@@ -17,4 +17,6 @@ Dive → catch → stock → sell → upgrade / unlock / hire / decorate / exped
 - After Tang (or $60 earned): boat expedition on the right dock ($35, every 3rd trip is night)
 - Esc for pause and help
 
+First session: a mission chip (dive, catch 5 Clownfish, earn $60). The opening school has one shiny clownfish — gold outline, 2× pay.
+
 Progress saves in `localStorage` under `aqua-bay-save`.
