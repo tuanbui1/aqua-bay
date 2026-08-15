@@ -6,7 +6,7 @@ Original HTML5 pier aquarium tycoon. No build step.
 
 Open `index.html` in a browser (or `python3 -m http.server` in this folder).
 
-WASD or hold-click to move. Walk to the dock and press Space to dive. Keep a fish in the catch cone, surface, stock the tank, collect at the cashier.
+WASD or hold-click to move. Walk to the dock and press Space to dive. Keep a fish in the catch cone. With a full bag, Space or click surfaces. Stock the tank, collect at the cashier.
 
 ## Loop
 
