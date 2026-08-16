@@ -413,7 +413,9 @@
     }
     state.toasts.push(t);
   }
-  function pop(x, y, text, col, life) { pops.push({ x, y, text, col: col || "#ffe27a", life: life || 1, vy: -36 }); }
+  function pop(x, y, text, col, life, scale) {
+    pops.push({ x, y, text, col: col || "#ffe27a", life: life || 1, vy: -42, scale: scale || 1 });
+  }
   function hudPop(text, col, x, y, life) {
     const scr = (x != null && y != null) ? worldToScreen(x, y) : { x: W / 2, y: 168 };
     const minX = (missionVisible() || sessionChipVisible()) ? 280 : 210;
@@ -443,9 +445,9 @@
     if (o.x != null && o.y != null) pop(o.x, o.y, o.msg || "Not yet", "#ff8a7a", 0.9);
   }
   function playSale(who, speciesName, pay, wx, wy) {
-    pop(wx, wy, "+$" + pay, "#ffe27a", 1.35);
+    pop(wx, wy - 8, "+$" + pay, "#ffe27a", 1.7, 1.55);
     if (who && (who === "Maya" || who === "Nico")) {
-      pop(wx, wy - 22, who + " · the usual!", "#fff6e8", 1.1);
+      pop(wx, wy - 36, who, "#fff6e8", 1.0, 0.85);
     }
     state.registerPunch = 1.22;
   }
@@ -1231,9 +1233,9 @@
     const f = cl.fish;
     cl.t += dt;
     const u = clamp(cl.t / cl.max, 0, 1);
-    const wig = (1 - u) * (cl.rare ? 11 : 8);
-    f.x = cl.ox + Math.sin(cl.t * 42) * wig;
-    f.y = cl.oy + Math.cos(cl.t * 36) * wig * 0.55;
+    const wig = (1 - u * 0.35) * (cl.rare ? 16 : 12);
+    f.x = cl.ox + Math.sin(cl.t * 48) * wig;
+    f.y = cl.oy + Math.cos(cl.t * 40) * wig * 0.6;
     player.target = f;
     player.catchProg = 1;
     if (cl.t >= cl.max) {
@@ -1365,9 +1367,9 @@
           const foot = Math.sin(player.walkPhase) >= 0 ? 6 : -6;
           particles.push({
             x: player.x + foot + rand(-3, 3), y: player.y + 12,
-            vx: -player.vx * 0.12 + rand(-18, 18), vy: rand(-14, 2),
-            life: rand(0.28, 0.48), r: rand(6, 11),
-            col: "rgba(196,160,104,0.55)", kind: "dust",
+            vx: -player.vx * 0.12 + rand(-22, 22), vy: rand(-18, 2),
+            life: rand(0.34, 0.55), r: rand(7, 13),
+            col: "rgba(210,170,110,0.72)", kind: "dust",
           });
           if (!state.muted && Math.random() < 0.45) sfx("step");
         }
@@ -2776,6 +2778,8 @@
       ctx.fillStyle = "#6b4423"; ctx.fillRect(px, 1000, 16, 80);
       ctx.fillStyle = "#8a5a30"; ctx.fillRect(px, 1000, 6, 80);
     }
+    ctx.fillStyle = "#6b4423";
+    ctx.fillRect(-40, 70, 120, 830);
     ctx.fillStyle = state.unlocked[1] ? "#dce8d8" : "#e8d2ae"; ctx.fillRect(80, 70, 1600, 830);
     for (let y = 80; y < 890; y += 28) {
       ctx.fillStyle = (y / 28) % 2 ? "#d8be94" : "#e6cda6";
@@ -3439,7 +3443,9 @@
     for (const p of pops) {
       ctx.globalAlpha = clamp(p.life, 0, 1);
       ctx.fillStyle = p.col;
-      ctx.font = (p.text && p.text.length > 18 ? "800 13px" : "800 16px") + " Fredoka, sans-serif"; ctx.textAlign = "center";
+      const sc = p.scale || 1;
+      const base = (p.text && p.text.length > 18 ? 13 : 16) * sc;
+      ctx.font = "800 " + Math.round(base) + "px Fredoka, sans-serif"; ctx.textAlign = "center";
       ctx.fillText(p.text, p.x, p.y);
     }
     ctx.globalAlpha = 1;
@@ -3475,6 +3481,18 @@
   }
   function cashierHandlingIt() {
     return !!state.hiredCashier && !playerNearRegister();
+  }
+  function firstSessionReached() {
+    if (state.missionDone) return 6;
+    let r = 0;
+    if (state.didMove || (state.tutorial | 0) >= 1 || state.scene === "ocean") r = 1;
+    if ((state.tutorial | 0) >= 1 || state.scene === "ocean" || state.pendingScene === "ocean") r = 2;
+    if (((state.caughtCount && state.caughtCount[0]) | 0) >= 1) r = 2;
+    if (((state.caughtCount && state.caughtCount[0]) | 0) >= 5 || bagIsFull() || state.didFirstStock) r = 3;
+    if (state.didFirstStock) r = 4;
+    if (state.didFirstCollect || state.didFirstSale || (state.money | 0) > 0) r = 5;
+    if ((state.didFirstCollect || state.didFirstSale) && (state.money | 0) >= 15) r = 6;
+    return r;
   }
   function firstSessionIndex() {
     if (state.missionDone) return -1;
@@ -3724,13 +3742,13 @@
       ctx.restore();
     }
     if (missionVisible()) {
-      const step = Math.max(0, firstSessionIndex());
+      const reached = Math.max(1, Math.min(6, firstSessionReached() || (firstSessionIndex() + 1)));
       const chip = hudBox(16, 74, 176, 30);
       card(chip.x, chip.y, chip.w, chip.h, "rgba(16, 36, 46, 0.88)");
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 12px Nunito, sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText("FIRST SESSION  " + (step + 1) + " / 6", chip.x + 12, chip.y + 20);
+      ctx.fillText("FIRST SESSION  " + reached + " / 6", chip.x + 12, chip.y + 20);
     } else if (sessionChipVisible()) {
       const goals = state.sessionGoals || [];
       let cur = "";
@@ -4131,7 +4149,7 @@
 
   function drawSpeciesStrip() {
     for (let i = 0; i < 5; i++) {
-      const b = hudBox(W - 56, 60 + i * 38, 44, 34);
+      const b = hudBox(W - 56, 58 + i * 34, 44, 32);
       const x = b.x, y = b.y;
       card(x, y, 44, 34, state.unlocked[i] ? "rgba(18,40,48,0.8)" : "rgba(20,20,24,0.7)");
       if (state.bookOpen === i) {
