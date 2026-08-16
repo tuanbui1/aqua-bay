@@ -81,8 +81,9 @@
     missionStep: 0, missionDone: false, caughtRare: false,
     bagRare: [], stockRare: [0, 0, 0, 0, 0],
     diveLock: 0,
+    didMove: false, shinyCallout: 0, shinyFocus: 0,
   };
-  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16 };
+  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null };
   const cam = { x: 880, y: 920, z: 1 };
   const oceanFish = [];
   const tankFish = [[], [], [], [], []];
@@ -95,8 +96,9 @@
   const worldCoins = [];
   const titleBubbles = [];
   const dockTeasers = [];
+  const hudPops = [];
   const keys = new Set();
-  const mouse = { x: W / 2, y: H / 2, down: false, ui: false };
+  const mouse = { x: W / 2, y: H / 2, down: false, ui: false, held: 0, acted: false, pressX: 0, pressY: 0 };
   let uiHits = [];
   let custTimer = 0;
   let browseTimer = 0.35;
@@ -322,12 +324,12 @@
       decor: [false, false, false], expeditionCount: 0, nightExpedition: false, decorOpen: false,
       missionStep: 0, missionDone: false, caughtRare: false,
       bagRare: [], stockRare: [0, 0, 0, 0, 0],
-      diveLock: 0 });
+      diveLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0 });
     state.hasSave = false;
-    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null;
+    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null;
     cam.x = 880; cam.y = 920; cam.z = 1;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
-    flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0;
+    flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
     browseTimer = 0.35;
     for (let i = 0; i < 5; i++) tankFish[i].length = 0;
     seedOcean();
@@ -350,6 +352,22 @@
   function coneRange() { return 200 + state.catchLv * 8; }
   function toast(msg, col, life) { state.toasts.push({ msg, col: col || "#fff6d2", life: life == null ? 2.2 : life }); }
   function pop(x, y, text, col, life) { pops.push({ x, y, text, col: col || "#ffe27a", life: life || 1, vy: -36 }); }
+  function hudPop(text, col, x, y, life) {
+    const scr = (x != null && y != null) ? worldToScreen(x, y) : { x: W / 2, y: 168 };
+    hudPops.push({
+      text, col: col || "#ffe27a",
+      x: clamp(scr.x, 210, W - 210),
+      y: clamp(scr.y, 92, H - 150),
+      life: life == null ? 2.4 : life,
+      max: life == null ? 2.4 : life,
+    });
+  }
+  function namedSale(who, speciesName, wx, wy) {
+    const line = who + " bought a " + speciesName + "!";
+    pop(wx, wy, line, "#ffe27a", 1.8);
+    toast(line, "#ffe27a", 2.8);
+    hudPop(line, "#ffe27a", wx, wy, 2.5);
+  }
   function expeditionUnlocked() { return !!state.unlocked[1] || (state.peakMoney | 0) >= 60; }
   function nearBoat() {
     return state.scene === "shop" && Math.hypot(player.x - BOAT.x, player.y - BOAT.y) < 78;
@@ -358,7 +376,7 @@
     return (state.speedLv | 0) > 0 || (state.bagLv | 0) > 0 || (state.catchLv | 0) > 0 || !!state.hiredCashier;
   }
   function shopBarsReady() {
-    return state.scene === "shop" && !inDiveZone() && (state.tutorial >= 5 || state.money >= 25);
+    return state.scene === "shop" && !inDiveZone() && player.y < 840 && (state.tutorial >= 5 || state.money >= 25);
   }
   function decorHudReady() {
     return shopBarsReady() && (boughtAnUpgrade() || !!state.unlocked[1]);
@@ -530,14 +548,32 @@
   canvas.addEventListener("pointerdown", (e) => {
     const p = canvasPos(e);
     mouse.x = p.x; mouse.y = p.y; mouse.down = true; mouse.ui = false;
+    mouse.held = 0; mouse.acted = false; mouse.pressX = p.x; mouse.pressY = p.y;
     audio();
     const hit = hitUI(p.x, p.y);
-    if (hit) { mouse.ui = true; onUI(hit); return; }
-    if (state.mode === "play") tryAction();
+    if (hit) { mouse.ui = true; mouse.acted = true; onUI(hit); return; }
+    if (state.mode === "play") {
+      if (tryAction()) { mouse.acted = true; player.goto = null; return; }
+    }
   });
   canvas.addEventListener("pointermove", (e) => { const p = canvasPos(e); mouse.x = p.x; mouse.y = p.y; });
-  canvas.addEventListener("pointerup", () => { mouse.down = false; mouse.ui = false; });
-  canvas.addEventListener("pointerleave", () => { mouse.down = false; });
+  canvas.addEventListener("pointerup", () => {
+    if (state.mode === "play" && !mouse.ui && !mouse.acted && mouse.held < 0.22) {
+      const w = screenToWorld(mouse.pressX, mouse.pressY);
+      player.goto = clickWalkTarget(w.x, w.y);
+    }
+    mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.acted = false;
+  });
+  canvas.addEventListener("pointerleave", () => { mouse.down = false; mouse.held = 0; });
+  function clickWalkTarget(wx, wy) {
+    if (state.scene === "shop") {
+      if (wx > DIVE_ZONE.x - 30 && wx < DIVE_ZONE.x + DIVE_ZONE.w + 30 &&
+          wy > DIVE_ZONE.y - 80 && wy < DIVE_ZONE.y + DIVE_ZONE.h + 50) {
+        return { x: 880, y: 1008 };
+      }
+    }
+    return { x: wx, y: wy };
+  }
   function hitUI(x, y) {
     for (let i = uiHits.length - 1; i >= 0; i--) {
       const b = uiHits[i];
@@ -586,6 +622,8 @@
     if (state.scene === "shop") {
       player.x = 880; player.y = 920;
       cam.x = 880; cam.y = 920; cam.z = 1;
+      player.goto = null;
+      if (state.tutorial === 0) state.didMove = false;
     }
     state.displayMoney = state.money;
     seedDockTeasers();
@@ -601,15 +639,16 @@
     return state.scene === "ocean" && (bagIsFull() || nearSurface());
   }
   function tryAction() {
-    if (state.mode !== "play") return;
+    if (state.mode !== "play") return false;
     if (state.bookOpen != null) {
-      if (shouldSurface()) { state.bookOpen = null; beginSurface(); }
-      return;
+      if (shouldSurface()) { state.bookOpen = null; beginSurface(); return true; }
+      return false;
     }
-    if (state.fadeDir > 0) return;
-    if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) beginExpedition();
-    else if (state.scene === "shop" && inDiveZone()) beginDive();
-    else if (shouldSurface()) beginSurface();
+    if (state.fadeDir > 0) return true;
+    if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) { beginExpedition(); return true; }
+    if (state.scene === "shop" && inDiveZone()) { beginDive(); return true; }
+    if (shouldSurface()) { beginSurface(); return true; }
+    return false;
   }
   function inDiveZone() {
     return player.x > DIVE_ZONE.x && player.x < DIVE_ZONE.x + DIVE_ZONE.w &&
@@ -759,18 +798,41 @@
       total++;
     }
   }
+  function firstRareFish() {
+    for (const f of oceanFish) if (f.rare && !f.caught) return f;
+    return null;
+  }
   function updateOceanFish(dt) {
     const px = player.x, py = player.y;
     for (const f of oceanFish) {
       if (f.caught) continue;
       const sp = SPECIES[f.s];
+      if (f.rare && state.diveLock > 0) {
+        f.x += Math.cos(state.time * 2.1 + f.ph) * 10 * dt;
+        f.y += Math.sin(state.time * 1.7 + f.ph) * 7 * dt;
+        f.vx = 0; f.vy = 0;
+        continue;
+      }
+      if (f.nudgeT > 0) {
+        f.nudgeT -= dt;
+        const nx = (f.nudgeX != null ? f.nudgeX : px + 150) - f.x;
+        const ny = (f.nudgeY != null ? f.nudgeY : py + 80) - f.y;
+        const nd = Math.hypot(nx, ny) || 1;
+        f.vx = (nx / nd) * 70;
+        f.vy = (ny / nd) * 70;
+        f.ang = Math.atan2(f.vy, f.vx);
+        f.x += f.vx * dt; f.y += f.vy * dt;
+        continue;
+      }
       const dx = f.x - px, dy = f.y - py;
       const d = Math.hypot(dx, dy) || 0.001;
-      if (d < sp.fleeR) {
-        f.fleeT = 0.45;
-        const boost = d < 70 ? 1.25 : 1;
-        f.vx = (dx / d) * sp.flee * boost;
-        f.vy = (dy / d) * sp.flee * boost;
+      const fleeR = f.rare ? sp.fleeR * 0.55 : sp.fleeR;
+      const fleeSp = f.rare ? sp.flee * 0.52 : sp.flee;
+      if (d < fleeR) {
+        f.fleeT = f.rare ? 0.22 : 0.45;
+        const boost = (!f.rare && d < 70) ? 1.25 : 1;
+        f.vx = (dx / d) * fleeSp * boost;
+        f.vy = (dy / d) * fleeSp * boost;
         f.ang = Math.atan2(f.vy, f.vx);
       } else if (f.fleeT > 0) {
         f.fleeT -= dt;
@@ -804,8 +866,10 @@
   function fishInCone(f) {
     const dx = f.x - player.x, dy = f.y - player.y;
     const d = Math.hypot(dx, dy);
-    if (d > coneRange() || d < 18) return false;
-    return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < 0.85;
+    const range = coneRange() + (f.rare ? 44 : 0);
+    if (d > range || d < 16) return false;
+    const half = f.rare ? 1.18 : 0.85;
+    return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < half;
   }
   function updateCatch(dt) {
     if (state.fadeDir || state.diveLock > 0) {
@@ -885,23 +949,32 @@
     const ocean = state.scene === "ocean";
     const max = ocean ? swimSpeed() : walkSpeed();
     let ax = 0, ay = 0;
+    if (mouse.down) mouse.held += dt; else mouse.held = 0;
     if (keys.has("w") || keys.has("arrowup")) ay -= 1;
     if (keys.has("s") || keys.has("arrowdown")) ay += 1;
     if (keys.has("a") || keys.has("arrowleft")) ax -= 1;
     if (keys.has("d") || keys.has("arrowright")) ax += 1;
     if (ax || ay) {
       const m = Math.hypot(ax, ay) || 1; ax /= m; ay /= m;
-    } else if (mouse.down && !mouse.ui && state.mode === "play") {
+      player.goto = null;
+    } else if (mouse.down && !mouse.ui && !mouse.acted && state.mode === "play" && mouse.held > 0.16) {
+      player.goto = null;
       const w = screenToWorld(mouse.x, mouse.y);
       const dx = w.x - player.x, dy = w.y - player.y, d = Math.hypot(dx, dy);
       if (d > 8) { ax = dx / d; ay = dy / d; }
+    } else if (player.goto && state.mode === "play") {
+      const dx = player.goto.x - player.x, dy = player.goto.y - player.y, d = Math.hypot(dx, dy);
+      if (d < 16) player.goto = null;
+      else { ax = dx / d; ay = dy / d; }
     }
-    player.vx += ax * 1650 * dt; player.vy += ay * 1650 * dt;
+    const accel = player.goto ? 2200 : 1650;
+    player.vx += ax * accel * dt; player.vy += ay * accel * dt;
     const fr = ax || ay ? 5.2 : 8.5;
     player.vx -= player.vx * fr * dt; player.vy -= player.vy * fr * dt;
     const sp = Math.hypot(player.vx, player.vy);
     if (sp > max) { player.vx *= max / sp; player.vy *= max / sp; }
     player.x += player.vx * dt; player.y += player.vy * dt;
+    if (!state.didMove && Math.hypot(player.x - 880, player.y - 920) > 28) state.didMove = true;
     const faceMin = (ocean && mouse.down) ? 6 : 18;
     if (sp > faceMin) player.facing = Math.atan2(player.vy, player.vx);
     player.bob += dt * (ocean ? 7 : 9) * (sp > 20 ? 1 : 0.35);
@@ -1280,7 +1353,7 @@
               });
             }
             const who = c.name || "A guest";
-            pop(REGISTER.x + 110, REGISTER.y - 8, who + " bought a " + SPECIES[c.carry].name + "!", "#ffe27a", 1.6);
+            namedSale(who, SPECIES[c.carry].name, REGISTER.x + 110, REGISTER.y - 8);
             sfx("coin"); c.carry = -1; c.state = "leave"; c.wait = 0; c.emote = ""; persist();
           }
         }
@@ -1339,6 +1412,13 @@
       state.toasts[i].life -= dt;
       if (state.toasts[i].life <= 0) state.toasts.splice(i, 1);
     }
+    for (let i = hudPops.length - 1; i >= 0; i--) {
+      hudPops[i].life -= dt;
+      hudPops[i].y -= 18 * dt;
+      if (hudPops[i].life <= 0) hudPops.splice(i, 1);
+    }
+    if (state.shinyCallout > 0) state.shinyCallout = Math.max(0, state.shinyCallout - dt);
+    if (state.shinyFocus > 0) state.shinyFocus = Math.max(0, state.shinyFocus - dt);
     for (let i = flyers.length - 1; i >= 0; i--) {
       const fl = flyers[i];
       fl.life -= dt;
@@ -2539,9 +2619,31 @@
         ctx.stroke();
         ctx.restore();
         ctx.fillStyle = "#ffd24a";
-        ctx.font = "800 13px Fredoka, sans-serif";
+        ctx.font = state.shinyCallout > 0 ? "800 18px Fredoka, sans-serif" : "800 13px Fredoka, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("SHINY", f.x, f.y - 28 + Math.sin(state.time * 6) * 2);
+        if (state.shinyCallout > 0) {
+          const bounce = Math.sin(state.time * 8) * 6;
+          ctx.fillStyle = "#ffe27a";
+          ctx.font = "800 22px Fredoka, sans-serif";
+          ctx.fillText("SHINY!", f.x, f.y - 52 + bounce);
+          ctx.save();
+          ctx.translate(f.x, f.y - 72 + bounce);
+          ctx.fillStyle = "#ffd24a";
+          ctx.strokeStyle = "rgba(80,50,10,0.45)";
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(0, 16);
+          ctx.lineTo(10, 0);
+          ctx.lineTo(3, 2);
+          ctx.lineTo(3, -12);
+          ctx.lineTo(-3, -12);
+          ctx.lineTo(-3, 2);
+          ctx.lineTo(-10, 0);
+          ctx.closePath();
+          ctx.fill(); ctx.stroke();
+          ctx.restore();
+        }
       }
     }
     drawCone();
@@ -2705,6 +2807,14 @@
       ctx.fill();
     }
     ctx.globalAlpha = 1;
+    if (player.goto) {
+      const pulse = 0.45 + 0.35 * Math.sin(state.time * 7);
+      ctx.strokeStyle = "rgba(255,226,122," + pulse + ")";
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(player.goto.x, player.goto.y, 14 + Math.sin(state.time * 6) * 3, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "rgba(255,226,122,0.28)";
+      ctx.beginPath(); ctx.arc(player.goto.x, player.goto.y, 5, 0, Math.PI * 2); ctx.fill();
+    }
     for (const p of pops) {
       ctx.globalAlpha = clamp(p.life, 0, 1);
       ctx.fillStyle = p.col;
@@ -2760,6 +2870,10 @@
       }
       if (state.bag.length > 0) {
         return { text: "Nice catch! Grab more, or swim up to stock", target: { x: player.x, y: 140 } };
+      }
+      const shiny = firstRareFish();
+      if (shiny && (state.shinyCallout > 0 || !state.caughtRare)) {
+        return { text: "Point the glowing cone at the SHINY clownfish", target: { x: shiny.x, y: shiny.y } };
       }
       return { text: "Point the glowing cone at a fish — hold until the bar fills", target: nearestOceanFish() };
     }
@@ -2910,7 +3024,7 @@
     ctx.font = "700 13px Nunito, sans-serif";
     const bagIconsW = state.bag.length ? Math.min(36 + state.bag.length * 28, 340) : 0;
     const leftHud = (state.bag.length ? 400 + bagIconsW : 400) + 10;
-    const rightHud = W - 144;
+    const rightHud = W - 80;
     const maxTw = Math.max(160, rightHud - leftHud);
     const tw = Math.min(ctx.measureText(gt).width + 24, 560, maxTw);
     let gx = W / 2 - tw / 2;
@@ -2927,7 +3041,7 @@
     if (missionVisible()) {
       const chipW = 248, chipH = 86;
       let cx = gx + tw / 2 - chipW / 2;
-      cx = clamp(cx, 222, W - 160 - chipW);
+      cx = clamp(cx, 222, W - 72 - chipW);
       card(cx, 70, chipW, chipH, "rgba(16, 36, 46, 0.88)");
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 12px Nunito, sans-serif";
@@ -2972,7 +3086,12 @@
         ctx.fillText(clock, W / 2, ey + 20);
       }
     }
-    if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) {
+    if (state.tutorial === 0 && state.scene === "shop" && !state.didMove && !inDiveZone()) {
+      card(W / 2 - 210, H - 92, 420, 40, "rgba(20, 50, 62, 0.9)");
+      ctx.fillStyle = "#ffe27a"; ctx.font = "700 16px Fredoka, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Hold WASD or click to walk", W / 2, H - 66);
+    } else if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) {
       card(W / 2 - 160, H - 92, 320, 40, "rgba(40, 160, 180, 0.88)");
       ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
       ctx.fillText("SPACE · Expedition $35", W / 2, H - 66);
@@ -3003,11 +3122,22 @@
     if (state.expedition) ty = Math.max(ty, 196);
     for (const t of state.toasts) {
       ctx.globalAlpha = clamp(t.life, 0, 1);
-      card(W / 2 - 180, ty, 360, 30, "rgba(20,30,40,0.8)");
+      card(W / 2 - 200, ty, 400, 30, "rgba(20,30,40,0.8)");
       ctx.fillStyle = t.col; ctx.font = "700 14px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText(t.msg, W / 2, ty + 20);
       ctx.globalAlpha = 1;
       ty += 36;
+    }
+    for (const hp of hudPops) {
+      const a = clamp(hp.life / Math.max(0.2, hp.max * 0.28), 0, 1);
+      ctx.globalAlpha = a;
+      ctx.font = "800 16px Fredoka, sans-serif";
+      const tw = Math.min(ctx.measureText(hp.text).width + 28, 460);
+      card(hp.x - tw / 2, hp.y - 16, tw, 30, "rgba(18, 36, 44, 0.88)");
+      ctx.fillStyle = hp.col;
+      ctx.textAlign = "center";
+      ctx.fillText(hp.text, hp.x, hp.y + 4);
+      ctx.globalAlpha = 1;
     }
     for (const fl of flyers) {
       ctx.globalAlpha = clamp(fl.life / 0.2, 0, 1);
@@ -3218,7 +3348,7 @@
       ctx.fillText("How to play", W / 2, 108);
       ctx.fillStyle = "#e8f4f8"; ctx.font = "600 15px Nunito, sans-serif"; ctx.textAlign = "left";
       const lines = [
-        "WASD or Arrows — move  ·  hold mouse to steer",
+        "WASD or Arrows — move  ·  click to walk  ·  hold to steer",
         "SPACE / click at the dock — dive",
         "SPACE / click — surface (full bag, or at the waterline)",
         "Keep a fish in the glowing cone to catch it",
@@ -3254,29 +3384,29 @@
     ctx.fillStyle = "rgba(200,220,230,0.42)";
     ctx.font = "600 11px Nunito, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("Aqua Bay · loop 11", W - 16, H - 14);
+    ctx.fillText("Aqua Bay · loop 12", W - 16, H - 14);
   }
 
   function drawSpeciesStrip() {
     for (let i = 0; i < 5; i++) {
-      const x = W - 88, y = 68 + i * 50;
-      card(x, y, 58, 44, state.unlocked[i] ? "rgba(18,40,48,0.8)" : "rgba(20,20,24,0.7)");
+      const x = W - 56, y = 60 + i * 38;
+      card(x, y, 44, 34, state.unlocked[i] ? "rgba(18,40,48,0.8)" : "rgba(20,20,24,0.7)");
       if (state.bookOpen === i) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.55 + 0.25 * Math.sin(state.time * 6)) + ")";
         ctx.lineWidth = 2.4;
-        roundRect(x, y, 58, 44, 12); ctx.stroke();
+        roundRect(x, y, 44, 34, 12); ctx.stroke();
       }
-      if (state.unlocked[i]) drawFishBody(SPECIES[i], x + 29, y + 22, 0, 0.85, state.time + i);
+      if (state.unlocked[i]) drawFishBody(SPECIES[i], x + 22, y + 17, 0, 0.68, state.time + i);
       else {
         const showPrice = i === nextLockedTank();
-        ctx.fillStyle = "#8a8074"; ctx.font = "700 14px Nunito, sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("?", x + 29, y + (showPrice ? 20 : 27));
+        ctx.fillStyle = "#8a8074"; ctx.font = "700 12px Nunito, sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("?", x + 22, y + (showPrice ? 16 : 22));
         if (showPrice) {
-          ctx.fillStyle = "#ffe27a"; ctx.font = "700 10px Nunito, sans-serif";
-          ctx.fillText("$" + SPECIES[i].unlock, x + 29, y + 36);
+          ctx.fillStyle = "#ffe27a"; ctx.font = "700 9px Nunito, sans-serif";
+          ctx.fillText("$" + SPECIES[i].unlock, x + 22, y + 28);
         }
       }
-      btn("book-" + i, x, y, 58, 44);
+      btn("book-" + i, x, y, 44, 34);
     }
   }
   function drawCollectionBook() {
@@ -3400,12 +3530,35 @@
     else if (lx < 0) lx *= clamp((player.x - minX) / Math.max(1, -lx), 0, 1);
     if (ly > 0) ly *= clamp((maxY - player.y) / Math.max(1, ly), 0, 1);
     else if (ly < 0) ly *= clamp((player.y - minY) / Math.max(1, -ly), 0, 1);
-    const tx = player.x + lx;
-    const ty = player.y + ly;
+    let tx = player.x + lx;
+    let ty = player.y + ly;
+    if (state.shinyFocus > 0 && state.scene === "ocean") {
+      const shiny = firstRareFish();
+      if (shiny) {
+        tx = lerp(player.x, shiny.x, 0.42);
+        ty = lerp(player.y, shiny.y, 0.42);
+      }
+    }
     cam.x = lerp(cam.x, tx, 1 - Math.pow(0.0008, dt));
     cam.y = lerp(cam.y, ty, 1 - Math.pow(0.0008, dt));
+    const rightRail = 70;
+    const bottomRail = shopBarsReady() ? 100 : (state.tutorial === 0 && !state.didMove ? 100 : 28);
+    let psx = (player.x - cam.x) * cam.z + W / 2;
+    let psy = (player.y - cam.y) * cam.z + H / 2;
+    if (psx > W - rightRail - 40) cam.x += (psx - (W - rightRail - 40)) / cam.z;
+    if (psy > H - bottomRail - 30) cam.y += (psy - (H - bottomRail - 30)) / cam.z;
     cam.x = clamp(cam.x, minX, maxX);
     cam.y = clamp(cam.y, minY, maxY);
+  }
+  function onDiveLockEnd() {
+    if (state.expedition) return;
+    const shiny = firstRareFish();
+    if (!shiny) return;
+    state.shinyCallout = 3.4;
+    state.shinyFocus = 1.7;
+    shiny.nudgeX = player.x + 148;
+    shiny.nudgeY = player.y + 86;
+    shiny.nudgeT = 1.05;
   }
   let last = performance.now();
   function frame(now) {
@@ -3424,7 +3577,11 @@
         updatePlayer(sim);
         if (state.scene === "ocean") { updateOceanFish(sim); updateCatch(sim); updateReefPresence(); }
         else { updateShopInteract(); updateCustomers(sim); }
-        if (state.diveLock > 0) state.diveLock = Math.max(0, state.diveLock - sim);
+        if (state.diveLock > 0) {
+          const prevLock = state.diveLock;
+          state.diveLock = Math.max(0, state.diveLock - sim);
+          if (prevLock > 0 && state.diveLock <= 0) onDiveLockEnd();
+        }
         if (state.expedition && state.scene === "ocean" && !state.fadeDir) {
           state.expeditionTime -= sim;
           if (state.expeditionTime <= 0) beginSurface();
