@@ -48,6 +48,7 @@
   const KIOSK    = { x: 1280, y: 480, w: 170, h: 130 };
   const WELCOME  = { x: 300, y: 668, w: 156, h: 86 };
   const DIVE_ZONE = { x: 520, y: 980, w: 720, h: 160 };
+  const AISLE = { x: 802, y: 318, w: 156, h: 560 };
   const EXPEDITION_COST = 35;
   const EXPEDITION_SECS = 45;
   const BOAT = { x: 1224, y: 1052 };
@@ -91,7 +92,7 @@
     didFirstStock: false, didFirstSale: false,
     shinyHold: 0, shinyHoldName: "",
     boatHint: 0, boatGlance: 0,
-    coneFlash: 0, registerPunch: 1, tankShake: null, cardShake: null, nopeFlash: 0,
+    coneFlash: 0, registerPunch: 1, tankShake: null, cardShake: null, priceFlash: null, nopeFlash: 0,
     catchClimax: null,
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0 };
@@ -233,7 +234,10 @@
       noiseBurst(0.1, 900, 400, 0.07);
       tone(400, 0.08, "sine", 0.05, 640);
     } else if (kind === "click") { tone(400, 0.04, "square", 0.03); }
-    else if (kind === "no") { tone(160, 0.1, "sawtooth", 0.03); }
+    else if (kind === "no") {
+      tone(220, 0.07, "square", 0.08, 130);
+      setTimeout(() => { if (!state.muted) tone(130, 0.12, "square", 0.07); }, 50);
+    }
     else if (kind === "shiny") {
       tone(659, 0.06, "triangle", 0.08);
       setTimeout(() => { if (!state.muted) tone(880, 0.07, "triangle", 0.08); }, 50);
@@ -378,7 +382,7 @@
       didFirstStock: false, didFirstSale: false,
       shinyHold: 0, shinyHoldName: "",
       boatHint: 0, boatGlance: 0,
-      coneFlash: 0, registerPunch: 1, tankShake: null, cardShake: null, nopeFlash: 0,
+      coneFlash: 0, registerPunch: 1, tankShake: null, cardShake: null, priceFlash: null, nopeFlash: 0,
       catchClimax: null });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0;
@@ -401,7 +405,15 @@
     return a;
   }
   function bagMax() { return BAG_STEPS[clamp(state.bagLv, 0, BAG_STEPS.length - 1)]; }
-  function walkSpeed() { return 195 + state.speedLv * 38; }
+  function walkSpeed() { return 232 + state.speedLv * 38; }
+  function aisleMidX() { return AISLE.x + AISLE.w / 2; }
+  function confineShopSwimmer(sw) {
+    const pad = 22;
+    const top = AISLE.y + pad;
+    const bot = AISLE.y + AISLE.h - pad;
+    sw.x = aisleMidX() + Math.sin(state.time * 1.55 + sw.ph) * (AISLE.w * 0.26);
+    sw.y = clamp(sw.y, top, bot);
+  }
   function swimSpeed() { return 215 + state.speedLv * 42; }
   function catchTime() { return (state.lifetimeCatches < 3 ? 0.42 : 0.55) / (1 + 0.24 * state.catchLv); }
   function coneRange() { return 200 + state.catchLv * 8; }
@@ -439,10 +451,16 @@
   function nope(opts) {
     const o = opts || {};
     sfx("no");
-    state.nopeFlash = 0.16;
-    if (o.tank >= 0) state.tankShake = { i: o.tank, t: 0.32 };
-    if (o.card) state.cardShake = { id: o.card, t: 0.32 };
-    if (o.x != null && o.y != null) pop(o.x, o.y, o.msg || "Not yet", "#ff8a7a", 0.9);
+    state.nopeFlash = 0.28;
+    if (o.tank >= 0) {
+      state.tankShake = { i: o.tank, t: 0.5 };
+      state.priceFlash = { tank: o.tank, t: 0.48 };
+    }
+    if (o.card) {
+      state.cardShake = { id: o.card, t: 0.5 };
+      state.priceFlash = { id: o.card, t: 0.48 };
+    }
+    if (o.x != null && o.y != null) pop(o.x, o.y, o.msg || "Not yet", "#ff6a5a", 1.05, 1.15);
   }
   function playSale(who, speciesName, pay, wx, wy) {
     pop(wx, wy - 8, "+$" + pay, "#ffe27a", 1.7, 1.55);
@@ -1577,16 +1595,16 @@
       tankFish[i].push({ x: rand(24, TANK_W - 24), y: rand(36, TANK_H - 18), a: rand(0, 6), ph: rand(0, 20), ceremonial: true });
     }
     state.shopSwimmers.push(
-      { s: i, x: 260, y: 430, vx: 92, ph: rand(0, 8) },
-      { s: i, x: 620, y: 510, vx: 78, ph: rand(0, 8) }
+      { s: i, x: aisleMidX(), y: AISLE.y + 80, vx: 92, ph: rand(0, 8) },
+      { s: i, x: aisleMidX(), y: AISLE.y + 220, vx: 78, ph: rand(0, 8) }
     );
     if (i === 1) {
       toast("The bay just opened up", "#9ef0ff", 3.4);
       state.shopSwimmers.push(
-        { s: 1, x: 340, y: 390, vx: 88, ph: rand(0, 8), school: 2 },
-        { s: 1, x: 720, y: 460, vx: 76, ph: rand(0, 8), school: 2 },
-        { s: 1, x: 1080, y: 520, vx: 98, ph: rand(0, 8), school: 2 },
-        { s: 0, x: 480, y: 410, vx: 70, ph: rand(0, 8), school: 2 }
+        { s: 1, x: aisleMidX(), y: AISLE.y + 70, vx: 88, ph: rand(0, 8), school: 2 },
+        { s: 1, x: aisleMidX(), y: AISLE.y + 180, vx: 76, ph: rand(0, 8), school: 2 },
+        { s: 1, x: aisleMidX(), y: AISLE.y + 300, vx: 98, ph: rand(0, 8), school: 2 },
+        { s: 0, x: aisleMidX(), y: AISLE.y + 400, vx: 70, ph: rand(0, 8), school: 2 }
       );
       toast("The boat is ready — $35 on the right dock", "#ffe27a", 4.6, { big: true });
       state.boatHint = 6.5;
@@ -1741,8 +1759,8 @@
     while (n < 4) {
       state.shopSwimmers.push({
         s: n % 3 === 2 ? 0 : 1,
-        x: 180 + n * 280,
-        y: 380 + (n % 3) * 36,
+        x: aisleMidX(),
+        y: AISLE.y + 50 + n * 110,
         vx: rand(68, 102),
         ph: rand(0, 8),
         school: 2,
@@ -1926,9 +1944,9 @@
       pops[i].life -= dt; pops[i].y += pops[i].vy * dt;
       if (pops[i].life <= 0) pops.splice(i, 1);
     }
-    for (let i = state.toasts.length - 1; i >= 0; i--) {
-      state.toasts[i].life -= dt;
-      if (state.toasts[i].life <= 0) state.toasts.splice(i, 1);
+    if (state.toasts.length && !state.unlockBanner) {
+      state.toasts[0].life -= dt;
+      if (state.toasts[0].life <= 0) state.toasts.shift();
     }
     for (let i = hudPops.length - 1; i >= 0; i--) {
       hudPops[i].life -= dt;
@@ -1985,7 +2003,7 @@
       }
     }
     if (state.coneFlash > 0) state.coneFlash = Math.max(0, state.coneFlash - dt);
-    if (state.nopeFlash > 0) state.nopeFlash = Math.max(0, state.nopeFlash - dt);
+    if (state.nopeFlash > 0) state.nopeFlash = Math.max(0, state.nopeFlash - dt * 0.85);
     if (state.registerPunch > 1) state.registerPunch = Math.max(1, state.registerPunch - dt * 2.4);
     if (state.tankShake) {
       state.tankShake.t -= dt;
@@ -1994,6 +2012,10 @@
     if (state.cardShake) {
       state.cardShake.t -= dt;
       if (state.cardShake.t <= 0) state.cardShake = null;
+    }
+    if (state.priceFlash) {
+      state.priceFlash.t -= dt;
+      if (state.priceFlash.t <= 0) state.priceFlash = null;
     }
     if (state.moneyRollT > 0) {
       state.moneyRollT = Math.max(0, state.moneyRollT - dt);
@@ -2038,15 +2060,17 @@
     if (state.flash > 0) state.flash = Math.max(0, state.flash - dt);
     for (let i = state.shopSwimmers.length - 1; i >= 0; i--) {
       const sw = state.shopSwimmers[i];
-      sw.x += sw.vx * dt;
-      sw.y += Math.sin(state.time * 2 + sw.ph) * 10 * dt;
-      if (sw.x > 1660) {
-        if (sw.school === 2 && state.unlocked[1]) {
-          sw.x = 110;
-          sw.y = 380 + (i % 3) * 40;
-        } else {
-          state.shopSwimmers.splice(i, 1);
-        }
+      const dir = sw.vx >= 0 ? 1 : -1;
+      sw.y += Math.abs(sw.vx) * 0.7 * dir * dt;
+      confineShopSwimmer(sw);
+      const top = AISLE.y + 22;
+      const bot = AISLE.y + AISLE.h - 22;
+      if (sw.y >= bot && dir > 0) {
+        if (sw.school === 2 && state.unlocked[1]) sw.y = top;
+        else state.shopSwimmers.splice(i, 1);
+      } else if (sw.y <= top && dir < 0) {
+        if (sw.school === 2 && state.unlocked[1]) sw.y = bot;
+        else state.shopSwimmers.splice(i, 1);
       }
     }
     if (state.scene === "shop") {
@@ -2869,12 +2893,13 @@
     drawRegister(); drawKiosk();
     for (let i = 0; i < 5; i++) drawTank(i);
     ctx.save();
-    ctx.beginPath();
-    ctx.rect(90, 118, 1580, 760);
+    roundRect(AISLE.x, AISLE.y, AISLE.w, AISLE.h, 18);
     ctx.clip();
     for (const sw of state.shopSwimmers) {
-      if (sw.x < 70 || sw.x > 1690) continue;
-      drawFishBody(SPECIES[sw.s], sw.x, sw.y, 0.05, 1.15, state.time + sw.ph);
+      if (sw.y < AISLE.y - 8 || sw.y > AISLE.y + AISLE.h + 8) continue;
+      if (sw.x < AISLE.x - 8 || sw.x > AISLE.x + AISLE.w + 8) continue;
+      const ang = (sw.vx >= 0 ? 1 : -1) * Math.PI / 2;
+      drawFishBody(SPECIES[sw.s], sw.x, sw.y, ang + Math.sin(state.time * 2 + sw.ph) * 0.12, 1.15, state.time + sw.ph);
     }
     ctx.restore();
     const sorted = customers.slice().sort((a, b) => a.y - b.y);
@@ -2964,7 +2989,7 @@
   function drawTank(i) {
     const t = TANK_POS[i], sp = SPECIES[i];
     const shake = (state.tankShake && state.tankShake.i === i)
-      ? Math.sin(state.tankShake.t * 52) * 6 * clamp(state.tankShake.t / 0.12, 0, 1)
+      ? Math.sin(state.tankShake.t * 64) * 12 * clamp(state.tankShake.t / 0.18, 0, 1)
       : 0;
     ctx.save();
     ctx.translate(shake, 0);
@@ -3067,7 +3092,9 @@
       ctx.textAlign = "center";
       ctx.fillText(sp.name, t.x + TANK_W / 2, t.y + 96);
       ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillStyle = affordable ? "#ffe27a" : "#d0c4b0";
+      const priceNope = state.priceFlash && state.priceFlash.tank === i;
+      ctx.fillStyle = priceNope ? "#ff6a5a" : affordable ? "#ffe27a" : "#d0c4b0";
+      if (priceNope) ctx.font = "800 16px Nunito, sans-serif";
       ctx.fillText("Unlock  $" + sp.unlock, t.x + TANK_W / 2, t.y + 116);
       if (affordable) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.4 + 0.35 * Math.sin(state.time * 6)) + ")";
@@ -3617,13 +3644,11 @@
     ctx.closePath();
     ctx.fill(); ctx.stroke();
     ctx.restore();
-    if (d > 220) {
-      const worldD = Math.hypot(tgt.x - player.x, tgt.y - player.y);
+    if (d > 220 && state.boatHint > 0 && tgt.x === BOAT.x && tgt.y === BOAT.y) {
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 12px Nunito, sans-serif";
       ctx.textAlign = "center";
-      const label = (state.boatHint > 0 && tgt.x === BOAT.x && tgt.y === BOAT.y) ? "BOAT" : (Math.round(worldD) + "m");
-      ctx.fillText(label, ax + Math.cos(ang) * 22, ay + Math.sin(ang) * 22 + 4);
+      ctx.fillText("BOAT", ax + Math.cos(ang) * 22, ay + Math.sin(ang) * 22 + 4);
     }
   }
   function drawBoatEdgeHint() {
@@ -3830,15 +3855,16 @@
       ctx.textAlign = "center";
       ctx.fillText("Bag full — SPACE or click!", fb.x + fb.w / 2, fb.y + 22);
     }
-    // toasts — center column, clear of the shop banner / mission chip / sale pops
-    let ty = 78;
-    if (state.scene === "shop") ty = 152;
-    if (state.scene === "ocean" && bagIsFull()) ty = Math.max(ty, state.expedition ? 142 : 108);
-    if (state.expedition && !(state.scene === "ocean" && bagIsFull())) ty = Math.max(ty, 104);
-    for (const t of state.toasts) {
+    // one toast at a time — the rest stay queued (unlock banner holds the slot)
+    if (state.toasts.length && !state.unlockBanner) {
+      const t = state.toasts[0];
       const big = !!t.big;
       const th = big ? 44 : 30;
       const tw = big ? 520 : 400;
+      let ty = 78;
+      if (state.scene === "shop") ty = 152;
+      if (state.scene === "ocean" && bagIsFull()) ty = Math.max(ty, state.expedition ? 142 : 108);
+      if (state.expedition && !(state.scene === "ocean" && bagIsFull())) ty = Math.max(ty, 104);
       const tb = hudBox(W / 2 - tw / 2, ty, tw, th);
       ctx.globalAlpha = clamp(t.life / (big ? 0.55 : 1), 0, 1);
       card(tb.x, tb.y, tb.w, tb.h, big ? "rgba(28, 22, 10, 0.9)" : "rgba(20,30,40,0.8)");
@@ -3852,7 +3878,6 @@
       ctx.textAlign = "center";
       ctx.fillText(t.msg, tb.x + tb.w / 2, tb.y + (big ? 30 : 20));
       ctx.globalAlpha = 1;
-      ty = tb.y + tb.h + 8;
     }
     for (const hp of hudPops) {
       const a = clamp(hp.life / Math.max(0.2, hp.max * 0.28), 0, 1);
@@ -3933,7 +3958,7 @@
       ctx.fillRect(0, 0, W, H);
     }
     if (state.nopeFlash > 0) {
-      ctx.fillStyle = "rgba(255, 80, 70," + (0.12 * clamp(state.nopeFlash / 0.16, 0, 1)) + ")";
+      ctx.fillStyle = "rgba(255, 70, 60," + (0.2 * clamp(state.nopeFlash / 0.28, 0, 1)) + ")";
       ctx.fillRect(0, 0, W, H);
     }
   }
@@ -3951,14 +3976,22 @@
   }
   function upCard(id, x, y, title, sub, cost, maxed, can, pulse) {
     const w = 168;
-    const shake = (state.cardShake && state.cardShake.id === id)
-      ? Math.sin(state.cardShake.t * 54) * 5 * clamp(state.cardShake.t / 0.12, 0, 1)
+    const shaking = state.cardShake && state.cardShake.id === id;
+    const shake = shaking
+      ? Math.sin(state.cardShake.t * 68) * 13 * clamp(state.cardShake.t / 0.2, 0, 1)
       : 0;
     x += shake;
-    const fill = maxed ? "rgba(40,70,60,0.85)" : can ? "rgba(28, 58, 52, 0.9)" : "rgba(40, 32, 28, 0.82)";
+    const flashing = state.priceFlash && state.priceFlash.id === id;
+    const fill = maxed ? "rgba(40,70,60,0.85)" : can ? "rgba(28, 58, 52, 0.9)" : flashing
+      ? "rgba(72, 24, 22, 0.92)" : "rgba(40, 32, 28, 0.82)";
     card(x, y, w, 64, fill);
     if (pulse) {
       ctx.strokeStyle = "rgba(255,226,122," + (0.45 + 0.35 * Math.sin(state.time * 6)) + ")";
+      ctx.lineWidth = 3;
+      roundRect(x, y, w, 64, 12); ctx.stroke();
+    }
+    if (flashing) {
+      ctx.strokeStyle = "rgba(255,90,70," + (0.55 + 0.35 * clamp(state.priceFlash.t / 0.2, 0, 1)) + ")";
       ctx.lineWidth = 3;
       roundRect(x, y, w, 64, 12); ctx.stroke();
     }
@@ -3968,8 +4001,8 @@
     ctx.fillStyle = "#c8e8ee"; ctx.font = "700 11px Nunito, sans-serif";
     ctx.fillText(sub, x + 10, y + 44);
     ctx.textAlign = "right";
-    ctx.fillStyle = maxed ? "#8fd" : can ? "#ffe27a" : "#c4b8a4";
-    ctx.font = "800 13px Nunito, sans-serif";
+    ctx.fillStyle = maxed ? "#8fd" : flashing ? "#ff6a5a" : can ? "#ffe27a" : "#c4b8a4";
+    ctx.font = flashing ? "800 16px Nunito, sans-serif" : "800 13px Nunito, sans-serif";
     ctx.fillText(maxed ? "MAX" : "$" + cost, x + w - 10, y + 36);
     if (!maxed) btn(id, x, y, w, 64);
   }
@@ -4018,20 +4051,33 @@
       const owned = !!dec[i];
       const cost = DECOR_COST[i];
       const can = !owned && state.money >= cost;
-      const fill = owned ? "rgba(40,70,60,0.92)" : can ? "rgba(28, 58, 52, 0.94)" : "rgba(40, 32, 28, 0.92)";
-      card(x, y, pw, ph, fill);
+      const id = "decor-" + i;
+      const shaking = state.cardShake && state.cardShake.id === id;
+      const shake = shaking
+        ? Math.sin(state.cardShake.t * 68) * 12 * clamp(state.cardShake.t / 0.2, 0, 1)
+        : 0;
+      const flashing = state.priceFlash && state.priceFlash.id === id;
+      const dx = x + shake;
+      const fill = owned ? "rgba(40,70,60,0.92)" : can ? "rgba(28, 58, 52, 0.94)" : flashing
+        ? "rgba(72, 24, 22, 0.94)" : "rgba(40, 32, 28, 0.92)";
+      card(dx, y, pw, ph, fill);
+      if (flashing) {
+        ctx.strokeStyle = "rgba(255,90,70,0.7)";
+        ctx.lineWidth = 2.5;
+        roundRect(dx, y, pw, ph, 12); ctx.stroke();
+      }
       ctx.textAlign = "left";
       ctx.fillStyle = "#fff6e8";
       ctx.font = "700 13px Fredoka, sans-serif";
-      ctx.fillText(labels[i], x + 10, y + 20);
+      ctx.fillText(labels[i], dx + 10, y + 20);
       ctx.fillStyle = "#c8e8ee";
       ctx.font = "700 10px Nunito, sans-serif";
-      ctx.fillText(owned ? "Installed" : "Pier decor", x + 10, y + 36);
+      ctx.fillText(owned ? "Installed" : "Pier decor", dx + 10, y + 36);
       ctx.textAlign = "right";
-      ctx.fillStyle = owned ? "#8fd" : can ? "#ffe27a" : "#c4b8a4";
-      ctx.font = "800 13px Nunito, sans-serif";
-      ctx.fillText(owned ? "OWNED" : "$" + cost, x + pw - 10, y + 30);
-      if (!owned) btn("decor-" + i, x, y, pw, ph);
+      ctx.fillStyle = owned ? "#8fd" : flashing ? "#ff6a5a" : can ? "#ffe27a" : "#c4b8a4";
+      ctx.font = flashing ? "800 16px Nunito, sans-serif" : "800 13px Nunito, sans-serif";
+      ctx.fillText(owned ? "OWNED" : "$" + cost, dx + pw - 10, y + 30);
+      if (!owned) btn(id, dx, y, pw, ph);
     }
   }
 
@@ -4144,7 +4190,7 @@
     ctx.fillStyle = "rgba(200,220,230,0.42)";
     ctx.font = "600 11px Nunito, sans-serif";
     ctx.textAlign = "right";
-      ctx.fillText("Aqua Bay · loop 17", W - 16, H - 14);
+      ctx.fillText("Aqua Bay · loop 18", W - 16, H - 14);
   }
 
   function drawSpeciesStrip() {
@@ -4308,6 +4354,9 @@
       const pull = u > 0.35 ? 0.78 : 0.78 * (u / 0.35);
       tx = lerp(tx, BOAT.x, pull);
       ty = lerp(ty, BOAT.y, pull);
+    } else if (player.goto && state.scene === "shop") {
+      tx = lerp(tx, player.goto.x, 0.2);
+      ty = lerp(ty, player.goto.y, 0.2);
     }
     cam.x = lerp(cam.x, tx, 1 - Math.pow(0.012, dt));
     cam.y = lerp(cam.y, ty, 1 - Math.pow(0.012, dt));
