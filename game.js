@@ -86,8 +86,11 @@
     didMove: false, shinyCallout: 0, shinyFocus: 0,
     sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
     sessionCaughtRare: false, sessionBoat: false,
-    bookOpened: false, bookTeaseShown: false,
+    bookOpened: false, bookTeaseShown: false, sawBookTease: false,
+    pendingBookTease: false, bookTeaseWait: 0,
     didFirstStock: false, didFirstSale: false,
+    shinyHold: 0, shinyHoldName: "",
+    boatHint: 0, boatGlance: 0,
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null };
   const cam = { x: 880, y: 920, z: 1 };
@@ -245,7 +248,8 @@
       bagRare: [], stockRare: [0, 0, 0, 0, 0],
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionCaughtRare: false, sessionBoat: false,
-      bookOpened: false, bookTeaseShown: false,
+      bookOpened: false, bookTeaseShown: false, sawBookTease: false,
+      pendingBookTease: false,
       didFirstStock: false, didFirstSale: false,
     };
   }
@@ -290,6 +294,8 @@
         sessionBoat: !!d.sessionBoat,
         bookOpened: !!d.bookOpened,
         bookTeaseShown: !!d.bookTeaseShown,
+        sawBookTease: !!d.sawBookTease,
+        pendingBookTease: !!d.pendingBookTease,
         didFirstStock: !!(d.didFirstStock || (Array.isArray(d.stock) && d.stock.some(n => (n | 0) > 0))),
         didFirstSale: !!(d.didFirstSale || d.didFirstCollect || (d.money | 0) > 0),
       });
@@ -331,6 +337,8 @@
         sessionBoat: !!state.sessionBoat,
         bookOpened: !!state.bookOpened,
         bookTeaseShown: !!state.bookTeaseShown,
+        sawBookTease: !!state.sawBookTease,
+        pendingBookTease: !!state.pendingBookTease,
         didFirstStock: !!state.didFirstStock,
         didFirstSale: !!state.didFirstSale,
       }));
@@ -355,8 +363,11 @@
       diveLock: 0, surfaceLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0,
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionCaughtRare: false, sessionBoat: false,
-      bookOpened: false, bookTeaseShown: false,
-      didFirstStock: false, didFirstSale: false });
+      bookOpened: false, bookTeaseShown: false, sawBookTease: false,
+      pendingBookTease: false, bookTeaseWait: 0,
+      didFirstStock: false, didFirstSale: false,
+      shinyHold: 0, shinyHoldName: "",
+      boatHint: 0, boatGlance: 0 });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null;
     cam.x = 880; cam.y = 920; cam.z = 1;
@@ -382,7 +393,14 @@
   function swimSpeed() { return 215 + state.speedLv * 42; }
   function catchTime() { return (state.lifetimeCatches < 3 ? 0.42 : 0.55) / (1 + 0.24 * state.catchLv); }
   function coneRange() { return 200 + state.catchLv * 8; }
-  function toast(msg, col, life) { state.toasts.push({ msg, col: col || "#fff6d2", life: life == null ? 2.2 : life }); }
+  function toast(msg, col, life, opts) {
+    const t = { msg, col: col || "#fff6d2", life: life == null ? 2.2 : life };
+    if (opts && typeof opts === "object") {
+      t.big = !!opts.big;
+      t.kind = opts.kind || "";
+    }
+    state.toasts.push(t);
+  }
   function pop(x, y, text, col, life) { pops.push({ x, y, text, col: col || "#ffe27a", life: life || 1, vy: -36 }); }
   function hudPop(text, col, x, y, life) {
     const scr = (x != null && y != null) ? worldToScreen(x, y) : { x: W / 2, y: 168 };
@@ -674,8 +692,17 @@
     mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.acted = false;
   });
   canvas.addEventListener("pointerleave", () => { mouse.down = false; mouse.held = 0; });
+  function tankAtWorld(wx, wy) {
+    for (let i = 0; i < 5; i++) {
+      const t = TANK_POS[i];
+      if (wx > t.x - 8 && wx < t.x + TANK_W + 8 && wy > t.y - 8 && wy < t.y + TANK_H + 28) return i;
+    }
+    return -1;
+  }
   function clickWalkTarget(wx, wy) {
     if (state.scene === "shop") {
+      const tankHit = tankAtWorld(wx, wy);
+      if (tankHit >= 0) return tankWalkPoint(tankHit);
       const inDock = wx > DIVE_ZONE.x - 30 && wx < DIVE_ZONE.x + DIVE_ZONE.w + 30 &&
           wy > DIVE_ZONE.y - 80 && wy < DIVE_ZONE.y + DIVE_ZONE.h + 50;
       if (inDock) {
@@ -717,14 +744,22 @@
     if (id === "up-catch") buyCatch();
     if (id === "up-cashier") buyCashier();
     if (id.startsWith("decor-")) buyDecor(+id.split("-")[1]);
-    if (id.startsWith("unlock-")) buyTank(+id.split("-")[1]);
+    if (id.startsWith("unlock-")) {
+      const i = +id.split("-")[1];
+      if (!nearStockPad(i)) { player.goto = tankWalkPoint(i); return; }
+      buyTank(i);
+    }
     if (id === "book-dismiss" || id === "book-close") { state.bookOpen = null; return; }
     if (id === "book-panel") return;
     if (id.startsWith("book-")) {
       const n = +id.split("-")[1];
       if (n >= 0 && n < 5) {
         state.bookOpen = n;
-        if (!state.bookOpened) { state.bookOpened = true; persist(); }
+        if (!state.bookOpened) { state.bookOpened = true; }
+        state.sawBookTease = true;
+        state.pendingBookTease = false;
+        state.bookTeaseWait = 0;
+        persist();
       }
     }
     if (id === "surface") {
@@ -750,6 +785,7 @@
     if (state.tutorial === 0 || state.stock.reduce((a, b) => a + b, 0) === 0) seedLivingPier();
     if (state.missionDone) rollSessionGoals();
     ensureBaySchool();
+    maybeBookTease();
   }
   function bagIsFull() {
     return state.bag.length >= bagMax();
@@ -1135,15 +1171,19 @@
     if (f.rare) {
       state.caughtRare = true;
       state.sessionCaughtRare = true;
-      toast("Shiny " + SPECIES[f.s].name + "!", "#ffd24a", 3.6);
+      state.shinyHold = 5.4;
+      state.shinyHoldName = SPECIES[f.s].name;
+      toast("Shiny " + SPECIES[f.s].name + "!", "#ffd24a", 5.6, { big: true, kind: "shiny" });
       spawnP(f.x, f.y, 22, ["#ffd24a", "#fff6e8", "#ffe27a"], 200);
-      maybeBookTease();
+      state.pendingBookTease = true;
     }
-    if (state.diveCatches >= 3) {
+    if (state.diveCatches >= 3 && !f.rare) {
       state.bagBonus = 1.1;
       const word = state.diveCatches >= 5 ? "AMAZING" : state.diveCatches === 4 ? "GREAT" : "NICE";
       const col = state.diveCatches >= 5 ? "#ff8ad4" : state.diveCatches === 4 ? "#9ef0ff" : "#ffe27a";
       state.comboPop = { text: word, col, life: 0.6, max: 0.6 };
+    } else if (state.diveCatches >= 3) {
+      state.bagBonus = 1.1;
     }
     state.bagPunch = 1.25;
     const scr = worldToScreen(f.x, f.y);
@@ -1155,7 +1195,7 @@
     }
     pop(f.x, f.y - 18, (f.rare ? "Shiny " : "") + SPECIES[f.s].name + "!", f.rare ? "#ffd24a" : SPECIES[f.s].accent);
     sfx("catch");
-    if (state.lifetimeCatches <= 2) toast("Swim up when you are ready", "#9ef0ff");
+    if (state.lifetimeCatches <= 2 && !f.rare) toast("Swim up when you are ready", "#9ef0ff");
     if (state.tutorial === 1) state.tutorial = 2;
     if (bagIsFull()) toast("Bag full! SPACE or click to surface.", "#9ef0ff");
     for (let i = oceanFish.length - 1; i >= 0; i--) if (oceanFish[i].caught) oceanFish.splice(i, 1);
@@ -1191,7 +1231,10 @@
     } else if (player.goto && state.mode === "play") {
       const dx = player.goto.x - player.x, dy = player.goto.y - player.y, d = Math.hypot(dx, dy);
       if (d < 22) {
-        if (state.scene === "shop") tryStockOnArrival();
+        if (state.scene === "shop") {
+          tryStockOnArrival();
+          tryUnlockOnArrival();
+        }
         player.goto = null;
       } else { ax = dx / d; ay = dy / d; }
     }
@@ -1275,11 +1318,33 @@
       if (state.unlocked[i] && state.bag.some((s) => s === i) && nearStockPad(i)) stockTank(i);
     }
   }
+  function tryUnlockOnArrival() {
+    const i = nextLockedTank();
+    if (i < 0 || state.unlocked[i] || !nearStockPad(i)) return;
+    if (state.money < SPECIES[i].unlock) return;
+    buyTank(i);
+  }
+  function bookTeaseReady() {
+    if (state.sawBookTease || state.bookOpened || state.bookOpen != null) return false;
+    return !!(state.didFirstStock || state.caughtRare || state.pendingBookTease);
+  }
   function maybeBookTease() {
-    if (state.bookTeaseShown || state.bookOpened) return;
-    if (!state.didFirstStock && !state.caughtRare) return;
+    if (!bookTeaseReady()) return;
+    if (state.scene !== "shop") {
+      state.pendingBookTease = true;
+      persist();
+      return;
+    }
+    if (state.bookTeaseWait > 0) return;
+    state.bookTeaseWait = 1.15;
+  }
+  function flushBookTease() {
+    if (!bookTeaseReady() || state.scene !== "shop") return;
+    state.sawBookTease = true;
     state.bookTeaseShown = true;
-    toast("Tap a fish on the right to open your book", "#9ef0ff", 3.4);
+    state.pendingBookTease = false;
+    state.bookTeaseWait = 0;
+    toast("Tap a fish on the right to open your book", "#9ef0ff", 4.4, { big: true });
     persist();
   }
   function updateShopInteract() {
@@ -1391,9 +1456,9 @@
   }
   function buyTank(i) {
     if (state.unlocked[i]) return;
+    if (!nearStockPad(i)) { player.goto = tankWalkPoint(i); return; }
     const c = SPECIES[i].unlock;
     if (state.money < c) return sfx("no");
-    const boatWasReady = expeditionUnlocked();
     state.money -= c; state.unlocked[i] = true;
     sfx("unlock");
     toast("Unlocked " + SPECIES[i].name + "!", SPECIES[i].color);
@@ -1416,7 +1481,9 @@
         { s: 1, x: -180, y: 530, vx: 98, ph: rand(0, 8), school: 2 },
         { s: 0, x: -80, y: 400, vx: 70, ph: rand(0, 8), school: 2 }
       );
-      if (!boatWasReady) toast("The boat is ready — SPACE at the right dock", "#ffe27a", 3.2);
+      toast("The boat is ready — $35 on the right dock", "#ffe27a", 4.6, { big: true });
+      state.boatHint = 6.5;
+      state.boatGlance = 2.2;
       ensureBaySchool();
     }
     if (!state.didFirstUnlock) { state.didFirstUnlock = true; triggerFlash(); }
@@ -1761,6 +1828,15 @@
     }
     if (state.shinyCallout > 0) state.shinyCallout = Math.max(0, state.shinyCallout - dt);
     if (state.shinyFocus > 0) state.shinyFocus = Math.max(0, state.shinyFocus - dt);
+    if (state.shinyHold > 0) state.shinyHold = Math.max(0, state.shinyHold - dt);
+    if (state.boatHint > 0) state.boatHint = Math.max(0, state.boatHint - dt);
+    if (state.boatGlance > 0) state.boatGlance = Math.max(0, state.boatGlance - dt);
+    if (state.bookTeaseWait > 0) {
+      state.bookTeaseWait = Math.max(0, state.bookTeaseWait - dt);
+      if (state.bookTeaseWait <= 0) flushBookTease();
+    } else if (state.pendingBookTease && state.scene === "shop" && state.mode === "play") {
+      maybeBookTease();
+    }
     for (let i = flyers.length - 1; i >= 0; i--) {
       const fl = flyers[i];
       fl.life -= dt;
@@ -2821,7 +2897,7 @@
           ctx.lineWidth = 5;
           roundRect(t.x - 3, t.y - 3, TANK_W + 6, TANK_H + 6, 12); ctx.stroke();
         }
-        btn("unlock-" + i, ...screenBtnFromWorld(t.x + 20, t.y + 78, TANK_W - 40, 28));
+        btn("unlock-" + i, ...screenBtnFromWorld(t.x, t.y, TANK_W, TANK_H));
       } else {
         ctx.fillStyle = "rgba(8,10,16,0.78)";
         roundRect(t.x, t.y, TANK_W, TANK_H, 10); ctx.fill();
@@ -3230,6 +3306,9 @@
     return !!state.hiredCashier && !playerNearRegister();
   }
   function currentGoal() {
+    if (state.scene === "shop" && state.boatHint > 0 && !bagHasStockable()) {
+      return { text: "The boat is ready — $35 on the right dock", target: { x: BOAT.x, y: BOAT.y } };
+    }
     if (state.scene === "ocean" || state.pendingScene === "ocean") {
       if (state.scene !== "ocean") {
         return { text: "Point the glowing cone at a fish — hold until the bar fills", target: null };
@@ -3241,6 +3320,9 @@
         return { text: "Expedition · catch rares, then surface", target: state.bag.length > 0 ? { x: player.x, y: 140 } : nearestOceanFish() };
       }
       if (state.bag.length > 0) {
+        if (state.shinyHold > 0 && state.shinyHoldName) {
+          return { text: "Shiny " + state.shinyHoldName + "! Grab more, or swim up to stock", target: { x: player.x, y: 140 } };
+        }
         return { text: "Nice catch! Grab more, or swim up to stock", target: { x: player.x, y: 140 } };
       }
       const shiny = firstRareFish();
@@ -3319,8 +3401,24 @@
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 12px Nunito, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(Math.round(worldD) + "m", ax + Math.cos(ang) * 22, ay + Math.sin(ang) * 22 + 4);
+      const label = (state.boatHint > 0 && tgt.x === BOAT.x && tgt.y === BOAT.y) ? "BOAT" : (Math.round(worldD) + "m");
+      ctx.fillText(label, ax + Math.cos(ang) * 22, ay + Math.sin(ang) * 22 + 4);
     }
+  }
+  function drawBoatEdgeHint() {
+    if (state.boatHint <= 0 || state.scene !== "shop") return;
+    const ts = worldToScreen(BOAT.x, BOAT.y);
+    if (ts.x > 70 && ts.x < W - 70 && ts.y > 70 && ts.y < H - 90) return;
+    const cx = clamp(ts.x, 80, W - 80);
+    const cy = clamp(ts.y, 90, H - 120);
+    const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
+    ctx.globalAlpha = clamp(state.boatHint / 0.4, 0, 1);
+    card(cx - 46, cy - 16, 92, 32, "rgba(40, 160, 180," + (0.72 + pulse * 0.18) + ")");
+    ctx.fillStyle = "#fff6e8";
+    ctx.font = "800 16px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("BOAT", cx, cy + 6);
+    ctx.globalAlpha = 1;
   }
   function card(x, y, w, h, fill) {
     ctx.fillStyle = fill || "rgba(18, 32, 42, 0.78)";
@@ -3518,12 +3616,22 @@
     if (state.scene === "ocean" && bagIsFull()) ty = Math.max(ty, state.expedition ? 142 : 108);
     if (state.expedition && !(state.scene === "ocean" && bagIsFull())) ty = Math.max(ty, 104);
     for (const t of state.toasts) {
-      ctx.globalAlpha = clamp(t.life, 0, 1);
-      card(W / 2 - 200, ty, 400, 30, "rgba(20,30,40,0.8)");
-      ctx.fillStyle = t.col; ctx.font = "700 14px Nunito, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(t.msg, W / 2, ty + 20);
+      const big = !!t.big;
+      const th = big ? 44 : 30;
+      const tw = big ? 520 : 400;
+      ctx.globalAlpha = clamp(t.life / (big ? 0.55 : 1), 0, 1);
+      card(W / 2 - tw / 2, ty, tw, th, big ? "rgba(28, 22, 10, 0.9)" : "rgba(20,30,40,0.8)");
+      if (big) {
+        ctx.strokeStyle = "rgba(255,210,74," + (0.45 + 0.25 * Math.sin(state.time * 6)) + ")";
+        ctx.lineWidth = 2.4;
+        roundRect(W / 2 - tw / 2, ty, tw, th, 12); ctx.stroke();
+      }
+      ctx.fillStyle = t.col;
+      ctx.font = big ? "800 22px Fredoka, sans-serif" : "700 14px Nunito, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(t.msg, W / 2, ty + (big ? 30 : 20));
       ctx.globalAlpha = 1;
-      ty += 36;
+      ty += big ? 52 : 36;
     }
     for (const hp of hudPops) {
       const a = clamp(hp.life / Math.max(0.2, hp.max * 0.28), 0, 1);
@@ -3548,6 +3656,7 @@
       ctx.globalAlpha = 1;
     }
     drawGuideArrow();
+    drawBoatEdgeHint();
     if (shopBarsReady()) {
       const nearK = nearRect(KIOSK.x, KIOSK.y, KIOSK.w, KIOSK.h, 90);
       if (nearK) {
@@ -3793,7 +3902,7 @@
     ctx.fillStyle = "rgba(200,220,230,0.42)";
     ctx.font = "600 11px Nunito, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("Aqua Bay · loop 15", W - 16, H - 14);
+      ctx.fillText("Aqua Bay · loop 16", W - 16, H - 14);
   }
 
   function drawSpeciesStrip() {
@@ -3921,6 +4030,7 @@
         if (bagHasStockable()) {
           player.goto = stockableTankTarget() || tankWalkPoint(0);
         }
+        maybeBookTease();
       }
       state.pendingScene = null; state.fadeDir = -1;
     }
@@ -3953,6 +4063,12 @@
         tx = lerp(player.x, shiny.x, 0.42);
         ty = lerp(player.y, shiny.y, 0.42);
       }
+    }
+    if (state.boatGlance > 0 && state.scene === "shop") {
+      const u = clamp(state.boatGlance / 2.2, 0, 1);
+      const pull = u > 0.35 ? 0.78 : 0.78 * (u / 0.35);
+      tx = lerp(tx, BOAT.x, pull);
+      ty = lerp(ty, BOAT.y, pull);
     }
     cam.x = lerp(cam.x, tx, 1 - Math.pow(0.0008, dt));
     cam.y = lerp(cam.y, ty, 1 - Math.pow(0.0008, dt));
