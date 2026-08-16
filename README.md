@@ -1,24 +1,37 @@
 # Aqua Bay
 
-Original HTML5 pier aquarium tycoon. No build step.
+**Dive. Stock. Sell.** A sunny pier aquarium tycoon in one HTML file.
+
+You run a little mart on the dock. Dive for fish, stock the tanks, and cash out customers before the next boat leaves. Five minutes feels like a real shop. An hour still has a next unlock.
+
+Open `index.html` (or `python3 -m http.server` in this folder). No build step.
 
 ## Play
 
-Open `index.html` in a browser (or `python3 -m http.server` in this folder).
+- **Move:** WASD, click-to-walk, or hold-click
+- **Dive:** walk to the glowing dock, Space or click
+- **Catch:** keep a fish in the cone until the bar fills
+- **Surface:** full bag — Space, Enter, or the SURFACE button
+- **Sell:** walk into the glowing tank, then stand on the cashier
+- **Book:** tap a fish on the right strip
+- **Esc:** pause and help
 
-WASD, click-to-walk, or hold-click to move. Walk to the dock and press Space to dive. Keep a fish in the catch cone. With a full bag, Space, Enter, or the SURFACE button surfaces from any depth. Stock the tank, collect at the cashier.
+Saves in `localStorage` under `aqua-bay-save`.
+
+## Why it’s fun
+
+The first dive has a **shiny clownfish** (gold outline, 2× pay). The pier is already alive — regulars, a mission chip, a boat on the right dock. After you earn $60, **Blue Tang** opens the bay: the shop goes teal, a new school swims the aisle, and night expeditions start every third trip.
+
+Five species: Clownfish, Blue Tang, Goldfish, Koi, Sea Turtle. Hire a cashier, hang lights, take the boat.
 
 ## Loop
 
 Dive → catch → stock → sell → upgrade / unlock / hire / decorate / expedition.
 
-- Five species: Clownfish, Blue Tang, Goldfish, Koi, Sea Turtle
-- Tap the right-hand strip for the collection book
-- After Tang (or $60 earned): boat expedition on the right dock ($35, every 3rd trip is night)
-- Esc for pause and help
+## Listing blurb (itch / stores)
 
-First session: a mission chip (dive, catch 5 Clownfish, earn $60). The opening school has one shiny clownfish — gold outline, 2× pay. It stays on-screen until you catch it or fill the bag.
+**Short:** Run a sunny pier aquarium. Dive, stock the tanks, sell to regulars.
 
-After that mission, a TODAY chip lists 2–3 session goals (unlock Blue Tang, catch a shiny, hire the cashier, serve 3 customers). Completing one pays a small coin bonus. Buying Blue Tang opens the bay — shop water shifts, a second school swims the aisle, and the boat feels ready. Regulars ask for the usual.
+**Long:** Aqua Bay is a cozy tycoon you can finish a session of in three minutes. Dive off your own dock, bag a shiny clownfish, and stock the mart before Maya asks for the usual. Unlock Blue Tang and the whole bay changes color. Then the boat, the night trips, the collection book.
 
-Progress saves in `localStorage` under `aqua-bay-save`.
+Original art. Plays in a browser. No account.
