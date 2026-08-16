@@ -19,4 +19,6 @@ Dive → catch → stock → sell → upgrade / unlock / hire / decorate / exped
 
 First session: a mission chip (dive, catch 5 Clownfish, earn $60). The opening school has one shiny clownfish — gold outline, 2× pay. It stays on-screen until you catch it or fill the bag.
 
+After that mission, a TODAY chip lists 2–3 session goals (unlock Blue Tang, catch a shiny, hire the cashier, serve 3 customers). Completing one pays a small coin bonus. Buying Blue Tang opens the bay — shop water shifts, a second school swims the aisle, and the boat feels ready. Regulars ask for the usual.
+
 Progress saves in `localStorage` under `aqua-bay-save`.
