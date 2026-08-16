@@ -1564,7 +1564,10 @@
     return null;
   }
   function seedTangTease() {
-    if (state.unlocked[1] || state.expedition) return;
+    if (state.unlocked[1] || state.expedition) {
+      for (let i = oceanFish.length - 1; i >= 0; i--) if (oceanFish[i].tease) oceanFish.splice(i, 1);
+      return;
+    }
     if ((state.divesThisSession | 0) < 2 && !state.didFirstStock) return;
     for (let i = oceanFish.length - 1; i >= 0; i--) if (oceanFish[i].tease) oceanFish.splice(i, 1);
     const x = clamp(player.x + 70, 120, OCEAN.w - 120);
@@ -1709,6 +1712,7 @@
       { s: i, x: aisleMidX(), y: AISLE.y + 220, vx: 78, ph: rand(0, 8) }
     );
     if (i === 1) {
+      for (let k = oceanFish.length - 1; k >= 0; k--) if (oceanFish[k].tease) oceanFish.splice(k, 1);
       toast("The bay just opened up", "#9ef0ff", 3.4);
       state.shopSwimmers.push(
         { s: 1, x: aisleMidX(), y: AISLE.y + 70, vx: 88, ph: rand(0, 8), school: 2 },
