@@ -799,8 +799,13 @@
     }
   }
   function firstRareFish() {
-    for (const f of oceanFish) if (f.rare && !f.caught) return f;
-    return null;
+    let best = null, bestD = 1e9;
+    for (const f of oceanFish) {
+      if (!f.rare || f.caught) continue;
+      const d = Math.hypot(f.x - player.x, f.y - player.y);
+      if (d < bestD) { bestD = d; best = f; }
+    }
+    return best;
   }
   function updateOceanFish(dt) {
     const px = player.x, py = player.y;
@@ -3024,7 +3029,7 @@
     ctx.font = "700 13px Nunito, sans-serif";
     const bagIconsW = state.bag.length ? Math.min(36 + state.bag.length * 28, 340) : 0;
     const leftHud = (state.bag.length ? 400 + bagIconsW : 400) + 10;
-    const rightHud = W - 80;
+    const rightHud = W - 144;
     const maxTw = Math.max(160, rightHud - leftHud);
     const tw = Math.min(ctx.measureText(gt).width + 24, 560, maxTw);
     let gx = W / 2 - tw / 2;
