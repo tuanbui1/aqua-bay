@@ -354,10 +354,12 @@
   function pop(x, y, text, col, life) { pops.push({ x, y, text, col: col || "#ffe27a", life: life || 1, vy: -36 }); }
   function hudPop(text, col, x, y, life) {
     const scr = (x != null && y != null) ? worldToScreen(x, y) : { x: W / 2, y: 168 };
+    const minX = missionVisible() ? 280 : 210;
+    const minY = 92;
     hudPops.push({
       text, col: col || "#ffe27a",
-      x: clamp(scr.x, 210, W - 210),
-      y: clamp(scr.y, 92, H - 150),
+      x: clamp(scr.x, minX, W - 210),
+      y: clamp(scr.y, minY, H - 150),
       life: life == null ? 2.4 : life,
       max: life == null ? 2.4 : life,
     });
@@ -537,7 +539,15 @@
       else if (state.mode === "play") state.mode = "pause";
       else if (state.mode === "pause" || state.mode === "help") state.mode = "play";
     }
-    if (e.key === " " || e.code === "Space" || e.key === "Enter") tryAction();
+    if (e.key === " " || e.code === "Space" || e.key === "Enter") {
+      // Full bag + Space/Enter always surfaces, even with a walk target.
+      if (state.mode === "play" && state.scene === "ocean" && bagIsFull() && !state.fadeDir) {
+        player.goto = null;
+        beginSurface();
+      } else {
+        tryAction();
+      }
+    }
     audio();
   });
   window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
@@ -553,14 +563,19 @@
     const hit = hitUI(p.x, p.y);
     if (hit) { mouse.ui = true; mouse.acted = true; onUI(hit); return; }
     if (state.mode === "play") {
+      if (state.scene === "ocean" && bagIsFull() && !state.fadeDir) {
+        mouse.acted = true; player.goto = null; beginSurface(); return;
+      }
       if (tryAction()) { mouse.acted = true; player.goto = null; return; }
     }
   });
   canvas.addEventListener("pointermove", (e) => { const p = canvasPos(e); mouse.x = p.x; mouse.y = p.y; });
   canvas.addEventListener("pointerup", () => {
     if (state.mode === "play" && !mouse.ui && !mouse.acted && mouse.held < 0.22) {
-      const w = screenToWorld(mouse.pressX, mouse.pressY);
-      player.goto = clickWalkTarget(w.x, w.y);
+      if (!(state.scene === "ocean" && bagIsFull())) {
+        const w = screenToWorld(mouse.pressX, mouse.pressY);
+        player.goto = clickWalkTarget(w.x, w.y);
+      }
     }
     mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.acted = false;
   });
@@ -610,7 +625,10 @@
       const n = +id.split("-")[1];
       if (n >= 0 && n < 5) state.bookOpen = n;
     }
-    if (id === "surface") { if (state.mode === "play") beginSurface(); return; }
+    if (id === "surface") {
+      if (state.mode === "play") { player.goto = null; beginSurface(); }
+      return;
+    }
     if (id === "dive") { if (state.mode === "play" && inDiveZone()) beginDive(); return; }
   }
   function startPlay() {
@@ -640,14 +658,17 @@
   }
   function tryAction() {
     if (state.mode !== "play") return false;
-    if (state.bookOpen != null) {
-      if (shouldSurface()) { state.bookOpen = null; beginSurface(); return true; }
-      return false;
-    }
     if (state.fadeDir > 0) return true;
+    if (state.scene === "ocean" && bagIsFull()) {
+      state.bookOpen = null;
+      player.goto = null;
+      beginSurface();
+      return true;
+    }
+    if (state.bookOpen != null) return false;
     if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) { beginExpedition(); return true; }
     if (state.scene === "shop" && inDiveZone()) { beginDive(); return true; }
-    if (shouldSurface()) { beginSurface(); return true; }
+    if (shouldSurface()) { player.goto = null; beginSurface(); return true; }
     return false;
   }
   function inDiveZone() {
@@ -664,6 +685,8 @@
   function beginSurface() {
     if (state.scene !== "ocean") return;
     if (state.pendingScene === "shop") return;
+    if (state.fadeDir > 0) return;
+    player.goto = null;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "shop";
     if (state.tutorial === 2) state.tutorial = 3;
     if ((state.bagBonus || 1) > 1) {
@@ -717,8 +740,8 @@
     const wantShiny = !state.caughtRare;
     const mixed = state.unlocked[1] && Math.random() < 0.3;
     if (wantShiny) {
-      // Off to the side, outside the opening cone, so it cannot vanish during the dive fade.
-      pushOceanFish(0, player.x + 250, player.y + 36, { rare: true });
+      // In front of the diver and inside the opening view — never off-camera.
+      pushOceanFish(0, player.x + 118, player.y + 52, { rare: true });
     }
     if (mixed) {
       for (let i = 0; i < 4; i++) {
@@ -807,14 +830,52 @@
     }
     return best;
   }
+  function onScreenWorldPos(wx, wy, pad) {
+    const p = pad == null ? 70 : pad;
+    const s = worldToScreen(wx, wy);
+    return s.x > p && s.x < W - p && s.y > p && s.y < H - p;
+  }
+  function shinyLeashPoint() {
+    const ahead = 132;
+    let x = player.x + Math.cos(player.facing) * ahead + 36;
+    let y = player.y + Math.sin(player.facing) * ahead + 28;
+    const halfW = (W * 0.32) / Math.max(0.7, cam.z);
+    const halfH = (H * 0.26) / Math.max(0.7, cam.z);
+    x = clamp(x, cam.x - halfW, cam.x + halfW);
+    y = clamp(y, cam.y - halfH, cam.y + halfH);
+    return { x: clamp(x, 90, OCEAN.w - 90), y: clamp(y, 270, OCEAN.h - 90) };
+  }
+  function placeShinyInView(f) {
+    if (!f || f.caught) return;
+    const p = shinyLeashPoint();
+    f.x = p.x; f.y = p.y;
+    f.nudgeX = p.x; f.nudgeY = p.y; f.nudgeT = 0.35;
+    f.vx = 0; f.vy = 0;
+  }
+  function leashShiny(dt) {
+    if (state.caughtRare || bagIsFull() || state.scene !== "ocean" || state.fadeDir || state.diveLock > 0) return;
+    const f = firstRareFish();
+    if (!f) return;
+    const p = shinyLeashPoint();
+    const d = Math.hypot(f.x - player.x, f.y - player.y);
+    const off = !onScreenWorldPos(f.x, f.y, 56);
+    if (d > 240 || off) {
+      const nx = p.x - f.x, ny = p.y - f.y, nd = Math.hypot(nx, ny) || 1;
+      const pull = off || d > 340 ? 220 : 140;
+      f.vx = (nx / nd) * pull;
+      f.vy = (ny / nd) * pull;
+      f.x += f.vx * dt; f.y += f.vy * dt;
+      f.ang = Math.atan2(f.vy, f.vx);
+    }
+  }
   function updateOceanFish(dt) {
     const px = player.x, py = player.y;
     for (const f of oceanFish) {
       if (f.caught) continue;
       const sp = SPECIES[f.s];
       if (f.rare && state.diveLock > 0) {
-        f.x += Math.cos(state.time * 2.1 + f.ph) * 10 * dt;
-        f.y += Math.sin(state.time * 1.7 + f.ph) * 7 * dt;
+        f.x += Math.cos(state.time * 2.1 + f.ph) * 6 * dt;
+        f.y += Math.sin(state.time * 1.7 + f.ph) * 4 * dt;
         f.vx = 0; f.vy = 0;
         continue;
       }
@@ -867,6 +928,7 @@
       }
     }
     if (state.diveLock <= 0) ensureNearbyFish();
+    leashShiny(dt);
   }
   function fishInCone(f) {
     const dx = f.x - player.x, dy = f.y - player.y;
@@ -2932,8 +2994,9 @@
     const ang = Math.atan2(dy, dx);
     const bounce = Math.sin(state.time * 5) * 4;
     const dist = 48 + bounce;
+    const ax = ps.x + Math.cos(ang) * dist, ay = ps.y + Math.sin(ang) * dist;
     ctx.save();
-    ctx.translate(ps.x + Math.cos(ang) * dist, ps.y + Math.sin(ang) * dist);
+    ctx.translate(ax, ay);
     ctx.rotate(ang);
     ctx.fillStyle = "#ffe27a";
     ctx.strokeStyle = "rgba(80,50,10,0.45)";
@@ -2946,6 +3009,13 @@
     ctx.closePath();
     ctx.fill(); ctx.stroke();
     ctx.restore();
+    if (d > 220) {
+      const worldD = Math.hypot(tgt.x - player.x, tgt.y - player.y);
+      ctx.fillStyle = "#ffe27a";
+      ctx.font = "800 12px Nunito, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(Math.round(worldD) + "m", ax + Math.cos(ang) * 22, ay + Math.sin(ang) * 22 + 4);
+    }
   }
   function card(x, y, w, h, fill) {
     ctx.fillStyle = fill || "rgba(18, 32, 42, 0.78)";
@@ -3045,20 +3115,19 @@
     ctx.restore();
     if (missionVisible()) {
       const chipW = 248, chipH = 86;
-      let cx = gx + tw / 2 - chipW / 2;
-      cx = clamp(cx, 222, W - 72 - chipW);
-      card(cx, 70, chipW, chipH, "rgba(16, 36, 46, 0.88)");
+      const cx = 16, cy = 74;
+      card(cx, cy, chipW, chipH, "rgba(16, 36, 46, 0.88)");
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 12px Nunito, sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText("FIRST SESSION", cx + 12, 88);
+      ctx.fillText("FIRST SESSION", cx + 12, cy + 18);
       const checks = [
         { ok: (state.missionStep | 0) >= 1 || (state.tutorial | 0) >= 1, label: "Dive" },
         { ok: (state.missionStep | 0) >= 2, label: "Catch 5 Clownfish  " + Math.min(5, (state.caughtCount && state.caughtCount[0]) | 0) + "/5" },
         { ok: state.missionDone, label: "Stock & earn $60  $" + Math.min(60, state.money | 0) },
       ];
       for (let i = 0; i < checks.length; i++) {
-        const y = 106 + i * 16;
+        const y = cy + 36 + i * 16;
         ctx.fillStyle = checks[i].ok ? "#7dffa0" : "#8ab";
         ctx.fillText(checks[i].ok ? "✓  " + checks[i].label : "○  " + checks[i].label, cx + 12, y);
       }
@@ -3078,7 +3147,7 @@
       const sec = Math.max(0, Math.ceil(state.expeditionTime));
       const ss = sec % 60;
       const clock = ((sec / 60) | 0) + ":" + (ss < 10 ? "0" : "") + ss;
-      const ey = missionVisible() ? 164 : 70;
+      const ey = 70;
       if (state.nightExpedition) {
         card(W / 2 - 92, ey, 184, 28, "rgba(10, 18, 36, 0.92)");
         ctx.fillStyle = sec <= 10 ? "#ff8a7a" : "#9ef0ff";
@@ -3112,19 +3181,17 @@
       ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
       ctx.fillText("SPACE  or  click  to  SURFACE", W / 2, H - 66);
       ctx.globalAlpha = 1;
-      btn("surface", W / 2 - 170, H - 92, 340, 40);
     }
     if (state.scene === "ocean" && bagIsFull()) {
-      const by = missionVisible() ? 164 : 70;
+      const by = state.expedition ? 104 : 70;
       card(W / 2 - 150, by, 300, 32, "rgba(255, 140, 60, 0.88)");
       ctx.fillStyle = "#fff"; ctx.font = "700 14px Nunito, sans-serif";
       ctx.fillText("Bag full — SPACE or click!", W / 2, by + 22);
     }
-    // toasts
+    // toasts — center column, clear of the left mission chip and sale pops
     let ty = 78;
-    if (missionVisible()) ty = 168;
-    if (state.scene === "ocean" && bagIsFull()) ty = Math.max(ty, 204);
-    if (state.expedition) ty = Math.max(ty, 196);
+    if (state.scene === "ocean" && bagIsFull()) ty = Math.max(ty, state.expedition ? 142 : 108);
+    if (state.expedition && !(state.scene === "ocean" && bagIsFull())) ty = Math.max(ty, 104);
     for (const t of state.toasts) {
       ctx.globalAlpha = clamp(t.life, 0, 1);
       card(W / 2 - 200, ty, 400, 30, "rgba(20,30,40,0.8)");
@@ -3199,6 +3266,19 @@
       ctx.fillStyle = "rgba(255,255,255,0.2)";
       ctx.fillRect(0, 0, W, H);
     }
+    registerSurfaceHits();
+  }
+  function registerSurfaceHits() {
+    if (state.scene !== "ocean" || state.mode !== "play") return;
+    if (!(bagIsFull() || nearSurface())) return;
+    // Last-registered wins hit-testing, so these beat click-to-walk and other HUD.
+    btn("surface", W / 2 - 180, H - 100, 360, 56);
+    if (bagIsFull()) {
+      const by = state.expedition ? 104 : 70;
+      btn("surface", W / 2 - 160, by, 320, 40);
+    }
+    const sp = worldToScreen(OCEAN.w / 2, 70);
+    btn("surface", sp.x - 170, sp.y - 28, 340, 48);
   }
   function upCard(id, x, y, title, sub, cost, maxed, can, pulse) {
     const w = 168;
@@ -3389,7 +3469,7 @@
     ctx.fillStyle = "rgba(200,220,230,0.42)";
     ctx.font = "600 11px Nunito, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("Aqua Bay · loop 12", W - 16, H - 14);
+    ctx.fillText("Aqua Bay · loop 13", W - 16, H - 14);
   }
 
   function drawSpeciesStrip() {
@@ -3494,6 +3574,8 @@
             r: rand(2, 5), v: rand(36, 70), ph: rand(0, 8),
           });
         }
+        cam.x = player.x;
+        cam.y = player.y;
         cam.z = 1.28;
         state.camPunch = 0.16;
         if (state.expedition) seedExpeditionPocket();
@@ -3561,9 +3643,7 @@
     if (!shiny) return;
     state.shinyCallout = 3.4;
     state.shinyFocus = 1.7;
-    shiny.nudgeX = player.x + 148;
-    shiny.nudgeY = player.y + 86;
-    shiny.nudgeT = 1.05;
+    placeShinyInView(shiny);
   }
   let last = performance.now();
   function frame(now) {
