@@ -3911,9 +3911,13 @@
   }
   function chipAlpha(box, ribbon) {
     if (!ribbon) return 1;
-    if (boxesOverlap(box, ribbon, 10)) return 0.16;
+    if (boxesOverlap(box, ribbon, 10)) return 0.12;
     if (state.camPunch > 0 && box.y < 70) return 0.55;
     return 1;
+  }
+  function parkChip(box, ribbon) {
+    if (!ribbon || !boxesOverlap(box, ribbon, 12)) return box;
+    return hudBox(box.x, ribbon.y + ribbon.h + 8, box.w, box.h);
   }
   function drawRibbon(rb) {
     if (!rb) return;
@@ -3929,7 +3933,7 @@
   }
   function drawHUD() {
     const ribbon = ribbonLayout();
-    const moneyBox = hudBox(16, 14, 200, 52);
+    const moneyBox = parkChip(hudBox(16, 14, 200, 52), ribbon);
     ctx.save();
     ctx.globalAlpha = chipAlpha(moneyBox, ribbon);
     ctx.translate(moneyBox.x + 94, moneyBox.y + 26);
@@ -3946,7 +3950,7 @@
       ctx.fillText("Next " + ng.name + " $" + ng.cost, moneyBox.x + 52, moneyBox.y + 42);
     }
     ctx.restore();
-    const bagBox = hudBox(224, 14, 168, 52);
+    const bagBox = parkChip(hudBox(224, 14, 168, 52), ribbon);
     ctx.save();
     ctx.globalAlpha = chipAlpha(bagBox, ribbon);
     ctx.translate(bagBox.x + 84, bagBox.y + 26);
@@ -3960,7 +3964,10 @@
     ctx.restore();
     if (state.bag.length) {
       const bw = Math.min(36 + state.bag.length * 28, 340);
-      const ib = hudBox(400, 14, bw, 52);
+      let ib = hudBox(400, 14, bw, 52);
+      if (ribbon && boxesOverlap(ib, ribbon, 12)) {
+        ib = hudBox(400, ribbon.y + ribbon.h + 8, bw, 52);
+      }
       ctx.save();
       ctx.globalAlpha = chipAlpha(ib, ribbon);
       card(ib.x, ib.y, ib.w, ib.h);
@@ -3974,9 +3981,10 @@
       }
       ctx.restore();
     }
+    const sessionY = Math.max(74, moneyBox.y + moneyBox.h + 8, bagBox.y + bagBox.h + 8);
     if (missionVisible()) {
       const reached = Math.max(1, Math.min(6, firstSessionReached() || (firstSessionIndex() + 1)));
-      const chip = hudBox(16, 74, 176, 30);
+      const chip = hudBox(16, sessionY, 176, 30);
       card(chip.x, chip.y, chip.w, chip.h, "rgba(16, 36, 46, 0.88)");
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 12px Nunito, sans-serif";
@@ -3992,7 +4000,7 @@
       if (!cur) cur = "Done for today";
       ctx.font = "700 12px Nunito, sans-serif";
       const tw = Math.min(ctx.measureText(cur).width + 88, 320);
-      const chip = hudBox(16, 74, tw, 30);
+      const chip = hudBox(16, sessionY, tw, 30);
       card(chip.x, chip.y, chip.w, chip.h, "rgba(16, 36, 46, 0.88)");
       ctx.fillStyle = "#9ef0ff";
       ctx.font = "800 12px Nunito, sans-serif";
