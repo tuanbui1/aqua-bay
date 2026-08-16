@@ -3266,7 +3266,6 @@
       ctx.fillStyle = "rgba(255,255,255,0.2)";
       ctx.fillRect(0, 0, W, H);
     }
-    registerSurfaceHits();
   }
   function registerSurfaceHits() {
     if (state.scene !== "ocean" || state.mode !== "play") return;
@@ -3684,6 +3683,7 @@
       drawHUD();
       if (state.mode === "pause" || state.mode === "help") drawPause();
       drawCollectionBook();
+      registerSurfaceHits();
       if (state.fade > 0) {
         ctx.fillStyle = "rgba(8, 40, 52," + state.fade + ")";
         ctx.fillRect(0, 0, W, H);
