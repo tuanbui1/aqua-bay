@@ -20,7 +20,7 @@ Saves in `localStorage` under `aqua-bay-save`.
 
 ## Why it’s fun
 
-The first dive has a **shiny clownfish** (gold outline, 2× pay). The pier is already alive — regulars, a mission chip, a boat on the right dock. After you earn $60, **Blue Tang** opens the bay: the shop goes teal, a new school swims the aisle, and night expeditions start every third trip.
+The first dive has a **shiny clownfish** (gold outline, 2× pay). Catches, sales, and unlocks hit with a camera punch, particles, and a tiny chirp — not just a banner. Maya glances and calls for the usual. After the first stock, dive 2 is not a clone: a blue flash teases **Blue Tang** in the deep. After you earn $60, Tang opens the bay: the shop goes teal, a new school swims the aisle, and night expeditions start every third trip.
 
 Five species: Clownfish, Blue Tang, Goldfish, Koi, Sea Turtle. Hire a cashier, hang lights, take the boat.
 
