@@ -80,7 +80,7 @@
     decorOpen: false,
     missionStep: 0, missionDone: false, caughtRare: false,
     bagRare: [], stockRare: [0, 0, 0, 0, 0],
-    diveLock: 0,
+    diveLock: 0, surfaceLock: 0,
     didMove: false, shinyCallout: 0, shinyFocus: 0,
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null };
@@ -324,7 +324,7 @@
       decor: [false, false, false], expeditionCount: 0, nightExpedition: false, decorOpen: false,
       missionStep: 0, missionDone: false, caughtRare: false,
       bagRare: [], stockRare: [0, 0, 0, 0, 0],
-      diveLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0 });
+      diveLock: 0, surfaceLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0 });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null;
     cam.x = 880; cam.y = 920; cam.z = 1;
@@ -545,7 +545,7 @@
         player.goto = null;
         beginSurface();
       } else {
-        tryAction();
+        tryAction({ fromKey: true });
       }
     }
     audio();
@@ -582,8 +582,14 @@
   canvas.addEventListener("pointerleave", () => { mouse.down = false; mouse.held = 0; });
   function clickWalkTarget(wx, wy) {
     if (state.scene === "shop") {
-      if (wx > DIVE_ZONE.x - 30 && wx < DIVE_ZONE.x + DIVE_ZONE.w + 30 &&
-          wy > DIVE_ZONE.y - 80 && wy < DIVE_ZONE.y + DIVE_ZONE.h + 50) {
+      const inDock = wx > DIVE_ZONE.x - 30 && wx < DIVE_ZONE.x + DIVE_ZONE.w + 30 &&
+          wy > DIVE_ZONE.y - 80 && wy < DIVE_ZONE.y + DIVE_ZONE.h + 50;
+      if (inDock) {
+        // With fish in the bag, dock clicks must walk to the tanks — not snap-dive.
+        if (bagHasStockable()) {
+          const t = stockableTankTarget() || TANK_POS[0];
+          return { x: t.x + TANK_W / 2, y: t.y + TANK_H + 48 };
+        }
         return { x: 880, y: 1008 };
       }
     }
@@ -629,7 +635,7 @@
       if (state.mode === "play") { player.goto = null; beginSurface(); }
       return;
     }
-    if (id === "dive") { if (state.mode === "play" && inDiveZone()) beginDive(); return; }
+    if (id === "dive") { if (state.mode === "play" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable()) beginDive(); return; }
   }
   function startPlay() {
     if (oceanFish.length === 0) seedOcean();
@@ -650,15 +656,19 @@
   function bagIsFull() {
     return state.bag.length >= bagMax();
   }
+  function bagHasStockable() {
+    return state.bag.some((s) => state.unlocked[s]);
+  }
   function nearSurface() {
     return player.y < 280;
   }
   function shouldSurface() {
     return state.scene === "ocean" && (bagIsFull() || nearSurface());
   }
-  function tryAction() {
+  function tryAction(opts) {
+    const fromKey = !!(opts && opts.fromKey);
     if (state.mode !== "play") return false;
-    if (state.fadeDir > 0) return true;
+    if (state.fadeDir) return true;
     if (state.scene === "ocean" && bagIsFull()) {
       state.bookOpen = null;
       player.goto = null;
@@ -667,7 +677,13 @@
     }
     if (state.bookOpen != null) return false;
     if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) { beginExpedition(); return true; }
-    if (state.scene === "shop" && inDiveZone()) { beginDive(); return true; }
+    if (state.scene === "shop" && inDiveZone()) {
+      if (state.surfaceLock > 0) return fromKey;
+      // Clicks walk to the tanks while the bag still has fish; Space can still re-dive.
+      if (!fromKey && bagHasStockable()) return false;
+      beginDive();
+      return true;
+    }
     if (shouldSurface()) { player.goto = null; beginSurface(); return true; }
     return false;
   }
@@ -676,7 +692,7 @@
            player.y > DIVE_ZONE.y - 40 && player.y < DIVE_ZONE.y + DIVE_ZONE.h;
   }
   function beginDive() {
-    if (state.fadeDir > 0) return;
+    if (state.fadeDir || state.surfaceLock > 0) return;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "ocean";
     state.decorOpen = false;
     if (state.tutorial === 0) state.tutorial = 1;
@@ -852,16 +868,31 @@
     f.nudgeX = p.x; f.nudgeY = p.y; f.nudgeT = 0.35;
     f.vx = 0; f.vy = 0;
   }
+  function shinyWanted() {
+    return !state.caughtRare && !bagIsFull() && state.scene === "ocean" && !state.fadeDir && !state.expedition;
+  }
+  function ensureShiny() {
+    if (!shinyWanted()) return;
+    if (firstRareFish()) return;
+    const p = shinyLeashPoint();
+    pushOceanFish(0, p.x, p.y, { rare: true });
+    placeShinyInView(firstRareFish());
+  }
   function leashShiny(dt) {
-    if (state.caughtRare || bagIsFull() || state.scene !== "ocean" || state.fadeDir || state.diveLock > 0) return;
+    if (!shinyWanted() || state.diveLock > 0) return;
+    ensureShiny();
     const f = firstRareFish();
     if (!f) return;
     const p = shinyLeashPoint();
     const d = Math.hypot(f.x - player.x, f.y - player.y);
-    const off = !onScreenWorldPos(f.x, f.y, 56);
-    if (d > 240 || off) {
+    const off = !onScreenWorldPos(f.x, f.y, 48);
+    if (off || d > 300) {
+      placeShinyInView(f);
+      return;
+    }
+    if (d > 200) {
       const nx = p.x - f.x, ny = p.y - f.y, nd = Math.hypot(nx, ny) || 1;
-      const pull = off || d > 340 ? 220 : 140;
+      const pull = d > 260 ? 220 : 150;
       f.vx = (nx / nd) * pull;
       f.vy = (ny / nd) * pull;
       f.x += f.vx * dt; f.y += f.vy * dt;
@@ -892,8 +923,8 @@
       }
       const dx = f.x - px, dy = f.y - py;
       const d = Math.hypot(dx, dy) || 0.001;
-      const fleeR = f.rare ? sp.fleeR * 0.55 : sp.fleeR;
-      const fleeSp = f.rare ? sp.flee * 0.52 : sp.flee;
+      const fleeR = f.rare ? sp.fleeR * 0.38 : sp.fleeR;
+      const fleeSp = f.rare ? sp.flee * 0.36 : sp.flee;
       if (d < fleeR) {
         f.fleeT = f.rare ? 0.22 : 0.45;
         const boost = (!f.rare && d < 70) ? 1.25 : 1;
@@ -933,9 +964,17 @@
   function fishInCone(f) {
     const dx = f.x - player.x, dy = f.y - player.y;
     const d = Math.hypot(dx, dy);
-    const range = coneRange() + (f.rare ? 44 : 0);
+    const range = coneRange() + (f.rare ? 56 : 0);
     if (d > range || d < 16) return false;
-    const half = f.rare ? 1.18 : 0.85;
+    const half = f.rare ? 1.28 : 0.85;
+    return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < half;
+  }
+  function fishNearCone(f) {
+    const dx = f.x - player.x, dy = f.y - player.y;
+    const d = Math.hypot(dx, dy);
+    const range = coneRange() + (f.rare ? 92 : 16);
+    if (d > range || d < 16) return false;
+    const half = f.rare ? 1.48 : 0.98;
     return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < half;
   }
   function updateCatch(dt) {
@@ -946,10 +985,22 @@
     }
     if (state.bag.length >= bagMax()) { player.target = null; player.catchProg = 0; return; }
     let best = null, bestD = 1e9;
+    let bestRare = null, bestRareD = 1e9;
+    let rareNear = false;
     for (const f of oceanFish) {
-      if (f.caught || !fishInCone(f)) continue;
+      if (f.caught) continue;
+      if (f.rare && fishNearCone(f)) rareNear = true;
+      const inC = f.rare ? fishNearCone(f) : fishInCone(f);
+      if (!inC) continue;
       const d = Math.hypot(f.x - player.x, f.y - player.y);
+      if (f.rare && d < bestRareD) { bestRareD = d; bestRare = f; }
       if (d < bestD) { bestD = d; best = f; }
+    }
+    if (bestRare) best = bestRare;
+    else if (rareNear) best = null;
+    if (rareNear && player.target && !player.target.rare) {
+      player.target = null;
+      player.catchProg = 0;
     }
     if (best) {
       player.target = best;
@@ -1007,6 +1058,11 @@
     if (bagIsFull()) toast("Bag full! SPACE or click to surface.", "#9ef0ff");
     for (let i = oceanFish.length - 1; i >= 0; i--) if (oceanFish[i].caught) oceanFish.splice(i, 1);
     ensureOceanStock();
+    if (shinyWanted()) {
+      const shiny = firstRareFish();
+      if (shiny) placeShinyInView(shiny);
+      else ensureShiny();
+    }
     persist();
     advanceMission();
   }
@@ -1151,6 +1207,9 @@
     }
     persist();
     advanceMission();
+    if (!bagHasStockable() && state.registerCash > 0 && !cashierHandlingIt()) {
+      player.goto = { x: REGISTER.x + REGISTER.w / 2 + 36, y: REGISTER.y + REGISTER.h + 40 };
+    }
   }
   function collectCash(fromStaff) {
     const got = state.registerCash;
@@ -1421,6 +1480,9 @@
             }
             const who = c.name || "A guest";
             namedSale(who, SPECIES[c.carry].name, REGISTER.x + 110, REGISTER.y - 8);
+            if (!bagHasStockable() && state.registerCash > 0 && !cashierHandlingIt() && !player.goto) {
+              player.goto = { x: REGISTER.x + REGISTER.w / 2 + 36, y: REGISTER.y + REGISTER.h + 40 };
+            }
             sfx("coin"); c.carry = -1; c.state = "leave"; c.wait = 0; c.emote = ""; persist();
           }
         }
@@ -2947,14 +3009,14 @@
     if (nearBoat() && expeditionUnlocked() && !state.expedition) {
       return { text: "Press SPACE to start an expedition ($35)", target: { x: BOAT.x, y: BOAT.y } };
     }
-    if (inDiveZone()) {
-      return { text: "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
-    }
-    if (state.bag.some(s => state.unlocked[s])) {
-      return { text: "Walk into the glowing tank to stock your catch", target: stockableTankTarget() || { x: 880, y: 980 } };
+    if (bagHasStockable()) {
+      return { text: "Walk into the glowing tank to stock your catch", target: stockableTankTarget() || { x: TANK_POS[0].x + TANK_W / 2, y: TANK_POS[0].y + TANK_H / 2 } };
     }
     if (state.registerCash > 0 && !cashierHandlingIt()) {
       return { text: "Stand on CASHIER to pocket $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
+    }
+    if (inDiveZone() && state.surfaceLock <= 0) {
+      return { text: "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
     }
     const vip = activeVIP();
     if (vip) {
@@ -3169,11 +3231,15 @@
       card(W / 2 - 160, H - 92, 320, 40, "rgba(40, 160, 180, 0.88)");
       ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
       ctx.fillText("SPACE · Expedition $35", W / 2, H - 66);
-    } else if (state.scene === "shop" && inDiveZone()) {
+    } else if (state.scene === "shop" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable()) {
       card(W / 2 - 160, H - 92, 320, 40, "rgba(40, 160, 180, 0.88)");
       ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
       ctx.fillText("SPACE  or  click  to  DIVE", W / 2, H - 66);
       btn("dive", W / 2 - 160, H - 92, 320, 40);
+    } else if (state.scene === "shop" && bagHasStockable() && (inDiveZone() || state.surfaceLock > 0)) {
+      card(W / 2 - 170, H - 92, 340, 40, "rgba(40, 160, 180, 0.88)");
+      ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
+      ctx.fillText("Walk to the glowing tank", W / 2, H - 66);
     }
     if (state.scene === "ocean" && (bagIsFull() || nearSurface())) {
       ctx.globalAlpha = bagIsFull() ? 1 : clamp((280 - player.y) / 80, 0.45, 1);
@@ -3188,8 +3254,9 @@
       ctx.fillStyle = "#fff"; ctx.font = "700 14px Nunito, sans-serif";
       ctx.fillText("Bag full — SPACE or click!", W / 2, by + 22);
     }
-    // toasts — center column, clear of the left mission chip and sale pops
+    // toasts — center column, clear of the shop banner / mission chip / sale pops
     let ty = 78;
+    if (state.scene === "shop") ty = 152;
     if (state.scene === "ocean" && bagIsFull()) ty = Math.max(ty, state.expedition ? 142 : 108);
     if (state.expedition && !(state.scene === "ocean" && bagIsFull())) ty = Math.max(ty, 104);
     for (const t of state.toasts) {
@@ -3468,7 +3535,7 @@
     ctx.fillStyle = "rgba(200,220,230,0.42)";
     ctx.font = "600 11px Nunito, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("Aqua Bay · loop 13", W - 16, H - 14);
+    ctx.fillText("Aqua Bay · loop 14", W - 16, H - 14);
   }
 
   function drawSpeciesStrip() {
@@ -3582,6 +3649,7 @@
         ensureOceanStock();
       } else if (state.pendingScene === "shop") {
         state.scene = "shop";
+        state.surfaceLock = 1.05;
         if (state.expedition) {
           player.x = 1188; player.y = 1000; player.vx = 0; player.vy = -30;
           toast("Expedition complete", "#ffe27a");
@@ -3592,6 +3660,10 @@
           player.x = 880; player.y = 1000; player.vx = 0; player.vy = -40;
         }
         state.diveCatches = 0;
+        if (bagHasStockable()) {
+          const t = stockableTankTarget() || TANK_POS[0];
+          player.goto = { x: t.x + TANK_W / 2, y: t.y + TANK_H + 48 };
+        }
       }
       state.pendingScene = null; state.fadeDir = -1;
     }
@@ -3666,6 +3738,7 @@
           state.diveLock = Math.max(0, state.diveLock - sim);
           if (prevLock > 0 && state.diveLock <= 0) onDiveLockEnd();
         }
+        if (state.surfaceLock > 0) state.surfaceLock = Math.max(0, state.surfaceLock - sim);
         if (state.expedition && state.scene === "ocean" && !state.fadeDir) {
           state.expeditionTime -= sim;
           if (state.expeditionTime <= 0) beginSurface();
