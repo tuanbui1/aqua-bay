@@ -927,6 +927,34 @@
     for (const c of customers) if (c !== self && c.state === "tank" && c.tank === tank) n++;
     return n === 0 ? 0 : (n % 2 ? -28 : 28);
   }
+  function tankClusterKey(c) {
+    if (!c || c.x == null || c.y == null) return -1;
+    let best = -1, bestD = 128;
+    for (let i = 0; i < 5; i++) {
+      const t = TANK_POS[i];
+      const d = Math.hypot(c.x - (t.x + TANK_W / 2), c.y - (t.y + TANK_H + 40));
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best;
+  }
+  function tankTalkFocus(self) {
+    const key = tankClusterKey(self);
+    if (key < 0) return self;
+    const talkers = [];
+    for (const o of customers) {
+      if (!o || !o.emote) continue;
+      if (tankClusterKey(o) === key) talkers.push(o);
+    }
+    if (talkers.length <= 1) return self;
+    talkers.sort((a, b) => {
+      const an = String(a.name || "");
+      const bn = String(b.name || "");
+      if (an !== bn) return an < bn ? -1 : 1;
+      if (a.x !== b.x) return a.x - b.x;
+      return a.y - b.y;
+    });
+    return talkers[Math.floor(state.time / 1.65) % talkers.length];
+  }
   function unusedName() {
     const used = new Set(customers.map((c) => c.name));
     for (const n of Object.keys(REGULAR_LOOKS)) used.add(n);
@@ -3334,35 +3362,44 @@
       const gold = isGoldTalk(label);
       const tint = gold ? (REGULAR_TINTS[opt.name] || null) : null;
       const tangTalk = /tang/i.test(label);
-      let ey = gold ? -56 : -40;
-      let alpha = 1;
-      if (tangTalk) {
-        ox += (ox >= 0 ? 38 : -38);
-        ey = -12;
-        const tank = TANK_POS[opt.tank != null ? opt.tank : 1];
-        if (tank && !state.unlocked[opt.tank != null ? opt.tank : 1]) {
-          const overCard = opt.y != null
-            ? (opt.y - 48 < tank.y + TANK_H + 8)
-            : true;
-          if (overCard) { ey = 18; alpha = 0.82; }
+      const focus = tankTalkFocus(opt);
+      if (focus && focus !== opt) {
+        ctx.save();
+        ctx.globalAlpha = 0.42;
+        ctx.fillStyle = tint ? tint.stroke : gold ? "rgba(232, 192, 74, 0.7)" : "rgba(255,255,255,0.55)";
+        ctx.beginPath(); ctx.arc(ox, -32, 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      } else {
+        let ey = gold ? -56 : -40;
+        let alpha = 1;
+        if (tangTalk) {
+          ox += (ox >= 0 ? 38 : -38);
+          ey = -12;
+          const tank = TANK_POS[opt.tank != null ? opt.tank : 1];
+          if (tank && !state.unlocked[opt.tank != null ? opt.tank : 1]) {
+            const overCard = opt.y != null
+              ? (opt.y - 48 < tank.y + TANK_H + 8)
+              : true;
+            if (overCard) { ey = 18; alpha = 0.82; }
+          }
         }
+        const pulse = gold ? 1 + 0.08 * Math.sin(state.time * 7) : 1;
+        const bw = Math.max(28, label.length * (gold ? 10.2 : 8) + (gold ? 22 : 10)) * pulse;
+        const bh = gold ? 26 : 16;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = tint ? tint.fill : gold ? "rgba(255, 236, 170, 0.96)" : "rgba(255,255,255,0.94)";
+        roundRect(-bw / 2 + ox, ey, bw, bh, 8); ctx.fill();
+        if (gold) {
+          ctx.strokeStyle = tint ? tint.stroke : "rgba(200, 140, 30, 0.55)";
+          ctx.lineWidth = 2;
+          roundRect(-bw / 2 + ox, ey, bw, bh, 8); ctx.stroke();
+        }
+        ctx.fillStyle = tint ? tint.ink : "#2a1a12";
+        ctx.font = (gold ? "800 16px" : "800 12px") + " Fredoka, sans-serif"; ctx.textAlign = "center";
+        ctx.fillText(label, ox, ey + (gold ? 18 : 12));
+        ctx.restore();
       }
-      const pulse = gold ? 1 + 0.08 * Math.sin(state.time * 7) : 1;
-      const bw = Math.max(28, label.length * (gold ? 10.2 : 8) + (gold ? 22 : 10)) * pulse;
-      const bh = gold ? 26 : 16;
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = tint ? tint.fill : gold ? "rgba(255, 236, 170, 0.96)" : "rgba(255,255,255,0.94)";
-      roundRect(-bw / 2 + ox, ey, bw, bh, 8); ctx.fill();
-      if (gold) {
-        ctx.strokeStyle = tint ? tint.stroke : "rgba(200, 140, 30, 0.55)";
-        ctx.lineWidth = 2;
-        roundRect(-bw / 2 + ox, ey, bw, bh, 8); ctx.stroke();
-      }
-      ctx.fillStyle = tint ? tint.ink : "#2a1a12";
-      ctx.font = (gold ? "800 16px" : "800 12px") + " Fredoka, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(label, ox, ey + (gold ? 18 : 12));
-      ctx.restore();
     }
     ctx.restore();
   }
@@ -5041,6 +5078,12 @@
           ctx.beginPath(); ctx.ellipse(px, py, 14, 8, 0, 0, Math.PI * 2); ctx.stroke();
         }
         drawFishBody(SPECIES[s], px, py, 0, 0.7, state.time + pip);
+        if (rare) {
+          ctx.fillStyle = "#ffd24a";
+          ctx.font = "800 9px Nunito, sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("x2", px + 11, py + 12);
+        }
         ctx.restore();
         pip++;
       };
@@ -5463,7 +5506,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 248);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 25", W / 2, 274);
+    ctx.fillText("Aqua Bay · loop 26", W / 2, 274);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
       panelBtn("continue", W / 2 - 150, 348, 300, 56, "Continue", null, pulse);
@@ -5502,7 +5545,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 25", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 26", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 240, 110, 480, 500, "rgba(16, 32, 42, 0.94)");
@@ -5518,7 +5561,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 516);
       ctx.fillText("Esc to resume", W / 2, 538);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 25", W / 2, 568);
+      ctx.fillText("Aqua Bay · loop 26", W / 2, 568);
     }
   }
 
