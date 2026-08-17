@@ -22,7 +22,7 @@ Open `index.html` (or `python3 -m http.server` in this folder). No build step.
 - **Book:** tap a fish on the right strip
 - **Esc:** pause and help
 
-Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 24**.
+Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 25**.
 
 ## Why it’s fun
 

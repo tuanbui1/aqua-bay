@@ -4066,8 +4066,8 @@
     ctx.restore();
     if (state.unlocked[i]) {
       const sc = stocked ? 0.96 : 0.84;
+      const tm = state.time; // shared with tankExits — must stay outside the swim loop
       for (const f of tankFish[i]) {
-        const tm = state.time;
         let ox = Math.sin(tm * 1.2 + f.ph) * 10, oy = Math.sin(tm * 0.8 + f.ph) * 6;
         if (i === 0) {
           const dart = Math.sin(tm * 9 + f.ph) > 0.35 ? 1 : 0.15;
@@ -4101,7 +4101,7 @@
         const hideY = fy - u * 36;
         ctx.save();
         ctx.globalAlpha = 1 - u * 0.92;
-        drawFishBody(sp, fx, hideY, 0.4 + u * 1.2, sc * (1 - u * 0.25), tm + e.ph);
+        drawFishBody(sp, fx, hideY, 0.4 + u * 1.2, sc * (1 - u * 0.25), tm + (e.ph || 0));
         ctx.restore();
       }
       for (const r of tankRipples) {
@@ -5463,7 +5463,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 248);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 24", W / 2, 274);
+    ctx.fillText("Aqua Bay · loop 25", W / 2, 274);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
       panelBtn("continue", W / 2 - 150, 348, 300, 56, "Continue", null, pulse);
@@ -5502,7 +5502,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 24", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 25", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 240, 110, 480, 500, "rgba(16, 32, 42, 0.94)");
@@ -5518,7 +5518,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 516);
       ctx.fillText("Esc to resume", W / 2, 538);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 24", W / 2, 568);
+      ctx.fillText("Aqua Bay · loop 25", W / 2, 568);
     }
   }
 
