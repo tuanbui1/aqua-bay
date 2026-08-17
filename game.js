@@ -113,6 +113,7 @@
     catchClimax: null,
     divesThisSession: 0, tangRumor: false, freezeFrame: 0,
     aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
+    catchVerb: null, tankFlash: null, pierChirp: 0,
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0 };
   const cam = { x: 880, y: 920, z: 1 };
@@ -133,6 +134,8 @@
   const pathGlints = [];
   const saleTalks = [];
   const tankRipples = [];
+  const tankReceipts = [];
+  const pierLife = { gull: null, skiff: null, seeded: false };
   let saleBarkDeck = [];
   const saleBarkRecent = [];
   const keys = new Set();
@@ -317,6 +320,14 @@
       setTimeout(() => { if (!state.muted) tone(740, 0.08, "triangle", 0.07); }, 70);
       setTimeout(() => { if (!state.muted) tone(988, 0.1, "sine", 0.065); }, 150);
       setTimeout(() => { if (!state.muted) tone(1480, 0.12, "triangle", 0.05); }, 240);
+    } else if (kind === "gull") {
+      tone(980, 0.055, "triangle", 0.032, 640);
+      setTimeout(() => { if (!state.muted) tone(720, 0.09, "sine", 0.026, 480); }, 80);
+    } else if (kind === "lap") {
+      noiseBurst(0.18, 280, 60, 0.026);
+    } else if (kind === "receipt") {
+      tone(1046, 0.045, "square", 0.04);
+      tone(1480, 0.06, "sine", 0.028);
     }
   }
 
@@ -456,14 +467,16 @@
       boatHint: 0, boatGlance: 0,
       coneFlash: 0, registerPunch: 1, tankShake: null, cardShake: null, priceFlash: null, nopeFlash: 0,
       catchClimax: null, divesThisSession: 0, tangRumor: false, freezeFrame: 0,
-      aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null });
+      aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
+      catchVerb: null, tankFlash: null, pierChirp: 0 });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0;
     cam.x = 880; cam.y = 920; cam.z = 1;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
     stockHops.length = 0; bagGhosts.length = 0; pathGlints.length = 0;
-    saleTalks.length = 0; tankRipples.length = 0;
+    saleTalks.length = 0; tankRipples.length = 0; tankReceipts.length = 0;
+    pierLife.gull = null; pierLife.skiff = null; pierLife.seeded = false;
     saleBarkDeck.length = 0; saleBarkRecent.length = 0;
     browseTimer = 0.35;
     for (let i = 0; i < 5; i++) tankFish[i].length = 0;
@@ -675,6 +688,22 @@
   function spawnSaleTalk(who, line, wx, wy) {
     const tint = REGULAR_TINTS[who] || { fill: "rgba(40, 28, 10, 0.94)", ink: "#ffe27a", stroke: "#e8c04a" };
     saleTalks.push({ who: who || "", line, wx, wy, life: 2.75, max: 2.75, tint });
+  }
+  function playTankSale(i, who) {
+    const t = TANK_POS[i];
+    if (!t) return;
+    const tx = t.x + TANK_W / 2, ty = t.y + TANK_H * 0.42;
+    const tint = REGULAR_TINTS[who] || null;
+    state.tankFlash = { i, life: 0.46, max: 0.46, tint };
+    for (const f of tankFish[i]) f.dip = 0.55;
+    tankRipples.push({ i, x: tx + rand(-10, 10), y: ty + rand(-6, 6), life: 0.42, max: 0.42 });
+    tankReceipts.push({
+      x: tx + 18, y: t.y + 18, life: 0.95, max: 0.95,
+      who: who || "", tint,
+    });
+    pop(tx - 8, t.y + 8, "sold", tint ? tint.ink : "#fff6e8", 0.85, 1.05);
+    spawnP(tx, ty, 8, tint ? [tint.stroke, "#ffe27a", "#fff"] : ["#ffe27a", "#fff6e8", "#9ef0ff"], 54);
+    sfx("receipt");
   }
   function expeditionUnlocked() { return !!state.unlocked[1] || (state.peakMoney | 0) >= 60; }
   function nearBoat() {
@@ -907,6 +936,165 @@
     dockTeasers.push({ s: 1, x: -50, y: 1148, vx: 40, ph: 0.4 });
     dockTeasers.push({ s: 1, x: 520, y: 1204, vx: 32, ph: 2.1 });
   }
+  function seedPierLife() {
+    if (pierLife.seeded) return;
+    pierLife.seeded = true;
+    pierLife.gull = {
+      x: 780, y: 988, perchX: 780, perchY: 988,
+      mode: "perch", t: 0, facing: -1, hop: 0,
+    };
+    pierLife.skiff = { x: 1092, y: 1196, ph: 1.2 };
+    state.pierChirp = 1.6;
+  }
+  function updatePierLife(dt) {
+    if (state.scene !== "shop") return;
+    seedPierLife();
+    const g = pierLife.gull;
+    if (g) {
+      g.t += dt;
+      if (g.mode === "perch") {
+        g.x = g.perchX;
+        g.y = g.perchY + Math.sin(state.time * 2.2) * 1.2;
+        if (g.t > 3.4) {
+          g.mode = Math.random() < 0.55 ? "hop" : "glide";
+          g.t = 0;
+          g.hop = 0;
+        }
+      } else if (g.mode === "hop") {
+        g.hop += dt;
+        const u = clamp(g.hop / 0.42, 0, 1);
+        g.x = g.perchX + g.facing * 18 * u;
+        g.y = g.perchY - Math.sin(u * Math.PI) * 14;
+        if (u >= 1) {
+          g.perchX = clamp(g.x, 660, 1020);
+          g.facing *= -1;
+          g.mode = "perch";
+          g.t = 0;
+        }
+      } else {
+        g.x += g.facing * 46 * dt;
+        g.y = 970 + Math.sin(state.time * 3.1) * 8;
+        if (g.t > 1.8 || g.x < 620 || g.x > 1080) {
+          g.facing *= -1;
+          g.mode = "perch";
+          g.t = 0;
+          g.x = g.perchX;
+          g.y = g.perchY;
+        }
+      }
+    }
+    state.pierChirp -= dt;
+    if (state.pierChirp <= 0 && state.mode === "play") {
+      state.pierChirp = rand(5.5, 9.5);
+      if (Math.random() < 0.55) sfx("gull");
+      else sfx("lap");
+    }
+  }
+  function drawGull(g) {
+    if (!g) return;
+    const flap = g.mode === "glide" ? Math.sin(state.time * 14) * 0.55 : 0.12;
+    ctx.save();
+    ctx.translate(g.x, g.y);
+    ctx.scale(g.facing, 1);
+    ctx.fillStyle = "rgba(8, 20, 28, 0.22)";
+    ctx.beginPath(); ctx.ellipse(0, 10, 8, 3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#f4efe6";
+    ctx.beginPath(); ctx.ellipse(0, 0, 7.5, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(7, -2, 3.4, 2.6, 0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#e8c04a";
+    ctx.beginPath();
+    ctx.moveTo(10, -2); ctx.lineTo(15, -1); ctx.lineTo(10, 0.6);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#2a1a12";
+    ctx.beginPath(); ctx.arc(8.2, -2.6, 0.8, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#f4efe6";
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(-2, -1);
+    ctx.quadraticCurveTo(-12, -10 - flap * 10, -18, -2 + flap * 6);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-1, 1);
+    ctx.quadraticCurveTo(-10, 8 + flap * 4, -16, 3);
+    ctx.stroke();
+    ctx.strokeStyle = "#e8c04a";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-1, 4); ctx.lineTo(-2, 9); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(2, 4); ctx.lineTo(3, 9); ctx.stroke();
+    ctx.restore();
+  }
+  function drawSkiff(s) {
+    if (!s) return;
+    const bob = Math.sin(state.time * 1.15 + s.ph) * 3.2;
+    ctx.save();
+    ctx.translate(s.x, s.y + bob);
+    ctx.fillStyle = "rgba(8, 28, 40, 0.28)";
+    ctx.beginPath(); ctx.ellipse(2, 12, 34, 6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#6b3a22";
+    ctx.beginPath();
+    ctx.moveTo(-32, 2);
+    ctx.quadraticCurveTo(-28, 12, -4, 13);
+    ctx.lineTo(22, 12);
+    ctx.quadraticCurveTo(36, 8, 32, 1);
+    ctx.lineTo(24, -5);
+    ctx.quadraticCurveTo(0, -9, -22, -4);
+    ctx.quadraticCurveTo(-34, 0, -32, 2);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#3a1e10"; ctx.lineWidth = 1.3; ctx.stroke();
+    ctx.fillStyle = "#d8c07a";
+    ctx.fillRect(-4, -18, 2, 16);
+    ctx.fillStyle = "#fff6e8";
+    ctx.beginPath(); ctx.moveTo(-2, -18); ctx.lineTo(10, -12); ctx.lineTo(-2, -8); ctx.fill();
+    ctx.restore();
+  }
+  function drawMopBucket(x, y) {
+    ctx.fillStyle = "rgba(20, 16, 10, 0.2)";
+    ctx.beginPath(); ctx.ellipse(x, y + 16, 14, 5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#3d6f7a";
+    ctx.beginPath();
+    ctx.moveTo(x - 10, y);
+    ctx.lineTo(x + 10, y);
+    ctx.lineTo(x + 8, y + 14);
+    ctx.lineTo(x - 8, y + 14);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#2a7d8a";
+    ctx.beginPath(); ctx.ellipse(x, y, 10.5, 3.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(180, 230, 240, 0.45)";
+    ctx.beginPath(); ctx.ellipse(x, y + 1, 7, 2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#8a5a30"; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(x + 2, y + 2); ctx.lineTo(x + 16, y - 22); ctx.stroke();
+    ctx.fillStyle = "#c8b090";
+    ctx.beginPath(); ctx.ellipse(x + 17, y - 24, 6, 4, 0.4, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#9a8060"; ctx.lineWidth = 1;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.moveTo(x + 14 + i, y - 22);
+      ctx.lineTo(x + 12 + i * 2, y - 16);
+      ctx.stroke();
+    }
+  }
+  function drawHangingSign(x, y) {
+    const sway = Math.sin(state.time * 1.4) * 0.08;
+    ctx.fillStyle = "#6b4423";
+    ctx.fillRect(x - 4, y - 40, 8, 52);
+    ctx.fillStyle = "#8a5a30";
+    ctx.fillRect(x - 4, y - 40, 3, 52);
+    ctx.strokeStyle = "#4a2a14"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x - 16, y - 36); ctx.lineTo(x - 12, y - 8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 16, y - 36); ctx.lineTo(x + 12, y - 8); ctx.stroke();
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(sway);
+    ctx.fillStyle = "#6b3a18";
+    roundRect(-28, -8, 56, 28, 4); ctx.fill();
+    ctx.strokeStyle = "#e8c04a"; ctx.lineWidth = 2;
+    roundRect(-25, -5, 50, 22, 3); ctx.stroke();
+    ctx.fillStyle = "#fff6e8";
+    ctx.font = "800 11px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("OPEN", 0, 10);
+    ctx.restore();
+  }
   function spawnAisleCrossing() {
     if (customers.length >= MAX_CUSTOMERS) return;
     for (const c of customers) if (c.state === "cross") return;
@@ -1083,6 +1271,7 @@
     state.displayMoney = state.money;
     seedDockTeasers();
     if (state.tutorial === 0 || state.stock.reduce((a, b) => a + b, 0) === 0) seedLivingPier();
+    seedPierLife();
     if (!saleBarkDeck.length) shuffleSaleBarkDeck();
     if (state.missionDone) rollSessionGoals();
     ensureBaySchool();
@@ -1137,6 +1326,7 @@
     if (state.scene !== "ocean") return;
     if (state.pendingScene === "shop") return;
     if (state.fadeDir > 0) return;
+    clearCatchVerb();
     player.goto = null;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "shop";
     if (state.tutorial === 2) state.tutorial = 3;
@@ -1392,6 +1582,10 @@
         f.x += f.vx * dt; f.y += f.vy * dt;
         continue;
       }
+      if (f.verb && player.target === f && !f.caught) {
+        tickCatchVerbFish(f, dt);
+        continue;
+      }
       const dx = f.x - px, dy = f.y - py;
       const d = Math.hypot(dx, dy) || 0.001;
       const fleeR = f.rare ? sp.fleeR * 0.38 : sp.fleeR;
@@ -1443,10 +1637,91 @@
   function fishNearCone(f) {
     const dx = f.x - player.x, dy = f.y - player.y;
     const d = Math.hypot(dx, dy);
-    const range = coneRange() + (f.rare ? 92 : 16);
+    const verbPad = f.verb ? 36 : 0;
+    const range = coneRange() + (f.rare ? 92 : 16) + verbPad;
     if (d > range || d < 16) return false;
-    const half = f.rare ? 1.48 : 0.98;
+    const half = f.rare ? 1.48 : (f.verb ? 1.22 : 0.98);
     return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < half;
+  }
+  function beginDashHold(f) {
+    if (!f || f.rare || f.verb) return;
+    f.verb = "dash";
+    f.dashT = 0;
+    f.dashDir = (f.x >= player.x ? 1 : -1);
+    f.dashX = f.x;
+    f.dashY = f.y;
+    state.catchVerb = "dash";
+    state.camPunch = Math.max(state.camPunch || 0, 0.07);
+    pop(f.x, f.y - 22, "dash!", "#9ef0ff", 0.72, 1.2);
+    sfx("click");
+  }
+  function beginSitHold(f) {
+    if (!f || f.rare || f.verb) return;
+    f.verb = "sit";
+    f.sitT = 0;
+    f.sitCx = f.x;
+    f.sitCy = f.y;
+    state.catchVerb = "sit";
+    state.camPunch = Math.max(state.camPunch || 0, 0.05);
+    partSchoolAround(f.x, f.y);
+    pop(f.x, f.y - 22, "easy…", "#fff6e8", 0.8, 1.15);
+    sfx("stock");
+  }
+  function partSchoolAround(x, y) {
+    for (const o of oceanFish) {
+      if (o.caught || o.tease || o.rare || o.verb) continue;
+      const d = Math.hypot(o.x - x, o.y - y);
+      if (d < 170 && d > 8) {
+        o.fleeT = 0.55;
+        o.vx = ((o.x - x) / d) * 210;
+        o.vy = ((o.y - y) / d) * 160;
+        o.ang = Math.atan2(o.vy, o.vx);
+      }
+    }
+  }
+  function tickCatchVerbFish(f, dt) {
+    if (f.verb === "dash") {
+      f.dashT = (f.dashT || 0) + dt;
+      const sway = Math.sin(f.dashT * 2.35) * 78;
+      f.x = clamp((f.dashX || f.x) + (f.dashDir || 1) * sway, 80, OCEAN.w - 80);
+      f.y = (f.dashY || f.y) + Math.sin(f.dashT * 7.2) * 7;
+      f.vx = (f.dashDir || 1) * 90;
+      f.vy = 0;
+      f.ang = (f.dashDir || 1) > 0 ? 0.05 : Math.PI - 0.05;
+      if (Math.random() < dt * 18) {
+        particles.push({
+          x: f.x - (f.dashDir || 1) * 16, y: f.y + rand(-4, 4),
+          vx: -(f.dashDir || 1) * rand(20, 50), vy: rand(-10, 10),
+          life: rand(0.18, 0.36), r: rand(1.6, 3.2), col: "#9ef0ff",
+        });
+      }
+      return;
+    }
+    if (f.verb === "sit") {
+      f.sitT = (f.sitT || 0) + dt;
+      if (f.sitT < 0.48) {
+        const a = (f.sitT / 0.48) * Math.PI * 2;
+        f.x = (f.sitCx || f.x) + Math.cos(a) * 30;
+        f.y = (f.sitCy || f.y) + Math.sin(a) * 16;
+        f.ang = a + Math.PI / 2;
+      } else {
+        f.x = f.sitCx || f.x;
+        f.y = f.sitCy || f.y;
+        f.vx = 0; f.vy = 0;
+        f.ang = 0.08;
+      }
+    }
+  }
+  function maybeStartCatchVerb(f) {
+    if (!f || f.rare || f.tease || f.verb || state.catchVerb) return;
+    if ((state.divesThisSession | 0) !== 1) return;
+    const n = (state.diveCatches | 0) + 1;
+    if (n === 2) beginDashHold(f);
+    else if (n === 4) beginSitHold(f);
+  }
+  function clearCatchVerb() {
+    if (player.target && player.target.verb) player.target.verb = "";
+    state.catchVerb = null;
   }
   function updateCatch(dt) {
     if (state.catchClimax) {
@@ -1454,11 +1729,12 @@
       return;
     }
     if (state.fadeDir || state.diveLock > 0) {
+      clearCatchVerb();
       player.target = null;
       player.catchProg = 0;
       return;
     }
-    if (state.bag.length >= bagMax()) { player.target = null; player.catchProg = 0; return; }
+    if (state.bag.length >= bagMax()) { clearCatchVerb(); player.target = null; player.catchProg = 0; return; }
     let best = null, bestD = 1e9;
     let bestRare = null, bestRareD = 1e9;
     let rareNear = false;
@@ -1474,25 +1750,35 @@
     if (bestRare) best = bestRare;
     else if (rareNear) best = null;
     if (rareNear && player.target && !player.target.rare) {
+      clearCatchVerb();
       player.target = null;
       player.catchProg = 0;
     }
     if (best) {
-      player.target = best;
-      player.catchProg += dt / catchTime();
+      if (player.target !== best) {
+        if (player.target && player.target.verb) player.target.verb = "";
+        state.catchVerb = null;
+        player.target = best;
+        maybeStartCatchVerb(best);
+      } else {
+        player.target = best;
+      }
+      const hold = best.verb ? catchTime() * 0.92 : catchTime();
+      player.catchProg += dt / hold;
       if (player.catchProg >= 1) beginCatchClimax(best);
     } else if (player.target && !player.target.caught) {
       const d = Math.hypot(player.target.x - player.x, player.target.y - player.y);
-      if (d < coneRange() * 1.2) {
+      const stay = player.target.verb ? coneRange() * 1.35 : coneRange() * 1.2;
+      if (d < stay || fishNearCone(player.target)) {
         player.catchProg += dt / catchTime();
         if (player.catchProg >= 1) beginCatchClimax(player.target);
       } else {
         player.catchProg = Math.max(0, player.catchProg - dt * 1.6);
-        if (player.catchProg <= 0) player.target = null;
+        if (player.catchProg <= 0) { clearCatchVerb(); player.target = null; }
       }
     } else {
       player.catchProg = Math.max(0, player.catchProg - dt * 1.6);
-      if (player.catchProg <= 0) player.target = null;
+      if (player.catchProg <= 0) { clearCatchVerb(); player.target = null; }
     }
   }
   function beginCatchClimax(f) {
@@ -1502,16 +1788,17 @@
     const n = (state.diveCatches | 0) + 1;
     const escape = !f.rare && n === 3;
     const snap = !f.rare && n === 2;
+    const sitScoop = !f.rare && n === 4;
     const flourish = !f.rare && n >= 5;
     state.catchClimax = {
       fish: f, t: 0,
-      max: f.rare ? 0.62 : escape ? 1.18 : snap ? 0.42 : flourish ? 0.78 : 0.62,
+      max: f.rare ? 0.62 : escape ? 1.18 : snap ? 0.42 : sitScoop ? 0.74 : flourish ? 0.78 : 0.62,
       rare: !!f.rare, ox: f.x, oy: f.y,
-      escape: escape, snap: snap, flourish: flourish, n,
+      escape: escape, snap: snap, sitScoop: sitScoop, flourish: flourish, n,
     };
-    state.coneFlash = f.rare ? 0.34 : escape ? 0.48 : 0.22;
-    state.camPunch = f.rare ? 0.16 : escape ? 0.14 : 0.08;
-    state.hitStop = Math.max(state.hitStop || 0, f.rare ? 0.12 : escape ? 0.1 : 0.1);
+    state.coneFlash = f.rare ? 0.34 : escape ? 0.48 : sitScoop ? 0.3 : 0.22;
+    state.camPunch = f.rare ? 0.16 : escape ? 0.14 : sitScoop ? 0.12 : snap ? 0.1 : 0.08;
+    state.hitStop = Math.max(state.hitStop || 0, f.rare ? 0.12 : escape ? 0.1 : sitScoop ? 0.11 : 0.1);
     if (f.rare) state.flash = 0.2;
   }
   function tickCatchClimax(dt) {
@@ -1539,6 +1826,10 @@
       const wig = (1 - u) * 7;
       f.x = cl.ox + Math.sin(cl.t * 64) * wig;
       f.y = cl.oy + Math.cos(cl.t * 52) * wig * 0.4;
+    } else if (cl.sitScoop) {
+      const lift = Math.sin(u * Math.PI) * 22;
+      f.x = cl.ox;
+      f.y = cl.oy - lift;
     } else {
       const wig = (1 - u * 0.35) * (cl.rare ? 16 : cl.flourish ? 15 : 12);
       f.x = cl.ox + Math.sin(cl.t * 48) * wig;
@@ -1554,6 +1845,8 @@
   }
   function catchFish(f) {
     f.caught = true;
+    f.verb = "";
+    state.catchVerb = null;
     state.bag.push(f.s);
     if (!state.bagRare) state.bagRare = [];
     state.bagRare.push(!!f.rare);
@@ -1893,7 +2186,7 @@
     state.registerPunch = Math.max(state.registerPunch || 1, 1.42);
     if (!state.didFirstCollect) { state.didFirstCollect = true; triggerFlash(); persist(); }
     if (!state.didFirstSale) state.didFirstSale = true;
-    if (prev < 40 && state.money >= 40) toast("Cashed in! Tap Speed to run faster", "#ffe27a");
+    if (prev < 40 && state.money >= 40 && state.missionDone) toast("Cashed in! Speed is ready", "#ffe27a");
     if (state.tutorial === 4) state.tutorial = 5;
     persist();
     advanceMission();
@@ -2165,6 +2458,7 @@
               if (c.wait > 0.35) {
                 state.stock[c.tank]--;
                 popSaleFish(c.tank);
+                playTankSale(c.tank, c.regular ? c.name : "");
                 c.carry = c.tank; c.state = "reg"; c.wait = 0;
                 c.emote = (c.regular && c.favorite === c.tank) ? regularBark(c) : "VIP";
               }
@@ -2187,6 +2481,7 @@
               if (state.stock[c.tank] > 0) {
                 state.stock[c.tank]--;
                 popSaleFish(c.tank);
+                playTankSale(c.tank, c.regular ? c.name : "");
                 c.carry = c.tank; c.state = "reg"; c.wait = 0;
                 c.emote = (c.regular && (c.favorite == null || c.favorite === c.tank)) ? regularBark(c) : "";
               } else {
@@ -2407,6 +2702,20 @@
     if (state.tankShake) {
       state.tankShake.t -= dt;
       if (state.tankShake.t <= 0) state.tankShake = null;
+    }
+    if (state.tankFlash) {
+      state.tankFlash.life -= dt;
+      if (state.tankFlash.life <= 0) state.tankFlash = null;
+    }
+    for (let i = 0; i < 5; i++) {
+      for (const f of tankFish[i]) {
+        if (f.dip > 0) f.dip = Math.max(0, f.dip - dt);
+      }
+    }
+    for (let i = tankReceipts.length - 1; i >= 0; i--) {
+      tankReceipts[i].life -= dt;
+      tankReceipts[i].y -= 28 * dt;
+      if (tankReceipts[i].life <= 0) tankReceipts.splice(i, 1);
     }
     if (state.cardShake) {
       state.cardShake.t -= dt;
@@ -3462,8 +3771,14 @@
     drawPot(168, 780, "#3aa35a", 1.7); drawPot(1588, 780, "#2e8b4a", 1.75);
     drawCrateStack(360, 760);
     drawCrateStack(1288, 748);
+    drawCrate(1004, 948, 40, 26);
+    drawCrate(1014, 928, 34, 22);
+    drawMopBucket(748, 944);
+    drawHangingSign(1020, 888);
     drawBench(1088, 780);
     drawLifeRing(548, 888);
+    drawSkiff(pierLife.skiff);
+    drawGull(pierLife.gull);
     if (state.decor && state.decor[2]) drawFountain();
     drawBoat();
     // side welcome counter (inward so the starting camera keeps it on-canvas)
@@ -3633,7 +3948,8 @@
         }
         const fx = t.x + 20 + ((f.x + ox) % (TANK_W - 40) + (TANK_W - 40)) % (TANK_W - 40);
         const fy = t.y + 28 + ((f.y + oy) % (TANK_H - 50) + (TANK_H - 50)) % (TANK_H - 50);
-        const bobY = fy + Math.sin(tm * (i === 2 ? 1.1 : 2.2) + f.ph) * (i === 2 ? 6 : 3);
+        const dip = (f.dip || 0) > 0 ? Math.sin((1 - f.dip / 0.55) * Math.PI) * 11 : 0;
+        const bobY = fy + Math.sin(tm * (i === 2 ? 1.1 : 2.2) + f.ph) * (i === 2 ? 6 : 3) + dip;
         const lookA = i === 1 ? Math.sin(tm * 2.2 + f.ph) * 1.05
           : i === 0 ? Math.sin(tm * 4.2 + f.ph) * 0.55
           : i === 4 ? Math.sin(tm * 2.2 + f.ph) * 0.18
@@ -3732,6 +4048,21 @@
     if (state.tankReveal && state.tankReveal.i === i) {
       ctx.fillStyle = "rgba(255,255,255," + (0.55 * (state.tankReveal.life / state.tankReveal.max)) + ")";
       roundRect(t.x, t.y, TANK_W, TANK_H, 10); ctx.fill();
+    }
+    if (state.tankFlash && state.tankFlash.i === i) {
+      const a = clamp(state.tankFlash.life / 0.2, 0, 1) * 0.48;
+      const tint = state.tankFlash.tint;
+      ctx.fillStyle = tint
+        ? "rgba(255,255,255," + (a * 0.55) + ")"
+        : "rgba(255,255,255," + a + ")";
+      roundRect(t.x, t.y, TANK_W, TANK_H, 10); ctx.fill();
+      if (tint) {
+        ctx.strokeStyle = tint.stroke;
+        ctx.globalAlpha = a;
+        ctx.lineWidth = 5;
+        roundRect(t.x - 2, t.y - 2, TANK_W + 4, TANK_H + 4, 12); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
     }
     ctx.restore();
   }
@@ -3888,6 +4219,26 @@
       else if (f.s === 2) dang += Math.sin(state.time * 0.85 + f.ph) * 0.32;
       else if (f.s === 3) dang += Math.sin(state.time * 0.4 + f.ph) * 0.08;
       else if (f.s === 4) dang += Math.sin(state.time * 2.35 + f.ph) * 0.22;
+      if (f.verb === "dash") {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.strokeStyle = "rgba(158,240,255,0.55)";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(f.x, f.y);
+        ctx.lineTo(f.x - (f.dashDir || 1) * 34, f.y);
+        ctx.stroke();
+        ctx.restore();
+      } else if (f.verb === "sit") {
+        const sitting = (f.sitT || 0) >= 0.48;
+        ctx.save();
+        ctx.strokeStyle = sitting ? "rgba(255,246,232,0.7)" : "rgba(158,240,255,0.45)";
+        ctx.lineWidth = sitting ? 2.4 : 1.6;
+        ctx.beginPath();
+        ctx.ellipse(f.sitCx || f.x, f.sitCy || f.y, sitting ? 18 : 28, sitting ? 8 : 16, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
       drawFishBody(SPECIES[f.s], f.x, f.y, dang, SPECIES[f.s].size / 15 * (f.rare ? 1.18 : 1), state.time + f.ph);
       if (f.rare) {
         ctx.save();
@@ -3938,7 +4289,11 @@
       ctx.save();
       ctx.strokeStyle = f.rare
         ? "rgba(255,210,74," + (0.5 + tug * 0.45) + ")"
-        : "rgba(255,246,232," + (0.42 + tug * 0.4) + ")";
+        : state.catchClimax.sitScoop
+          ? "rgba(158,240,255," + (0.5 + tug * 0.4) + ")"
+          : state.catchClimax.snap
+            ? "rgba(255,210,122," + (0.48 + tug * 0.4) + ")"
+            : "rgba(255,246,232," + (0.42 + tug * 0.4) + ")";
       ctx.lineWidth = 2.6 + tug * 2.2;
       ctx.beginPath();
       ctx.moveTo(player.x, player.y);
@@ -4173,6 +4528,28 @@
       ctx.textAlign = "center";
       ctx.fillText("$", c.x, c.y + 4 * fat);
     }
+    for (const r of tankReceipts) {
+      const a = clamp(r.life / 0.22, 0, 1);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.translate(r.x, r.y);
+      ctx.rotate(-0.08);
+      ctx.fillStyle = "#fff6e8";
+      roundRect(-14, -10, 28, 20, 3); ctx.fill();
+      ctx.strokeStyle = r.tint ? r.tint.stroke : "#c49210";
+      ctx.lineWidth = 1.4;
+      roundRect(-14, -10, 28, 20, 3); ctx.stroke();
+      ctx.fillStyle = "#c49210";
+      ctx.fillRect(-10, -6, 12, 2);
+      ctx.fillRect(-10, -2, 16, 2);
+      ctx.fillStyle = "#ffe27a";
+      ctx.beginPath(); ctx.ellipse(8, 4, 5.5, 4.2, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#a87410";
+      ctx.font = "800 8px Nunito, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("$", 8, 7);
+      ctx.restore();
+    }
     ctx.restore();
   }
 
@@ -4298,16 +4675,6 @@
       const want = clamp((vip.want != null ? vip.want : vip.tank) | 0, 0, 4);
       const t = TANK_POS[want];
       return { text: "A VIP wants " + SPECIES[want].name + " — stock that tank", target: { x: t.x + TANK_W / 2, y: t.y + TANK_H / 2 } };
-    }
-    if (state.money >= 40 && state.tutorial >= 4) {
-      if (state.speedLv === 0) {
-        return { text: "Tap an upgrade card — Speed is a great first buy", target: null };
-      }
-      const aff = firstAffordableUp();
-      if (aff) {
-        const names = { speed: "Speed", bag: "Bag", catch: "Catch", cashier: "Cashier" };
-        return { text: "Tap an upgrade card — " + names[aff.id] + " is a good buy", target: null };
-      }
     }
     if (state.stock.some(n => n > 0) && state.registerCash === 0) {
       return { text: "Customers are on the way — wait at the cashier", target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
@@ -4681,7 +5048,7 @@
         ctx.strokeStyle = "rgba(255,226,122," + (0.35 + 0.3 * Math.sin(state.time * 5)) + ")";
         ctx.lineWidth = 3;
         const barW = decorHudReady() ? 854 : 720;
-        const hb = hudBox(16, H - 92, barW, 84);
+        const hb = hudBox(16, H - 96, barW, 88);
         roundRect(hb.x, hb.y, hb.w, hb.h, 12); ctx.stroke();
       }
       drawUpgradeBar();
@@ -4746,8 +5113,30 @@
     const sp = worldToScreen(OCEAN.w / 2, 70);
     btn("surface", sp.x - 170, sp.y - 28, 340, 48);
   }
-  function upCard(id, x, y, title, sub, cost, maxed, can, pulse) {
-    const w = 168;
+  function drawUpIcon(kind, x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+    if (kind === "speed") {
+      ctx.strokeStyle = "#ffe27a"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(-6, 3); ctx.lineTo(2, 3); ctx.lineTo(-1, 0); ctx.moveTo(2, 3); ctx.lineTo(-1, 6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-2, -2); ctx.lineTo(7, -2); ctx.lineTo(4, -5); ctx.moveTo(7, -2); ctx.lineTo(4, 1); ctx.stroke();
+    } else if (kind === "bag") {
+      ctx.strokeStyle = "#9ef0ff"; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(-5, -2); ctx.lineTo(-4, 6); ctx.lineTo(4, 6); ctx.lineTo(5, -2); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, -2, 3.2, Math.PI, 0); ctx.stroke();
+    } else if (kind === "catch") {
+      ctx.strokeStyle = "#9ef0ff"; ctx.lineWidth = 1.7;
+      ctx.beginPath(); ctx.moveTo(-6, 0); ctx.lineTo(6, 0); ctx.stroke();
+      ctx.beginPath(); ctx.arc(6, 0, 4.5, -0.7, 0.7); ctx.stroke();
+    } else {
+      ctx.fillStyle = "#ffe27a";
+      ctx.beginPath(); ctx.arc(0, -2, 3.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(-2.4, 1, 4.8, 5);
+    }
+    ctx.restore();
+  }
+  function upCard(id, x, y, title, promise, icon, cost, maxed, can, pulse) {
+    const w = 168, h = 72;
     const shaking = state.cardShake && state.cardShake.id === id;
     const shake = shaking
       ? Math.sin(state.cardShake.t * 68) * 26 * clamp(state.cardShake.t / 0.2, 0, 1)
@@ -4756,30 +5145,34 @@
     const flashing = state.priceFlash && state.priceFlash.id === id;
     const fill = maxed ? "rgba(40,70,60,0.85)" : can ? "rgba(28, 58, 52, 0.9)" : flashing
       ? "rgba(72, 24, 22, 0.92)" : "rgba(40, 32, 28, 0.82)";
-    card(x, y, w, 64, fill);
+    card(x, y, w, h, fill);
     if (pulse) {
       ctx.strokeStyle = "rgba(255,226,122," + (0.45 + 0.35 * Math.sin(state.time * 6)) + ")";
       ctx.lineWidth = 3;
-      roundRect(x, y, w, 64, 12); ctx.stroke();
+      roundRect(x, y, w, h, 12); ctx.stroke();
     }
     if (flashing) {
       ctx.strokeStyle = "rgba(255,90,70," + (0.55 + 0.35 * clamp(state.priceFlash.t / 0.2, 0, 1)) + ")";
       ctx.lineWidth = 3;
-      roundRect(x, y, w, 64, 12); ctx.stroke();
+      roundRect(x, y, w, h, 12); ctx.stroke();
     }
     ctx.textAlign = "left";
     ctx.fillStyle = "#fff6e8"; ctx.font = "700 13px Fredoka, sans-serif";
-    ctx.fillText(title, x + 10, y + 24);
-    ctx.fillStyle = "#c8e8ee"; ctx.font = "700 11px Nunito, sans-serif";
-    ctx.fillText(sub, x + 10, y + 44);
+    ctx.fillText(title, x + 10, y + 20);
+    ctx.fillStyle = can ? "rgba(20, 48, 44, 0.95)" : "rgba(28, 24, 20, 0.88)";
+    roundRect(x + 8, y + 40, 118, 22, 8); ctx.fill();
+    drawUpIcon(icon, x + 20, y + 51);
+    ctx.fillStyle = can ? "#ffe27a" : "#e8f4f8";
+    ctx.font = "800 11px Nunito, sans-serif";
+    ctx.fillText(promise, x + 32, y + 55);
     ctx.textAlign = "right";
     ctx.fillStyle = maxed ? "#8fd" : flashing ? "#ff6a5a" : can ? "#ffe27a" : "#c4b8a4";
     ctx.font = flashing ? "800 16px Nunito, sans-serif" : "800 13px Nunito, sans-serif";
-    ctx.fillText(maxed ? "MAX" : "$" + cost, x + w - 10, y + 36);
-    if (!maxed) btn(id, x, y, w, 64);
+    ctx.fillText(maxed ? "MAX" : "$" + cost, x + w - 10, y + 22);
+    if (!maxed) btn(id, x, y, w, h);
   }
   function drawUpgradeBar() {
-    const bar = hudBox(16, H - 84, 720, 76);
+    const bar = hudBox(16, H - 96, 720, 88);
     const y = bar.y + 8;
     card(bar.x, bar.y, bar.w, bar.h, "rgba(12, 28, 36, 0.72)");
     const sMax = state.speedLv >= SPEED_COST.length;
@@ -4789,13 +5182,14 @@
     const bc = bMax ? 0 : BAG_COST[state.bagLv];
     const cc = cMax ? 0 : CATCH_COST[state.catchLv];
     const aff = firstAffordableUp();
-    upCard("up-speed", bar.x + 8, y, "Speed  Lv " + (state.speedLv + 1), "Walk & swim faster", sc, sMax, !sMax && state.money >= sc, aff && aff.id === "speed");
-    upCard("up-bag", bar.x + 184, y, "Bag  " + bagMax() + "/20", "Carry more fish", bc, bMax, !bMax && state.money >= bc, aff && aff.id === "bag");
-    upCard("up-catch", bar.x + 360, y, "Catch  Lv " + (state.catchLv + 1), "Fill the meter faster", cc, cMax, !cMax && state.money >= cc, aff && aff.id === "catch");
-    upCard("up-cashier", bar.x + 536, y, "Cashier", state.hiredCashier ? "Collects while you dive" : "Hire front-desk help", CASHIER_COST, state.hiredCashier, !state.hiredCashier && state.money >= CASHIER_COST, aff && aff.id === "cashier");
+    const speedPromise = state.speedLv === 0 ? "faster walk" : "faster walk";
+    upCard("up-speed", bar.x + 8, y, "Speed  Lv " + (state.speedLv + 1), speedPromise, "speed", sc, sMax, !sMax && state.money >= sc, aff && aff.id === "speed");
+    upCard("up-bag", bar.x + 184, y, "Bag  " + bagMax() + "/20", "bigger bag", "bag", bc, bMax, !bMax && state.money >= bc, aff && aff.id === "bag");
+    upCard("up-catch", bar.x + 360, y, "Catch  Lv " + (state.catchLv + 1), "quicker scoop", "catch", cc, cMax, !cMax && state.money >= cc, aff && aff.id === "catch");
+    upCard("up-cashier", bar.x + 536, y, "Cashier", state.hiredCashier ? "auto till" : "auto till", "cashier", CASHIER_COST, state.hiredCashier, !state.hiredCashier && state.money >= CASHIER_COST, aff && aff.id === "cashier");
   }
   function drawDecorBar() {
-    const chip = hudBox(744, H - 84, 118, 64);
+    const chip = hudBox(744, H - 96, 118, 64);
     const chipX = chip.x, chipY = chip.y, chipW = 118, chipH = 64;
     const dec = state.decor || [false, false, false];
     const ownedN = (dec[0] ? 1 : 0) + (dec[1] ? 1 : 0) + (dec[2] ? 1 : 0);
@@ -4962,7 +5356,7 @@
     ctx.fillStyle = "rgba(200,220,230,0.42)";
     ctx.font = "600 11px Nunito, sans-serif";
     ctx.textAlign = "right";
-      ctx.fillText("Aqua Bay · loop 22", W - 16, H - 14);
+      ctx.fillText("Aqua Bay · loop 23", W - 16, H - 14);
   }
 
   function drawSpeciesStrip(ribbon) {
@@ -5055,6 +5449,7 @@
           player.facing = 0.22;
         }
         state.diveCatches = 0;
+        state.catchVerb = null;
         state.diveLock = 1.6;
         state.bagBonus = 1;
         state.divesThisSession = (state.divesThisSession | 0) + 1;
@@ -5101,7 +5496,9 @@
     if (state.fadeDir < 0 && state.fade <= 0) { state.fade = 0; state.fadeDir = 0; }
   }
   function updateCam(dt) {
-    const tz = state.scene === "ocean" ? 1.12 : 1.00;
+    const tz = state.scene === "ocean"
+      ? (state.catchVerb === "dash" ? 1.28 : state.catchVerb === "sit" ? 0.96 : 1.12)
+      : 1.00;
     cam.z = lerp(cam.z, tz, 1 - Math.pow(0.001, dt));
     if (state.camPunch > 0) {
       cam.z *= 1.08;
@@ -5140,7 +5537,7 @@
     cam.x = lerp(cam.x, tx, 1 - Math.pow(0.012, dt));
     cam.y = lerp(cam.y, ty, 1 - Math.pow(0.012, dt));
     const rightRail = 70;
-    const bottomRail = shopBarsReady() ? 100 : (state.tutorial === 0 && !state.didMove ? 100 : 28);
+    const bottomRail = shopBarsReady() ? 112 : (state.tutorial === 0 && !state.didMove ? 100 : 28);
     let psx = (player.x - cam.x) * cam.z + W / 2;
     let psy = (player.y - cam.y) * cam.z + H / 2;
     if (psx > W - rightRail - 40) cam.x += (psx - (W - rightRail - 40)) / cam.z;
@@ -5207,7 +5604,7 @@
         const sim = state.hitStop > 0 ? 0 : dt;
         updatePlayer(sim);
         if (state.scene === "ocean") { updateOceanFish(sim); updateCatch(sim); updateReefPresence(); updateNearMiss(sim); }
-        else { updateShopInteract(); updateCustomers(sim); }
+        else { updateShopInteract(); updateCustomers(sim); updatePierLife(sim); }
         if (state.diveLock > 0) {
           const prevLock = state.diveLock;
           state.diveLock = Math.max(0, state.diveLock - sim);
@@ -5242,6 +5639,7 @@
   loadSave();
   seedOcean();
   seedDockTeasers();
+  seedPierLife();
   for (let i = 0; i < 16; i++) {
     titleBubbles.push({ x: rand(30, W - 30), y: rand(40, H + 20), r: rand(2, 6), v: rand(36, 88), ph: rand(0, 8) });
   }
