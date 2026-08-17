@@ -1637,19 +1637,20 @@
     return clamp((s.y - 14) / 64, 0.12, 1);
   }
   // Hide a chip before any edge bisects it. Fully on-canvas stays 1.
-  function screenBoxAlpha(x, y, w, h) {
-    const pad = 6;
-    const visW = Math.max(0, Math.min(x + w, W - pad) - Math.max(x, pad));
-    const visH = Math.max(0, Math.min(y + h, H - pad) - Math.max(y, pad));
+  function screenBoxAlpha(x, y, w, h, pad, hideBelow) {
+    const p = pad == null ? 6 : pad;
+    const hide = hideBelow == null ? 0.86 : hideBelow;
+    const visW = Math.max(0, Math.min(x + w, W - p) - Math.max(x, p));
+    const visH = Math.max(0, Math.min(y + h, H - p) - Math.max(y, p));
     const frac = (visW * visH) / Math.max(1, w * h);
-    if (frac >= 0.97) return 1;
-    if (frac < 0.86) return 0;
-    return (frac - 0.86) / 0.11;
+    if (frac >= 0.99) return 1;
+    if (frac < hide) return 0;
+    return (frac - hide) / Math.max(0.01, 0.99 - hide);
   }
   function worldBoxAlpha(wx, wy, ww, wh) {
     const s = worldToScreen(wx, wy);
     const z = Math.max(0.001, cam.z);
-    return screenBoxAlpha(s.x, s.y, ww * z, wh * z);
+    return screenBoxAlpha(s.x, s.y, ww * z, wh * z, 12, 0.92);
   }
 
   // ===== OCEAN FISH =====
