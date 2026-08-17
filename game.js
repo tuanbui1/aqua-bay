@@ -122,8 +122,9 @@
     catchVerb: null, tankFlash: null, pierChirp: 0,
     camNudge: 0, camNudgeMax: 0,
     skin: "skip",
+    surfaceQuiet: 0,
   };
-  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0 };
+  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, pendingAct: null };
   const cam = { x: 880, y: 920, z: 1 };
   const oceanFish = [];
   const tankFish = [[], [], [], [], []];
@@ -140,10 +141,11 @@
   const stockHops = [];
   const bagGhosts = [];
   const pathGlints = [];
+  const pathCoins = [];
   const saleTalks = [];
   const tankRipples = [];
   const tankReceipts = [];
-  const pierLife = { gull: null, skiff: null, seeded: false };
+  const pierLife = { gull: null, gull2: null, skiff: null, seeded: false };
   const oceanScenery = [];
   const tankExits = [];
   let saleBarkDeck = [];
@@ -484,16 +486,16 @@
       catchClimax: null, divesThisSession: 0, tangRumor: false, freezeFrame: 0,
       aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
       catchVerb: null, tankFlash: null, pierChirp: 0,
-      camNudge: 0, camNudgeMax: 0 });
+      camNudge: 0, camNudgeMax: 0, surfaceQuiet: 0 });
     state.hasSave = false;
-    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0;
+    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null;
     cam.x = 880; cam.y = 920; cam.z = 1;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
-    stockHops.length = 0; bagGhosts.length = 0; pathGlints.length = 0;
+    stockHops.length = 0; bagGhosts.length = 0; pathGlints.length = 0; pathCoins.length = 0;
     saleTalks.length = 0; tankRipples.length = 0; tankReceipts.length = 0;
     oceanScenery.length = 0; tankExits.length = 0;
-    pierLife.gull = null; pierLife.skiff = null; pierLife.seeded = false;
+    pierLife.gull = null; pierLife.gull2 = null; pierLife.skiff = null; pierLife.seeded = false;
     saleBarkDeck.length = 0; saleBarkRecent.length = 0;
     browseTimer = 0.35;
     for (let i = 0; i < 5; i++) tankFish[i].length = 0;
@@ -687,6 +689,8 @@
       t.big = !!opts.big;
       t.kind = opts.kind || "";
     }
+    // One channel: drop a duplicate of the line already showing or queued next.
+    if (state.toasts.some((q) => q.msg === t.msg)) return;
     state.toasts.push(t);
   }
   function pop(x, y, text, col, life, scale) {
@@ -793,13 +797,13 @@
   }
   function upgradeBarBox() {
     if (compactHud()) {
-      const cw = thumbCanvas(148, 176, 260);
-      const ch = thumbCanvas(58, 76, 118);
+      const cw = thumbCanvas(136, 156, 220);
+      const ch = thumbCanvas(50, 64, 96);
       const w = cw * 2 + 24;
       const h = ch * 2 + 24;
-      return Object.assign(hudBox(16, H - 16 - h, w, h), { cw, ch, compact: true });
+      return Object.assign(hudBox(16, H - 22 - h, w, h), { cw, ch, compact: true });
     }
-    return Object.assign(hudBox(16, H - 96, 720, 88), { cw: 168, ch: 72, compact: false });
+    return Object.assign(hudBox(16, H - 110, 688, 82), { cw: 160, ch: 66, compact: false });
   }
   function decorHudReady() {
     return shopBarsReady() && (boughtAnUpgrade() || !!state.unlocked[1]);
@@ -1081,46 +1085,52 @@
       x: 780, y: 988, perchX: 780, perchY: 988,
       mode: "perch", t: 0, facing: -1, hop: 0,
     };
+    pierLife.gull2 = {
+      x: 1496, y: 798, perchX: 1496, perchY: 798,
+      mode: "perch", t: 1.1, facing: 1, hop: 0,
+    };
     pierLife.skiff = { x: 1092, y: 1196, ph: 1.2 };
     state.pierChirp = 1.6;
+  }
+  function updateOneGull(g, dt, lo, hi, glideY) {
+    if (!g) return;
+    g.t += dt;
+    if (g.mode === "perch") {
+      g.x = g.perchX;
+      g.y = g.perchY + Math.sin(state.time * 2.2 + (g.t || 0)) * 1.2;
+      if (g.t > 3.4) {
+        g.mode = Math.random() < 0.55 ? "hop" : "glide";
+        g.t = 0;
+        g.hop = 0;
+      }
+    } else if (g.mode === "hop") {
+      g.hop += dt;
+      const u = clamp(g.hop / 0.42, 0, 1);
+      g.x = g.perchX + g.facing * 18 * u;
+      g.y = g.perchY - Math.sin(u * Math.PI) * 14;
+      if (u >= 1) {
+        g.perchX = clamp(g.x, lo, hi);
+        g.facing *= -1;
+        g.mode = "perch";
+        g.t = 0;
+      }
+    } else {
+      g.x += g.facing * 46 * dt;
+      g.y = glideY + Math.sin(state.time * 3.1) * 8;
+      if (g.t > 1.8 || g.x < lo - 40 || g.x > hi + 40) {
+        g.facing *= -1;
+        g.mode = "perch";
+        g.t = 0;
+        g.x = g.perchX;
+        g.y = g.perchY;
+      }
+    }
   }
   function updatePierLife(dt) {
     if (state.scene !== "shop") return;
     seedPierLife();
-    const g = pierLife.gull;
-    if (g) {
-      g.t += dt;
-      if (g.mode === "perch") {
-        g.x = g.perchX;
-        g.y = g.perchY + Math.sin(state.time * 2.2) * 1.2;
-        if (g.t > 3.4) {
-          g.mode = Math.random() < 0.55 ? "hop" : "glide";
-          g.t = 0;
-          g.hop = 0;
-        }
-      } else if (g.mode === "hop") {
-        g.hop += dt;
-        const u = clamp(g.hop / 0.42, 0, 1);
-        g.x = g.perchX + g.facing * 18 * u;
-        g.y = g.perchY - Math.sin(u * Math.PI) * 14;
-        if (u >= 1) {
-          g.perchX = clamp(g.x, 660, 1020);
-          g.facing *= -1;
-          g.mode = "perch";
-          g.t = 0;
-        }
-      } else {
-        g.x += g.facing * 46 * dt;
-        g.y = 970 + Math.sin(state.time * 3.1) * 8;
-        if (g.t > 1.8 || g.x < 620 || g.x > 1080) {
-          g.facing *= -1;
-          g.mode = "perch";
-          g.t = 0;
-          g.x = g.perchX;
-          g.y = g.perchY;
-        }
-      }
-    }
+    updateOneGull(pierLife.gull, dt, 660, 1020, 970);
+    updateOneGull(pierLife.gull2, dt, 1380, 1580, 780);
     state.pierChirp -= dt;
     if (state.pierChirp <= 0 && state.mode === "play") {
       state.pierChirp = rand(5.5, 9.5);
@@ -1279,6 +1289,10 @@
     if (hit) { mouse.ui = true; mouse.acted = true; onUI(hit); return; }
     if (state.mode === "play") {
       const touch = e.pointerType === "touch";
+      if (state.scene === "shop") {
+        const w = screenToWorld(p.x, p.y);
+        if (tryClickShop(w.x, w.y)) { mouse.acted = true; return; }
+      }
       if (state.scene === "ocean" && bagIsFull() && !state.fadeDir) {
         if (!touch) { mouse.acted = true; player.goto = null; beginSurface(); return; }
       } else if (tryAction({ fromTouch: touch })) {
@@ -1376,6 +1390,7 @@
     if (id === "back") { state.mode = "pause"; return; }
     if (id === "reset") { resetSave(); return; }
     if (id === "mute") { state.muted = !state.muted; persist(); return; }
+    if (id === "till") { intentWalk("cash", registerWalkPoint()); return; }
     if (id === "up-speed") buySpeed();
     if (id === "up-bag") buyBag();
     if (id === "up-catch") buyCatch();
@@ -1394,14 +1409,18 @@
           msg: !ready ? "Soon" : "$" + SPECIES[i].unlock,
         });
       }
-      if (!nearStockPad(i)) { player.goto = tankWalkPoint(i); return; }
-      if (can) buyTank(i);
+      intentWalk("unlock", tankWalkPoint(i), i);
+      return;
     }
     if (id === "book-dismiss" || id === "book-close") { state.bookOpen = null; return; }
     if (id === "book-panel") return;
     if (id.startsWith("book-")) {
       const n = +id.split("-")[1];
       if (n >= 0 && n < 5) {
+        if (!state.unlocked[n] && n === nextLockedTank() && state.money >= SPECIES[n].unlock) {
+          intentWalk("unlock", tankWalkPoint(n), n);
+          return;
+        }
         state.bookOpen = n;
         if (!state.bookOpened) { state.bookOpened = true; }
         state.sawBookTease = true;
@@ -1576,6 +1595,7 @@
       }
     }
     seedOceanScenery();
+    seedDiveLandmark();
     seedTangTease();
   }
   function seedOceanScenery() {
@@ -1596,6 +1616,22 @@
       });
     }
   }
+  function seedDiveLandmark() {
+    if (state.expedition || state.unlocked[1]) return;
+    if ((state.divesThisSession | 0) !== 1) return;
+    const x = clamp(player.x + 168, 180, OCEAN.w - 180);
+    const y = clamp(player.y + 228, 520, 820);
+    oceanScenery.push({ kind: "kelp", x, y, ph: 0.35, landmark: true });
+    for (let i = 0; i < 3; i++) {
+      pushOceanFish(0, x + rand(-46, 46), y + rand(-28, 40));
+    }
+  }
+  function diveLandmark() {
+    for (const s of oceanScenery) {
+      if (s.kind === "kelp" && s.landmark) return { x: s.x, y: s.y - 18 };
+    }
+    return null;
+  }
   function updateOceanScenery(dt) {
     for (const s of oceanScenery) {
       if (s.kind === "ray") {
@@ -1609,6 +1645,8 @@
         s.x += Math.sin(state.time * 0.55 + s.ph) * 16 * dt;
         if (s.y < 250) s.y = OCEAN.h - 160;
         s.x = clamp(s.x, 80, OCEAN.w - 80);
+      } else if (s.kind === "kelp") {
+        s.x += Math.sin(state.time * 0.7 + s.ph) * 4 * dt;
       } else {
         s.x += s.vx * dt;
         s.y += Math.sin(state.time * 6 + s.ph) * 28 * dt;
@@ -2141,7 +2179,6 @@
     beatMoment(f.rare ? "shiny" : "catch", f.x, f.y);
     pop(f.x, f.y - 18, (f.rare ? "Shiny " : "") + SPECIES[f.s].name + "!", f.rare ? "#ffd24a" : SPECIES[f.s].accent);
     if (state.tutorial === 1) state.tutorial = 2;
-    if (bagIsFull()) toast(compactHud() ? "Bag full! Tap SURFACE." : "Bag full! SPACE or click to surface.", "#9ef0ff");
     for (let i = oceanFish.length - 1; i >= 0; i--) if (oceanFish[i].caught) oceanFish.splice(i, 1);
     ensureOceanStock();
     if (shinyWanted()) {
@@ -2176,10 +2213,14 @@
       const dx = player.goto.x - player.x, dy = player.goto.y - player.y, d = Math.hypot(dx, dy);
       if (d < 22) {
         if (state.scene === "shop") {
-          tryStockOnArrival();
-          tryUnlockOnArrival();
+          if (!performPendingAct()) {
+            tryStockOnArrival();
+            tryUnlockOnArrival();
+            if (player.pendingAct && player.pendingAct.kind === "cash") collectCash();
+          }
         }
         player.goto = null;
+        player.pendingAct = null;
       } else { ax = dx / d; ay = dy / d; }
     }
     const accel = player.goto ? 2200 : 1650;
@@ -2289,6 +2330,8 @@
       return;
     }
     if (state.bookTeaseWait > 0) return;
+    if ((state.surfaceQuiet || 0) > 0) return;
+    if (state.toasts.length) return;
     state.bookTeaseWait = 1.15;
   }
   function flushBookTease() {
@@ -2346,35 +2389,51 @@
     if (nearRect(REGISTER.x, REGISTER.y, REGISTER.w, REGISTER.h, cashPad)) collectCash();
   }
   function stockTank(i) {
-    let n = 0, rares = 0; const keep = []; const keepRare = []; const hopped = [];
+    if (!state.unlocked[i]) return;
     const flags = state.bagRare || [];
+    const hopped = [];
+    const keep = [];
+    const keepRare = [];
     for (let j = 0; j < state.bag.length; j++) {
-      if (state.bag[j] === i) {
-        n++;
-        if (flags[j]) rares++;
-        hopped.push({ s: i, rare: !!flags[j] });
-      } else {
-        keep.push(state.bag[j]);
-        keepRare.push(!!flags[j]);
-      }
+      const s = state.bag[j] | 0;
+      const rare = !!flags[j];
+      const match = s === i;
+      // Shiny leftover of this species, or a shiny that cannot go anywhere else.
+      const leftoverShiny = rare && (s === i || !state.unlocked[s]);
+      if (match || leftoverShiny) hopped.push({ s: match ? i : (state.unlocked[s] ? s : i), rare });
+      else { keep.push(s); keepRare.push(rare); }
     }
-    if (!n) return;
+    // If nothing else in the bag can stock another unlocked tank, drain the rest too.
+    if (keep.length && !keep.some((s) => state.unlocked[s] && s !== i)) {
+      for (let j = 0; j < keep.length; j++) hopped.push({ s: i, rare: !!keepRare[j] });
+      keep.length = 0;
+      keepRare.length = 0;
+    }
+    if (!hopped.length) return;
+    let n = 0, rares = 0;
+    for (const h of hopped) { n++; if (h.rare) rares++; }
     state.bag = keep;
     state.bagRare = keepRare;
     state.stock[i] += n;
     if (!state.stockRare || state.stockRare.length < 5) state.stockRare = [0, 0, 0, 0, 0];
     state.stockRare[i] = (state.stockRare[i] | 0) + rares;
     for (let k = tankFish[i].length - 1; k >= 0; k--) if (tankFish[i][k].ceremonial) tankFish[i].splice(k, 1);
+    const room = Math.max(0, 10 - tankFish[i].length);
+    for (let k = 0; k < Math.min(n, room); k++) {
+      tankFish[i].push({ x: rand(24, TANK_W - 24), y: rand(36, TANK_H - 18), a: rand(0, 6), ph: rand(0, 20) });
+    }
     const t = TANK_POS[i];
     const tx = t.x + TANK_W / 2, ty = t.y + TANK_H * 0.58;
+    bagGhosts.length = 0;
     for (let k = 0; k < hopped.length; k++) {
-      bagGhosts.push({ s: hopped[k].s, rare: hopped[k].rare });
+      bagGhosts.push({ s: hopped[k].s, rare: hopped[k].rare, life: 0.18 + k * 0.05 });
       stockHops.push({
         s: hopped[k].s, rare: hopped[k].rare, tank: i,
-        wait: k * 0.1, life: 0.24, max: 0.24,
+        wait: k * 0.08, life: 0.22, max: 0.22,
         sx: player.x + (k % 2 ? -44 : 44), sy: player.y + 26,
         tx: tx + rand(-14, 14), ty: ty + rand(-8, 8),
         x: player.x, y: player.y + 26, launched: false,
+        visual: true,
       });
     }
     state.camPunch = Math.max(state.camPunch || 0, 0.1);
@@ -2406,7 +2465,10 @@
     advanceMission();
     checkSessionGoals();
     if (!bagHasStockable() && state.registerCash > 0 && !cashierHandlingIt()) {
-      player.goto = { x: REGISTER.x + REGISTER.w / 2 + 36, y: REGISTER.y + REGISTER.h + 40 };
+      const dest = registerWalkPoint();
+      player.goto = dest;
+      player.pendingAct = { kind: "cash" };
+      seedPathCoins([[player.x, player.y], [520, 380], [dest.x, dest.y]], 3);
     }
   }
   function collectCash(fromStaff) {
@@ -2440,6 +2502,9 @@
     persist();
     advanceMission();
     checkSessionGoals();
+    if (!state.hiredCashier && !bagHasStockable() && (state.tutorial | 0) <= 5) {
+      seedPathCoins([[player.x, player.y], [720, 640], [880, 1008]], 2);
+    }
   }
   function buySpeed() {
     if (state.speedLv >= SPEED_COST.length) return nope({ card: "up-speed" });
@@ -2465,7 +2530,7 @@
   }
   function buyTank(i) {
     if (state.unlocked[i]) return;
-    if (!nearStockPad(i)) { player.goto = tankWalkPoint(i); return; }
+    if (!nearStockPad(i)) { intentWalk("unlock", tankWalkPoint(i), i); return; }
     const c = SPECIES[i].unlock;
     if (state.money < c) {
       const t = TANK_POS[i];
@@ -2911,6 +2976,7 @@
     if (state.shinyCallout > 0) state.shinyCallout = Math.max(0, state.shinyCallout - dt);
     if (state.shinyFocus > 0) state.shinyFocus = Math.max(0, state.shinyFocus - dt);
     if (state.shinyHold > 0) state.shinyHold = Math.max(0, state.shinyHold - dt);
+    if (state.surfaceQuiet > 0) state.surfaceQuiet = Math.max(0, state.surfaceQuiet - dt);
     if (state.boatHint > 0) state.boatHint = Math.max(0, state.boatHint - dt);
     if (state.boatGlance > 0) state.boatGlance = Math.max(0, state.boatGlance - dt);
     if (state.bookTeaseWait > 0) {
@@ -3069,6 +3135,8 @@
       state.aisleSchoolWait = Math.max(0, state.aisleSchoolWait - dt);
     }
     updateStockHops(dt);
+    updateBagGhosts(dt);
+    updatePathCoins(dt);
     updatePathGlints(dt);
     if (state.scene === "shop") {
       ensureBaySchool();
@@ -3091,7 +3159,6 @@
         h.wait -= dt;
         if (h.wait > 0) continue;
         h.launched = true;
-        if (bagGhosts.length) bagGhosts.shift();
         state.bagPunch = 1.24;
         sfx("click");
       }
@@ -3102,9 +3169,6 @@
       h.x = lerp(h.sx, h.tx, e);
       h.y = lerp(h.sy, h.ty, e) - Math.sin(u * Math.PI) * 92;
       if (h.life <= 0) {
-        tankFish[h.tank].push({
-          x: rand(24, TANK_W - 24), y: rand(36, TANK_H - 18), a: rand(0, 6), ph: rand(0, 20),
-        });
         spawnP(h.tx, h.ty, 14, [SPECIES[h.s].color, "#b8f3ff", "#fff", "#9ef0ff"], 78);
         tankRipples.push({ i: h.tank, x: h.tx, y: h.ty, life: 0.48, max: 0.48 });
         state.camPunch = Math.max(state.camPunch || 0, 0.07);
@@ -3112,6 +3176,130 @@
         stockHops.splice(i, 1);
       }
     }
+  }
+  function updateBagGhosts(dt) {
+    for (let i = bagGhosts.length - 1; i >= 0; i--) {
+      const g = bagGhosts[i];
+      g.life = (g.life == null ? 0.22 : g.life) - dt;
+      if (g.life <= 0) bagGhosts.splice(i, 1);
+    }
+  }
+  function registerWalkPoint() {
+    return { x: REGISTER.x + REGISTER.w / 2 + 36, y: REGISTER.y + REGISTER.h + 40 };
+  }
+  function seedPathCoins(pts, n) {
+    if (!pts || pts.length < 2) return;
+    pathCoins.length = 0;
+    const count = clamp(n | 0, 2, 3);
+    for (let i = 0; i < count; i++) {
+      const u = (i + 0.55) / (count + 0.2);
+      const f = u * (pts.length - 1);
+      const a = clamp(f | 0, 0, pts.length - 2);
+      const t = f - a;
+      pathCoins.push({
+        x: lerp(pts[a][0], pts[a + 1][0], t) + rand(-10, 10),
+        y: lerp(pts[a][1], pts[a + 1][1], t) + rand(-8, 8),
+        v: 2,
+        bob: rand(0, 6),
+        life: 22,
+      });
+    }
+  }
+  function updatePathCoins(dt) {
+    if (state.scene !== "shop") {
+      for (let i = pathCoins.length - 1; i >= 0; i--) {
+        pathCoins[i].life -= dt * 3;
+        if (pathCoins[i].life <= 0) pathCoins.splice(i, 1);
+      }
+      return;
+    }
+    for (let i = pathCoins.length - 1; i >= 0; i--) {
+      const c = pathCoins[i];
+      c.life -= dt;
+      if (c.life <= 0) { pathCoins.splice(i, 1); continue; }
+      if (Math.hypot(player.x - c.x, player.y - c.y) < 38) {
+        state.money += c.v;
+        state.moneyRollFrom = state.displayMoney;
+        state.moneyRollTo = state.money;
+        state.moneyRollT = 0.22;
+        state.moneyPunch = 1.16;
+        pop(c.x, c.y - 12, "+$" + c.v, "#ffe27a", 1.1, 1.15);
+        sfx("coin");
+        pathCoins.splice(i, 1);
+        persist();
+      }
+    }
+  }
+  function bagCanStock(i) {
+    if (!state.unlocked[i] || !state.bag.length) return false;
+    const flags = state.bagRare || [];
+    let other = false;
+    for (let j = 0; j < state.bag.length; j++) {
+      const s = state.bag[j] | 0;
+      if (s === i) return true;
+      if (flags[j] && !state.unlocked[s]) return true;
+      if (state.unlocked[s] && s !== i) other = true;
+    }
+    return !other;
+  }
+  function canPerformAct(act) {
+    if (!act || state.scene !== "shop") return false;
+    if (act.kind === "stock") {
+      return nearStockPad(act.i) && bagCanStock(act.i);
+    }
+    if (act.kind === "unlock") {
+      return nearStockPad(act.i) && !state.unlocked[act.i] && act.i === nextLockedTank() && state.money >= SPECIES[act.i].unlock;
+    }
+    if (act.kind === "cash") {
+      return nearRect(REGISTER.x, REGISTER.y, REGISTER.w, REGISTER.h, 48) && state.registerCash > 0;
+    }
+    return false;
+  }
+  function performPendingAct() {
+    const act = player.pendingAct;
+    if (!act || !canPerformAct(act)) return false;
+    if (act.kind === "stock") stockTank(act.i);
+    else if (act.kind === "unlock") buyTank(act.i);
+    else if (act.kind === "cash") collectCash();
+    player.pendingAct = null;
+    player.goto = null;
+    return true;
+  }
+  function intentWalk(kind, dest, i) {
+    const act = { kind, i };
+    player.pendingAct = act;
+    if (canPerformAct(act)) {
+      performPendingAct();
+      return true;
+    }
+    player.goto = dest;
+    return true;
+  }
+  function tryClickShop(wx, wy) {
+    if (state.scene !== "shop" || state.mode !== "play") return false;
+    const tankHit = tankAtWorld(wx, wy);
+    if (tankHit >= 0) {
+      if (!state.unlocked[tankHit]) {
+        const t = TANK_POS[tankHit];
+        const ready = tankHit === nextLockedTank();
+        const can = ready && state.money >= SPECIES[tankHit].unlock;
+        if (!can) {
+          nope({
+            tank: tankHit,
+            x: t.x + TANK_W / 2,
+            y: t.y + 36,
+            msg: !ready ? "Soon" : "$" + SPECIES[tankHit].unlock,
+          });
+        }
+        return intentWalk("unlock", tankWalkPoint(tankHit), tankHit);
+      }
+      return intentWalk("stock", tankWalkPoint(tankHit), tankHit);
+    }
+    if (wx > REGISTER.x - 24 && wx < REGISTER.x + REGISTER.w + 48 &&
+        wy > REGISTER.y - 24 && wy < REGISTER.y + REGISTER.h + 56) {
+      return intentWalk("cash", registerWalkPoint());
+    }
+    return false;
   }
   function updatePathGlints(dt) {
     const haul = state.scene === "shop" && bagHasStockable();
@@ -3465,7 +3653,7 @@
       ctx.beginPath(); ctx.arc(25, 16, 2.4, 0, Math.PI * 2); ctx.fill();
     }
     if (opt.carry >= 0) drawCarryParcel(14, -2);
-    if (opt.emote) {
+    if (opt.emote && !((state.surfaceQuiet || 0) > 0 && !isGoldTalk(String(opt.emote)) && !/tang/i.test(String(opt.emote)))) {
       let ox = opt.emoteOff || 0;
       const label = String(opt.emote);
       const gold = isGoldTalk(label);
@@ -3747,6 +3935,60 @@
     ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI * 2); ctx.stroke();
     ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
+  }
+  function drawBaitShack(x, y) {
+    ctx.fillStyle = "rgba(20, 16, 10, 0.22)";
+    ctx.beginPath(); ctx.ellipse(x + 4, y + 78, 54, 12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#8a4a22";
+    roundRect(x - 40, y + 18, 88, 58, 4); ctx.fill();
+    ctx.fillStyle = "#6b3416";
+    ctx.fillRect(x - 38, y + 22, 8, 52);
+    ctx.fillRect(x + 34, y + 22, 8, 52);
+    ctx.fillStyle = "#c4483a";
+    ctx.beginPath();
+    ctx.moveTo(x - 50, y + 22);
+    ctx.lineTo(x, y - 8);
+    ctx.lineTo(x + 50, y + 22);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#e8c04a";
+    ctx.fillRect(x - 48, y + 20, 96, 4);
+    ctx.fillStyle = "#3a2415";
+    roundRect(x - 10, y + 40, 22, 34, 3); ctx.fill();
+    ctx.fillStyle = "#6b3a18";
+    roundRect(x - 32, y + 36, 16, 14, 2); ctx.fill();
+    ctx.strokeStyle = "#e8c04a"; ctx.lineWidth = 1.4;
+    roundRect(x - 32, y + 36, 16, 14, 2); ctx.stroke();
+    ctx.fillStyle = "#fff6e8";
+    ctx.font = "800 9px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("BAIT", x, y + 14);
+    ctx.fillStyle = "#2a7d8a";
+    ctx.beginPath(); ctx.ellipse(x + 28, y + 52, 7, 10, 0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#9ef0ff";
+    ctx.beginPath(); ctx.ellipse(x + 28, y + 50, 4, 3, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  function drawVending(x, y) {
+    ctx.fillStyle = "rgba(16, 20, 24, 0.2)";
+    ctx.beginPath(); ctx.ellipse(x + 2, y + 78, 22, 7, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#2a4a58";
+    roundRect(x - 18, y, 40, 76, 5); ctx.fill();
+    ctx.fillStyle = "#1a3038";
+    roundRect(x - 14, y + 8, 32, 40, 3); ctx.fill();
+    const cols = ["#e85d4c", "#3d8bfd", "#f0b429", "#7ad08a"];
+    for (let i = 0; i < 8; i++) {
+      ctx.fillStyle = cols[i % cols.length];
+      ctx.beginPath();
+      ctx.arc(x - 6 + (i % 2) * 14, y + 16 + ((i / 2) | 0) * 8, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = "#0a181c";
+    roundRect(x - 10, y + 52, 24, 10, 2); ctx.fill();
+    ctx.fillStyle = "#ffe27a";
+    ctx.font = "800 8px Nunito, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("POP", x + 2, y + 60);
+    ctx.fillStyle = "#7dffa0";
+    ctx.fillRect(x + 14, y + 64, 4, 6);
   }
   function drawBench(x, y) {
     ctx.fillStyle = "#6b4423";
@@ -4168,8 +4410,11 @@
     drawHangingSign(1020, 888);
     drawBench(1088, 780);
     drawLifeRing(548, 888);
+    drawVending(1396, 688);
+    drawBaitShack(1488, 812);
     drawSkiff(pierLife.skiff);
     drawGull(pierLife.gull);
+    drawGull(pierLife.gull2);
     if (state.decor && state.decor[2]) drawFountain();
     drawBoat();
     // side welcome counter (inward so the starting camera keeps it on-canvas)
@@ -4249,6 +4494,7 @@
       ctx.fillText("Collect  $" + state.registerCash, r.x + r.w / 2, r.y - 16);
     }
     ctx.restore();
+    btn("till", ...screenBtnFromWorld(r.x - 8, r.y - 8, r.w + 16, r.h + 24));
   }
   function drawKiosk() {
     const k = KIOSK;
@@ -4917,12 +5163,30 @@
     }
     ctx.globalAlpha = 1;
     if (player.goto) {
-      const pulse = 0.45 + 0.35 * Math.sin(state.time * 7);
+      const pulse = 0.5 + 0.4 * Math.sin(state.time * 7);
+      const act = !!player.pendingAct;
+      const r = (act ? 22 : 14) + Math.sin(state.time * 6) * 4;
       ctx.strokeStyle = "rgba(255,226,122," + pulse + ")";
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(player.goto.x, player.goto.y, 14 + Math.sin(state.time * 6) * 3, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = "rgba(255,226,122,0.28)";
-      ctx.beginPath(); ctx.arc(player.goto.x, player.goto.y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.lineWidth = act ? 4.2 : 3;
+      ctx.beginPath(); ctx.arc(player.goto.x, player.goto.y, r, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(255,246,180," + (0.28 + pulse * 0.25) + ")";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(player.goto.x, player.goto.y, r + 8, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "rgba(255,226,122,0.32)";
+      ctx.beginPath(); ctx.arc(player.goto.x, player.goto.y, 6, 0, Math.PI * 2); ctx.fill();
+    }
+    for (const c of pathCoins) {
+      const bob = Math.sin(state.time * 5 + c.bob) * 4;
+      const a = clamp(c.life / 0.4, 0, 1);
+      ctx.globalAlpha = a;
+      ctx.fillStyle = "#ffd24a";
+      ctx.beginPath(); ctx.ellipse(c.x, c.y + bob, 11, 8, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#c49210"; ctx.lineWidth = 1.6; ctx.stroke();
+      ctx.fillStyle = "#a87410";
+      ctx.font = "800 11px Nunito, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("$", c.x, c.y + bob + 4);
+      ctx.globalAlpha = 1;
     }
     for (const p of pops) {
       ctx.globalAlpha = clamp(p.life, 0, 1);
@@ -5007,13 +5271,14 @@
   }
   function firstSessionIndex() {
     if (state.missionDone) return -1;
-    if (state.registerCash > 0 && !cashierHandlingIt() && !bagHasStockable()) return 5;
-    if (bagHasStockable()) return 4;
-    if (state.scene === "ocean" || state.pendingScene === "ocean") {
+    const ocean = state.scene === "ocean" || state.pendingScene === "ocean";
+    if (ocean) {
       if (bagIsFull()) return 3;
       if (((state.caughtCount && state.caughtCount[0]) | 0) >= 5 && state.bag.length > 0) return 3;
       return 2;
     }
+    if (bagHasStockable()) return 4;
+    if (state.registerCash > 0 && !cashierHandlingIt()) return 5;
     if (inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable()) return 1;
     return 0;
   }
@@ -5033,6 +5298,7 @@
       if (step === 2) {
         const n = Math.min(5, (state.caughtCount && state.caughtCount[0]) | 0);
         const shiny = firstRareFish();
+        const mark = diveLandmark();
         if (shiny && (state.shinyCallout > 0 || !state.caughtRare) && n === 0) {
           return { text: "Catch the SHINY — then 5 Clownfish", target: { x: shiny.x, y: shiny.y } };
         }
@@ -5041,11 +5307,16 @@
           if (tease) return { text: "A blue flash in the deep — Maya asked for Tang", target: { x: tease.x, y: tease.y } };
           return { text: "Catch more — Maya wants a Blue Tang", target: nearestOceanFish() };
         }
+        if (mark && n < 5) {
+          return { text: "Catch 5 at the glowing reef  ·  " + n + "/5", target: mark };
+        }
         return { text: "Catch 5  ·  " + n + "/5", target: nearestOceanFish() };
       }
       if (step === 3) return { text: compactHud() ? "Tap SURFACE" : "Surface — SPACE or click", target: { x: player.x, y: 140 } };
-      if (step === 4) return { text: "Stock the glowing tank", target: stockableTankTarget() || { x: TANK_POS[0].x + TANK_W / 2, y: TANK_POS[0].y + TANK_H / 2 } };
-      if (step === 5) return { text: "Collect  $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
+      if (step === 4 && bagHasStockable() && state.scene === "shop") {
+        return { text: "Stock the glowing tank", target: stockableTankTarget() || { x: TANK_POS[0].x + TANK_W / 2, y: TANK_POS[0].y + TANK_H / 2 } };
+      }
+      if (step === 5 && state.registerCash > 0) return { text: "Collect  $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
     }
     if (state.scene === "ocean" || state.pendingScene === "ocean") {
       if (state.scene !== "ocean") {
@@ -5076,10 +5347,10 @@
     if (nearBoat() && expeditionUnlocked() && !state.expedition) {
       return { text: "Press SPACE to start an expedition ($35)", target: { x: BOAT.x, y: BOAT.y } };
     }
-    if (bagHasStockable()) {
+    if (state.scene === "shop" && bagHasStockable()) {
       return { text: "Walk into the glowing tank to stock your catch", target: stockableTankTarget() || { x: TANK_POS[0].x + TANK_W / 2, y: TANK_POS[0].y + TANK_H / 2 } };
     }
-    if (state.registerCash > 0 && !cashierHandlingIt()) {
+    if (state.scene === "shop" && state.registerCash > 0 && !cashierHandlingIt()) {
       return { text: "Stand on CASHIER to pocket $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
     }
     if (inDiveZone() && state.surfaceLock <= 0) {
@@ -5215,12 +5486,18 @@
     return !(a.x + a.w < b.x - p || a.x > b.x + b.w + p || a.y + a.h < b.y - p || a.y > b.y + b.h + p);
   }
   function ribbonLayout() {
-    if (ribbonHidesForDock()) return null;
-    const gt = goalText();
-    ctx.font = "700 13px Nunito, sans-serif";
-    const tw = Math.min(ctx.measureText(gt).width + 24, 560, W - 300);
-    const gx = clamp(W / 2 - tw / 2, 200, W - 148 - tw);
-    return Object.assign(hudBox(gx, 16, tw, 32), { text: gt });
+    if (ribbonHidesForDock() && !(state.toasts.length && !state.unlockBanner)) return null;
+    const live = (state.toasts.length && !state.unlockBanner) ? state.toasts[0] : null;
+    const gt = live ? live.msg : goalText();
+    if (!gt) return null;
+    ctx.font = live && live.big ? "800 15px Nunito, sans-serif" : "700 13px Nunito, sans-serif";
+    const tw = Math.min(ctx.measureText(gt).width + 28, 620, W - 280);
+    const gx = clamp(W / 2 - tw / 2, 210, W - 160 - tw);
+    return Object.assign(hudBox(gx, 16, tw, live && live.big ? 36 : 32), {
+      text: gt,
+      col: live ? live.col : "#e8fbff",
+      toast: !!live,
+    });
   }
   function chipAlpha(box, ribbon) {
     if (!ribbon) return 1;
@@ -5234,14 +5511,14 @@
   }
   function drawRibbon(rb) {
     if (!rb) return;
-    card(rb.x, rb.y, rb.w, rb.h, "rgba(20, 50, 62, 0.9)");
-    ctx.fillStyle = "#e8fbff"; ctx.textAlign = "center";
-    ctx.font = "700 13px Nunito, sans-serif";
+    card(rb.x, rb.y, rb.w, rb.h, rb.toast ? "rgba(18, 36, 44, 0.92)" : "rgba(20, 50, 62, 0.9)");
+    ctx.fillStyle = rb.col || "#e8fbff"; ctx.textAlign = "center";
+    ctx.font = rb.toast ? "800 14px Nunito, sans-serif" : "700 13px Nunito, sans-serif";
     ctx.save();
     ctx.beginPath();
     ctx.rect(rb.x + 6, rb.y, Math.max(8, rb.w - 12), rb.h);
     ctx.clip();
-    ctx.fillText(rb.text, rb.x + rb.w / 2, rb.y + 21);
+    ctx.fillText(rb.text, rb.x + rb.w / 2, rb.y + (rb.h > 34 ? 24 : 21));
     ctx.restore();
   }
   function drawHUD() {
@@ -5273,11 +5550,12 @@
     ctx.fillStyle = "#9ef0ff"; ctx.font = "700 13px Nunito, sans-serif"; ctx.textAlign = "left";
     ctx.fillText("BAG", bagBox.x + 14, bagBox.y + 20);
     ctx.fillStyle = "#fff"; ctx.font = "800 22px Nunito, sans-serif";
-    const bagShown = state.bag.length + bagGhosts.length;
+    const bagShown = state.bag.length;
     ctx.fillText(bagShown + " / " + bagMax(), bagBox.x + 14, bagBox.y + 42);
     ctx.restore();
-    if (bagShown) {
-      const bw = Math.min(36 + bagShown * 28, 340);
+    if (bagShown || bagGhosts.length) {
+      const pipN = bagShown + bagGhosts.length;
+      const bw = Math.min(36 + pipN * 28, 340);
       let ib = hudBox(400, 14, bw, 52);
       if (ribbon && boxesOverlap(ib, ribbon, 12)) {
         ib = hudBox(400, ribbon.y + ribbon.h + 8, bw, 52);
@@ -5309,7 +5587,11 @@
         drawPip(state.bag[i], !!(state.bagRare && state.bagRare[i]), false);
       }
       for (let i = 0; i < bagGhosts.length; i++) {
+        const fade = bagGhosts[i].life == null ? 0.55 : clamp(bagGhosts[i].life / 0.22, 0.12, 0.7);
+        ctx.save();
+        ctx.globalAlpha *= fade;
         drawPip(bagGhosts[i].s, !!bagGhosts[i].rare, true);
+        ctx.restore();
       }
       ctx.restore();
     }
@@ -5384,12 +5666,6 @@
       ctx.textAlign = "center";
       ctx.fillText(compactHud() ? "DIVE" : "SPACE  or  click  to  DIVE", db.x + db.w / 2, db.y + db.h / 2 + 10);
       btn("dive", db.x, db.y, db.w, db.h);
-    } else if (state.scene === "shop" && bagHasStockable() && (inDiveZone() || state.surfaceLock > 0)) {
-      const sb = hudBox(W / 2 - 170, H - 92, 340, 40);
-      card(sb.x, sb.y, sb.w, sb.h, "rgba(40, 160, 180, 0.88)");
-      ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("Walk to the glowing tank", sb.x + sb.w / 2, sb.y + 26);
     }
     if (surfaceActionLegal()) {
       ctx.globalAlpha = bagIsFull() ? 1 : clamp((280 - player.y) / 80, 0.45, 1);
@@ -5408,30 +5684,6 @@
       ctx.fillStyle = "#fff"; ctx.font = "700 14px Nunito, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(compactHud() ? "Bag full — tap SURFACE" : "Bag full — SPACE or click!", fb.x + fb.w / 2, fb.y + 22);
-    }
-    // one toast at a time — the rest stay queued (unlock banner holds the slot)
-    if (state.toasts.length && !state.unlockBanner) {
-      const t = state.toasts[0];
-      const big = !!t.big;
-      const th = big ? 44 : 30;
-      const tw = big ? 520 : 400;
-      let ty = 78;
-      if (state.scene === "shop") ty = 152;
-      if (state.scene === "ocean" && bagIsFull()) ty = Math.max(ty, state.expedition ? 142 : 108);
-      if (state.expedition && !(state.scene === "ocean" && bagIsFull())) ty = Math.max(ty, 104);
-      const tb = hudBox(W / 2 - tw / 2, ty, tw, th);
-      ctx.globalAlpha = clamp(t.life / (big ? 0.55 : 1), 0, 1);
-      card(tb.x, tb.y, tb.w, tb.h, big ? "rgba(28, 22, 10, 0.9)" : "rgba(20,30,40,0.8)");
-      if (big) {
-        ctx.strokeStyle = "rgba(255,210,74," + (0.45 + 0.25 * Math.sin(state.time * 6)) + ")";
-        ctx.lineWidth = 2.4;
-        roundRect(tb.x, tb.y, tb.w, tb.h, 12); ctx.stroke();
-      }
-      ctx.fillStyle = t.col;
-      ctx.font = big ? "800 22px Fredoka, sans-serif" : "700 14px Nunito, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(t.msg, tb.x + tb.w / 2, tb.y + (big ? 30 : 20));
-      ctx.globalAlpha = 1;
     }
     drawSaleTalks();
     for (const hp of hudPops) {
@@ -5777,7 +6029,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 27", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 28", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -5802,9 +6054,9 @@
         "DIVE button or SPACE at the dock — dive",
         "SURFACE button or SPACE — full bag, or at the waterline",
         "Keep a fish in the glowing cone to catch it",
-        "Walk into a matching tank — stock",
-        "Stand on cashier — collect cash",
-        "Tap upgrade cards to spend coins",
+        "Tap a tank, till, or unlock card — act now, or walk there then act",
+        "Walk into a matching tank — stock  ·  bag clears the instant it lands",
+        "Stand on cashier — collect cash  ·  scoop coins on the path",
         "Hire a cashier — they collect while you dive",
         "SPACE at the boat — $35 timed expedition",
         "Every 3rd expedition is a night dive (rares)",
@@ -5817,7 +6069,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 27", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 28", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -5834,17 +6086,19 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 27", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 28", W / 2, 632);
     }
   }
 
   function drawSpeciesStrip(ribbon) {
-    const cw = compactHud() ? thumbCanvas(36, 44, 64) : 44;
-    const ch = compactHud() ? thumbCanvas(28, 32, 48) : 32;
+    const cw = compactHud() ? thumbCanvas(30, 34, 48) : 36;
+    const ch = compactHud() ? thumbCanvas(22, 26, 36) : 26;
     const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
-    const startY = 14 + Math.max(40, topBtn - 8) + 8;
+    const pauseH = Math.max(40, topBtn - 8);
+    const startY = 14 + pauseH + 16;
+    const xCol = W - 16 - topBtn - 10 - cw;
     for (let i = 0; i < 5; i++) {
-      const b = hudBox(W - 16 - cw, startY + i * (ch + 6), cw, ch);
+      const b = hudBox(xCol, startY + i * (ch + 5), cw, ch);
       const x = b.x, y = b.y;
       ctx.save();
       ctx.globalAlpha = chipAlpha({ x, y, w: cw, h: ch + 2 }, ribbon);
@@ -5967,9 +6221,18 @@
           player.x = 880; player.y = state.missionDone ? 1000 : 940; player.vx = 0; player.vy = -40;
         }
         state.diveCatches = 0;
+        state.surfaceQuiet = 2.2;
         if (bagHasStockable()) {
-          player.goto = stockableTankTarget() || tankWalkPoint(0);
+          let si = 0;
+          for (let i = 0; i < 5; i++) {
+            if (state.unlocked[i] && state.bag.some((s) => (s | 0) === i)) { si = i; break; }
+          }
+          player.goto = stockableTankTarget() || tankWalkPoint(si);
+          player.pendingAct = { kind: "stock", i: si };
           cuePathWelcome();
+          seedPathCoins([[880, 1008], [880, 820], [880, 640], [880, 460], [player.goto.x, player.goto.y]], 3);
+        } else if (state.registerCash <= 0) {
+          seedPathCoins([[880, 860], [880, 1008]], 2);
         }
         maybeBookTease();
         maybeTangRumor();
@@ -6074,8 +6337,43 @@
     for (const s of oceanScenery) {
       if (s.kind === "ray") drawSceneryRay(s);
       else if (s.kind === "jelly") drawSceneryJelly(s);
+      else if (s.kind === "kelp") drawKelpPatch(s);
       else drawSceneryMinnow(s);
     }
+  }
+  function drawKelpPatch(s) {
+    const glow = 0.42 + 0.22 * Math.sin(state.time * 3.2 + s.ph);
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.globalCompositeOperation = "lighter";
+    const halo = ctx.createRadialGradient(0, 8, 6, 0, 4, 78);
+    halo.addColorStop(0, "rgba(120, 255, 210," + (0.28 + glow * 0.2) + ")");
+    halo.addColorStop(0.45, "rgba(70, 210, 180, 0.12)");
+    halo.addColorStop(1, "rgba(40, 160, 150, 0)");
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.ellipse(0, 10, 72, 34, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "rgba(18, 70, 58, 0.55)";
+    ctx.beginPath(); ctx.ellipse(0, 22, 40, 10, 0, 0, Math.PI * 2); ctx.fill();
+    for (let i = 0; i < 7; i++) {
+      const sway = Math.sin(state.time * 1.6 + s.ph + i * 0.7) * (10 + i);
+      const h = 38 + (i % 3) * 16;
+      ctx.strokeStyle = i % 2 ? "#2f8a5a" : "#1f6a48";
+      ctx.lineWidth = 3.2 - (i % 3) * 0.4;
+      ctx.beginPath();
+      ctx.moveTo(-24 + i * 8, 20);
+      ctx.quadraticCurveTo(-20 + i * 8 + sway * 0.4, 4, -18 + i * 8 + sway, 20 - h);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(90, 230, 160, 0.55)";
+      ctx.beginPath();
+      ctx.ellipse(-18 + i * 8 + sway, 18 - h, 5, 9, sway * 0.04, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = "rgba(255, 246, 180, " + (0.55 + glow * 0.35) + ")";
+    ctx.font = "800 13px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("REEF", 0, -36);
+    ctx.restore();
   }
   function drawSceneryRay(s) {
     const flap = Math.sin(state.time * 1.6 + s.ph) * 0.22;
