@@ -3,17 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aqua Bay</title>
+  <title>Aqua Bay — dive, stock, sell</title>
+  <meta name="description" content="Dive. Stock. Sell. A sunny pier aquarium tycoon in the browser. Free. No account. Also play Skipjack, a skipping-stone toy, from the games hub." />
+  <link rel="canonical" href="https://tuanbui1.github.io/aqua-bay/" />
+  <meta property="og:title" content="Aqua Bay — dive, stock, sell" />
+  <meta property="og:description" content="A sunny pier aquarium tycoon. Free HTML5. No account." />
+  <meta property="og:url" content="https://tuanbui1.github.io/aqua-bay/" />
+  <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <a href="games/skipjack/" style="position:fixed;top:10px;right:14px;z-index:5;font:600 13px Nunito,sans-serif;color:#f4efe6;text-decoration:none;opacity:.82">More games</a>
+  <a href="games/" style="position:fixed;top:10px;right:14px;z-index:5;font:600 13px Nunito,sans-serif;color:#f4efe6;text-decoration:none;opacity:.82">More games</a>
   <div id="wrap">
     <canvas id="game" width="1280" height="720" aria-label="Aqua Bay game"></canvas>
   </div>
+  <noscript>
+    <div style="max-width:36em;margin:24px auto;padding:0 16px;font:600 16px/1.5 Nunito,sans-serif;color:#f4efe6">
+      <h1>Aqua Bay</h1>
+      <p>Dive. Stock. Sell. A sunny pier aquarium tycoon. This page needs JavaScript to play.</p>
+      <p><a href="games/" style="color:#ffd27a">Two-game hub</a> · <a href="games/skipjack/" style="color:#ffd27a">Skipjack</a></p>
+    </div>
+  </noscript>
   <script src="game.js"></script>
 </body>
 </html>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tuanbui1.github.io/aqua-bay/sitemap.xml

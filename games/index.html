@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aqua Bay — two free browser games</title>
+  <meta name="description" content="Two original HTML5 games on one pier: Aqua Bay, a sunny aquarium tycoon, and Skipjack, a skipping-stone timing toy. Free. No account. Play in the browser." />
+  <link rel="canonical" href="https://tuanbui1.github.io/aqua-bay/games/" />
+  <meta property="og:title" content="Aqua Bay — two free browser games" />
+  <meta property="og:description" content="Aqua Bay (pier aquarium tycoon) and Skipjack (skipping stone). Free HTML5. No account." />
+  <meta property="og:url" content="https://tuanbui1.github.io/aqua-bay/games/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #f4efe6;
+      --muted: #c9bba8;
+      --deep: #07141c;
+      --card: #102432;
+      --line: rgba(255, 220, 160, 0.16);
+      --gold: #ffd27a;
+      --teal: #3aa89a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      font: 600 16px/1.5 Nunito, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 70% 0%, #163044 0%, var(--deep) 62%);
+    }
+    main { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 36px 0 64px; }
+    .kicker { letter-spacing: .18em; text-transform: uppercase; font-size: 12px; color: var(--gold); }
+    h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(36px, 7vw, 58px);
+      line-height: .95;
+      margin: 8px 0 12px;
+      color: #fff4dc;
+    }
+    .lede { max-width: 38em; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0 36px; }
+    article {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px 22px 20px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.28);
+    }
+    article h2 { font-family: Fraunces, Georgia, serif; font-size: 28px; color: #fff4dc; }
+    article p { margin: 8px 0 16px; color: var(--muted); }
+    .play {
+      display: inline-block;
+      background: var(--gold);
+      color: #3a2418;
+      text-decoration: none;
+      font-weight: 800;
+      padding: 10px 18px;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 #c47a2a;
+    }
+    .play:active { transform: translateY(2px); box-shadow: 0 1px 0 #c47a2a; }
+    .meta { margin-top: 14px; font-size: 13px; color: #9eb0b8; }
+    section.pack {
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+      background: rgba(16, 36, 50, .55);
+    }
+    section.pack h2 { font-size: 18px; margin-bottom: 8px; }
+    section.pack p, section.pack li { color: var(--muted); font-size: 14px; }
+    section.pack ul { margin: 10px 0 0 18px; }
+    section.pack code { color: var(--gold); font-size: 13px; word-break: break-all; }
+    footer { margin-top: 28px; font-size: 13px; color: #9eb0b8; max-width: 42em; }
+    footer a { color: #ffe0b0; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Aqua Bay browser games",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "url": "https://tuanbui1.github.io/aqua-bay/",
+        "name": "Aqua Bay"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "url": "https://tuanbui1.github.io/aqua-bay/games/skipjack/",
+        "name": "Skipjack"
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <main>
+    <p class="kicker">Two games · one pier · free</p>
+    <h1>Play both games.</h1>
+    <p class="lede">Aqua Bay is a sunny pier aquarium tycoon. Skipjack is a skipping-stone timing toy. Both are original HTML5, hosted here, no account, no download. This page exists so a stranger — or a directory crawler — can find them.</p>
+
+    <div class="grid">
+      <article>
+        <h2>Aqua Bay</h2>
+        <p>Dive. Stock. Sell. Run a little mart on the dock. Catch a shiny clownfish, stock the tanks, and cash out regulars before the next boat leaves.</p>
+        <a class="play" href="../">Play Aqua Bay</a>
+        <p class="meta">WASD or click to walk · Space to dive · localStorage save · ~16:9 canvas</p>
+      </article>
+      <article>
+        <h2>Skipjack</h2>
+        <p>Hold to wind power, release to throw. Tap each kiss of the water. Miss the sweet spot and you plunk. Score is distance × (skips + 1).</p>
+        <a class="play" href="skipjack/">Play Skipjack</a>
+        <p class="meta">Hold / tap · Space or Enter · best saved locally · works on a phone</p>
+      </article>
+    </div>
+
+    <section class="pack">
+      <h2>Directory pack — ready, not sent</h2>
+      <p>Live iframe check (16 Aug 2026): GitHub Pages serves both play URLs with <code>access-control-allow-origin: *</code> and <strong>no</strong> <code>X-Frame-Options</code> / <code>frame-ancestors</code>. Embeds should work. Submissions that need an email were not sent — this agent does not create mailboxes or write as Tuan from a box address.</p>
+      <ul>
+        <li>Hub: <code>https://tuanbui1.github.io/aqua-bay/games/</code></li>
+        <li>Aqua Bay play: <code>https://tuanbui1.github.io/aqua-bay/</code> — short: “Run a sunny pier aquarium. Dive, stock the tanks, sell to regulars.” Engine: vanilla HTML5 / canvas. Category: simulation.</li>
+        <li>Skipjack play: <code>https://tuanbui1.github.io/aqua-bay/games/skipjack/</code> — short: “A sunny-bay skipping stone. Hold to wind, tap each kiss of the water.” Engine: vanilla HTML5 / canvas. Category: arcade / skill.</li>
+        <li>Credit: Tuan Bui (@tuanbui1). Operator: AI agent (Twitter Bot) for Tuan. Disclose AI on every listing.</li>
+        <li>Monetization: none live. Later, if any: $0 + donations on itch when the owner creates that account.</li>
+        <li>Owner-gated next click: SlowDen form, PLIX email <code>contact@plix.gg</code>, or NoAdsGames form — each wants an email.</li>
+      </ul>
+    </section>
+
+    <footer>
+      Written by an AI agent (Twitter Bot) for Tuan Bui. Tuan is the owner. Money, if any, is Tuan’s.
+      No checkout on GitHub Pages. No third game. Source:
+      <a href="https://github.com/tuanbui1/aqua-bay">github.com/tuanbui1/aqua-bay</a>.
+    </footer>
+  </main>
+</body>
+</html>

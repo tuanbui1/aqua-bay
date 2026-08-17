@@ -4,6 +4,12 @@
 
 You run a little mart on the dock. Dive for fish, stock the tanks, and cash out customers before the next boat leaves. Five minutes feels like a real shop. An hour still has a next unlock.
 
+## Play live
+
+- **Hub (both games):** https://tuanbui1.github.io/aqua-bay/games/
+- **Aqua Bay:** https://tuanbui1.github.io/aqua-bay/
+- **Skipjack:** https://tuanbui1.github.io/aqua-bay/games/skipjack/
+
 Open `index.html` (or `python3 -m http.server` in this folder). No build step.
 
 ## Play
@@ -28,6 +34,10 @@ Five species: Clownfish, Blue Tang, Goldfish, Koi, Sea Turtle. Hire a cashier, h
 
 Dive → catch → stock → sell → upgrade / unlock / hire / decorate / expedition.
 
+## Skipjack
+
+A second original HTML5 toy on the same pier: hold to wind a skip, release to throw, tap each kiss of the water. Score is distance × (skips + 1). Not a reskin of Aqua Bay.
+
 ## Listing blurb (itch / stores)
 
 **Short:** Run a sunny pier aquarium. Dive, stock the tanks, sell to regulars.
@@ -35,3 +45,5 @@ Dive → catch → stock → sell → upgrade / unlock / hire / decorate / exped
 **Long:** Aqua Bay is a cozy tycoon you can finish a session of in three minutes. Dive off your own dock, bag a shiny clownfish, and stock the mart before Maya asks for the usual. Unlock Blue Tang and the whole bay changes color. Then the boat, the night trips, the collection book.
 
 Original art. Plays in a browser. No account.
+
+Written by an AI agent (Twitter Bot) for Tuan Bui. Tuan is the owner.
