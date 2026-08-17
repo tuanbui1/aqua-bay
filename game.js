@@ -125,7 +125,7 @@
     surfaceQuiet: 0,
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, pendingAct: null };
-  const cam = { x: 880, y: 920, z: 1 };
+  const cam = { x: 880, y: 920, z: 1, rail: 28 };
   const oceanFish = [];
   const tankFish = [[], [], [], [], []];
   const customers = [];
@@ -489,7 +489,7 @@
       camNudge: 0, camNudgeMax: 0, surfaceQuiet: 0 });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null;
-    cam.x = 880; cam.y = 920; cam.z = 1;
+    cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
     stockHops.length = 0; bagGhosts.length = 0; pathGlints.length = 0; pathCoins.length = 0;
@@ -519,6 +519,19 @@
   }
   function compactHud() {
     return isCoarsePointer() || displayScale() < 0.62;
+  }
+  function topCtrlBoxes() {
+    const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
+    const pauseB = hudBox(W - 16 - topBtn, 14, topBtn, Math.max(40, topBtn - 8));
+    const muteB = hudBox(pauseB.x - 8 - topBtn, 14, topBtn, pauseB.h);
+    return { topBtn, pauseB, muteB };
+  }
+  function topHudFloor() {
+    let floor = 14 + 52 + 8;
+    if (missionVisible() || sessionChipVisible()) floor += 38;
+    const rb = ribbonLayout();
+    if (rb) floor = Math.max(floor, rb.y + rb.h + 8);
+    return floor;
   }
   function thumbCanvas(cssPx, minC, maxC) {
     const s = Math.max(0.28, displayScale());
@@ -700,12 +713,20 @@
     const scr = (x != null && y != null) ? worldToScreen(x, y) : { x: W / 2, y: 168 };
     const minX = (missionVisible() || sessionChipVisible()) ? 280 : 210;
     const minY = 92;
+    const aim = text === "STREAK!" || text === "almost!";
+    let sx = scr.x, sy = scr.y;
+    if (aim && x != null) {
+      const side = scr.x < W * 0.58 ? 1 : -1;
+      sx = scr.x + side * 132;
+      sy = Math.min(scr.y - 36, H * 0.26);
+    }
     hudPops.push({
       text, col: col || "#ffe27a",
-      x: clamp(scr.x, minX, W - 210),
-      y: clamp(scr.y, minY, H - 150),
+      x: clamp(sx, minX, W - 210),
+      y: clamp(sy, minY, H - 150),
       life: life == null ? 2.4 : life,
       max: life == null ? 2.4 : life,
+      small: aim,
     });
   }
   function hudBox(x, y, w, h, pad) {
@@ -795,15 +816,36 @@
     }
     return hudBox(x, y, w, h);
   }
+  function welcomeScreenBox() {
+    if (state.scene !== "shop") return null;
+    const p = worldToScreen(WELCOME.x, WELCOME.y);
+    return { x: p.x, y: p.y, w: WELCOME.w * cam.z, h: WELCOME.h * cam.z };
+  }
   function upgradeBarBox() {
-    if (compactHud()) {
-      const cw = thumbCanvas(136, 156, 220);
-      const ch = thumbCanvas(50, 64, 96);
-      const w = cw * 2 + 24;
-      const h = ch * 2 + 24;
-      return Object.assign(hudBox(16, H - 22 - h, w, h), { cw, ch, compact: true });
+    const compact = compactHud();
+    const cw = compact ? thumbCanvas(136, 156, 220) : 160;
+    const ch = compact ? thumbCanvas(50, 64, 96) : 66;
+    const w = compact ? cw * 2 + 24 : 688;
+    const h = compact ? ch * 2 + 24 : 82;
+    const chipW = decorHudReady() ? (compact ? thumbCanvas(72, 100, 140) : 118) : 0;
+    const totalW = w + (chipW ? 8 + chipW : 0);
+    let x = 16;
+    let y = H - (compact ? 22 : 18) - h;
+    const floor = topHudFloor();
+    if (y < floor) y = clamp(floor, 10, Math.max(10, H - 10 - h));
+    const welcome = welcomeScreenBox();
+    const footprint = { x, y, w: totalW, h };
+    if (welcome && boxesOverlap(footprint, welcome, 14)) {
+      const right = welcome.x + welcome.w + 16;
+      const left = welcome.x - 16 - totalW;
+      if (right + totalW <= W - 10) x = right;
+      else if (left >= 10) x = left;
+      else {
+        const up = welcome.y - 14 - h;
+        if (up >= floor) y = up;
+      }
     }
-    return Object.assign(hudBox(16, H - 110, 688, 82), { cw: 160, ch: 66, compact: false });
+    return Object.assign(hudBox(x, Math.max(y, floor), w, h), { cw, ch, compact });
   }
   function decorHudReady() {
     return shopBarsReady() && (boughtAnUpgrade() || !!state.unlocked[1]);
@@ -1021,13 +1063,24 @@
     }
     return best;
   }
-  function tankTalkFocus(self) {
-    const key = tankClusterKey(self);
-    if (key < 0) return self;
+  function tillCluster(c) {
+    if (!c || c.x == null || c.y == null) return false;
+    const rx = REGISTER.x + REGISTER.w + 40;
+    const ry = REGISTER.y + REGISTER.h * 0.55;
+    return Math.hypot(c.x - rx, c.y - ry) < 168;
+  }
+  function talkClusterKey(c) {
+    if (tillCluster(c)) return "till";
+    const tank = tankClusterKey(c);
+    return tank >= 0 ? "tank-" + tank : "";
+  }
+  function talkFocus(self) {
+    const key = talkClusterKey(self);
+    if (!key) return self;
     const talkers = [];
     for (const o of customers) {
       if (!o || !o.emote) continue;
-      if (tankClusterKey(o) === key) talkers.push(o);
+      if (talkClusterKey(o) === key) talkers.push(o);
     }
     if (talkers.length <= 1) return self;
     talkers.sort((a, b) => {
@@ -1443,7 +1496,7 @@
     if (state.scene !== "shop" && state.scene !== "ocean") state.scene = "shop";
     if (state.scene === "shop") {
       player.x = 880; player.y = 920;
-      cam.x = 880; cam.y = 920; cam.z = 1;
+      cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28;
       player.goto = null;
       if (state.tutorial === 0) state.didMove = false;
     }
@@ -1925,7 +1978,7 @@
     state.catchVerb = "yank";
     state.camPunch = Math.max(state.camPunch || 0, 0.12);
     state.hitStop = Math.max(state.hitStop || 0, 0.08);
-    pop(f.x, f.y - 28, "almost!", "#fff6e8", 1.7, 1.85);
+    pop(f.x + 58, f.y - 56, "almost!", "#fff6e8", 1.7, 1.15);
     hudPop("almost!", "#fff6e8", f.x, f.y - 36, 1.8);
     sfx("almost");
   }
@@ -3109,9 +3162,9 @@
     }
     if (state.flash > 0) state.flash = Math.max(0, state.flash - dt);
     if (state.freezeFrame > 0) state.freezeFrame = Math.max(0, state.freezeFrame - dt);
-    for (let i = saleTalks.length - 1; i >= 0; i--) {
-      saleTalks[i].life -= dt;
-      if (saleTalks[i].life <= 0) saleTalks.splice(i, 1);
+    if (saleTalks.length) {
+      saleTalks[0].life -= dt;
+      if (saleTalks[0].life <= 0) saleTalks.shift();
     }
     for (let i = tankRipples.length - 1; i >= 0; i--) {
       tankRipples[i].life -= dt;
@@ -3661,7 +3714,7 @@
       const gold = isGoldTalk(label);
       const tint = gold ? (REGULAR_TINTS[opt.name] || null) : null;
       const tangTalk = /tang/i.test(label);
-      const focus = tankTalkFocus(opt);
+      const focus = talkFocus(opt);
       if (focus && focus !== opt) {
         ctx.save();
         ctx.globalAlpha = 0.42;
@@ -5461,27 +5514,27 @@
     }
   }
   function drawSaleTalks() {
-    for (const t of saleTalks) {
-      const a = clamp(t.life / 0.4, 0, 1);
-      const scr = worldToScreen(t.wx, t.wy - 10);
-      const x = clamp(scr.x, 200, W - 200);
-      const y = clamp(scr.y, 196, H - (actionPromptVisible() ? 210 : 130));
-      ctx.save();
-      ctx.globalAlpha = a;
-      ctx.font = "800 20px Fredoka, sans-serif";
-      const label = t.who ? (t.who + "  ·  " + t.line) : t.line;
-      const tw = Math.min(ctx.measureText(label).width + 40, 540);
-      const th = 42;
-      ctx.fillStyle = t.tint.fill;
-      roundRect(x - tw / 2, y - 24, tw, th, 12); ctx.fill();
-      ctx.strokeStyle = t.tint.stroke;
-      ctx.lineWidth = 2.3;
-      roundRect(x - tw / 2, y - 24, tw, th, 12); ctx.stroke();
-      ctx.fillStyle = t.tint.ink;
-      ctx.textAlign = "center";
-      ctx.fillText(label, x, y + 5);
-      ctx.restore();
-    }
+    const t = saleTalks[0];
+    if (!t) return;
+    const a = clamp(t.life / 0.4, 0, 1);
+    const scr = worldToScreen(t.wx, t.wy - 10);
+    const x = clamp(scr.x, 200, W - 200);
+    const y = clamp(scr.y, 196, H - (actionPromptVisible() ? 210 : 130));
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.font = "800 20px Fredoka, sans-serif";
+    const label = t.who ? (t.who + "  ·  " + t.line) : t.line;
+    const tw = Math.min(ctx.measureText(label).width + 40, 540);
+    const th = 42;
+    ctx.fillStyle = t.tint.fill;
+    roundRect(x - tw / 2, y - 24, tw, th, 12); ctx.fill();
+    ctx.strokeStyle = t.tint.stroke;
+    ctx.lineWidth = 2.3;
+    roundRect(x - tw / 2, y - 24, tw, th, 12); ctx.stroke();
+    ctx.fillStyle = t.tint.ink;
+    ctx.textAlign = "center";
+    ctx.fillText(label, x, y + 5);
+    ctx.restore();
   }
   function boxesOverlap(a, b, pad) {
     const p = pad == null ? 6 : pad;
@@ -5623,9 +5676,8 @@
       ctx.textAlign = "left";
       ctx.fillText("TODAY  ·  " + cur, chip.x + 12, chip.y + 20);
     }
-    const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
-    const pauseB = hudBox(W - 16 - topBtn, 14, topBtn, Math.max(40, topBtn - 8));
-    const muteB = hudBox(pauseB.x - 8 - topBtn, 14, topBtn, pauseB.h);
+    drawSpeciesStrip(ribbon);
+    const { muteB, pauseB } = topCtrlBoxes();
     card(muteB.x, muteB.y, muteB.w, muteB.h);
     drawSpeaker(muteB.x + muteB.w / 2, muteB.y + muteB.h / 2, state.muted);
     btn("mute", muteB.x, muteB.y, muteB.w, muteB.h);
@@ -5634,7 +5686,6 @@
     ctx.textAlign = "center";
     ctx.fillText("II", pauseB.x + pauseB.w / 2, pauseB.y + pauseB.h / 2 + 7);
     btn("pause", pauseB.x, pauseB.y, pauseB.w, pauseB.h);
-    drawSpeciesStrip(ribbon);
     drawRibbon(ribbon);
     // scene prompts
     if (state.expedition) {
@@ -5691,13 +5742,13 @@
     for (const hp of hudPops) {
       const a = clamp(hp.life / Math.max(0.2, hp.max * 0.28), 0, 1);
       ctx.globalAlpha = a;
-      ctx.font = "800 16px Fredoka, sans-serif";
-      const tw = Math.min(ctx.measureText(hp.text).width + 28, 460);
-      const hb = hudBox(hp.x - tw / 2, hp.y - 16, tw, 30);
+      ctx.font = hp.small ? "800 13px Fredoka, sans-serif" : "800 16px Fredoka, sans-serif";
+      const tw = Math.min(ctx.measureText(hp.text).width + (hp.small ? 20 : 28), hp.small ? 220 : 460);
+      const hb = hudBox(hp.x - tw / 2, hp.y - (hp.small ? 12 : 16), tw, hp.small ? 24 : 30);
       card(hb.x, hb.y, hb.w, hb.h, "rgba(18, 36, 44, 0.88)");
       ctx.fillStyle = hp.col;
       ctx.textAlign = "center";
-      ctx.fillText(hp.text, hb.x + hb.w / 2, hb.y + 20);
+      ctx.fillText(hp.text, hb.x + hb.w / 2, hb.y + (hp.small ? 16 : 20));
       ctx.globalAlpha = 1;
     }
     for (const fl of flyers) {
@@ -5741,14 +5792,14 @@
       const late = state.comboPop.keep ? 0.9 : 0.65;
       const fade = state.comboPop.keep ? 0.1 : 0.35;
       const a = t < 0.08 ? t / 0.08 : t > late ? (1 - t) / fade : 1;
-      const sc = 0.92 + u * 0.28;
+      const sc = 0.94 + u * 0.12;
       ctx.save();
       ctx.globalAlpha = a;
-      ctx.translate(W / 2, H * 0.42);
+      ctx.translate(W / 2, 78);
       ctx.scale(sc, sc);
-      ctx.fillStyle = "rgba(8,16,24,0.35)";
-      ctx.font = "800 58px Fredoka, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(state.comboPop.text, 2, 4);
+      ctx.fillStyle = "rgba(8,16,24,0.28)";
+      ctx.font = "800 26px Fredoka, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(state.comboPop.text, 1, 2);
       ctx.fillStyle = state.comboPop.col;
       ctx.fillText(state.comboPop.text, 0, 0);
       ctx.restore();
@@ -5756,13 +5807,14 @@
     if (state.unlockBanner) {
       const u = clamp(state.unlockBanner.life / 0.9, 0, 1);
       const a = u > 0.75 ? (1 - u) / 0.25 : u < 0.2 ? u / 0.2 : 1;
-      const midY = 108 + (H - 220) / 2;
+      const midY = 78;
+      const bw = Math.min(520, W - 280);
       ctx.globalAlpha = a;
-      ctx.fillStyle = "rgba(8, 16, 24, 0.62)";
-      ctx.fillRect(0, midY - 44, W, 88);
+      ctx.fillStyle = "rgba(8, 16, 24, 0.5)";
+      roundRect(W / 2 - bw / 2, midY - 22, bw, 44, 12); ctx.fill();
       ctx.fillStyle = state.unlockBanner.color;
-      ctx.font = "800 42px Fredoka, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(state.unlockBanner.name.toUpperCase() + " UNLOCKED", W / 2, midY + 14);
+      ctx.font = "800 22px Fredoka, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(state.unlockBanner.name.toUpperCase() + " UNLOCKED", W / 2, midY + 8);
       ctx.globalAlpha = 1;
     }
     if (state.flash > 0) {
@@ -5906,9 +5958,25 @@
     if (!open) return;
     const labels = ["Lights", "Sign", "Fountain"];
     const pw = 168, ph = 48;
+    const floor = topHudFloor();
+    const stackH = 3 * ph + 2 * 6;
+    let stackX = chipX;
+    let stackY = chipY - 8 - stackH;
+    if (stackY < floor) {
+      stackY = Math.max(floor, Math.min(chipY + chipH - stackH, H - 10 - stackH));
+      stackX = chipX - 10 - pw;
+      if (stackX < 10) stackX = clamp(chipX + chipW + 10, 10, W - 10 - pw);
+    }
+    const welcome = welcomeScreenBox();
+    if (welcome && boxesOverlap({ x: stackX, y: stackY, w: pw, h: stackH }, welcome, 10)) {
+      const right = welcome.x + welcome.w + 12;
+      const left = welcome.x - 12 - pw;
+      if (right + pw <= W - 10) stackX = right;
+      else if (left >= 10) stackX = left;
+    }
     for (let i = 0; i < 3; i++) {
-      const x = chipX;
-      const y = chipY - 8 - (3 - i) * (ph + 6);
+      const x = stackX;
+      const y = stackY + i * (ph + 6);
       const owned = !!dec[i];
       const cost = DECOR_COST[i];
       const can = !owned && state.money >= cost;
@@ -6031,7 +6099,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 28", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 29", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -6071,7 +6139,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 28", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 29", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -6088,17 +6156,16 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 28", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 29", W / 2, 632);
     }
   }
 
   function drawSpeciesStrip(ribbon) {
-    const cw = compactHud() ? thumbCanvas(30, 34, 48) : 36;
-    const ch = compactHud() ? thumbCanvas(22, 26, 36) : 26;
-    const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
-    const pauseH = Math.max(40, topBtn - 8);
-    const startY = 14 + pauseH + 16;
-    const xCol = W - 16 - topBtn - 10 - cw;
+    const cw = compactHud() ? thumbCanvas(34, 40, 56) : 44;
+    const ch = compactHud() ? thumbCanvas(24, 28, 38) : 28;
+    const { muteB } = topCtrlBoxes();
+    const startY = muteB.y + muteB.h + 12;
+    const xCol = muteB.x - 12 - cw;
     for (let i = 0; i < 5; i++) {
       const b = hudBox(xCol, startY + i * (ch + 5), cw, ch);
       const x = b.x, y = b.y;
@@ -6279,27 +6346,36 @@
       tx = lerp(tx, BOAT.x, pull);
       ty = lerp(ty, BOAT.y, pull);
     } else if (player.goto && state.scene === "shop") {
-      tx = lerp(tx, player.goto.x, 0.38);
-      ty = lerp(ty, player.goto.y, 0.38);
+      tx = lerp(tx, player.goto.x, 0.14);
+      ty = lerp(ty, player.goto.y, 0.14);
     }
-    cam.x = lerp(cam.x, tx, 1 - Math.pow(0.012, dt));
-    cam.y = lerp(cam.y, ty, 1 - Math.pow(0.012, dt));
+    const follow = 1 - Math.pow(0.08, Math.min(dt, 0.05));
+    let nx = lerp(cam.x, tx, follow);
+    let ny = lerp(cam.y, ty, follow);
+    const rightRail = 70;
+    const wantRail = shopBarsReady() ? 112 : (state.tutorial === 0 && !state.didMove ? 100 : 28);
+    cam.rail = cam.rail == null ? wantRail : lerp(cam.rail, wantRail, 1 - Math.pow(0.05, Math.min(dt, 0.05)));
+    let psx = (player.x - nx) * cam.z + W / 2;
+    let psy = (player.y - ny) * cam.z + H / 2;
+    if (psx > W - rightRail - 40) nx += (psx - (W - rightRail - 40)) / cam.z;
+    if (psy > H - cam.rail - 30) ny += (psy - (H - cam.rail - 30)) / cam.z;
+    const step = Math.hypot(nx - cam.x, ny - cam.y);
+    const pace = (state.scene === "ocean" ? swimSpeed() : walkSpeed()) + 90;
+    const cap = Math.max(420, pace) * Math.min(dt, 0.05);
+    if (step > cap && step > 0.001) {
+      nx = cam.x + (nx - cam.x) * (cap / step);
+      ny = cam.y + (ny - cam.y) * (cap / step);
+    }
+    cam.x = clamp(nx, minX, maxX);
+    cam.y = clamp(ny, minY, maxY);
     if (state.camNudge > 0) {
       const max = state.camNudgeMax || 0.48;
       const u = 1 - state.camNudge / max;
       const kick = Math.sin(u * Math.PI);
-      cam.y += kick * 26;
-      cam.x += Math.sin(u * Math.PI * 2) * 12;
+      cam.y = clamp(cam.y + kick * 26, minY, maxY);
+      cam.x = clamp(cam.x + Math.sin(u * Math.PI * 2) * 12, minX, maxX);
       state.camNudge = Math.max(0, state.camNudge - dt);
     }
-    const rightRail = 70;
-    const bottomRail = shopBarsReady() ? 112 : (state.tutorial === 0 && !state.didMove ? 100 : 28);
-    let psx = (player.x - cam.x) * cam.z + W / 2;
-    let psy = (player.y - cam.y) * cam.z + H / 2;
-    if (psx > W - rightRail - 40) cam.x += (psx - (W - rightRail - 40)) / cam.z;
-    if (psy > H - bottomRail - 30) cam.y += (psy - (H - bottomRail - 30)) / cam.z;
-    cam.x = clamp(cam.x, minX, maxX);
-    cam.y = clamp(cam.y, minY, maxY);
   }
   function seedNearMissSchool() {
     if ((state.divesThisSession | 0) !== 2 || state.expedition || state.nearMissLife > 0) return;
