@@ -120,7 +120,8 @@
     divesThisSession: 0, tangRumor: false, freezeFrame: 0,
     aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
     catchVerb: null, tankFlash: null, pierChirp: 0,
-    camNudge: 0, camNudgeMax: 0, camSettle: 0,
+    camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0,
+    almostSfxAt: 0,
     skin: "skip",
     surfaceQuiet: 0,
     playClock: 0,
@@ -330,7 +331,7 @@
       setTimeout(() => { if (!state.muted) tone(784, 0.07, "square", 0.06, 1175); }, 45);
       setTimeout(() => { if (!state.muted) tone(1046, 0.1, "sine", 0.055); }, 100);
     } else if (kind === "almost") {
-      tone(520, 0.08, "triangle", 0.065, 260);
+      tone(490, 0.045, "sine", 0.022, 360);
     } else if (kind === "tang") {
       tone(494, 0.07, "sine", 0.07, 740);
       setTimeout(() => { if (!state.muted) tone(740, 0.08, "triangle", 0.07); }, 70);
@@ -347,6 +348,11 @@
     } else if (kind === "escape") {
       tone(420, 0.07, "triangle", 0.04, 180);
     }
+  }
+  function playAlmostSfx() {
+    if (state.time - (state.almostSfxAt || 0) < 2.4) return;
+    state.almostSfxAt = state.time;
+    sfx("almost");
   }
 
   // ===== SAVE =====
@@ -491,7 +497,7 @@
       catchClimax: null, divesThisSession: 0, tangRumor: false, freezeFrame: 0,
       aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
       catchVerb: null, tankFlash: null, pierChirp: 0,
-      camNudge: 0, camNudgeMax: 0, camSettle: 0, surfaceQuiet: 0,
+      camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, almostSfxAt: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
@@ -2395,9 +2401,6 @@
     state.catchVerb = "yank";
     state.camPunch = Math.max(state.camPunch || 0, 0.12);
     state.hitStop = Math.max(state.hitStop || 0, 0.08);
-    pop(f.x + 58, f.y - 56, "almost!", "#fff6e8", 1.7, 1.15);
-    hudPop("almost!", "#fff6e8", f.x, f.y - 36, 1.8);
-    sfx("almost");
   }
   function partSchoolAround(x, y) {
     for (const o of oceanFish) {
@@ -2648,7 +2651,7 @@
         hudPop("almost!", "#fff6e8", f.x, f.y - 36, 1.7);
         state.hitStop = Math.max(state.hitStop || 0, 0.18);
         state.camPunch = Math.max(state.camPunch || 0, 0.18);
-        sfx("almost");
+        playAlmostSfx();
       }
     } else if (cl.snap) {
       const wig = (1 - u) * 7;
@@ -7038,7 +7041,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 40", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 41", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -7078,7 +7081,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 40", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 41", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -7095,7 +7098,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 40", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 41", W / 2, 632);
     }
   }
 
@@ -7304,9 +7307,10 @@
         }
         cam.x = player.x;
         cam.y = player.y;
-        cam.z = 1.28;
-        state.camPunch = 0.16;
-        state.camSettle = 0.55;
+        cam.z = 1.1;
+        state.camPunch = 0.04;
+        state.camSettle = 0.85;
+        state.camEase = 0.85;
         if (state.expedition) { seedExpeditionPocket(); seedOceanScenery(); }
         else seedFrontSchool();
         ensureOceanStock();
@@ -7343,8 +7347,9 @@
         maybeTangRumor();
         cam.x = player.x;
         cam.y = player.y;
-        cam.z = 1.06;
-        state.camSettle = 0.7;
+        cam.z = 1.02;
+        state.camSettle = 0.9;
+        state.camEase = 0.9;
       }
       state.pendingScene = null; state.fadeDir = -1;
     }
@@ -7356,7 +7361,7 @@
       : 1.00;
     cam.z = lerp(cam.z, tz, 1 - Math.pow(0.001, dt));
     if (state.camPunch > 0) {
-      cam.z *= 1 + 0.08 * clamp(state.camPunch / 0.12, 0, 1);
+      cam.z *= 1 + 0.028 * clamp(state.camPunch / 0.12, 0, 1);
       state.camPunch = Math.max(0, state.camPunch - dt);
     }
     const look = state.scene === "ocean" ? 80 : (player.goto ? 72 : 40);
@@ -7397,13 +7402,9 @@
     }
     if (state.scene === "shop" && cashNeedsCollect() && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
       const tw = tillWorld();
-      if (isDockDest(player.goto) || tillOffScreen()) {
-        tx = lerp(tx, tw.x, 0.42);
-        ty = lerp(ty, tw.y + 36, 0.42);
-      } else {
-        tx = lerp(tx, tw.x, 0.18);
-        ty = lerp(ty, tw.y + 24, 0.18);
-      }
+      const tillPull = (isDockDest(player.goto) || tillOffScreen()) ? 0.12 : 0.07;
+      tx = lerp(tx, tw.x, tillPull);
+      ty = lerp(ty, tw.y + 28, tillPull);
     }
     if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
       const plaza = clamp((640 - player.y) / 200, 0, 1);
@@ -7415,9 +7416,9 @@
         const shelfR = TANK_POS[4].x + TANK_W;
         const minCam = shelfR - (W / 2) / z + 8 / z;
         const maxCam = shelfL + (W / 2) / z - 8 / z;
-        const pull = glowI >= 0 ? Math.max(plaza, 0.55) : plaza;
+        const pull = glowI >= 0 ? Math.max(plaza * 0.45, 0.14) : plaza * 0.42;
         if (minCam <= maxCam) tx = lerp(tx, clamp(tx, minCam, maxCam), pull);
-        else tx = lerp(tx, (minCam + maxCam) * 0.5, pull * 0.75);
+        else tx = lerp(tx, (minCam + maxCam) * 0.5, pull * 0.55);
         const t = TANK_POS[glowI >= 0 ? glowI : 0];
         const nameBand = t.y + TANK_H - 20;
         const camForName = nameBand - (hudClear - H / 2) / z;
@@ -7425,19 +7426,21 @@
         const bottomKeep = shopBarsReady() ? 136 : 88;
         const minCamForPlayer = player.y - (H / 2 - bottomKeep) / z;
         const tankCam = Math.max(glowI >= 0 ? camForGlow : camForName, minCamForPlayer);
-        ty = lerp(ty, Math.min(ty, tankCam), glowI >= 0 ? Math.max(plaza, 0.72) : plaza);
+        const rowPull = glowI >= 0 ? Math.max(plaza * 0.4, 0.16) : plaza * 0.38;
+        if (ty > tankCam) ty = lerp(ty, tankCam, rowPull);
       }
       // Top safe-area = HUD height: never let a tank card sit flush-cut on the frame.
       const cardTop = TANK_POS[0].y;
       const maxCamForCards = cardTop - (hudClear - H / 2) / z;
       const cardScr = (cardTop - ty) * z + H / 2;
       if (cardScr > 4 && cardScr < hudClear) {
-        ty = lerp(ty, Math.min(ty, maxCamForCards), 0.55);
+        ty = lerp(ty, maxCamForCards, 0.16);
       }
     }
     if ((state.camSettle || 0) > 0) state.camSettle = Math.max(0, state.camSettle - dt);
-    const settling = (state.camSettle || 0) > 0;
-    const follow = 1 - Math.pow(settling ? 0.22 : 0.08, Math.min(dt, 0.05));
+    if ((state.camEase || 0) > 0) state.camEase = Math.max(0, state.camEase - dt);
+    const easing = (state.camEase || 0) > 0 || (state.camSettle || 0) > 0;
+    const follow = 1 - Math.pow(easing ? 0.00035 : 0.002, dt);
     let nx = lerp(cam.x, tx, follow);
     let ny = lerp(cam.y, ty, follow);
     const rightRail = 70;
@@ -7445,11 +7448,11 @@
     cam.rail = cam.rail == null ? wantRail : lerp(cam.rail, wantRail, 1 - Math.pow(0.05, Math.min(dt, 0.05)));
     let psx = (player.x - nx) * cam.z + W / 2;
     let psy = (player.y - ny) * cam.z + H / 2;
-    if (psx > W - rightRail - 40) nx += (psx - (W - rightRail - 40)) / cam.z;
-    if (psy > H - cam.rail - 30) ny += (psy - (H - cam.rail - 30)) / cam.z;
+    if (psx > W - rightRail - 40) nx = lerp(nx, nx + (psx - (W - rightRail - 40)) / cam.z, 0.18);
+    if (psy > H - cam.rail - 30) ny = lerp(ny, ny + (psy - (H - cam.rail - 30)) / cam.z, 0.18);
     const step = Math.hypot(nx - cam.x, ny - cam.y);
     const pace = (state.scene === "ocean" ? swimSpeed() : walkSpeed()) + 90;
-    const cap = (settling ? Math.max(180, pace * 0.42) : Math.max(420, pace)) * Math.min(dt, 0.05);
+    const cap = (easing ? Math.max(110, pace * 0.28) : Math.max(240, pace * 0.7)) * Math.min(dt, 0.05);
     if (step > cap && step > 0.001) {
       nx = cam.x + (nx - cam.x) * (cap / step);
       ny = cam.y + (ny - cam.y) * (cap / step);
@@ -7460,8 +7463,8 @@
       const max = state.camNudgeMax || 0.48;
       const u = 1 - state.camNudge / max;
       const kick = Math.sin(u * Math.PI);
-      cam.y = clamp(cam.y + kick * 26, minY, maxY);
-      cam.x = clamp(cam.x + Math.sin(u * Math.PI * 2) * 12, minX, maxX);
+      cam.y = clamp(cam.y + kick * 9, minY, maxY);
+      cam.x = clamp(cam.x + Math.sin(u * Math.PI * 2) * 4, minX, maxX);
       state.camNudge = Math.max(0, state.camNudge - dt);
     }
   }
