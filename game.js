@@ -75,6 +75,12 @@
   const LM_TURTLE = { x: 1640, y: 1760 };
   const SHIRTS = ["#e85d4c", "#3d8bfd", "#f0b429", "#7ad08a", "#c86bde", "#f2789f", "#5ec8c0"];
   const CUST_NAMES = ["Maya", "Nico", "Jun", "Sable", "Rio", "Piper", "Eden", "Wren"];
+  const SKIN_IDS = ["skip", "reef", "dino"];
+  const SKIN_META = {
+    skip: { name: "Skip", blurb: "dock kid" },
+    reef: { name: "Reef", blurb: "reef girl" },
+    dino: { name: "Dino", blurb: "snorkel dino" },
+  };
 
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
@@ -115,6 +121,7 @@
     aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
     catchVerb: null, tankFlash: null, pierChirp: 0,
     camNudge: 0, camNudgeMax: 0,
+    skin: "skip",
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0 };
   const cam = { x: 880, y: 920, z: 1 };
@@ -352,6 +359,7 @@
       bookOpened: false, bookTeaseShown: false, sawBookTease: false,
       pendingBookTease: false,
       didFirstStock: false, didFirstSale: false,
+      skin: "skip",
     };
   }
   function loadSave() {
@@ -399,6 +407,7 @@
         pendingBookTease: !!d.pendingBookTease,
         didFirstStock: !!(d.didFirstStock || (Array.isArray(d.stock) && d.stock.some(n => (n | 0) > 0))),
         didFirstSale: !!(d.didFirstSale || d.didFirstCollect || (d.money | 0) > 0),
+        skin: normalizeSkin(d.skin),
       });
       if (!state.missionDone) {
         if ((state.tutorial | 0) >= 1) state.missionStep = Math.max(state.missionStep | 0, 1);
@@ -442,6 +451,7 @@
         pendingBookTease: !!state.pendingBookTease,
         didFirstStock: !!state.didFirstStock,
         didFirstSale: !!state.didFirstSale,
+        skin: normalizeSkin(state.skin),
       }));
       state.hasSave = true;
     } catch (e) {}
@@ -449,8 +459,9 @@
   function resetSave() {
     try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
     const keepMute = state.muted;
+    const keepSkin = normalizeSkin(state.skin);
     Object.assign(state, defaultSave(), { mode: "title", scene: "shop", fade: 0, coins: [], toasts: [],
-      muted: keepMute, hitStop: 0, camPunch: 0, bagPunch: 1, moneyPunch: 1, displayMoney: 0,
+      muted: keepMute, skin: keepSkin, hitStop: 0, camPunch: 0, bagPunch: 1, moneyPunch: 1, displayMoney: 0,
       moneyRollT: 0, audioUnlocked: state.audioUnlocked,
       diveCatches: 0, bagBonus: 1, flash: 0, dustTimer: 0,
       splash: null, tankReveal: null, unlockBanner: null, comboPop: null, shopSwimmers: [],
@@ -494,6 +505,39 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const rand = (a, b) => a + Math.random() * (b - a);
   const pick = (arr) => arr[(Math.random() * arr.length) | 0];
+  function normalizeSkin(id) {
+    return SKIN_IDS.indexOf(id) >= 0 ? id : "skip";
+  }
+  function isCoarsePointer() {
+    return !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
+  }
+  function displayScale() {
+    const r = canvas.getBoundingClientRect();
+    return r.width > 8 ? r.width / W : 1;
+  }
+  function compactHud() {
+    return isCoarsePointer() || displayScale() < 0.62;
+  }
+  function thumbCanvas(cssPx, minC, maxC) {
+    const s = Math.max(0.28, displayScale());
+    return clamp(Math.round(cssPx / s), minC, maxC);
+  }
+  function layoutStage() {
+    const wrap = document.getElementById("wrap");
+    if (!wrap) return;
+    const vv = window.visualViewport;
+    const w = vv ? vv.width : window.innerWidth;
+    const h = vv ? vv.height : window.innerHeight;
+    wrap.style.width = Math.max(1, w) + "px";
+    wrap.style.height = Math.max(1, h) + "px";
+    wrap.style.left = ((vv && vv.offsetLeft) || 0) + "px";
+    wrap.style.top = ((vv && vv.offsetTop) || 0) + "px";
+    const cw = wrap.clientWidth || w;
+    const ch = wrap.clientHeight || h;
+    const scale = Math.min(cw / W, ch / H);
+    canvas.style.width = Math.max(1, W * scale) + "px";
+    canvas.style.height = Math.max(1, H * scale) + "px";
+  }
   function normAng(a) {
     while (a > Math.PI) a -= Math.PI * 2;
     while (a < -Math.PI) a += Math.PI * 2;
@@ -720,6 +764,42 @@
   }
   function shopBarsReady() {
     return state.scene === "shop" && !inDiveZone() && player.y < 840 && (state.tutorial >= 5 || state.money >= 25);
+  }
+  function diveActionLegal() {
+    return state.mode === "play" && state.scene === "shop" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable();
+  }
+  function surfaceActionLegal() {
+    return state.mode === "play" && state.scene === "ocean" && (bagIsFull() || nearSurface());
+  }
+  function actionPromptVisible() {
+    return diveActionLegal() || surfaceActionLegal();
+  }
+  function actionBtnBox() {
+    const compact = compactHud();
+    const w = compact ? thumbCanvas(168, 300, 540) : 340;
+    const h = compact ? thumbCanvas(58, 64, 150) : 52;
+    let x = W / 2 - w / 2;
+    let y = H - (compact ? 22 : 18) - h;
+    if (state.scene === "shop" && shopBarsReady()) {
+      const bar = upgradeBarBox();
+      y = bar.y - 12 - h;
+      if (compact) {
+        x = clamp(W - 18 - w, 16, W - 18 - w);
+        y = H - 18 - h;
+        if (y + h > bar.y - 8 && x < bar.x + bar.w + 8) y = bar.y - 10 - h;
+      }
+    }
+    return hudBox(x, y, w, h);
+  }
+  function upgradeBarBox() {
+    if (compactHud()) {
+      const cw = thumbCanvas(148, 176, 260);
+      const ch = thumbCanvas(58, 76, 118);
+      const w = cw * 2 + 24;
+      const h = ch * 2 + 24;
+      return Object.assign(hudBox(16, H - 16 - h, w, h), { cw, ch, compact: true });
+    }
+    return Object.assign(hudBox(16, H - 96, 720, 88), { cw: 168, ch: 72, compact: false });
   }
   function decorHudReady() {
     return shopBarsReady() && (boughtAnUpgrade() || !!state.unlocked[1]);
@@ -1185,9 +1265,12 @@
   window.addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
   function canvasPos(ev) {
     const r = canvas.getBoundingClientRect();
-    return { x: (ev.clientX - r.left) * (W / r.width), y: (ev.clientY - r.top) * (H / r.height) };
+    const rw = r.width || 1, rh = r.height || 1;
+    return { x: (ev.clientX - r.left) * (W / rw), y: (ev.clientY - r.top) * (H / rh) };
   }
   canvas.addEventListener("pointerdown", (e) => {
+    if (e.cancelable) e.preventDefault();
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
     const p = canvasPos(e);
     mouse.x = p.x; mouse.y = p.y; mouse.down = true; mouse.ui = false;
     mouse.held = 0; mouse.acted = false; mouse.pressX = p.x; mouse.pressY = p.y;
@@ -1195,23 +1278,36 @@
     const hit = hitUI(p.x, p.y);
     if (hit) { mouse.ui = true; mouse.acted = true; onUI(hit); return; }
     if (state.mode === "play") {
+      const touch = e.pointerType === "touch";
       if (state.scene === "ocean" && bagIsFull() && !state.fadeDir) {
-        mouse.acted = true; player.goto = null; beginSurface(); return;
+        if (!touch) { mouse.acted = true; player.goto = null; beginSurface(); return; }
+      } else if (tryAction({ fromTouch: touch })) {
+        mouse.acted = true; player.goto = null; return;
       }
-      if (tryAction()) { mouse.acted = true; player.goto = null; return; }
     }
   });
   canvas.addEventListener("pointermove", (e) => { const p = canvasPos(e); mouse.x = p.x; mouse.y = p.y; });
-  canvas.addEventListener("pointerup", () => {
+  canvas.addEventListener("pointerup", (e) => {
     if (state.mode === "play" && !mouse.ui && !mouse.acted && mouse.held < 0.22) {
-      if (!(state.scene === "ocean" && bagIsFull())) {
+      const touch = e && e.pointerType === "touch";
+      if (!(state.scene === "ocean" && bagIsFull() && !touch)) {
         const w = screenToWorld(mouse.pressX, mouse.pressY);
         player.goto = clickWalkTarget(w.x, w.y);
       }
     }
     mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.acted = false;
   });
+  canvas.addEventListener("pointercancel", () => { mouse.down = false; mouse.ui = false; mouse.held = 0; });
   canvas.addEventListener("pointerleave", () => { mouse.down = false; mouse.held = 0; });
+  window.addEventListener("touchmove", (e) => {
+    if (e.target === canvas && e.cancelable) e.preventDefault();
+  }, { passive: false });
+  window.addEventListener("gesturestart", (e) => { e.preventDefault(); }, { passive: false });
+  window.addEventListener("resize", layoutStage);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", layoutStage);
+    window.visualViewport.addEventListener("scroll", layoutStage);
+  }
   function tankAtWorld(wx, wy) {
     for (let i = 0; i < 5; i++) {
       const t = TANK_POS[i];
@@ -1262,9 +1358,15 @@
     sfx("click");
     if (id === "decor-toggle") { state.decorOpen = !state.decorOpen; return; }
     if (!String(id).startsWith("decor-")) state.decorOpen = false;
+    if (String(id).startsWith("skin-")) {
+      state.skin = normalizeSkin(String(id).slice(5));
+      if (state.hasSave) persist();
+      return;
+    }
     if (id === "play") {
       if (state.hasSave && state.mode === "title") resetSave();
       startPlay();
+      persist();
       return;
     }
     if (id === "continue") { startPlay(); return; }
@@ -1349,9 +1451,11 @@
   }
   function tryAction(opts) {
     const fromKey = !!(opts && opts.fromKey);
+    const fromTouch = !!(opts && opts.fromTouch);
     if (state.mode !== "play") return false;
     if (state.fadeDir) return true;
     if (state.scene === "ocean" && bagIsFull()) {
+      if (fromTouch && !fromKey) return false;
       state.bookOpen = null;
       player.goto = null;
       beginSurface();
@@ -1363,10 +1467,15 @@
       if (state.surfaceLock > 0) return fromKey;
       // Clicks walk to the tanks while the bag still has fish; Space can still re-dive.
       if (!fromKey && bagHasStockable()) return false;
+      // Touch uses the on-screen DIVE button; tap-to-walk still reaches the dock.
+      if (fromTouch && !fromKey) return false;
       beginDive();
       return true;
     }
-    if (shouldSurface()) { player.goto = null; beginSurface(); return true; }
+    if (shouldSurface()) {
+      if (fromTouch && !fromKey) return false;
+      player.goto = null; beginSurface(); return true;
+    }
     return false;
   }
   function inDiveZone() {
@@ -2032,7 +2141,7 @@
     beatMoment(f.rare ? "shiny" : "catch", f.x, f.y);
     pop(f.x, f.y - 18, (f.rare ? "Shiny " : "") + SPECIES[f.s].name + "!", f.rare ? "#ffd24a" : SPECIES[f.s].accent);
     if (state.tutorial === 1) state.tutorial = 2;
-    if (bagIsFull()) toast("Bag full! SPACE or click to surface.", "#9ef0ff");
+    if (bagIsFull()) toast(compactHud() ? "Bag full! Tap SURFACE." : "Bag full! SPACE or click to surface.", "#9ef0ff");
     for (let i = oceanFish.length - 1; i >= 0; i--) if (oceanFish[i].caught) oceanFish.splice(i, 1);
     ensureOceanStock();
     if (shinyWanted()) {
@@ -3403,33 +3512,7 @@
     }
     ctx.restore();
   }
-  function drawPlayer(x, y) {
-    const sp = Math.hypot(player.vx, player.vy);
-    const moving = sp > 28;
-    const phase = moving ? player.walkPhase : player.bob * 0.7;
-    const bob = Math.sin(phase) * (moving ? 3.4 : 1.4);
-    const walk = Math.sin(phase * 1.15);
-    const swing = Math.sin(phase) * (moving ? 11 : 4);
-    const flip = Math.cos(player.facing) < -0.12 ? -1 : 1;
-    const lean = (player.lean || 0) * flip;
-    shadow(x, y + 5, moving ? 12 : 10, moving ? 5.2 : 4.5);
-    ctx.save();
-    ctx.translate(x, y + bob);
-    ctx.scale(flip, 1);
-    ctx.rotate(lean * 0.55 + (moving ? walk * 0.04 : 0));
-    ctx.fillStyle = "#2a3a48";
-    ctx.fillRect(-7, 8, 5, 10 + walk * 4.5);
-    ctx.fillRect(2, 8, 5, 10 - walk * 4.5);
-    ctx.fillStyle = "#1a2430";
-    ctx.beginPath(); ctx.ellipse(-4.4, 18 + walk * 4.5, 3.4, 1.6, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(4.6, 18 - walk * 4.5, 3.4, 1.6, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#f0c2a0";
-    ctx.save(); ctx.translate(-11, -1); ctx.rotate(0.2 + swing * 0.09);
-    roundRect(-2, 0, 4, 12, 2); ctx.fill(); ctx.restore();
-    ctx.save(); ctx.translate(11, -1); ctx.rotate(-0.2 - swing * 0.09);
-    roundRect(-2, 0, 4, 12, 2); ctx.fill(); ctx.restore();
-    ctx.fillStyle = "#2a9d8f";
-    roundRect(-10, -8, 20, 18, 5); ctx.fill();
+  function drawWetsuitMarks() {
     ctx.fillStyle = "#ffd24a";
     ctx.beginPath(); ctx.arc(-3.2, 0, 2.5, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = "#e85d4c";
@@ -3438,26 +3521,127 @@
     ctx.beginPath(); ctx.ellipse(5.2, 4, 3.4, 1.6, 0.55, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = "#fff6e8";
     ctx.beginPath(); ctx.arc(3.2, -2.2, 1.9, 0, Math.PI * 2); ctx.fill();
+  }
+  function drawPlayer(x, y, pose) {
+    const p = pose || player;
+    const skin = normalizeSkin(p.skin != null ? p.skin : state.skin);
+    const vx = p.vx != null ? p.vx : 0;
+    const vy = p.vy != null ? p.vy : 0;
+    const facing = p.facing != null ? p.facing : 0;
+    const walkPhase = p.walkPhase != null ? p.walkPhase : 0;
+    const leanAmt = p.lean != null ? p.lean : 0;
+    const bobT = p.bob != null ? p.bob : 0;
+    const sp = Math.hypot(vx, vy);
+    const moving = sp > 28;
+    const phase = moving ? walkPhase : bobT * 0.7;
+    const bob = Math.sin(phase) * (moving ? 3.4 : 1.4);
+    const walk = Math.sin(phase * 1.15);
+    const swing = Math.sin(phase) * (moving ? 11 : 4);
+    const flip = Math.cos(facing) < -0.12 ? -1 : 1;
+    const lean = leanAmt * flip;
+    const short = skin === "reef" ? 0.9 : skin === "dino" ? 0.94 : 1;
+    shadow(x, y + 5, moving ? 12 : 10, moving ? 5.2 : 4.5);
     ctx.save();
-    ctx.translate(moving ? 1.6 : 0, 0);
-    ctx.rotate(lean * 0.2);
-    ctx.fillStyle = "#f0c2a0";
-    ctx.beginPath(); ctx.arc(0, -15, 8.2, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(-7.6, -14, 2.1, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(7.6, -14, 2.1, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#3a2415";
-    ctx.beginPath(); ctx.arc(0, -18.2, 7.6, Math.PI, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(-5.4, -16.2, 3.1, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(5.2, -17, 2.9, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#2a1a12";
-    ctx.beginPath(); ctx.arc(-2.6, -14.6, 1.15, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(2.8, -14.6, 1.15, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = "#c48a6a"; ctx.lineWidth = 1.1;
-    ctx.beginPath(); ctx.arc(0, -12.6, 2.1, 0.2, Math.PI - 0.2); ctx.stroke();
-    ctx.restore();
+    ctx.translate(x, y + bob);
+    ctx.scale(flip * short, short);
+    ctx.rotate(lean * 0.55 + (moving ? walk * 0.04 : 0));
+    if (skin === "dino") {
+      ctx.fillStyle = "#2f7a3a";
+      ctx.fillRect(-7, 7, 5, 9 + walk * 4.2);
+      ctx.fillRect(2, 7, 5, 9 - walk * 4.2);
+      ctx.fillStyle = "#1e4a24";
+      ctx.beginPath(); ctx.ellipse(-4.4, 16.4 + walk * 4.2, 3.6, 1.7, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(4.6, 16.4 - walk * 4.2, 3.6, 1.7, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#3d9a4a";
+      ctx.save(); ctx.translate(-10, 1); ctx.rotate(0.18 + swing * 0.08);
+      roundRect(-2, 0, 4, 9, 2); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.translate(10, 1); ctx.rotate(-0.18 - swing * 0.08);
+      roundRect(-2, 0, 4, 9, 2); ctx.fill(); ctx.restore();
+      ctx.fillStyle = "#46b35a";
+      roundRect(-11, -9, 22, 20, 8); ctx.fill();
+      ctx.fillStyle = "#2f7a3a";
+      ctx.beginPath(); ctx.ellipse(-4, -1, 2.1, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(5, 3, 2.4, 1.6, 0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#cfd8e3";
+      roundRect(-16, -8, 7, 14, 3); ctx.fill();
+      ctx.fillStyle = "#8aa0b5"; ctx.fillRect(-14.4, -8, 3.2, 14);
+      ctx.fillStyle = "#46b35a";
+      ctx.save(); ctx.translate(-10, 6); ctx.rotate(-0.55 + walk * 0.18);
+      ctx.beginPath();
+      ctx.moveTo(0, 0); ctx.quadraticCurveTo(-10, 4, -16, 1);
+      ctx.quadraticCurveTo(-9, 9, 1, 5); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.translate(moving ? 1.4 : 0, 0);
+      ctx.rotate(lean * 0.2);
+      ctx.fillStyle = "#46b35a";
+      ctx.beginPath(); ctx.arc(0, -15, 8.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(8.4, -13.2, 5.4, 3.4, 0.12, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2a1a12";
+      ctx.beginPath(); ctx.arc(-2.4, -15.4, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.6, -15.2, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#fff6e8";
+      ctx.beginPath(); ctx.arc(10.6, -13.4, 1.15, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#e85d4c"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(3.2, -20.4); ctx.lineTo(5.4, -28); ctx.lineTo(2.4, -29.2); ctx.stroke();
+      ctx.fillStyle = "#e85d4c";
+      ctx.beginPath(); ctx.arc(2.4, -29.2, 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(40,170,210,0.45)";
+      ctx.beginPath(); ctx.ellipse(1.2, -16.2, 5.2, 3.4, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#163040"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.ellipse(1.2, -16.2, 5.2, 3.4, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = "#2a3a48";
+      ctx.fillRect(-7, 8, 5, 10 + walk * 4.5);
+      ctx.fillRect(2, 8, 5, 10 - walk * 4.5);
+      ctx.fillStyle = "#1a2430";
+      ctx.beginPath(); ctx.ellipse(-4.4, 18 + walk * 4.5, 3.4, 1.6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(4.6, 18 - walk * 4.5, 3.4, 1.6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#f0c2a0";
+      ctx.save(); ctx.translate(-11, -1); ctx.rotate(0.2 + swing * 0.09);
+      roundRect(-2, 0, 4, 12, 2); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.translate(11, -1); ctx.rotate(-0.2 - swing * 0.09);
+      roundRect(-2, 0, 4, 12, 2); ctx.fill(); ctx.restore();
+      ctx.fillStyle = "#2a9d8f";
+      roundRect(-10, -8, 20, 18, 5); ctx.fill();
+      drawWetsuitMarks();
+      ctx.save();
+      ctx.translate(moving ? 1.6 : 0, 0);
+      ctx.rotate(lean * 0.2);
+      ctx.fillStyle = "#f0c2a0";
+      ctx.beginPath(); ctx.arc(0, -15, 8.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(-7.6, -14, 2.1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(7.6, -14, 2.1, 0, Math.PI * 2); ctx.fill();
+      if (skin === "reef") {
+        ctx.fillStyle = "#5a2a14";
+        ctx.beginPath(); ctx.arc(0, -18.6, 8.2, Math.PI * 0.92, Math.PI * 2.12); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(-7.8, -14.2, 3.6, 5.4, -0.35, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(7.6, -15.4, 3.2, 6.2, 0.4, 0, Math.PI * 2); ctx.fill();
+        ctx.save(); ctx.translate(-8.4, -8.2); ctx.rotate(-0.35 + walk * 0.12);
+        ctx.beginPath(); ctx.ellipse(0, 7, 3.1, 7.2, 0.15, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        ctx.fillStyle = "#e85d4c";
+        ctx.beginPath(); ctx.arc(6.4, -20.6, 1.8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#ffe27a";
+        ctx.beginPath(); ctx.arc(6.4, -20.6, 0.7, 0, Math.PI * 2); ctx.fill();
+      } else {
+        ctx.fillStyle = "#3a2415";
+        ctx.beginPath(); ctx.arc(0, -18.2, 7.6, Math.PI, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-5.4, -16.2, 3.1, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(5.2, -17, 2.9, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = "#2a1a12";
+      ctx.beginPath(); ctx.arc(-2.6, -14.6, 1.15, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.8, -14.6, 1.15, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#c48a6a"; ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.arc(0, -12.6, 2.1, 0.2, Math.PI - 0.2); ctx.stroke();
+      ctx.restore();
+    }
     ctx.restore();
   }
-  function drawDiver(x, y, ang, t) {
+  function drawDiver(x, y, ang, t, skinId) {
+    const skin = normalizeSkin(skinId != null ? skinId : state.skin);
     shadow(x, y + 6, 12, 5);
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
     const kick = Math.sin(t * 11) * 0.42;
@@ -3473,22 +3657,56 @@
     ctx.moveTo(-12, -5); ctx.lineTo(-26, -12); ctx.lineTo(-24, -3); ctx.lineTo(-13, -2);
     ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.restore();
-    ctx.fillStyle = "#cfd8e3";
-    roundRect(-10, -10, 9, 20, 3); ctx.fill();
-    ctx.fillStyle = "#8aa0b5"; ctx.fillRect(-8, -10, 4, 20);
-    ctx.fillStyle = "#1b4d6b";
-    roundRect(-8, -9, 20, 18, 7); ctx.fill();
-    ctx.fillStyle = "#2a9d8f"; ctx.fillRect(-2, -6, 10, 4);
-    ctx.fillStyle = "#f0c2a0";
-    ctx.beginPath(); ctx.arc(12, 0, 7, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "rgba(40,170,210,0.5)";
-    ctx.beginPath(); ctx.ellipse(14.5, -0.4, 4.6, 3.6, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = "#163040"; ctx.lineWidth = 1.8;
-    ctx.beginPath(); ctx.ellipse(14.5, -0.4, 4.6, 3.6, 0, 0, Math.PI * 2); ctx.stroke();
-    ctx.strokeStyle = "#e85d4c"; ctx.lineWidth = 2.2;
-    ctx.beginPath(); ctx.moveTo(16.2, -3); ctx.lineTo(18.4, -12); ctx.lineTo(15.2, -14); ctx.stroke();
-    ctx.fillStyle = "#e85d4c";
-    ctx.beginPath(); ctx.arc(15.2, -14, 2, 0, Math.PI * 2); ctx.fill();
+    if (skin === "dino") {
+      ctx.fillStyle = "#cfd8e3";
+      roundRect(-11, -8, 8, 16, 3); ctx.fill();
+      ctx.fillStyle = "#8aa0b5"; ctx.fillRect(-9, -8, 3.4, 16);
+      ctx.fillStyle = "#46b35a";
+      roundRect(-8, -9, 20, 18, 8); ctx.fill();
+      ctx.fillStyle = "#2f7a3a";
+      ctx.beginPath(); ctx.ellipse(-1, 1, 2.2, 1.5, 0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(5, -3, 1.8, 1.3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#46b35a";
+      ctx.beginPath(); ctx.arc(12, 0, 7.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(17.6, 1.2, 5.2, 3.2, 0.15, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2a1a12";
+      ctx.beginPath(); ctx.arc(11.2, -1.4, 1.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(14.4, -0.8, 1.05, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#fff6e8";
+      ctx.beginPath(); ctx.arc(19.4, 0.8, 1.05, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(40,170,210,0.45)";
+      ctx.beginPath(); ctx.ellipse(14.2, -0.6, 4.8, 3.4, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#163040"; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.ellipse(14.2, -0.6, 4.8, 3.4, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "#e85d4c"; ctx.lineWidth = 2.1;
+      ctx.beginPath(); ctx.moveTo(15.6, -3.2); ctx.lineTo(17.6, -12); ctx.lineTo(14.6, -13.8); ctx.stroke();
+      ctx.fillStyle = "#e85d4c";
+      ctx.beginPath(); ctx.arc(14.6, -13.8, 1.9, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.fillStyle = "#cfd8e3";
+      roundRect(-10, -10, 9, 20, 3); ctx.fill();
+      ctx.fillStyle = "#8aa0b5"; ctx.fillRect(-8, -10, 4, 20);
+      ctx.fillStyle = "#1b4d6b";
+      roundRect(-8, -9, 20, skin === "reef" ? 16 : 18, 7); ctx.fill();
+      ctx.fillStyle = "#2a9d8f"; ctx.fillRect(-2, -6, 10, 4);
+      ctx.fillStyle = "#f0c2a0";
+      ctx.beginPath(); ctx.arc(12, 0, skin === "reef" ? 6.4 : 7, 0, Math.PI * 2); ctx.fill();
+      if (skin === "reef") {
+        ctx.fillStyle = "#5a2a14";
+        ctx.beginPath(); ctx.arc(10.4, -3.2, 5.2, Math.PI * 0.7, Math.PI * 1.85); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(8.2, 3.6, 2.6, 4.4, 0.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#e85d4c";
+        ctx.beginPath(); ctx.arc(9.2, -6.4, 1.5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = "rgba(40,170,210,0.5)";
+      ctx.beginPath(); ctx.ellipse(14.5, -0.4, 4.6, 3.6, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#163040"; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.ellipse(14.5, -0.4, 4.6, 3.6, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "#e85d4c"; ctx.lineWidth = 2.2;
+      ctx.beginPath(); ctx.moveTo(16.2, -3); ctx.lineTo(18.4, -12); ctx.lineTo(15.2, -14); ctx.stroke();
+      ctx.fillStyle = "#e85d4c";
+      ctx.beginPath(); ctx.arc(15.2, -14, 2, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.restore();
   }
   function drawPot(x, y, leaf, sc) {
@@ -4335,7 +4553,7 @@
       ctx.globalAlpha = bagIsFull() ? 0.85 : clamp((280 - player.y) / 100, 0, 0.85);
       ctx.fillStyle = "#fff";
       ctx.font = "700 16px Fredoka, Nunito, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText("SURFACE  ·  SPACE or click", OCEAN.w / 2, 70);
+      ctx.fillText(compactHud() ? "SURFACE" : "SURFACE  ·  SPACE or click", OCEAN.w / 2, 70);
       ctx.globalAlpha = 1;
     }
     ctx.fillStyle = "#d8c07a";
@@ -4811,7 +5029,7 @@
     if (!state.missionDone) {
       const step = firstSessionIndex();
       if (step === 0) return { text: "Walk to the glowing dock", target: { x: 880, y: 980 } };
-      if (step === 1) return { text: "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
+      if (step === 1) return { text: compactHud() ? "Tap DIVE" : "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
       if (step === 2) {
         const n = Math.min(5, (state.caughtCount && state.caughtCount[0]) | 0);
         const shiny = firstRareFish();
@@ -4825,7 +5043,7 @@
         }
         return { text: "Catch 5  ·  " + n + "/5", target: nearestOceanFish() };
       }
-      if (step === 3) return { text: "Surface — SPACE or click", target: { x: player.x, y: 140 } };
+      if (step === 3) return { text: compactHud() ? "Tap SURFACE" : "Surface — SPACE or click", target: { x: player.x, y: 140 } };
       if (step === 4) return { text: "Stock the glowing tank", target: stockableTankTarget() || { x: TANK_POS[0].x + TANK_W / 2, y: TANK_POS[0].y + TANK_H / 2 } };
       if (step === 5) return { text: "Collect  $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
     }
@@ -4834,7 +5052,7 @@
         return { text: "Point the glowing cone at a fish — hold until the bar fills", target: null };
       }
       if (bagIsFull()) {
-        return { text: "Bag full — SPACE or click to surface", target: { x: player.x, y: 140 } };
+        return { text: compactHud() ? "Bag full — tap SURFACE" : "Bag full — SPACE or click to surface", target: { x: player.x, y: 140 } };
       }
       if (state.expedition) {
         return { text: "Expedition · catch rares, then surface", target: state.bag.length > 0 ? { x: player.x, y: 140 } : nearestOceanFish() };
@@ -4865,7 +5083,7 @@
       return { text: "Stand on CASHIER to pocket $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
     }
     if (inDiveZone() && state.surfaceLock <= 0) {
-      return { text: "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
+      return { text: compactHud() ? "Tap DIVE" : "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
     }
     const vip = activeVIP();
     if (vip) {
@@ -4974,7 +5192,7 @@
       const a = clamp(t.life / 0.4, 0, 1);
       const scr = worldToScreen(t.wx, t.wy - 10);
       const x = clamp(scr.x, 200, W - 200);
-      const y = clamp(scr.y, 196, H - 130);
+      const y = clamp(scr.y, 196, H - (actionPromptVisible() ? 210 : 130));
       ctx.save();
       ctx.globalAlpha = a;
       ctx.font = "800 20px Fredoka, sans-serif";
@@ -5121,15 +5339,16 @@
       ctx.textAlign = "left";
       ctx.fillText("TODAY  ·  " + cur, chip.x + 12, chip.y + 20);
     }
-    const muteB = hudBox(W - 132, 14, 54, 40);
+    const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
+    const pauseB = hudBox(W - 16 - topBtn, 14, topBtn, Math.max(40, topBtn - 8));
+    const muteB = hudBox(pauseB.x - 8 - topBtn, 14, topBtn, pauseB.h);
     card(muteB.x, muteB.y, muteB.w, muteB.h);
-    drawSpeaker(muteB.x + 25, muteB.y + 20, state.muted);
+    drawSpeaker(muteB.x + muteB.w / 2, muteB.y + muteB.h / 2, state.muted);
     btn("mute", muteB.x, muteB.y, muteB.w, muteB.h);
-    const pauseB = hudBox(W - 70, 14, 54, 40);
     card(pauseB.x, pauseB.y, pauseB.w, pauseB.h);
     ctx.fillStyle = "#fff6e8"; ctx.font = "800 18px Nunito, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("II", pauseB.x + 27, pauseB.y + 27);
+    ctx.fillText("II", pauseB.x + pauseB.w / 2, pauseB.y + pauseB.h / 2 + 7);
     btn("pause", pauseB.x, pauseB.y, pauseB.w, pauseB.h);
     drawSpeciesStrip(ribbon);
     drawRibbon(ribbon);
@@ -5152,15 +5371,18 @@
       }
     }
     if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) {
-      card(W / 2 - 160, H - 92, 320, 40, "rgba(40, 160, 180, 0.88)");
-      ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
-      ctx.fillText("SPACE · Expedition $35", W / 2, H - 66);
-    } else if (state.scene === "shop" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable()) {
-      const db = hudBox(W / 2 - 160, H - 92, 320, 40);
-      card(db.x, db.y, db.w, db.h, "rgba(40, 160, 180, 0.88)");
-      ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
+      const eb = actionBtnBox();
+      card(eb.x, eb.y, eb.w, eb.h, "rgba(40, 160, 180, 0.88)");
+      ctx.fillStyle = "#fff"; ctx.font = (eb.h > 70 ? "800 28px" : "700 16px") + " Fredoka, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("SPACE  or  click  to  DIVE", db.x + db.w / 2, db.y + 26);
+      ctx.fillText(compactHud() ? "EXPEDITION  $35" : "SPACE · Expedition $35", eb.x + eb.w / 2, eb.y + eb.h / 2 + 8);
+    } else if (diveActionLegal()) {
+      const db = actionBtnBox();
+      card(db.x, db.y, db.w, db.h, "rgba(40, 160, 180, 0.92)");
+      ctx.fillStyle = "#fff";
+      ctx.font = (db.h > 70 ? "800 34px" : "700 16px") + " Fredoka, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(compactHud() ? "DIVE" : "SPACE  or  click  to  DIVE", db.x + db.w / 2, db.y + db.h / 2 + 10);
       btn("dive", db.x, db.y, db.w, db.h);
     } else if (state.scene === "shop" && bagHasStockable() && (inDiveZone() || state.surfaceLock > 0)) {
       const sb = hudBox(W / 2 - 170, H - 92, 340, 40);
@@ -5169,13 +5391,14 @@
       ctx.textAlign = "center";
       ctx.fillText("Walk to the glowing tank", sb.x + sb.w / 2, sb.y + 26);
     }
-    if (state.scene === "ocean" && (bagIsFull() || nearSurface())) {
+    if (surfaceActionLegal()) {
       ctx.globalAlpha = bagIsFull() ? 1 : clamp((280 - player.y) / 80, 0.45, 1);
-      const sb = hudBox(W / 2 - 170, H - 92, 340, 40);
+      const sb = actionBtnBox();
       card(sb.x, sb.y, sb.w, sb.h, "rgba(40, 160, 180, 0.92)");
-      ctx.fillStyle = "#fff"; ctx.font = "700 16px Fredoka, sans-serif";
+      ctx.fillStyle = "#fff";
+      ctx.font = (sb.h > 70 ? "800 34px" : "700 16px") + " Fredoka, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("SPACE  or  click  to  SURFACE", sb.x + sb.w / 2, sb.y + 26);
+      ctx.fillText(compactHud() ? "SURFACE" : "SPACE  or  click  to  SURFACE", sb.x + sb.w / 2, sb.y + sb.h / 2 + 10);
       ctx.globalAlpha = 1;
     }
     if (state.scene === "ocean" && bagIsFull()) {
@@ -5184,7 +5407,7 @@
       card(fb.x, fb.y, fb.w, fb.h, "rgba(255, 140, 60, 0.88)");
       ctx.fillStyle = "#fff"; ctx.font = "700 14px Nunito, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("Bag full — SPACE or click!", fb.x + fb.w / 2, fb.y + 22);
+      ctx.fillText(compactHud() ? "Bag full — tap SURFACE" : "Bag full — SPACE or click!", fb.x + fb.w / 2, fb.y + 22);
     }
     // one toast at a time — the rest stay queued (unlock banner holds the slot)
     if (state.toasts.length && !state.unlockBanner) {
@@ -5250,8 +5473,9 @@
       if (nearK) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.35 + 0.3 * Math.sin(state.time * 5)) + ")";
         ctx.lineWidth = 3;
-        const barW = decorHudReady() ? 854 : 720;
-        const hb = hudBox(16, H - 96, barW, 88);
+        const bar = upgradeBarBox();
+        const barW = decorHudReady() && !bar.compact ? 854 : bar.w;
+        const hb = hudBox(bar.x, bar.y, barW, bar.h);
         roundRect(hb.x, hb.y, hb.w, hb.h, 12); ctx.stroke();
       }
       drawUpgradeBar();
@@ -5305,13 +5529,14 @@
     }
   }
   function registerSurfaceHits() {
-    if (state.scene !== "ocean" || state.mode !== "play") return;
-    if (!(bagIsFull() || nearSurface())) return;
+    if (!surfaceActionLegal()) return;
+    const sb = actionBtnBox();
     // Last-registered wins hit-testing, so these beat click-to-walk and other HUD.
-    btn("surface", W / 2 - 180, H - 100, 360, 56);
+    btn("surface", sb.x, sb.y, sb.w, sb.h);
     if (bagIsFull()) {
       const by = state.expedition ? 104 : 70;
-      btn("surface", W / 2 - 160, by, 320, 40);
+      const fb = hudBox(W / 2 - 150, by, 300, 32);
+      btn("surface", fb.x, fb.y, fb.w, fb.h);
     }
     const sp = worldToScreen(OCEAN.w / 2, 70);
     btn("surface", sp.x - 170, sp.y - 28, 340, 48);
@@ -5338,8 +5563,8 @@
     }
     ctx.restore();
   }
-  function upCard(id, x, y, title, promise, icon, cost, maxed, can, pulse) {
-    const w = 168, h = 72;
+  function upCard(id, x, y, title, promise, icon, cost, maxed, can, pulse, size) {
+    const w = (size && size.w) || 168, h = (size && size.h) || 72;
     const shaking = state.cardShake && state.cardShake.id === id;
     const shake = shaking
       ? Math.sin(state.cardShake.t * 68) * 26 * clamp(state.cardShake.t / 0.2, 0, 1)
@@ -5363,11 +5588,12 @@
     ctx.fillStyle = "#fff6e8"; ctx.font = "700 13px Fredoka, sans-serif";
     ctx.fillText(title, x + 10, y + 20);
     ctx.fillStyle = can ? "rgba(20, 48, 44, 0.95)" : "rgba(28, 24, 20, 0.88)";
-    roundRect(x + 8, y + 40, 118, 22, 8); ctx.fill();
-    drawUpIcon(icon, x + 20, y + 51);
+    const pillY = y + h - 32;
+    roundRect(x + 8, pillY, Math.min(128, w - 20), 22, 8); ctx.fill();
+    drawUpIcon(icon, x + 20, pillY + 11);
     ctx.fillStyle = can ? "#ffe27a" : "#e8f4f8";
     ctx.font = "800 11px Nunito, sans-serif";
-    ctx.fillText(promise, x + 32, y + 55);
+    ctx.fillText(promise, x + 32, pillY + 15);
     ctx.textAlign = "right";
     ctx.fillStyle = maxed ? "#8fd" : flashing ? "#ff6a5a" : can ? "#ffe27a" : "#c4b8a4";
     ctx.font = flashing ? "800 16px Nunito, sans-serif" : "800 13px Nunito, sans-serif";
@@ -5375,8 +5601,8 @@
     if (!maxed) btn(id, x, y, w, h);
   }
   function drawUpgradeBar() {
-    const bar = hudBox(16, H - 96, 720, 88);
-    const y = bar.y + 8;
+    const bar = upgradeBarBox();
+    const size = { w: bar.cw, h: bar.ch };
     card(bar.x, bar.y, bar.w, bar.h, "rgba(12, 28, 36, 0.72)");
     const sMax = state.speedLv >= SPEED_COST.length;
     const bMax = state.bagLv >= BAG_COST.length;
@@ -5385,15 +5611,27 @@
     const bc = bMax ? 0 : BAG_COST[state.bagLv];
     const cc = cMax ? 0 : CATCH_COST[state.catchLv];
     const aff = firstAffordableUp();
-    const speedPromise = state.speedLv === 0 ? "faster walk" : "faster walk";
-    upCard("up-speed", bar.x + 8, y, "Speed  Lv " + (state.speedLv + 1), speedPromise, "speed", sc, sMax, !sMax && state.money >= sc, aff && aff.id === "speed");
-    upCard("up-bag", bar.x + 184, y, "Bag  " + bagMax() + "/20", "bigger bag", "bag", bc, bMax, !bMax && state.money >= bc, aff && aff.id === "bag");
-    upCard("up-catch", bar.x + 360, y, "Catch  Lv " + (state.catchLv + 1), "quicker scoop", "catch", cc, cMax, !cMax && state.money >= cc, aff && aff.id === "catch");
-    upCard("up-cashier", bar.x + 536, y, "Cashier", state.hiredCashier ? "auto till" : "auto till", "cashier", CASHIER_COST, state.hiredCashier, !state.hiredCashier && state.money >= CASHIER_COST, aff && aff.id === "cashier");
+    const speedPromise = "faster walk";
+    const slots = [
+      ["up-speed", "Speed  Lv " + (state.speedLv + 1), speedPromise, "speed", sc, sMax, !sMax && state.money >= sc, aff && aff.id === "speed"],
+      ["up-bag", "Bag  " + bagMax() + "/20", "bigger bag", "bag", bc, bMax, !bMax && state.money >= bc, aff && aff.id === "bag"],
+      ["up-catch", "Catch  Lv " + (state.catchLv + 1), "quicker scoop", "catch", cc, cMax, !cMax && state.money >= cc, aff && aff.id === "catch"],
+      ["up-cashier", "Cashier", "auto till", "cashier", CASHIER_COST, state.hiredCashier, !state.hiredCashier && state.money >= CASHIER_COST, aff && aff.id === "cashier"],
+    ];
+    for (let i = 0; i < slots.length; i++) {
+      const col = bar.compact ? (i % 2) : i;
+      const row = bar.compact ? ((i / 2) | 0) : 0;
+      const x = bar.x + 8 + col * (size.w + 8);
+      const y = bar.y + 8 + row * (size.h + 8);
+      upCard(slots[i][0], x, y, slots[i][1], slots[i][2], slots[i][3], slots[i][4], slots[i][5], slots[i][6], slots[i][7], size);
+    }
   }
   function drawDecorBar() {
-    const chip = hudBox(744, H - 96, 118, 64);
-    const chipX = chip.x, chipY = chip.y, chipW = 118, chipH = 64;
+    const bar = upgradeBarBox();
+    const chipW = compactHud() ? thumbCanvas(72, 100, 140) : 118;
+    const chipH = compactHud() ? thumbCanvas(48, 56, 80) : 64;
+    const chip = hudBox(bar.x + bar.w + 8, bar.y + bar.h - chipH, chipW, chipH);
+    const chipX = chip.x, chipY = chip.y;
     const dec = state.decor || [false, false, false];
     const ownedN = (dec[0] ? 1 : 0) + (dec[1] ? 1 : 0) + (dec[2] ? 1 : 0);
     const open = !!state.decorOpen;
@@ -5464,6 +5702,39 @@
     ctx.restore();
     btn(id, x, y, w, h);
   }
+  function drawSkinPicker(cx, cy, cardW, cardH, gap) {
+    const total = cardW * 3 + gap * 2;
+    let x = cx - total / 2;
+    const chosen = normalizeSkin(state.skin);
+    ctx.fillStyle = "#c8e8ee";
+    ctx.font = "700 14px Nunito, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Who's diving?", cx, cy - 10);
+    for (let i = 0; i < SKIN_IDS.length; i++) {
+      const id = SKIN_IDS[i];
+      const meta = SKIN_META[id];
+      const selected = chosen === id;
+      card(x, cy, cardW, cardH, selected ? "rgba(28, 58, 52, 0.94)" : "rgba(12, 28, 36, 0.78)");
+      if (selected) {
+        ctx.strokeStyle = "rgba(255,226,122," + (0.55 + 0.3 * Math.sin(state.time * 5)) + ")";
+        ctx.lineWidth = 3;
+        roundRect(x, cy, cardW, cardH, 12); ctx.stroke();
+      }
+      drawPlayer(x + cardW / 2, cy + cardH * 0.46, {
+        skin: id, vx: 0, vy: 0, facing: 0.12,
+        walkPhase: state.time * 2.2 + i, lean: 0, bob: state.time * 1.6 + i,
+      });
+      ctx.fillStyle = "#fff6e8";
+      ctx.font = "800 16px Fredoka, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(meta.name, x + cardW / 2, cy + cardH - 28);
+      ctx.fillStyle = selected ? "#ffe27a" : "#9ec8d0";
+      ctx.font = "700 11px Nunito, sans-serif";
+      ctx.fillText(meta.blurb, x + cardW / 2, cy + cardH - 12);
+      btn("skin-" + id, x, cy, cardW, cardH);
+      x += cardW + gap;
+    }
+  }
   function drawTitle() {
     const bg = ctx.createLinearGradient(0, 0, 0, H);
     bg.addColorStop(0, "#7ad4e8"); bg.addColorStop(0.45, "#1b8aa8"); bg.addColorStop(1, "#0a3a4a");
@@ -5492,30 +5763,31 @@
     for (const b of titleBubbles) {
       ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
     }
-    card(W / 2 - 250, 108, 500, 186, "rgba(12, 28, 36, 0.78)");
+    card(W / 2 - 250, 48, 500, 168, "rgba(12, 28, 36, 0.78)");
     ctx.fillStyle = "#6b3a18";
-    roundRect(W / 2 - 210, 128, 420, 72, 10); ctx.fill();
+    roundRect(W / 2 - 210, 64, 420, 72, 10); ctx.fill();
     ctx.strokeStyle = "#e8c04a"; ctx.lineWidth = 3;
-    roundRect(W / 2 - 204, 133, 408, 62, 8); ctx.stroke();
-    drawFishBody(SPECIES[0], W / 2 - 168, 164, 0.08, 1.35, state.time);
+    roundRect(W / 2 - 204, 69, 408, 62, 8); ctx.stroke();
+    drawFishBody(SPECIES[0], W / 2 - 168, 100, 0.08, 1.35, state.time);
     ctx.fillStyle = "#fff6e8"; ctx.font = "700 28px Fredoka, sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("Aqua Bay Pier Mart", W / 2 + 18, 160);
+    ctx.fillText("Aqua Bay Pier Mart", W / 2 + 18, 96);
     ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-    ctx.fillText("Dive. Stock. Sell.", W / 2 + 18, 184);
-    ctx.fillStyle = "#9ef0ff"; ctx.font = "700 16px Nunito, sans-serif";
-    ctx.fillText("A sunny pier aquarium of your own", W / 2, 248);
+    ctx.fillText("Dive. Stock. Sell.", W / 2 + 18, 120);
+    ctx.fillStyle = "#9ef0ff"; ctx.font = "700 15px Nunito, sans-serif";
+    ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 26", W / 2, 274);
+    ctx.fillText("Aqua Bay · loop 27", W / 2, 194);
+    drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
-      panelBtn("continue", W / 2 - 150, 348, 300, 56, "Continue", null, pulse);
+      panelBtn("continue", W / 2 - 150, 440, 300, 56, "Continue", null, pulse);
       const nSp = state.unlocked.filter(Boolean).length;
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText("$" + (state.money | 0) + "  ·  " + nSp + " species unlocked", W / 2, 424);
-      panelBtn("play", W / 2 - 150, 444, 300, 48, "New Game", "#3d6f7a");
+      ctx.fillText("$" + (state.money | 0) + "  ·  " + nSp + " species unlocked", W / 2, 516);
+      panelBtn("play", W / 2 - 150, 536, 300, 48, "New Game", "#3d6f7a");
     } else {
-      panelBtn("play", W / 2 - 150, 360, 300, 56, "Play", null, pulse);
+      panelBtn("play", W / 2 - 150, 448, 300, 56, "Play", null, pulse);
     }
   }
   function drawPause() {
@@ -5526,64 +5798,69 @@
       ctx.fillText("How to play", W / 2, 108);
       ctx.fillStyle = "#e8f4f8"; ctx.font = "600 15px Nunito, sans-serif"; ctx.textAlign = "left";
       const lines = [
-        "WASD or Arrows — move  ·  click to walk  ·  hold to steer",
-        "SPACE / click at the dock — dive",
-        "SPACE / click — surface (full bag, or at the waterline)",
+        "WASD or Arrows — move  ·  tap / click to walk  ·  hold to steer",
+        "DIVE button or SPACE at the dock — dive",
+        "SURFACE button or SPACE — full bag, or at the waterline",
         "Keep a fish in the glowing cone to catch it",
         "Walk into a matching tank — stock",
         "Stand on cashier — collect cash",
-        "Click upgrade cards to spend coins",
+        "Tap upgrade cards to spend coins",
         "Hire a cashier — they collect while you dive",
         "SPACE at the boat — $35 timed expedition",
         "Every 3rd expedition is a night dive (rares)",
         "Tap the fish strip — collection book",
         "Decor chip — lights, sign, fountain",
         "Mute button — sound on/off",
-        "Esc — pause / resume",
+        "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
       ];
       lines.forEach((ln, i) => ctx.fillText(ln, W / 2 - 210, 142 + i * 26));
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 26", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 27", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
-      card(W / 2 - 240, 110, 480, 500, "rgba(16, 32, 42, 0.94)");
+      card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
       ctx.fillStyle = "#fff6e8"; ctx.font = "700 36px Fredoka, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText("Paused", W / 2, 168);
+      ctx.fillText("Paused", W / 2, 108);
       ctx.fillStyle = "#c8e8ee"; ctx.font = "600 15px Nunito, sans-serif";
-      ctx.fillText("A sunny little pier mart of your own.", W / 2, 210);
-      panelBtn("resume", W / 2 - 140, 250, 280, 52, "Resume");
-      panelBtn("help", W / 2 - 140, 318, 280, 48, "Help", "#2a7d8a");
-      panelBtn("mute", W / 2 - 140, 382, 280, 48, state.muted ? "Sound Off" : "Sound On", "#3d6f7a");
-      panelBtn("reset", W / 2 - 140, 446, 280, 48, "New Game", "#a84a3a");
+      ctx.fillText("A sunny little pier mart of your own.", W / 2, 142);
+      panelBtn("resume", W / 2 - 140, 164, 280, 48, "Resume");
+      panelBtn("help", W / 2 - 140, 222, 280, 44, "Help", "#2a7d8a");
+      panelBtn("mute", W / 2 - 140, 276, 280, 44, state.muted ? "Sound Off" : "Sound On", "#3d6f7a");
+      drawSkinPicker(W / 2, 352, 140, 148, 12);
+      panelBtn("reset", W / 2 - 140, 528, 280, 44, "New Game", "#a84a3a");
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif";
-      ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 516);
-      ctx.fillText("Esc to resume", W / 2, 538);
+      ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
+      ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 26", W / 2, 568);
+      ctx.fillText("Aqua Bay · loop 27", W / 2, 632);
     }
   }
 
   function drawSpeciesStrip(ribbon) {
+    const cw = compactHud() ? thumbCanvas(36, 44, 64) : 44;
+    const ch = compactHud() ? thumbCanvas(28, 32, 48) : 32;
+    const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
+    const startY = 14 + Math.max(40, topBtn - 8) + 8;
     for (let i = 0; i < 5; i++) {
-      const b = hudBox(W - 56, 58 + i * 34, 44, 32);
+      const b = hudBox(W - 16 - cw, startY + i * (ch + 6), cw, ch);
       const x = b.x, y = b.y;
       ctx.save();
-      ctx.globalAlpha = chipAlpha({ x, y, w: 44, h: 34 }, ribbon);
-      card(x, y, 44, 34, state.unlocked[i] ? "rgba(18,40,48,0.8)" : "rgba(20,20,24,0.7)");
+      ctx.globalAlpha = chipAlpha({ x, y, w: cw, h: ch + 2 }, ribbon);
+      card(x, y, cw, ch + 2, state.unlocked[i] ? "rgba(18,40,48,0.8)" : "rgba(20,20,24,0.7)");
       if (state.bookOpen === i) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.55 + 0.25 * Math.sin(state.time * 6)) + ")";
         ctx.lineWidth = 2.4;
-        roundRect(x, y, 44, 34, 12); ctx.stroke();
+        roundRect(x, y, cw, ch + 2, 12); ctx.stroke();
       }
-      if (state.unlocked[i]) drawFishBody(SPECIES[i], x + 22, y + 17, 0, 0.68, state.time + i);
+      if (state.unlocked[i]) drawFishBody(SPECIES[i], x + cw / 2, y + ch * 0.48, 0, 0.68, state.time + i);
       else {
-        drawFishSilhouette(SPECIES[i], x + 22, y + 13, 0.55);
+        drawFishSilhouette(SPECIES[i], x + cw / 2, y + ch * 0.38, 0.55);
         ctx.fillStyle = "#ffe27a"; ctx.font = "700 8px Nunito, sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("$" + SPECIES[i].unlock, x + 22, y + 28);
+        ctx.fillText("$" + SPECIES[i].unlock, x + cw / 2, y + ch - 2);
       }
-      btn("book-" + i, x, y, 44, 34);
+      btn("book-" + i, x, y, cw, ch + 2);
       ctx.restore();
     }
   }
@@ -5930,6 +6207,7 @@
     }
     requestAnimationFrame(frame);
   }
+  layoutStage();
   loadSave();
   seedOcean();
   seedDockTeasers();

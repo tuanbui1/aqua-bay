@@ -14,15 +14,16 @@ Open `index.html` (or `python3 -m http.server` in this folder). No build step.
 
 ## Play
 
-- **Move:** WASD, click-to-walk, or hold-click
-- **Dive:** walk to the glowing dock, Space or click
+- **Move:** WASD, tap/click-to-walk, or hold-drag
+- **Dive:** walk to the glowing dock, then Space or the DIVE button
 - **Catch:** keep a fish in the cone until the bar fills
 - **Surface:** full bag — Space, Enter, or the SURFACE button
 - **Sell:** walk into the glowing tank, then stand on the cashier
 - **Book:** tap a fish on the right strip
 - **Esc:** pause and help
+- **Who:** pick Reef, Skip, or Dino on the title (or pause)
 
-Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 26**.
+Plays on a phone in portrait or landscape — tap the pier to walk, no keyboard needed. Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 27**.
 
 ## Why it’s fun
 

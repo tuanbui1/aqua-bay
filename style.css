@@ -3,26 +3,47 @@
 html, body {
   width: 100%;
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
   background: #07141c;
   font-family: "Nunito", "Segoe UI", sans-serif;
   color: #f4efe6;
+  touch-action: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
 
 #wrap {
-  width: 100vw;
-  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding:
+    env(safe-area-inset-top, 0px)
+    env(safe-area-inset-right, 0px)
+    env(safe-area-inset-bottom, 0px)
+    env(safe-area-inset-left, 0px);
   background:
     radial-gradient(ellipse at 50% 0%, #123044 0%, #07141c 70%);
 }
 
 #game {
   display: block;
-  width: min(100vw, calc(100vh * 16 / 9));
-  height: min(100vh, calc(100vw * 9 / 16));
+  width: min(100%, calc((100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) * 16 / 9));
+  height: min(
+    calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)),
+    calc(100% * 9 / 16)
+  );
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
   background: #0a3040;
   border-radius: 10px;
   box-shadow:
@@ -30,6 +51,21 @@ html, body {
     0 18px 60px rgba(0, 0, 0, 0.55);
   cursor: crosshair;
   touch-action: none;
+}
+
+.more-games {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top, 0px));
+  right: max(14px, env(safe-area-inset-right, 0px));
+  z-index: 5;
+  font: 600 13px Nunito, sans-serif;
+  color: #f4efe6;
+  text-decoration: none;
+  opacity: .82;
+}
+
+@media (max-width: 900px), (pointer: coarse) {
+  .more-games { display: none; }
 }
 
 #boot {
