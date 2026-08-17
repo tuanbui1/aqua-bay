@@ -2409,7 +2409,7 @@
     if (state.unlocked[1] || state.tangRumor) return;
     if (!state.didFirstStock) return;
     state.tangRumor = true;
-    toast("Maya wants a Blue Tang — something blue flashed in the deep", "#9ef0ff", 3.8);
+    toast("Maya wants a Blue Tang — something blue flashed in the deep", "#9ef0ff", 4.2);
     let maya = null;
     for (const c of customers) {
       if (c.name === "Maya" || (c.regular && c.favorite === 0)) {
@@ -4280,7 +4280,7 @@
   }
   function drawShopBanner() {
     ctx.save();
-    ctx.globalAlpha = worldHudFade(880, 90);
+    ctx.globalAlpha = Math.max(0.78, worldHudFade(880, 90));
     if (state.decor && state.decor[1]) {
       ctx.strokeStyle = "#c8a050"; ctx.lineWidth = 2.2;
       ctx.beginPath(); ctx.moveTo(768, 58); ctx.lineTo(786, 86); ctx.stroke();
@@ -4738,15 +4738,25 @@
       }
       drawFishSilhouette(sp, t.x + TANK_W / 2, t.y + 58, 1.15);
       ctx.globalAlpha = worldHudFade(t.x + TANK_W / 2, t.y + 20);
-      ctx.fillStyle = "#fff6e8";
-      ctx.font = "800 16px Fredoka, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(sp.name, t.x + TANK_W / 2, t.y + 96);
-      ctx.font = "700 13px Nunito, sans-serif";
       const priceNope = state.priceFlash && state.priceFlash.tank === i;
+      const name = sp.name;
+      const price = "Unlock  $" + sp.unlock;
+      ctx.font = "800 16px Fredoka, sans-serif";
+      const nameW = ctx.measureText(name).width;
+      ctx.font = priceNope ? "800 16px Nunito, sans-serif" : "700 13px Nunito, sans-serif";
+      const priceW = ctx.measureText(price).width;
+      const scr = worldToScreen(t.x, t.y);
+      const visL = Math.max(t.x + 12, t.x + (8 - scr.x) / Math.max(0.001, cam.z));
+      const visR = Math.min(t.x + TANK_W - 12, t.x + (W - 8 - scr.x) / Math.max(0.001, cam.z));
+      const labelX = clamp((visL + visR) / 2, t.x + 16, t.x + TANK_W - 16);
+      const fit = Math.max(36, visR - visL);
+      ctx.fillStyle = "#fff6e8";
+      ctx.font = (nameW > fit ? "800 13px" : "800 16px") + " Fredoka, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(name, labelX, t.y + 96);
+      ctx.font = (priceNope ? "800 16px" : priceW > fit ? "700 11px" : "700 13px") + " Nunito, sans-serif";
       ctx.fillStyle = priceNope ? "#ff6a5a" : affordable ? "#ffe27a" : "#d0c4b0";
-      if (priceNope) ctx.font = "800 16px Nunito, sans-serif";
-      ctx.fillText("Unlock  $" + sp.unlock, t.x + TANK_W / 2, t.y + 116);
+      ctx.fillText(price, labelX, t.y + 116);
       ctx.globalAlpha = 1;
       if (affordable) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.4 + 0.35 * Math.sin(state.time * 6)) + ")";
@@ -5564,16 +5574,57 @@
     const p = pad == null ? 6 : pad;
     return !(a.x + a.w < b.x - p || a.x > b.x + b.w + p || a.y + a.h < b.y - p || a.y > b.y + b.h + p);
   }
+  function wrapHudLines(text, maxW) {
+    const words = String(text || "").split(/\s+/).filter(Boolean);
+    if (!words.length) return [""];
+    const lines = [];
+    let cur = words[0];
+    for (let i = 1; i < words.length; i++) {
+      const next = cur + " " + words[i];
+      if (ctx.measureText(next).width <= maxW) cur = next;
+      else { lines.push(cur); cur = words[i]; }
+    }
+    lines.push(cur);
+    return lines;
+  }
+  function ribbonFont(live) {
+    if (live && live.big) return "800 15px Nunito, sans-serif";
+    if (live) return "800 14px Nunito, sans-serif";
+    return "700 13px Nunito, sans-serif";
+  }
   function ribbonLayout() {
     if (ribbonHidesForDock() && !(state.toasts.length && !state.unlockBanner)) return null;
     const live = (state.toasts.length && !state.unlockBanner) ? state.toasts[0] : null;
     const gt = live ? live.msg : goalText();
     if (!gt) return null;
-    ctx.font = live && live.big ? "800 15px Nunito, sans-serif" : "700 13px Nunito, sans-serif";
-    const tw = Math.min(ctx.measureText(gt).width + 28, 620, W - 280);
-    const gx = clamp(W / 2 - tw / 2, 210, W - 160 - tw);
-    return Object.assign(hudBox(gx, 16, tw, live && live.big ? 36 : 32), {
+    const { muteB } = topCtrlBoxes();
+    const leftPad = 210;
+    const rightPad = W - muteB.x + 16;
+    const maxW = Math.max(280, Math.min(680, W - leftPad - rightPad));
+    let font = ribbonFont(live);
+    ctx.font = font;
+    const inner = maxW - 28;
+    let lines = wrapHudLines(gt, inner);
+    if (lines.length > 2) {
+      font = live ? "800 12px Nunito, sans-serif" : "700 12px Nunito, sans-serif";
+      ctx.font = font;
+      lines = wrapHudLines(gt, inner);
+    }
+    if (lines.length > 2) {
+      font = "700 11px Nunito, sans-serif";
+      ctx.font = font;
+      lines = wrapHudLines(gt, inner);
+    }
+    if (lines.length > 2) lines = [lines[0], lines.slice(1).join(" ")];
+    let tw = 28;
+    for (let i = 0; i < lines.length; i++) tw = Math.max(tw, ctx.measureText(lines[i]).width + 28);
+    tw = Math.min(Math.ceil(tw + 4), maxW);
+    const th = lines.length > 1 ? (live && live.big ? 54 : 50) : (live && live.big ? 36 : 32);
+    const gx = clamp(W / 2 - tw / 2, leftPad, W - rightPad - tw);
+    return Object.assign(hudBox(gx, 16, tw, th), {
       text: gt,
+      lines,
+      font,
       col: live ? live.col : "#e8fbff",
       toast: !!live,
     });
@@ -5591,14 +5642,15 @@
   function drawRibbon(rb) {
     if (!rb) return;
     card(rb.x, rb.y, rb.w, rb.h, rb.toast ? "rgba(18, 36, 44, 0.92)" : "rgba(20, 50, 62, 0.9)");
-    ctx.fillStyle = rb.col || "#e8fbff"; ctx.textAlign = "center";
-    ctx.font = rb.toast ? "800 14px Nunito, sans-serif" : "700 13px Nunito, sans-serif";
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(rb.x + 6, rb.y, Math.max(8, rb.w - 12), rb.h);
-    ctx.clip();
-    ctx.fillText(rb.text, rb.x + rb.w / 2, rb.y + (rb.h > 34 ? 24 : 21));
-    ctx.restore();
+    ctx.fillStyle = rb.col || "#e8fbff";
+    ctx.textAlign = "center";
+    ctx.font = rb.font || ribbonFont(rb.toast ? { big: rb.h > 34 } : null);
+    const lines = rb.lines && rb.lines.length ? rb.lines : [rb.text];
+    const step = lines.length > 1 ? 17 : 0;
+    const y0 = rb.y + rb.h / 2 + 5 - step * (lines.length - 1) / 2;
+    for (let i = 0; i < lines.length; i++) {
+      ctx.fillText(lines[i], rb.x + rb.w / 2, y0 + i * step);
+    }
   }
   function drawHUD() {
     const ribbon = ribbonLayout();
@@ -6123,7 +6175,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 31", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 32", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -6163,7 +6215,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 31", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 32", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -6180,7 +6232,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 31", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 32", W / 2, 632);
     }
   }
 
@@ -6189,16 +6241,62 @@
     const p = worldToScreen(1438, 804);
     return { x: p.x, y: p.y, w: 108 * cam.z, h: 96 * cam.z };
   }
+  function tankScreenBox(i) {
+    const t = TANK_POS[i];
+    if (!t) return null;
+    const p = worldToScreen(t.x, t.y);
+    return { x: p.x, y: p.y, w: TANK_W * cam.z, h: TANK_H * cam.z };
+  }
+  function lockedTankScreenBoxes() {
+    const out = [];
+    if (state.scene !== "shop") return out;
+    for (let i = 0; i < 5; i++) {
+      if (state.unlocked[i]) continue;
+      const b = tankScreenBox(i);
+      if (b) out.push(b);
+    }
+    return out;
+  }
   function drawSpeciesStrip(ribbon) {
-    const cw = compactHud() ? thumbCanvas(38, 44, 62) : 50;
+    const cw = compactHud() ? thumbCanvas(42, 48, 68) : 56;
     const ch = compactHud() ? thumbCanvas(28, 32, 42) : 32;
     const { muteB, pauseB } = topCtrlBoxes();
-    const startY = muteB.y + muteB.h + 12;
+    let startY = muteB.y + muteB.h + 12;
     let xCol = muteB.x - 12 - cw;
     const colH = 5 * (ch + 5);
+    const colAt = (x, y) => ({ x, y, w: cw, h: colH });
     const shack = baitShackScreenBox();
-    if (shack && boxesOverlap({ x: xCol, y: startY, w: cw, h: colH }, shack, 10)) {
+    if (shack && boxesOverlap(colAt(xCol, startY), shack, 10)) {
       xCol = clamp(shack.x - 12 - cw, 360, muteB.x - 12 - cw);
+    }
+    const locked = lockedTankScreenBoxes();
+    const shelfPad = 10;
+    const shelfGap = 16;
+    const hitsShelf = (x, y) => locked.some((b) => boxesOverlap(colAt(x, y), b, shelfPad));
+    if (hitsShelf(xCol, startY)) {
+      let below = startY;
+      for (let i = 0; i < locked.length; i++) {
+        const b = locked[i];
+        if (xCol + cw > b.x - shelfGap && xCol < b.x + b.w + shelfGap) below = Math.max(below, b.y + b.h + shelfGap);
+      }
+      if (below + colH <= H - 18 && !hitsShelf(xCol, below)) {
+        startY = below;
+      } else {
+        let left = xCol;
+        for (let i = 0; i < locked.length; i++) {
+          const b = locked[i];
+          if (boxesOverlap(colAt(xCol, startY), b, shelfPad)) left = Math.min(left, b.x - shelfGap - cw);
+        }
+        xCol = clamp(left, 320, muteB.x - 12 - cw);
+        if (hitsShelf(xCol, startY)) {
+          let down = startY;
+          for (let i = 0; i < locked.length; i++) {
+            const b = locked[i];
+            if (xCol + cw > b.x - shelfGap && xCol < b.x + b.w + shelfGap) down = Math.max(down, b.y + b.h + shelfGap);
+          }
+          if (down + colH <= H - 18) startY = down;
+        }
+      }
     }
     for (let i = 0; i < 5; i++) {
       const b = hudBox(xCol, startY + i * (ch + 5), cw, ch);
@@ -6390,6 +6488,18 @@
     } else if (player.goto && state.scene === "shop") {
       tx = lerp(tx, player.goto.x, 0.14);
       ty = lerp(ty, player.goto.y, 0.14);
+    }
+    if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
+      const plaza = clamp((640 - player.y) / 200, 0, 1);
+      if (plaza > 0.04) {
+        const z = Math.max(0.7, cam.z);
+        const shelfL = TANK_POS[0].x;
+        const shelfR = TANK_POS[4].x + TANK_W;
+        const minCam = shelfR - (W / 2) / z + 8 / z;
+        const maxCam = shelfL + (W / 2) / z - 8 / z;
+        if (minCam <= maxCam) tx = lerp(tx, clamp(tx, minCam, maxCam), plaza);
+        else tx = lerp(tx, (minCam + maxCam) * 0.5, plaza * 0.75);
+      }
     }
     const follow = 1 - Math.pow(0.08, Math.min(dt, 0.05));
     let nx = lerp(cam.x, tx, follow);
