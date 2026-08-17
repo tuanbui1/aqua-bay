@@ -125,8 +125,9 @@
     surfaceQuiet: 0,
     playClock: 0,
     tillSlip: null,
+    escapeBar: null, escapeGate: 0,
   };
-  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, pendingAct: null, catchLatch: false };
+  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0 };
   const cam = { x: 880, y: 920, z: 1, rail: 28 };
   const oceanFish = [];
   const tankFish = [[], [], [], [], []];
@@ -153,7 +154,7 @@
   let saleBarkDeck = [];
   const saleBarkRecent = [];
   const keys = new Set();
-  const mouse = { x: W / 2, y: H / 2, down: false, ui: false, held: 0, acted: false, pressX: 0, pressY: 0 };
+  const mouse = { x: W / 2, y: H / 2, down: false, ui: false, held: 0, acted: false, pressX: 0, pressY: 0, scoopPress: false };
   let uiHits = [];
   let custTimer = 0;
   let browseTimer = 0.35;
@@ -343,6 +344,8 @@
     } else if (kind === "receipt") {
       tone(1046, 0.045, "square", 0.04);
       tone(1480, 0.06, "sine", 0.028);
+    } else if (kind === "escape") {
+      tone(420, 0.07, "triangle", 0.04, 180);
     }
   }
 
@@ -489,9 +492,9 @@
       aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
       catchVerb: null, tankFlash: null, pierChirp: 0,
       camNudge: 0, camNudgeMax: 0, surfaceQuiet: 0,
-      playClock: 0, tillSlip: null });
+      playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     state.hasSave = false;
-    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null; player.catchLatch = false;
+    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0;
     cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
@@ -699,11 +702,20 @@
   function swimSpeed() { return 215 + state.speedLv * 42; }
   function catchTime() { return (state.lifetimeCatches < 3 ? 0.62 : 0.74) / (1 + 0.24 * state.catchLv); }
   function catchHolding() {
-    return !!(mouse.down || keys.has(" ") || keys.has("enter"));
+    return !!(mouse.down || keys.has(" ") || keys.has("enter") || player.scoopTap);
   }
+  function teasersAllowed() { return !!state.unlocked[1]; }
   function allowAutoStock() { return !!state.didFirstStock; }
   function ribbonLockedToGoal() {
     return !state.unlocked[1] || (state.playClock || 0) < 120;
+  }
+  // First 2–3 catches of dive 1: wide cone / auto-target, then taper.
+  function tutorialGrace() {
+    if ((state.divesThisSession | 0) !== 1) return 0;
+    const n = state.diveCatches | 0;
+    if (n < 2) return 1;
+    if (n < 3) return 0.45;
+    return 0;
   }
   function dockWalkPoint() { return { x: 880, y: 1008 }; }
   function dockOffScreen() {
@@ -721,7 +733,12 @@
     player.goto = dockWalkPoint();
     player.pendingAct = null;
   }
-  function coneRange() { return 200 + state.catchLv * 8; }
+  function coneRange() { return 200 + state.catchLv * 8 + tutorialGrace() * 70; }
+  function coneHalf() { return 0.85 + tutorialGrace() * 0.42; }
+  function scoopStayR(f) {
+    const base = (f && f.verb) ? coneRange() * 1.35 : coneRange() * 1.2;
+    return base + tutorialGrace() * 36;
+  }
   function toast(msg, col, life, opts) {
     const t = { msg, col: col || "#fff6d2", life: life == null ? 2.2 : life };
     if (opts && typeof opts === "object") {
@@ -729,7 +746,7 @@
       t.kind = opts.kind || "";
     }
     // Book / boat / VIP stay teasers until Tang — they must not steal the ribbon.
-    if (!state.unlocked[1] && (t.kind === "book" || t.kind === "boat" || t.kind === "vip")) return;
+    if (!teasersAllowed() && (t.kind === "book" || t.kind === "boat" || t.kind === "vip")) return;
     // One channel: drop a duplicate of the line already showing or queued next.
     if (state.toasts.some((q) => q.msg === t.msg)) return;
     state.toasts.push(t);
@@ -1436,23 +1453,31 @@
       }
       if (state.scene === "ocean" && bagIsFull() && !state.fadeDir) {
         if (!touch) { mouse.acted = true; player.goto = null; beginSurface(); return; }
-      } else if (tryAction({ fromTouch: touch })) {
+      } else if (state.scene === "ocean" && !state.fadeDir && !bagIsFull()) {
+        const w = screenToWorld(p.x, p.y);
+        const f = fishAtWorld(w.x, w.y);
+        if (f && startScoopOnFish(f)) { mouse.acted = true; mouse.scoopPress = true; return; }
+      }
+      if (tryAction({ fromTouch: touch })) {
         mouse.acted = true; player.goto = null; return;
       }
     }
   });
   canvas.addEventListener("pointermove", (e) => { const p = canvasPos(e); mouse.x = p.x; mouse.y = p.y; });
   canvas.addEventListener("pointerup", (e) => {
+    if (mouse.scoopPress && mouse.held < 0.22 && player.scoopLock) player.scoopTap = true;
     if (state.mode === "play" && !mouse.ui && !mouse.acted && mouse.held < 0.22) {
       const touch = e && e.pointerType === "touch";
       if (!(state.scene === "ocean" && bagIsFull() && !touch)) {
         const w = screenToWorld(mouse.pressX, mouse.pressY);
+        player.scoopTap = false;
+        player.scoopLock = null;
         player.goto = clickWalkTarget(w.x, w.y);
       }
     }
-    mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.acted = false;
+    mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.acted = false; mouse.scoopPress = false;
   });
-  canvas.addEventListener("pointercancel", () => { mouse.down = false; mouse.ui = false; mouse.held = 0; });
+  canvas.addEventListener("pointercancel", () => { mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.scoopPress = false; });
   canvas.addEventListener("pointerleave", () => { mouse.down = false; mouse.held = 0; });
   window.addEventListener("touchmove", (e) => {
     if (e.target === canvas && e.cancelable) e.preventDefault();
@@ -1661,6 +1686,7 @@
   function beginDive() {
     if (state.fadeDir || state.surfaceLock > 0) return;
     player.catchLatch = false;
+    player.scoopLock = null; player.scoopTap = false;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "ocean";
     state.decorOpen = false;
     if (state.tutorial === 0) state.tutorial = 1;
@@ -1673,6 +1699,7 @@
     clearCatchVerb();
     player.goto = null;
     player.catchLatch = false;
+    player.scoopLock = null; player.scoopTap = false;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "shop";
     if (state.tutorial === 2) state.tutorial = 3;
     if ((state.bagBonus || 1) > 1) {
@@ -2082,19 +2109,96 @@
   function fishInCone(f) {
     const dx = f.x - player.x, dy = f.y - player.y;
     const d = Math.hypot(dx, dy);
-    const range = coneRange() + (f.rare ? 56 : 0);
+    const grace = tutorialGrace();
+    const range = coneRange() + (f.rare ? 56 : 0) + grace * 64;
     if (d > range || d < 16) return false;
-    const half = f.rare ? 1.28 : 0.85;
+    const half = (f.rare ? 1.28 : coneHalf()) + grace * 0.12;
     return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < half;
   }
   function fishNearCone(f) {
     const dx = f.x - player.x, dy = f.y - player.y;
     const d = Math.hypot(dx, dy);
     const verbPad = f.verb ? 36 : 0;
-    const range = coneRange() + (f.rare ? 92 : 16) + verbPad;
+    const grace = tutorialGrace();
+    const range = coneRange() + (f.rare ? 92 : 16) + verbPad + grace * 80;
     if (d > range || d < 16) return false;
-    const half = f.rare ? 1.48 : (f.verb ? 1.22 : 0.98);
+    const half = (f.rare ? 1.48 : (f.verb ? 1.22 : 0.98)) + grace * 0.65;
     return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < half;
+  }
+  function faceToward(x, y) {
+    const dx = x - player.x, dy = y - player.y;
+    if (Math.hypot(dx, dy) > 4) player.facing = Math.atan2(dy, dx);
+  }
+  function fishAtWorld(wx, wy) {
+    const tapR = 88 + tutorialGrace() * 40;
+    let best = null, bestD = tapR;
+    for (const f of oceanFish) {
+      if (f.caught || f.tease) continue;
+      const d = Math.hypot(f.x - wx, f.y - wy);
+      if (d < bestD) { bestD = d; best = f; }
+    }
+    return best;
+  }
+  function nearestScoopFish() {
+    let best = null, bestD = 1e9, bestRare = null, bestRareD = 1e9;
+    const grace = tutorialGrace();
+    const maxD = coneRange() * (1.05 + grace * 0.35);
+    const half = coneHalf() + 0.35 + grace * 0.55;
+    for (const f of oceanFish) {
+      if (f.caught || f.tease) continue;
+      const dx = f.x - player.x, dy = f.y - player.y;
+      const d = Math.hypot(dx, dy);
+      if (d > maxD || d < 16) continue;
+      if (Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) > half) continue;
+      if (f.rare && d < bestRareD) { bestRareD = d; bestRare = f; }
+      if (d < bestD) { bestD = d; best = f; }
+    }
+    return bestRare || best;
+  }
+  function lockScoop(f) {
+    if (!f || f.caught || f.tease) return false;
+    if (player.scoopLock !== f) {
+      if (player.scoopLock && player.scoopLock.verb) player.scoopLock.verb = "";
+      if (player.target && player.target !== f && player.target.verb) player.target.verb = "";
+      state.catchVerb = null;
+      player.scoopLock = f;
+      player.target = f;
+      maybeStartCatchVerb(f);
+    } else {
+      player.target = f;
+    }
+    faceToward(f.x, f.y);
+    player.goto = null;
+    return true;
+  }
+  function startScoopOnFish(f) {
+    if (!f || f.caught || f.tease || state.bag.length >= bagMax()) return false;
+    if (player.catchLatch && (keys.has(" ") || keys.has("enter"))) return false;
+    player.catchLatch = false;
+    return lockScoop(f);
+  }
+  function cueEscaped(f, prog) {
+    if ((state.escapeGate || 0) > 0) return;
+    if (state.escapeBar && state.escapeBar.life > 0.18) return;
+    state.escapeGate = 0.95;
+    const x = f ? f.x : player.x + Math.cos(player.facing) * 40;
+    const y = f ? f.y : player.y + Math.sin(player.facing) * 40;
+    pop(x, y - 18, "escaped!", "#ff9a7a", 0.82, 1.2);
+    state.escapeBar = { x, y: y - 38, prog: clamp(prog, 0.12, 1), life: 0.48, max: 0.48 };
+    sfx("escape");
+  }
+  function clearScoop(reason) {
+    const f = player.scoopLock || player.target;
+    const prog = player.catchProg;
+    if (reason === "escape" && f && !f.caught && prog > 0.1) cueEscaped(f, prog);
+    if (f && f.verb && reason !== "catch") f.verb = "";
+    if (reason !== "catch") state.catchVerb = null;
+    player.scoopLock = null;
+    player.scoopTap = false;
+    if (reason === "fade" || reason === "catch") {
+      player.target = null;
+      if (reason === "fade") player.catchProg = 0;
+    }
   }
   function beginDashHold(f) {
     if (!f || f.rare || f.verb) return;
@@ -2227,18 +2331,64 @@
     }
     if (state.fadeDir || state.diveLock > 0) {
       clearCatchVerb();
+      clearScoop("fade");
       player.target = null;
       player.catchProg = 0;
       return;
     }
     if (player.catchLatch && !catchHolding()) player.catchLatch = false;
-    if (state.bag.length >= bagMax()) { clearCatchVerb(); player.target = null; player.catchProg = 0; return; }
-    let best = null, bestD = 1e9;
-    let bestRare = null, bestRareD = 1e9;
+    if (state.bag.length >= bagMax()) {
+      clearCatchVerb();
+      clearScoop("fade");
+      player.target = null;
+      player.catchProg = 0;
+      return;
+    }
+    const holding = catchHolding();
+    if (!holding) {
+      player.scoopLock = null;
+      player.scoopTap = false;
+    }
     let rareNear = false;
     for (const f of oceanFish) {
       if (f.caught || f.tease) continue;
       if (f.rare && fishNearCone(f)) rareNear = true;
+    }
+    if (rareNear && player.scoopLock && !player.scoopLock.rare) {
+      if (player.scoopLock.verb) player.scoopLock.verb = "";
+      state.catchVerb = null;
+      player.scoopLock = null;
+    }
+    if (player.scoopLock && (player.scoopLock.caught || oceanFish.indexOf(player.scoopLock) < 0)) {
+      player.scoopLock = null;
+      player.scoopTap = false;
+    }
+    if (holding && player.scoopLock && !player.scoopLock.caught) {
+      const f = player.scoopLock;
+      const d = Math.hypot(f.x - player.x, f.y - player.y);
+      if (d > scoopStayR(f)) {
+        const prog = player.catchProg;
+        clearScoop("escape");
+        player.catchProg = Math.max(0, prog - dt * 1.6);
+        if (player.catchProg <= 0) { clearCatchVerb(); player.target = null; }
+        return;
+      }
+      faceToward(f.x, f.y);
+      player.target = f;
+      const gated = !!player.catchLatch;
+      if (gated) {
+        player.catchProg = Math.max(0, player.catchProg - dt * 1.6);
+      } else {
+        const hold = f.verb ? catchTime() * 0.92 : catchTime();
+        player.catchProg += dt / hold;
+        if (player.catchProg >= 1) beginCatchClimax(f);
+      }
+      return;
+    }
+    let best = null, bestD = 1e9;
+    let bestRare = null, bestRareD = 1e9;
+    for (const f of oceanFish) {
+      if (f.caught || f.tease) continue;
       const inC = f.rare ? fishNearCone(f) : fishInCone(f);
       if (!inC) continue;
       const d = Math.hypot(f.x - player.x, f.y - player.y);
@@ -2252,7 +2402,25 @@
       player.target = null;
       player.catchProg = 0;
     }
-    const gated = !catchHolding() || !!player.catchLatch;
+    if (holding && !player.scoopLock) {
+      const snap = best || nearestScoopFish();
+      if (snap) lockScoop(snap);
+    }
+    const locked = player.scoopLock;
+    if (locked && holding) {
+      faceToward(locked.x, locked.y);
+      player.target = locked;
+      const gated = !!player.catchLatch;
+      if (gated) {
+        player.catchProg = Math.max(0, player.catchProg - dt * 1.6);
+      } else {
+        const hold = locked.verb ? catchTime() * 0.92 : catchTime();
+        player.catchProg += dt / hold;
+        if (player.catchProg >= 1) beginCatchClimax(locked);
+      }
+      return;
+    }
+    const gated = !holding || !!player.catchLatch;
     if (best) {
       if (player.target !== best) {
         if (player.target && player.target.verb) player.target.verb = "";
@@ -2271,11 +2439,12 @@
       }
     } else if (player.target && !player.target.caught) {
       const d = Math.hypot(player.target.x - player.x, player.target.y - player.y);
-      const stay = player.target.verb ? coneRange() * 1.35 : coneRange() * 1.2;
+      const stay = scoopStayR(player.target);
       if (!gated && (d < stay || fishNearCone(player.target))) {
         player.catchProg += dt / catchTime();
         if (player.catchProg >= 1) beginCatchClimax(player.target);
       } else {
+        if (!gated && player.catchProg > 0.1) cueEscaped(player.target, player.catchProg);
         player.catchProg = Math.max(0, player.catchProg - dt * 1.6);
         if (player.catchProg <= 0) { clearCatchVerb(); player.target = null; }
       }
@@ -2356,6 +2525,7 @@
     if (!state.bagRare) state.bagRare = [];
     state.bagRare.push(!!f.rare);
     player.catchProg = 0; player.target = null; player.catchLatch = true;
+    player.scoopLock = null; player.scoopTap = false;
     state.lifetimeCatches++;
     state.diveCatches++;
     if (!state.caughtCount || state.caughtCount.length < 5) state.caughtCount = [0, 0, 0, 0, 0];
@@ -2458,7 +2628,11 @@
     player.x += player.vx * dt; player.y += player.vy * dt;
     if (!state.didMove && Math.hypot(player.x - 880, player.y - 920) > 28) state.didMove = true;
     const faceMin = (ocean && mouse.down) ? 6 : 18;
-    if (sp > faceMin) player.facing = Math.atan2(player.vy, player.vx);
+    if (player.scoopLock && catchHolding() && !player.scoopLock.caught) {
+      faceToward(player.scoopLock.x, player.scoopLock.y);
+    } else if (sp > faceMin) {
+      player.facing = Math.atan2(player.vy, player.vx);
+    }
     const moving = sp > 28;
     const wantLean = moving ? Math.cos(player.facing) * clamp(sp / max, 0, 1) * 0.22 : 0;
     player.lean = lerp(player.lean || 0, wantLean, 1 - Math.pow(0.0004, dt));
@@ -2607,14 +2781,32 @@
       s: 1, x, y, vx: 36, vy: -6, ang: 0.15, ph: rand(0, 8), fleeT: 0, caught: false, tease: true,
     });
   }
-  function updateShopInteract() {
+  function tillWaiting() {
+    return state.scene === "shop" && state.registerCash > 0;
+  }
+  function tillRingR() { return 128; }
+  function inTillGlow() {
+    if (!tillWaiting()) return false;
+    const rcx = REGISTER.x + REGISTER.w / 2;
+    const rcy = REGISTER.y + REGISTER.h / 2 + 8;
+    return Math.hypot(player.x - rcx, player.y - rcy) <= tillRingR();
+  }
+  function updateShopInteract(dt) {
     if (allowAutoStock()) {
       for (let i = 0; i < 5; i++) {
         if (state.unlocked[i] && nearStockPad(i)) stockTank(i);
       }
     }
-    const cashPad = (state.registerCash > 0 && state.tutorial <= 4) ? 220 : 40;
-    if (nearRect(REGISTER.x, REGISTER.y, REGISTER.w, REGISTER.h, cashPad)) collectCash();
+    const pendingCash = player.pendingAct && player.pendingAct.kind === "cash";
+    if (tillWaiting() && inTillGlow() && !pendingCash && !cashierHandlingIt()) {
+      player.tillDwell = (player.tillDwell || 0) + (dt || 0);
+      if (player.tillDwell >= 0.3) {
+        player.tillDwell = 0;
+        collectCash();
+      }
+    } else if (!pendingCash) {
+      player.tillDwell = 0;
+    }
   }
   function stockTank(i) {
     if (!state.unlocked[i]) return;
@@ -3257,6 +3449,11 @@
       }
     }
     if (state.coneFlash > 0) state.coneFlash = Math.max(0, state.coneFlash - dt);
+    if (state.escapeGate > 0) state.escapeGate = Math.max(0, state.escapeGate - dt);
+    if (state.escapeBar) {
+      state.escapeBar.life -= dt;
+      if (state.escapeBar.life <= 0) state.escapeBar = null;
+    }
     if (state.nopeFlash > 0) state.nopeFlash = Math.max(0, state.nopeFlash - dt * 0.85);
     if (state.registerPunch > 1) state.registerPunch = Math.max(1, state.registerPunch - dt * 2.4);
     if (state.tankShake) {
@@ -3484,7 +3681,7 @@
       return nearStockPad(act.i) && !state.unlocked[act.i] && act.i === nextLockedTank() && state.money >= SPECIES[act.i].unlock;
     }
     if (act.kind === "cash") {
-      return nearRect(REGISTER.x, REGISTER.y, REGISTER.w, REGISTER.h, 48) && state.registerCash > 0;
+      return tillWaiting() && (inTillGlow() || nearRect(REGISTER.x, REGISTER.y, REGISTER.w, REGISTER.h, 48));
     }
     return false;
   }
@@ -3528,9 +3725,12 @@
       }
       return intentWalk("stock", tankWalkPoint(tankHit), tankHit);
     }
-    if (wx > REGISTER.x - 24 && wx < REGISTER.x + REGISTER.w + 48 &&
-        wy > REGISTER.y - 24 && wy < REGISTER.y + REGISTER.h + 56) {
-      return intentWalk("cash", registerWalkPoint());
+    if (tillWaiting()) {
+      const rcx = REGISTER.x + REGISTER.w / 2;
+      const rcy = REGISTER.y + REGISTER.h / 2;
+      if (Math.hypot(wx - rcx, wy - rcy) < tillRingR() + 24) {
+        return intentWalk("cash", registerWalkPoint());
+      }
     }
     return false;
   }
@@ -4704,6 +4904,23 @@
   }
   function drawRegister() {
     const r = REGISTER;
+    if (tillWaiting() && !cashierHandlingIt()) {
+      const cx = r.x + r.w / 2, cy = r.y + r.h / 2 + 10;
+      const rad = tillRingR();
+      const pulse = 0.42 + 0.22 * Math.sin(state.time * 3.2);
+      const dwell = clamp((player.tillDwell || 0) / 0.3, 0, 1);
+      ctx.save();
+      ctx.globalAlpha = pulse;
+      ctx.strokeStyle = "rgba(255,226,122,0.88)";
+      ctx.lineWidth = 5 + dwell * 3;
+      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "rgba(255,226,122," + (0.08 + dwell * 0.10) + ")";
+      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(255,246,232,0.35)";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, rad * 0.72, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    }
     const punch = state.registerPunch || 1;
     ctx.save();
     ctx.translate(r.x + r.w / 2, r.y + r.h / 2);
@@ -4761,7 +4978,10 @@
     }
     ctx.restore();
     drawTillSlip();
-    btn("till", ...screenBtnFromWorld(r.x - 8, r.y - 8, r.w + 16, r.h + 24));
+    if (tillWaiting()) {
+      const pad = tillRingR() - Math.min(r.w, r.h) / 2;
+      btn("till", ...screenBtnFromWorld(r.x - pad, r.y - pad, r.w + pad * 2, r.h + pad * 2));
+    }
   }
   function drawTillSlip() {
     const slip = state.tillSlip;
@@ -5310,6 +5530,18 @@
       ctx.fillStyle = sp.color;
       roundRect(f.x - wbar / 2, f.y - 38, wbar * clamp(player.catchProg, 0, 1), 10, 4); ctx.fill();
     }
+    if (state.escapeBar) {
+      const e = state.escapeBar;
+      const u = clamp(e.life / e.max, 0, 1);
+      const wbar = 52 * (0.28 + 0.72 * u);
+      ctx.save();
+      ctx.globalAlpha = 0.35 + 0.65 * u;
+      ctx.fillStyle = "rgba(0,0,0,0.45)";
+      roundRect(e.x - wbar / 2, e.y, wbar, 10, 4); ctx.fill();
+      ctx.fillStyle = "#ff8a7a";
+      roundRect(e.x - wbar / 2, e.y, wbar * e.prog * u, 10, 4); ctx.fill();
+      ctx.restore();
+    }
     if (state.zoneTitle) {
       const u = clamp(state.zoneTitle.life / state.zoneTitle.max, 0, 1);
       const t = 1 - u;
@@ -5437,7 +5669,8 @@
     grd.addColorStop(0, inner);
     grd.addColorStop(1, "rgba(120,230,255,0.02)");
     ctx.fillStyle = grd;
-    ctx.beginPath(); ctx.moveTo(8, 0); ctx.arc(0, 0, range, -0.85, 0.85); ctx.closePath(); ctx.fill();
+    const half = coneHalf();
+    ctx.beginPath(); ctx.moveTo(8, 0); ctx.arc(0, 0, range, -half, half); ctx.closePath(); ctx.fill();
     if (flash > 0) {
       ctx.strokeStyle = player.target && player.target.rare
         ? "rgba(255,210,74," + (0.75 + flash * 0.25) + ")"
@@ -5650,7 +5883,7 @@
     }
     if (state.scene === "ocean" || state.pendingScene === "ocean") {
       if (state.scene !== "ocean") {
-        return { text: "Point the glowing cone at a fish — hold until the bar fills", target: null };
+        return { text: "Hold or tap a fish — the cone locks on until the bar fills", target: null };
       }
       if (bagIsFull()) {
         return { text: compactHud() ? "Bag full — tap SURFACE" : "Bag full — SPACE or click to surface", target: { x: player.x, y: 140 } };
@@ -5672,7 +5905,7 @@
         const tease = firstTeaseFish();
         if (tease) return { text: "A blue flash in the deep — rumor of Blue Tang", target: { x: tease.x, y: tease.y } };
       }
-      return { text: "Point the glowing cone at a fish — hold until the bar fills", target: nearestOceanFish() };
+      return { text: "Hold or tap a fish — the cone locks on until the bar fills", target: nearestOceanFish() };
     }
     if (nearBoat() && expeditionUnlocked() && !state.expedition) {
       return { text: "Press SPACE to start an expedition ($35)", target: { x: BOAT.x, y: BOAT.y } };
@@ -5681,7 +5914,7 @@
       return { text: "Walk into the glowing tank to stock your catch", target: stockableTankTarget() || { x: TANK_POS[0].x + TANK_W / 2, y: TANK_POS[0].y + TANK_H / 2 } };
     }
     if (state.scene === "shop" && state.registerCash > 0 && !cashierHandlingIt()) {
-      return { text: "Stand on CASHIER to pocket $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
+      return { text: "Stand in the till glow to pocket $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
     }
     if (inDiveZone() && state.surfaceLock <= 0) {
       return { text: compactHud() ? "Tap DIVE" : "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
@@ -6467,7 +6700,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 37", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 38", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -6491,10 +6724,10 @@
         "WASD or Arrows — move  ·  tap / click to walk  ·  hold to steer",
         "DIVE button or SPACE at the dock — dive",
         "SURFACE button or SPACE — full bag, or at the waterline",
-        "Keep a fish in the glowing cone — hold until the bar fills, then release",
+        "Hold on a fish — the cone locks on  ·  tap a fish to scoop  ·  first catches are forgiving",
         "Tap a tank, till, or unlock card — act now, or walk there then act",
         "Walk into a matching tank — stock  ·  bag clears the instant it lands",
-        "Stand on cashier — collect cash  ·  scoop coins on the path",
+        "Stand in the till glow to collect  ·  scoop coins on the path",
         "Hire a cashier — they collect while you dive",
         "SPACE at the boat — $35 timed expedition",
         "Every 3rd expedition is a night dive (rares)",
@@ -6507,7 +6740,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 37", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 38", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -6524,7 +6757,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 37", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 38", W / 2, 632);
     }
   }
 
@@ -6550,8 +6783,8 @@
     return out;
   }
   function speciesStripLayout() {
-    const cw = compactHud() ? thumbCanvas(42, 48, 68) : 56;
-    const ch = compactHud() ? thumbCanvas(28, 32, 42) : 32;
+    const cw = compactHud() ? thumbCanvas(48, 54, 72) : 62;
+    const ch = compactHud() ? thumbCanvas(38, 42, 54) : 46;
     const { muteB, pauseB } = topCtrlBoxes();
     let startY = muteB.y + muteB.h + 12;
     let xCol = muteB.x - 12 - cw;
@@ -6609,9 +6842,12 @@
       }
       if (state.unlocked[i]) drawFishBody(SPECIES[i], x + cw / 2, y + ch * 0.48, 0, 0.72, state.time + i);
       else {
-        drawFishSilhouette(SPECIES[i], x + cw / 2, y + ch * 0.36, 0.58);
+        drawFishSilhouette(SPECIES[i], x + cw / 2, y + ch * 0.28, 0.52);
         ctx.fillStyle = "#ffe27a"; ctx.font = "800 11px Nunito, sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("$" + SPECIES[i].unlock, x + cw / 2, y + ch);
+        ctx.fillText("$" + SPECIES[i].unlock, x + cw / 2, y + ch - 14);
+        ctx.fillStyle = "#c8e8ee";
+        ctx.font = compactHud() ? "700 8px Nunito, sans-serif" : "700 9px Nunito, sans-serif";
+        ctx.fillText(SPECIES[i].name, x + cw / 2, y + ch);
       }
       btn("book-" + i, x, y, cw, ch + 2);
       ctx.restore();
@@ -6691,6 +6927,8 @@
         }
         state.diveCatches = 0;
         state.catchVerb = null;
+        player.scoopLock = null; player.scoopTap = false; player.catchProg = 0; player.target = null;
+        state.escapeBar = null;
         state.diveLock = 1.6;
         state.bagBonus = 1;
         state.divesThisSession = (state.divesThisSession | 0) + 1;
@@ -7011,7 +7249,7 @@
         const sim = state.hitStop > 0 ? 0 : dt;
         updatePlayer(sim);
         if (state.scene === "ocean") { updateOceanFish(sim); updateOceanScenery(sim); updateCatch(sim); updateReefPresence(); updateNearMiss(sim); }
-        else { updateShopInteract(); updateCustomers(sim); updatePierLife(sim); }
+        else { updateShopInteract(sim); updateCustomers(sim); updatePierLife(sim); }
         if (state.diveLock > 0) {
           const prevLock = state.diveLock;
           state.diveLock = Math.max(0, state.diveLock - sim);
