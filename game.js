@@ -1653,6 +1653,36 @@
   function worldLabelAlpha(wx, wy, ww, wh) {
     return Math.min(worldBoxAlpha(wx, wy, ww, wh), worldHudFade(wx + ww / 2, wy));
   }
+  // Money / BAG sit in screen space after the world pass. A world card that
+  // still has edge-alpha 1 can tuck under those chips — hide the label first.
+  function topHudChips() {
+    ctx.save();
+    const ribbon = ribbonLayout();
+    const chips = {
+      money: parkChip(hudBox(16, 14, 200, 52), ribbon),
+      bag: parkChip(hudBox(224, 14, 168, 52), ribbon),
+    };
+    ctx.restore();
+    return chips;
+  }
+  function hudChipClear(wx, wy, ww, wh) {
+    const s = worldToScreen(wx, wy);
+    const z = Math.max(0.001, cam.z);
+    const box = { x: s.x, y: s.y, w: ww * z, h: wh * z };
+    const chips = topHudChips();
+    if (boxesOverlap(box, chips.bag, 8) || boxesOverlap(box, chips.money, 8)) return 0;
+    return 1;
+  }
+  // C34 faded only the unlock *text* box (t.y+78). The dark card panel is the
+  // full tank — same rule as the pier sign: fade the whole panel before any
+  // edge bisects it. Glass under the overlay can still scroll.
+  function tankUnlockCardAlpha(t) {
+    return Math.min(
+      worldBoxAlpha(t.x, t.y, TANK_W, TANK_H),
+      worldLabelAlpha(t.x + 10, t.y + 78, TANK_W - 20, 46),
+      hudChipClear(t.x + 10, t.y + 78, TANK_W - 20, 46)
+    );
+  }
 
   // ===== OCEAN FISH =====
   function pushOceanFish(s, x, y, extra) {
@@ -4631,6 +4661,12 @@
     const ke = worldToScreen(k.x + k.w, k.y + k.h);
     if (ks.y < 12 || ke.y > H - 12 || ks.x < 8 || ke.x > W - 8) return;
     ctx.fillStyle = "#2a7d8a"; roundRect(k.x, k.y, k.w, k.h, 12); ctx.fill();
+    const labelA = worldLabelAlpha(k.x + 8, k.y + 28, k.w - 16, 80);
+    const strip = speciesStripLayout();
+    const kioskBox = { x: ks.x, y: ks.y, w: ke.x - ks.x, h: ke.y - ks.y };
+    if (labelA <= 0.04 || boxesOverlap(kioskBox, strip, 10)) return;
+    ctx.save();
+    ctx.globalAlpha = labelA;
     ctx.fillStyle = "#fff6e8"; ctx.font = "700 14px Fredoka, sans-serif"; ctx.textAlign = "center";
     ctx.fillText("UPGRADES", k.x + k.w / 2, k.y + 42);
     ctx.fillStyle = "#c8e8ee";
@@ -4640,6 +4676,7 @@
     ctx.beginPath(); ctx.arc(k.x + k.w / 2, k.y + 98, 12, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = "#a87410"; ctx.font = "800 14px Nunito, sans-serif";
     ctx.fillText("$", k.x + k.w / 2, k.y + 103);
+    ctx.restore();
   }
   function screenBtnFromWorld(x, y, w, h) {
     const a = worldToScreen(x, y), b = worldToScreen(x + w, y + h);
@@ -4648,7 +4685,7 @@
   function drawFishSilhouette(sp, x, y, scale) {
     ctx.save();
     ctx.translate(x, y);
-    ctx.globalAlpha = 0.55;
+    ctx.globalAlpha *= 0.55;
     ctx.filter = "brightness(0)";
     drawFishBody(sp, 0, 0, 0, scale, 0);
     ctx.filter = "none";
@@ -4771,7 +4808,10 @@
     ctx.strokeStyle = "rgba(190,235,255,0.5)"; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(t.x + 10, t.y + 3); ctx.lineTo(t.x + TANK_W - 12, t.y + 3); ctx.stroke();
     if (state.unlocked[i]) {
-      const nameA = worldLabelAlpha(t.x + 8, t.y + TANK_H - 32, TANK_W - 16, 24);
+      const nameA = Math.min(
+        worldLabelAlpha(t.x + 8, t.y + TANK_H - 32, TANK_W - 16, 24),
+        hudChipClear(t.x + 8, t.y + TANK_H - 32, TANK_W - 16, 24)
+      );
       if (nameA > 0.04) {
         ctx.globalAlpha = nameA;
         ctx.fillStyle = "rgba(30,40,50,0.72)";
@@ -4806,19 +4846,20 @@
       const next = nextLockedTank();
       const affordable = i === next && state.money >= sp.unlock;
       const glow = i === next ? (0.32 + 0.28 * Math.sin(state.time * 4)) : 0.12;
-      ctx.fillStyle = "rgba(12,16,24,0.62)";
-      roundRect(t.x, t.y, TANK_W, TANK_H, 10); ctx.fill();
-      if (i === next) {
-        ctx.fillStyle = "rgba(255,186,80," + (0.1 + glow * 0.18) + ")";
+      const cardA = tankUnlockCardAlpha(t);
+      if (cardA > 0.04) {
+        ctx.save();
+        ctx.globalAlpha = cardA;
+        ctx.fillStyle = "rgba(12,16,24,0.62)";
         roundRect(t.x, t.y, TANK_W, TANK_H, 10); ctx.fill();
-        ctx.strokeStyle = "rgba(255,180,80," + glow + ")";
-        ctx.lineWidth = 6;
-        roundRect(t.x - 4, t.y - 4, TANK_W + 8, TANK_H + 8, 12); ctx.stroke();
-      }
-      drawFishSilhouette(sp, t.x + TANK_W / 2, t.y + 58, 1.15);
-      const unlockA = worldLabelAlpha(t.x + 10, t.y + 78, TANK_W - 20, 46);
-      if (unlockA > 0.04) {
-        ctx.globalAlpha = unlockA;
+        if (i === next) {
+          ctx.fillStyle = "rgba(255,186,80," + (0.1 + glow * 0.18) + ")";
+          roundRect(t.x, t.y, TANK_W, TANK_H, 10); ctx.fill();
+          ctx.strokeStyle = "rgba(255,180,80," + glow + ")";
+          ctx.lineWidth = 6;
+          roundRect(t.x - 4, t.y - 4, TANK_W + 8, TANK_H + 8, 12); ctx.stroke();
+        }
+        drawFishSilhouette(sp, t.x + TANK_W / 2, t.y + 58, 1.15);
         const priceNope = state.priceFlash && state.priceFlash.tank === i;
         const name = sp.name;
         const price = "Unlock  $" + sp.unlock;
@@ -4829,12 +4870,12 @@
         ctx.font = (priceNope ? "800 16px" : "700 13px") + " Nunito, sans-serif";
         ctx.fillStyle = priceNope ? "#ff6a5a" : affordable ? "#ffe27a" : "#d0c4b0";
         ctx.fillText(price, t.x + TANK_W / 2, t.y + 116);
-        ctx.globalAlpha = 1;
-      }
-      if (affordable) {
-        ctx.strokeStyle = "rgba(255,226,122," + (0.4 + 0.35 * Math.sin(state.time * 6)) + ")";
-        ctx.lineWidth = 5;
-        roundRect(t.x - 3, t.y - 3, TANK_W + 6, TANK_H + 6, 12); ctx.stroke();
+        if (affordable) {
+          ctx.strokeStyle = "rgba(255,226,122," + (0.4 + 0.35 * Math.sin(state.time * 6)) + ")";
+          ctx.lineWidth = 5;
+          roundRect(t.x - 3, t.y - 3, TANK_W + 6, TANK_H + 6, 12); ctx.stroke();
+        }
+        ctx.restore();
       }
       btn("unlock-" + i, ...screenBtnFromWorld(t.x, t.y, TANK_W, TANK_H));
     }
@@ -6260,7 +6301,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 34", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 35", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -6300,7 +6341,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 34", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 35", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -6317,7 +6358,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 34", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 35", W / 2, 632);
     }
   }
 
@@ -6342,7 +6383,7 @@
     }
     return out;
   }
-  function drawSpeciesStrip(ribbon) {
+  function speciesStripLayout() {
     const cw = compactHud() ? thumbCanvas(42, 48, 68) : 56;
     const ch = compactHud() ? thumbCanvas(28, 32, 42) : 32;
     const { muteB, pauseB } = topCtrlBoxes();
@@ -6383,6 +6424,10 @@
         }
       }
     }
+    return { x: xCol, y: startY, w: cw, h: colH, cw, ch, muteB, pauseB };
+  }
+  function drawSpeciesStrip(ribbon) {
+    const { x: xCol, y: startY, cw, ch, muteB, pauseB } = speciesStripLayout();
     for (let i = 0; i < 5; i++) {
       const b = hudBox(xCol, startY + i * (ch + 5), cw, ch);
       const x = b.x, y = b.y;
