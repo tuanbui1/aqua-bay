@@ -18,7 +18,14 @@
   const REGULAR_LINES = {
     Maya: ["the usual!", "my clownfish!", "don't skimp!"],
     Nico: ["the usual!", "perfect.", "again please"],
+    Jun: ["the usual!", "don't skimp!", "again please"],
     _: ["the usual!", "same as always", "you know me"],
+  };
+  const SALE_BARK_POOL = ["the usual!", "my clownfish!", "don't skimp!", "perfect.", "again please"];
+  const REGULAR_LOOKS = {
+    Maya: { hawaii: true, hat: "#e8c04a", shirt: "#1b6b5a", hair: "#3a2415", hairCut: 1, idle: "glance" },
+    Nico: { sailor: true, hat: "#f4efe6", shirt: "#3d8bfd", hair: "#1b1b1b", hairCut: 0, idle: "whistle" },
+    Jun: { visor: true, hat: "#e85d4c", shirt: "#f0b429", hair: "#8a4a1a", hairCut: 2, idle: "bounce" },
   };
   const BOOK_FLAVOR = [
     "Orange stripes and zero fear — first regular of the bay.",
@@ -116,6 +123,11 @@
   const titleBubbles = [];
   const dockTeasers = [];
   const hudPops = [];
+  const stockHops = [];
+  const bagGhosts = [];
+  const pathGlints = [];
+  let saleBarkDeck = [];
+  const saleBarkRecent = [];
   const keys = new Set();
   const mouse = { x: W / 2, y: H / 2, down: false, ui: false, held: 0, acted: false, pressX: 0, pressY: 0 };
   let uiHits = [];
@@ -443,6 +455,8 @@
     cam.x = 880; cam.y = 920; cam.z = 1;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
+    stockHops.length = 0; bagGhosts.length = 0; pathGlints.length = 0;
+    saleBarkDeck.length = 0; saleBarkRecent.length = 0;
     browseTimer = 0.35;
     for (let i = 0; i < 5; i++) tankFish[i].length = 0;
     seedOcean();
@@ -480,19 +494,63 @@
     if (c && REGULAR_LINES[c.name]) return REGULAR_LINES[c.name];
     return REGULAR_LINES._;
   }
+  function isUsualLine(s) {
+    return s === "the usual!" || s === "the usual?";
+  }
+  function shuffleSaleBarkDeck() {
+    const pool = SALE_BARK_POOL.slice();
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = (Math.random() * (i + 1)) | 0;
+      const tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+    }
+    if (isUsualLine(pool[0]) && pool.length > 1) {
+      const j = 1 + ((Math.random() * (pool.length - 1)) | 0);
+      const tmp = pool[0]; pool[0] = pool[j]; pool[j] = tmp;
+    }
+    const last = saleBarkRecent.length ? saleBarkRecent[saleBarkRecent.length - 1] : "";
+    if (last && pool[0] === last && pool.length > 1) {
+      const tmp = pool[0]; pool[0] = pool[1]; pool[1] = tmp;
+    }
+    saleBarkDeck = pool;
+  }
   function nextRegularLine(c) {
-    const pool = regularLinePool(c);
-    const i = (c.lineSeq | 0) % pool.length;
-    c.lineSeq = i + 1;
-    return pool[i];
+    if (!saleBarkDeck.length) shuffleSaleBarkDeck();
+    const line = saleBarkDeck.shift();
+    saleBarkRecent.push(line);
+    if (saleBarkRecent.length > 3) saleBarkRecent.shift();
+    if (c) {
+      c.saidLine = line;
+      c.lineSeq = (c.lineSeq | 0) + 1;
+    }
+    return line;
+  }
+  function regularBark(c) {
+    if (c && c.saidLine) return c.saidLine;
+    return nextRegularLine(c);
   }
   function isGoldTalk(label) {
     const s = String(label || "");
-    if (s === "the usual!" || s === "the usual?") return true;
+    if (isUsualLine(s)) return true;
+    if (SALE_BARK_POOL.indexOf(s) >= 0) return true;
     for (const k of Object.keys(REGULAR_LINES)) {
       if (REGULAR_LINES[k].indexOf(s) >= 0) return true;
     }
     return false;
+  }
+  function applyRegularLook(c) {
+    const look = c && REGULAR_LOOKS[c.name];
+    if (!look) return c;
+    c.hawaii = !!look.hawaii;
+    c.sailor = !!look.sailor;
+    c.visor = !!look.visor;
+    if (look.hat) c.hat = look.hat;
+    c.shirt = look.shirt;
+    c.hair = look.hair;
+    c.hairCut = look.hairCut;
+    c.idle = look.idle;
+    c.regular = true;
+    if (c.favorite == null) c.favorite = 0;
+    return c;
   }
   function applySpeciesGait(f, dt, sp) {
     if (f.gaitT == null) f.gaitT = f.ph || 0;
@@ -581,7 +639,7 @@
   }
   function playSale(who, speciesName, pay, wx, wy, first) {
     pop(wx, wy - 10, "+$" + pay, "#ffe27a", first ? 2.2 : 1.9, first ? 2.55 : 2.15);
-    if (who && (who === "Maya" || who === "Nico")) {
+    if (who && REGULAR_LOOKS[who]) {
       pop(wx, wy - 42, who, "#fff6e8", 1.15, 0.95);
     }
     state.registerPunch = first ? 1.48 : 1.36;
@@ -780,11 +838,12 @@
   }
   function unusedName() {
     const used = new Set(customers.map((c) => c.name));
+    for (const n of Object.keys(REGULAR_LOOKS)) used.add(n);
     const pool = CUST_NAMES.filter((n) => !used.has(n));
-    return pick(pool.length ? pool : CUST_NAMES);
+    return pick(pool.length ? pool : CUST_NAMES.filter((n) => !REGULAR_LOOKS[n]));
   }
   function newCustomer(extra) {
-    return Object.assign({
+    const c = Object.assign({
       x: rand(700, 1060), y: 1040, vx: 0, vy: 0,
       shirt: pick(SHIRTS), hair: pick(["#3a2415", "#1b1b1b", "#8a4a1a", "#d8c07a"]),
       skin: pick(["#f0c2a0", "#d0a07a", "#8d5a3a", "#f3d3b4"]),
@@ -793,21 +852,22 @@
       hat: Math.random() < 0.33, hairCut: (Math.random() * 3) | 0, offX: 0,
       name: unusedName(),
     }, extra);
+    if (c.regular) applyRegularLook(c);
+    return c;
   }
   function seedLivingPier() {
     if (customers.length > 0) return;
     customers.push(newCustomer({
       x: 880, y: 1100, state: "browse", tank: 0, hops: 10, offX: 0,
-      name: "Maya", regular: true, favorite: 0, hawaii: true, hat: "#e8c04a",
-      shirt: "#1b6b5a", hair: "#3a2415", hairCut: 1, emote: "hi!",
+      name: "Maya", regular: true, favorite: 0, emote: "hi!",
     }));
     customers.push(newCustomer({
       x: 760, y: 1068, state: "browse", tank: 0, hops: 4, offX: -24,
-      emote: "!",
+      name: "Nico", regular: true, favorite: 0, emote: "hey!",
     }));
     customers.push(newCustomer({
       x: 980, y: 1084, state: "browse", tank: 1, hops: 5, offX: 20,
-      emote: "Blue Tang?", teaseTang: true,
+      name: "Jun", regular: true, favorite: 0, emote: "Blue Tang?", teaseTang: true,
     }));
   }
   function seedDockTeasers() {
@@ -991,6 +1051,7 @@
     state.displayMoney = state.money;
     seedDockTeasers();
     if (state.tutorial === 0 || state.stock.reduce((a, b) => a + b, 0) === 0) seedLivingPier();
+    if (!saleBarkDeck.length) shuffleSaleBarkDeck();
     if (state.missionDone) rollSessionGoals();
     ensureBaySchool();
     maybeBookTease();
@@ -1672,8 +1733,7 @@
     if (!maya && customers.length < MAX_CUSTOMERS) {
       customers.push(newCustomer({
         x: 880, y: 1088, state: "browse", tank: 1, hops: 8, offX: 0,
-        name: "Maya", regular: true, favorite: 0, hawaii: true, hat: "#e8c04a",
-        shirt: "#1b6b5a", hair: "#3a2415", hairCut: 1, emote: "Blue Tang!", teaseTang: true,
+        name: "Maya", regular: true, favorite: 0, emote: "Blue Tang!", teaseTang: true,
       }));
     }
   }
@@ -1702,12 +1762,13 @@
     if (nearRect(REGISTER.x, REGISTER.y, REGISTER.w, REGISTER.h, cashPad)) collectCash();
   }
   function stockTank(i) {
-    let n = 0, rares = 0; const keep = []; const keepRare = [];
+    let n = 0, rares = 0; const keep = []; const keepRare = []; const hopped = [];
     const flags = state.bagRare || [];
     for (let j = 0; j < state.bag.length; j++) {
       if (state.bag[j] === i) {
         n++;
         if (flags[j]) rares++;
+        hopped.push({ s: i, rare: !!flags[j] });
       } else {
         keep.push(state.bag[j]);
         keepRare.push(!!flags[j]);
@@ -1720,10 +1781,22 @@
     if (!state.stockRare || state.stockRare.length < 5) state.stockRare = [0, 0, 0, 0, 0];
     state.stockRare[i] = (state.stockRare[i] | 0) + rares;
     for (let k = tankFish[i].length - 1; k >= 0; k--) if (tankFish[i][k].ceremonial) tankFish[i].splice(k, 1);
-    for (let k = 0; k < n; k++) tankFish[i].push({ x: rand(24, TANK_W - 24), y: rand(36, TANK_H - 18), a: rand(0, 6), ph: rand(0, 20) });
     const t = TANK_POS[i];
-    spawnP(t.x + TANK_W / 2, t.y + TANK_H / 2, 12, [SPECIES[i].color, "#b8f3ff", "#fff"], 80);
-    pop(t.x + TANK_W / 2, t.y, "+" + n + " " + SPECIES[i].name, "#b8f3ff");
+    const tx = t.x + TANK_W / 2, ty = t.y + TANK_H * 0.58;
+    for (let k = 0; k < hopped.length; k++) {
+      bagGhosts.push({ s: hopped[k].s, rare: hopped[k].rare });
+      stockHops.push({
+        s: hopped[k].s, rare: hopped[k].rare, tank: i,
+        wait: k * 0.09, life: 0.32, max: 0.32,
+        sx: player.x + rand(-10, 10), sy: player.y - 12,
+        tx: tx + rand(-16, 16), ty: ty + rand(-10, 10),
+        x: player.x, y: player.y - 12, launched: false,
+      });
+    }
+    state.camPunch = Math.max(state.camPunch || 0, 0.1);
+    state.bagPunch = 1.3;
+    spawnP(tx, t.y + TANK_H / 2, 10, [SPECIES[i].color, "#b8f3ff", "#fff"], 70);
+    pop(tx, t.y, "+" + n + " " + SPECIES[i].name, "#b8f3ff");
     sfx("stock"); toast("Stocked " + n + " " + SPECIES[i].name, "#b8f3ff");
     if (!state.didFirstStock) { state.didFirstStock = true; maybeBookTease(); maybeTangRumor(); }
     if (state.tutorial === 3) state.tutorial = 4;
@@ -1734,7 +1807,7 @@
       c.state = "tank";
       c.tank = i;
       c.wait = 0;
-      c.emote = "!";
+      c.emote = c.regular ? regularBark(c) : "!";
       c.offX = tankQueueOffX(i, c);
       converted = true;
       if (c.regular) break;
@@ -1959,20 +2032,25 @@
       }
       if (c.name) names.add(c.name);
     }
-    if (n >= 2 || customers.length >= MAX_CUSTOMERS) return;
+    if (n >= 3 || customers.length >= MAX_CUSTOMERS) return;
     if (!names.has("Maya")) {
       customers.push(newCustomer({
         x: 880, y: 1088, state: "tank", tank: 0, hops: 8, offX: 0,
-        name: "Maya", regular: true, favorite: 0, hawaii: true, hat: "#e8c04a",
-        shirt: "#1b6b5a", hair: "#3a2415", hairCut: 1, emote: "the usual?",
+        name: "Maya", regular: true, favorite: 0, emote: "hey!",
       }));
       n++;
     }
-    if (n < 2 && !names.has("Nico") && customers.length < MAX_CUSTOMERS) {
+    if (n < 3 && !names.has("Nico") && customers.length < MAX_CUSTOMERS) {
       customers.push(newCustomer({
         x: 760, y: 1096, state: "tank", tank: 0, hops: 6, offX: -20,
-        name: "Nico", regular: true, favorite: 0,
-        shirt: "#3d8bfd", hair: "#1b1b1b", hairCut: 0, emote: "hi!",
+        name: "Nico", regular: true, favorite: 0, emote: "hey!",
+      }));
+      n++;
+    }
+    if (n < 3 && !names.has("Jun") && customers.length < MAX_CUSTOMERS) {
+      customers.push(newCustomer({
+        x: 1000, y: 1090, state: "tank", tank: 0, hops: 6, offX: 20,
+        name: "Jun", regular: true, favorite: 0, emote: "hey!",
       }));
     }
   }
@@ -2026,7 +2104,8 @@
       c.bob += dt * 10;
       let tx = c.x, ty = c.y;
       if (c.regular && c.favorite != null && state.stock[c.favorite] > 0 &&
-          (c.state === "tank" || c.state === "browse") && !c.vip) {
+          (c.state === "tank" || c.state === "browse") && !c.vip &&
+          !(c.teaseTang && !state.unlocked[1])) {
         c.tank = c.favorite;
       }
       if (c.state === "tank") {
@@ -2043,7 +2122,7 @@
                 state.stock[c.tank]--;
                 popSaleFish(c.tank);
                 c.carry = c.tank; c.state = "reg"; c.wait = 0;
-                c.emote = (c.regular && c.favorite === c.tank) ? nextRegularLine(c) : "VIP";
+                c.emote = (c.regular && c.favorite === c.tank) ? regularBark(c) : "VIP";
               }
             } else {
               c.emote = "…";
@@ -2065,7 +2144,7 @@
                 state.stock[c.tank]--;
                 popSaleFish(c.tank);
                 c.carry = c.tank; c.state = "reg"; c.wait = 0;
-                c.emote = (c.regular && (c.favorite == null || c.favorite === c.tank)) ? nextRegularLine(c) : "";
+                c.emote = (c.regular && (c.favorite == null || c.favorite === c.tank)) ? regularBark(c) : "";
               } else {
                 const alt = [];
                 for (let k = 0; k < 5; k++) if (state.stock[k] > 0) alt.push(k);
@@ -2085,7 +2164,7 @@
         }
         if (Math.hypot(c.x - tx, c.y - ty) < 16) {
           if (c.regular && (c.favorite == null || c.favorite === c.carry)) {
-            if (!isGoldTalk(c.emote)) c.emote = nextRegularLine(c);
+            c.emote = regularBark(c);
           } else c.emote = c.vip ? "$$$" : "$";
           c.wait += dt;
           if (c.wait > 0.15) {
@@ -2117,7 +2196,7 @@
               player.goto = { x: REGISTER.x + REGISTER.w / 2 + 36, y: REGISTER.y + REGISTER.h + 40 };
             }
             const usual = c.regular && (c.favorite == null || c.favorite === c.carry);
-            const said = usual ? (isGoldTalk(c.emote) ? c.emote : nextRegularLine(c)) : "";
+            const said = usual ? regularBark(c) : "";
             c.carry = -1; c.state = "leave"; c.wait = 0;
             c.emote = said;
             persist();
@@ -2127,7 +2206,7 @@
       } else if (c.state === "browse") {
         if (c.regular && state.unlocked[c.tank] && state.stock[c.tank] > 0) {
           c.state = "tank"; c.wait = 0;
-          c.emote = (c.favorite == null || c.favorite === c.tank) ? "the usual?" : "!";
+          c.emote = (c.favorite == null || c.favorite === c.tank) ? regularBark(c) : "!";
         } else {
           const t = TANK_POS[c.tank] || TANK_POS[0];
           const stand = state.unlocked[c.tank] ? 36 : 86;
@@ -2135,7 +2214,7 @@
           if (Math.hypot(c.x - tx, c.y - ty) < 18) {
             if ((c.teaseTang || c.tank === 1) && !state.unlocked[1]) c.emote = "Blue Tang?";
             else if (c.regular && (c.favorite == null || c.favorite === c.tank)) {
-              if (!isGoldTalk(c.emote)) c.emote = "the usual?";
+              if (!isGoldTalk(c.emote) && !c.saidLine) c.emote = "hey!";
             } else if (c.regular) c.emote = c.emote || "wow";
             else c.emote = "!";
             c.wait += dt;
@@ -2172,7 +2251,43 @@
       const wantGlance = nearYou ? clamp(pdx / 40, -1, 1) : 0;
       c.glance = lerp(c.glance || 0, wantGlance, 1 - Math.pow(0.02, dt));
       if (c.buyHop > 0) c.buyHop = Math.max(0, c.buyHop - dt);
+      updateRegularPresence(c, dt);
     }
+  }
+  function updateRegularPresence(c, dt) {
+    if (c.mutterCd > 0) c.mutterCd = Math.max(0, c.mutterCd - dt);
+    if (c.wave > 0) c.wave = Math.max(0, c.wave - dt);
+    if (!c.regular || c.vip || c.state === "leave" || c.state === "reg") return;
+    const d = Math.hypot(player.x - c.x, player.y - c.y);
+    const haul = bagHasStockable();
+    const till = state.registerCash > 0 && !cashierHandlingIt();
+    if (!(haul || till)) return;
+    if (d < 86 && d > 18 && (c.mutterCd || 0) <= 0) {
+      c.wave = Math.max(c.wave || 0, 1.15);
+      if (!isGoldTalk(c.emote) && !/tang/i.test(c.emote || "")) {
+        c.emote = haul ? pick(["this way!", "over here!", "nice haul"]) : pick(["the till!", "don't forget", "hey!"]);
+        c.mutterCd = 3.8;
+      }
+    } else if (d < 260 && d > 80 && (c.wave || 0) <= 0 && (c.mutterCd || 0) <= 0.6) {
+      c.wave = 1.4;
+    }
+  }
+  function cuePathWelcome() {
+    let greeter = null;
+    for (const c of customers) {
+      if (c.name === "Nico" && c.state !== "reg" && c.state !== "leave") { greeter = c; break; }
+    }
+    if (!greeter) {
+      for (const c of customers) {
+        if (c.regular && c.state !== "reg" && c.state !== "leave" && !c.teaseTang) { greeter = c; break; }
+      }
+    }
+    if (!greeter) return;
+    greeter.x = 880;
+    greeter.y = 640;
+    greeter.wave = 2.4;
+    greeter.mutterCd = 2.2;
+    if (!isGoldTalk(greeter.emote) && !/tang/i.test(greeter.emote || "")) greeter.emote = "this way!";
   }
   function updateFX(dt) {
     for (let i = particles.length - 1; i >= 0; i--) {
@@ -2318,6 +2433,8 @@
     if (state.aisleSchoolWait > 0) {
       state.aisleSchoolWait = Math.max(0, state.aisleSchoolWait - dt);
     }
+    updateStockHops(dt);
+    updatePathGlints(dt);
     if (state.scene === "shop") {
       ensureBaySchool();
       seedDockTeasers();
@@ -2329,6 +2446,63 @@
           t.y = rand(1120, 1220);
         }
       }
+    }
+  }
+  function updateStockHops(dt) {
+    for (let i = stockHops.length - 1; i >= 0; i--) {
+      const h = stockHops[i];
+      if (!h.launched) {
+        h.wait -= dt;
+        if (h.wait > 0) continue;
+        h.launched = true;
+        if (bagGhosts.length) bagGhosts.shift();
+        state.bagPunch = 1.24;
+        sfx("click");
+      }
+      h.life -= dt;
+      const max = h.max || 0.32;
+      const u = 1 - clamp(h.life / max, 0, 1);
+      const e = u * u * (3 - 2 * u);
+      h.x = lerp(h.sx, h.tx, e);
+      h.y = lerp(h.sy, h.ty, e) - Math.sin(u * Math.PI) * 56;
+      if (h.life <= 0) {
+        tankFish[h.tank].push({
+          x: rand(24, TANK_W - 24), y: rand(36, TANK_H - 18), a: rand(0, 6), ph: rand(0, 20),
+        });
+        spawnP(h.tx, h.ty, 7, [SPECIES[h.s].color, "#b8f3ff", "#fff"], 58);
+        state.camPunch = Math.max(state.camPunch || 0, 0.055);
+        stockHops.splice(i, 1);
+      }
+    }
+  }
+  function updatePathGlints(dt) {
+    const haul = state.scene === "shop" && bagHasStockable();
+    const till = state.scene === "shop" && state.registerCash > 0 && !cashierHandlingIt();
+    if (!haul && !till) {
+      for (let i = pathGlints.length - 1; i >= 0; i--) {
+        pathGlints[i].life -= dt * 2.4;
+        if (pathGlints[i].life <= 0) pathGlints.splice(i, 1);
+      }
+      return;
+    }
+    const pts = haul
+      ? [[880, 1000], [880, 820], [880, 640], [880, 460], [880, 340], [275, 342]]
+      : [[880, 360], [720, 360], [520, 380], [340, 440], [248, 530]];
+    if (pathGlints.length < 11 && Math.random() < dt * 7) {
+      const i = (Math.random() * (pts.length - 1)) | 0;
+      const u = Math.random();
+      pathGlints.push({
+        x: lerp(pts[i][0], pts[i + 1][0], u) + rand(-8, 8),
+        y: lerp(pts[i][1], pts[i + 1][1], u) + rand(-8, 8),
+        life: rand(0.55, 1.15), max: 1,
+        r: rand(2.1, 4.4),
+        coin: till && Math.random() < 0.45,
+      });
+    }
+    for (let i = pathGlints.length - 1; i >= 0; i--) {
+      const g = pathGlints[i];
+      g.life -= dt;
+      if (g.life <= 0) pathGlints.splice(i, 1);
     }
   }
   function updateTitleFX(dt) {
@@ -2544,7 +2718,8 @@
   }
   function drawPerson(x, y, opt) {
     const hop = opt.buyHop > 0 ? Math.sin((1 - opt.buyHop / 0.55) * Math.PI) * 7 : 0;
-    const bob = Math.sin(opt.bob || 0) * 2.2 - hop;
+    const bounce = opt.idle === "bounce" ? 3.5 : 2.2;
+    const bob = Math.sin(opt.bob || 0) * bounce - hop;
     const walk = Math.sin((opt.bob || 0) * 1.6);
     const squash = 1 + walk * 0.07 + (hop ? 0.08 : 0);
     shadow(x, y + 4, opt.kid ? 7 : 9, opt.kid ? 3.2 : 4);
@@ -2556,11 +2731,13 @@
     ctx.fillRect(-6, 8, 4, 8 + walk * 2);
     ctx.fillRect(2, 8, 4, 8 - walk * 2);
     const swing = walk * 6;
+    const waving = (opt.wave || 0) > 0 && !(opt.carry >= 0);
+    const waveAmt = waving ? 1.15 + 0.55 * Math.sin(state.time * 10) : 0;
     ctx.fillStyle = opt.skin;
     ctx.save(); ctx.translate(-9, -1); ctx.rotate(0.12 + swing * 0.07);
     ctx.fillRect(-2, 0, 3.5, 9); ctx.restore();
-    ctx.save(); ctx.translate(9, -1); ctx.rotate(-0.12 - swing * 0.07);
-    ctx.fillRect(-1.5, 0, 3.5, 9); ctx.restore();
+    ctx.save(); ctx.translate(9, -1); ctx.rotate(-0.12 - swing * 0.07 - waveAmt);
+    ctx.fillRect(-1.5, 0, 3.5, waving ? 11 : 9); ctx.restore();
     ctx.fillStyle = opt.shirt;
     roundRect(-9, -6, 18, 16, 5); ctx.fill();
     if (opt.hawaii) {
@@ -2595,10 +2772,26 @@
       ctx.closePath(); ctx.fill();
       ctx.fillStyle = "#e85d4c";
       ctx.beginPath(); ctx.arc(0, -29.2, 1.5, 0, Math.PI * 2); ctx.fill();
+    } else if (opt.sailor) {
+      ctx.fillStyle = "#f4efe6";
+      ctx.fillRect(-6.4, -26.4, 12.8, 6.2);
+      ctx.fillStyle = "#1b3a6b";
+      ctx.beginPath(); ctx.ellipse(0, -20.2, 10.4, 2.3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillRect(-2.1, -28.4, 4.2, 3.2);
+    } else if (opt.visor) {
+      ctx.fillStyle = opt.hat === true ? "#e85d4c" : (opt.hat || "#e85d4c");
+      ctx.fillRect(-6.2, -21.8, 12.4, 3.4);
+      ctx.beginPath(); ctx.ellipse(4.2, -18.8, 8.2, 2.3, 0.12, 0, Math.PI * 2); ctx.fill();
     } else if (opt.hat) {
       ctx.fillStyle = opt.hat === true ? "#c4483a" : opt.hat;
       ctx.beginPath(); ctx.ellipse(0, -21, 9.5, 2.4, 0, 0, Math.PI * 2); ctx.fill();
       ctx.fillRect(-6.5, -26, 13, 6);
+    }
+    if (opt.idle === "whistle" && !waving && Math.sin(state.time * 2.2 + (opt.bob || 0)) > 0.35) {
+      ctx.fillStyle = "#2a1a12";
+      ctx.font = "800 11px Fredoka, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText("♪", 11, -26);
     }
     ctx.fillStyle = "#2a1a12";
     const glance = clamp(opt.glance || 0, -1, 1);
@@ -3158,6 +3351,19 @@
         ctx.arc(x0 + (x1 - x0) * u, y0 + (y1 - y0) * u, 3.2, 0, Math.PI * 2);
         ctx.fill();
       }
+    }
+    for (const g of pathGlints) {
+      const a = clamp(g.life / 0.35, 0, 1);
+      ctx.globalAlpha = a;
+      if (g.coin) {
+        ctx.fillStyle = "#ffd24a";
+        ctx.beginPath(); ctx.ellipse(g.x, g.y, g.r + 1.4, g.r, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#c49210"; ctx.lineWidth = 1.1; ctx.stroke();
+      } else {
+        ctx.fillStyle = "#fff6c8";
+        ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
     }
     drawPot(140, 400, "#4cba6a"); drawPot(1600, 400, "#3aa35a");
     drawPot(168, 780, "#3aa35a", 1.7); drawPot(1588, 780, "#2e8b4a", 1.75);
@@ -3781,6 +3987,21 @@
     ctx.scale(cam.z, cam.z);
     ctx.translate(-cam.x, -cam.y);
     if (state.scene === "shop") drawShop(); else drawOcean();
+    for (const h of stockHops) {
+      if (!h.launched) continue;
+      const u = 1 - clamp(h.life / (h.max || 0.32), 0, 1);
+      const pop = 0.92 + Math.sin(u * Math.PI) * 0.28;
+      ctx.globalAlpha = clamp(h.life / 0.08, 0, 1);
+      if (h.rare) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.fillStyle = "rgba(255,210,74,0.4)";
+        ctx.beginPath(); ctx.ellipse(h.x, h.y, 18, 11, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
+      drawFishBody(SPECIES[h.s], h.x, h.y, 0.35 + u * 0.8, pop, state.time);
+      ctx.globalAlpha = 1;
+    }
     for (const p of particles) {
       ctx.globalAlpha = clamp(p.life / 0.5, 0, 1);
       ctx.fillStyle = p.col;
@@ -4112,10 +4333,11 @@
     ctx.fillStyle = "#9ef0ff"; ctx.font = "700 13px Nunito, sans-serif"; ctx.textAlign = "left";
     ctx.fillText("BAG", bagBox.x + 14, bagBox.y + 20);
     ctx.fillStyle = "#fff"; ctx.font = "800 22px Nunito, sans-serif";
-    ctx.fillText(state.bag.length + " / " + bagMax(), bagBox.x + 14, bagBox.y + 42);
+    const bagShown = state.bag.length + bagGhosts.length;
+    ctx.fillText(bagShown + " / " + bagMax(), bagBox.x + 14, bagBox.y + 42);
     ctx.restore();
-    if (state.bag.length) {
-      const bw = Math.min(36 + state.bag.length * 28, 340);
+    if (bagShown) {
+      const bw = Math.min(36 + bagShown * 28, 340);
       let ib = hudBox(400, 14, bw, 52);
       if (ribbon && boxesOverlap(ib, ribbon, 12)) {
         ib = hudBox(400, ribbon.y + ribbon.h + 8, bw, 52);
@@ -4123,13 +4345,25 @@
       ctx.save();
       ctx.globalAlpha = chipAlpha(ib, ribbon);
       card(ib.x, ib.y, ib.w, ib.h);
-      for (let i = 0; i < Math.min(state.bag.length, 11); i++) {
-        const rare = !!(state.bagRare && state.bagRare[i]);
+      let pip = 0;
+      const drawPip = (s, rare, ghost) => {
+        if (pip >= 11) return;
+        const px = ib.x + 28 + pip * 28, py = ib.y + 26;
+        ctx.save();
+        if (ghost) ctx.globalAlpha *= 0.55;
         if (rare) {
           ctx.strokeStyle = "#ffd24a"; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.ellipse(ib.x + 28 + i * 28, ib.y + 26, 14, 8, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.beginPath(); ctx.ellipse(px, py, 14, 8, 0, 0, Math.PI * 2); ctx.stroke();
         }
-        drawFishBody(SPECIES[state.bag[i]], ib.x + 28 + i * 28, ib.y + 26, 0, 0.7, state.time + i);
+        drawFishBody(SPECIES[s], px, py, 0, 0.7, state.time + pip);
+        ctx.restore();
+        pip++;
+      };
+      for (let i = 0; i < state.bag.length; i++) {
+        drawPip(state.bag[i], !!(state.bagRare && state.bagRare[i]), false);
+      }
+      for (let i = 0; i < bagGhosts.length; i++) {
+        drawPip(bagGhosts[i].s, !!bagGhosts[i].rare, true);
       }
       ctx.restore();
     }
@@ -4567,7 +4801,7 @@
     ctx.fillStyle = "rgba(200,220,230,0.42)";
     ctx.font = "600 11px Nunito, sans-serif";
     ctx.textAlign = "right";
-      ctx.fillText("Aqua Bay · loop 20", W - 16, H - 14);
+      ctx.fillText("Aqua Bay · loop 21", W - 16, H - 14);
   }
 
   function drawSpeciesStrip(ribbon) {
@@ -4691,11 +4925,12 @@
           state.expeditionTime = 0;
           state.nightExpedition = false;
         } else {
-          player.x = 880; player.y = 1000; player.vx = 0; player.vy = -40;
+          player.x = 880; player.y = state.missionDone ? 1000 : 940; player.vx = 0; player.vy = -40;
         }
         state.diveCatches = 0;
         if (bagHasStockable()) {
           player.goto = stockableTankTarget() || tankWalkPoint(0);
+          cuePathWelcome();
         }
         maybeBookTease();
         maybeTangRumor();
