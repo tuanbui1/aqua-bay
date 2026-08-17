@@ -762,7 +762,7 @@
   }
   function spawnSaleTalk(who, line, wx, wy) {
     const tint = REGULAR_TINTS[who] || { fill: "rgba(40, 28, 10, 0.94)", ink: "#ffe27a", stroke: "#e8c04a" };
-    // Same till slot as head bubbles — a rush queues; it does not stack a fourth banner.
+    // Queue only. drawSaleTalks must call drawSpeech — never paint a second full bubble.
     if (saleTalks.length >= 3) return;
     saleTalks.push({ who: who || "", line, wx, wy, life: 2.75, max: 2.75, tint });
   }
@@ -1055,53 +1055,43 @@
     for (const c of customers) if (c !== self && c.state === "tank" && c.tank === tank) n++;
     return n === 0 ? 0 : (n % 2 ? -28 : 28);
   }
-  function tankClusterKey(c) {
-    if (!c || c.x == null || c.y == null) return -1;
-    let best = -1, bestD = 128;
-    for (let i = 0; i < 5; i++) {
-      const t = TANK_POS[i];
-      const d = Math.hypot(c.x - (t.x + TANK_W / 2), c.y - (t.y + TANK_H + 40));
-      if (d < bestD) { bestD = d; best = i; }
-    }
-    return best;
+  function talkVisible(c) {
+    if (!c || !c.emote) return false;
+    const label = String(c.emote);
+    if ((state.surfaceQuiet || 0) > 0 && !isGoldTalk(label) && !/tang/i.test(label)) return false;
+    return true;
   }
-  function tillCluster(c) {
-    if (!c || c.x == null || c.y == null) return false;
-    const rx = REGISTER.x + REGISTER.w + 40;
-    const ry = REGISTER.y + REGISTER.h * 0.55;
-    return Math.hypot(c.x - rx, c.y - ry) < 168;
+  function talkSort(a, b) {
+    const an = String(a.name || a.who || a.line || "");
+    const bn = String(b.name || b.who || b.line || "");
+    if (an !== bn) return an < bn ? -1 : 1;
+    const ax = a.x != null ? a.x : (a.wx || 0);
+    const bx = b.x != null ? b.x : (b.wx || 0);
+    if (ax !== bx) return ax - bx;
+    const ay = a.y != null ? a.y : (a.wy || 0);
+    const by = b.y != null ? b.y : (b.wy || 0);
+    return ay - by;
   }
-  function talkClusterKey(c) {
-    if (tillCluster(c)) return "till";
-    const tank = tankClusterKey(c);
-    if (tank >= 0) return "tank-" + tank;
-    // C29 leak: gold / VIP lines on the walk to the till had no cluster, so
-    // talkFocus returned self and every walker drew a full bubble beside saleTalks.
-    const em = c && c.emote;
-    if (isGoldTalk(em) || em === "$$$") return "till";
-    if (/tang/i.test(em || "")) return "tank-1";
-    if (em === "VIP") return c.tank != null ? "tank-" + c.tank : "till";
-    return "";
-  }
-  function talkFocus(self) {
-    const key = talkClusterKey(self);
-    if (!key) return self;
-    // saleTalks is the till's one full bubble — head lines wait as pearls.
-    if (key === "till" && saleTalks[0]) return saleTalks[0];
+  // Entire canvas: at most one full speech bubble. Clusters returning self
+  // (C26 / C29 / C30) let every walker draw beside saleTalks.
+  function speechFocus() {
+    if (saleTalks[0]) return saleTalks[0];
     const talkers = [];
-    for (const o of customers) {
-      if (!o || !o.emote) continue;
-      if (talkClusterKey(o) === key) talkers.push(o);
-    }
-    if (talkers.length <= 1) return self;
-    talkers.sort((a, b) => {
-      const an = String(a.name || "");
-      const bn = String(b.name || "");
-      if (an !== bn) return an < bn ? -1 : 1;
-      if (a.x !== b.x) return a.x - b.x;
-      return a.y - b.y;
-    });
+    for (const c of customers) if (talkVisible(c)) talkers.push(c);
+    if (!talkers.length) return null;
+    talkers.sort(talkSort);
     return talkers[Math.floor(state.time / 1.65) % talkers.length];
+  }
+  // THE gate. Greeting / VIP / sale / till emote all call this.
+  // Winner draws the one full bubble; everyone else is a pearl or is not spawned.
+  function drawSpeech(who, full, pearl) {
+    if (!who) return false;
+    if (speechFocus() === who) {
+      if (full) full();
+      return true;
+    }
+    if (pearl) pearl();
+    return false;
   }
   function unusedName() {
     const used = new Set(customers.map((c) => c.name));
@@ -1963,7 +1953,14 @@
     f.dashY = f.y;
     state.catchVerb = "dash";
     state.camPunch = Math.max(state.camPunch || 0, 0.07);
-    pop(f.x, f.y - 22, "dash!", "#9ef0ff", 0.72, 1.2);
+    const liveDash = pops.filter((p) => p.text === "dash!");
+    if (!liveDash.length) pop(f.x, f.y - 22, "dash!", "#9ef0ff", 0.72, 1.2);
+    else {
+      const d = liveDash[0];
+      d.x = f.x + 28;
+      d.y = f.y - 40;
+      d.life = Math.max(d.life, 0.72);
+    }
     sfx("click");
   }
   function beginSitHold(f) {
@@ -3718,24 +3715,18 @@
       ctx.beginPath(); ctx.arc(25, 16, 2.4, 0, Math.PI * 2); ctx.fill();
     }
     if (opt.carry >= 0) drawCarryParcel(14, -2);
-    if (opt.emote && !((state.surfaceQuiet || 0) > 0 && !isGoldTalk(String(opt.emote)) && !/tang/i.test(String(opt.emote)))) {
+    if (talkVisible(opt)) {
       let ox = opt.emoteOff || 0;
       const label = String(opt.emote);
       const gold = isGoldTalk(label);
       const tint = gold ? (REGULAR_TINTS[opt.name] || null) : null;
       const tangTalk = /tang/i.test(label);
-      const focus = talkFocus(opt);
-      if (focus && focus !== opt) {
-        ctx.save();
-        ctx.globalAlpha = 0.42;
-        ctx.fillStyle = tint ? tint.stroke : gold ? "rgba(232, 192, 74, 0.7)" : "rgba(255,255,255,0.55)";
-        ctx.beginPath(); ctx.arc(ox, -32, 3.2, 0, Math.PI * 2); ctx.fill();
-        ctx.restore();
-      } else {
+      drawSpeech(opt, () => {
         let ey = gold ? -56 : -40;
         let alpha = 1;
+        let bx = ox;
         if (tangTalk) {
-          ox += (ox >= 0 ? 38 : -38);
+          bx += (bx >= 0 ? 38 : -38);
           ey = -12;
           const tank = TANK_POS[opt.tank != null ? opt.tank : 1];
           if (tank && !state.unlocked[opt.tank != null ? opt.tank : 1]) {
@@ -3751,17 +3742,23 @@
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.fillStyle = tint ? tint.fill : gold ? "rgba(255, 236, 170, 0.96)" : "rgba(255,255,255,0.94)";
-        roundRect(-bw / 2 + ox, ey, bw, bh, 8); ctx.fill();
+        roundRect(-bw / 2 + bx, ey, bw, bh, 8); ctx.fill();
         if (gold) {
           ctx.strokeStyle = tint ? tint.stroke : "rgba(200, 140, 30, 0.55)";
           ctx.lineWidth = 2;
-          roundRect(-bw / 2 + ox, ey, bw, bh, 8); ctx.stroke();
+          roundRect(-bw / 2 + bx, ey, bw, bh, 8); ctx.stroke();
         }
         ctx.fillStyle = tint ? tint.ink : "#2a1a12";
         ctx.font = (gold ? "800 16px" : "800 12px") + " Fredoka, sans-serif"; ctx.textAlign = "center";
-        ctx.fillText(label, ox, ey + (gold ? 18 : 12));
+        ctx.fillText(label, bx, ey + (gold ? 18 : 12));
         ctx.restore();
-      }
+      }, () => {
+        ctx.save();
+        ctx.globalAlpha = 0.42;
+        ctx.fillStyle = tint ? tint.stroke : gold ? "rgba(232, 192, 74, 0.7)" : "rgba(255,255,255,0.55)";
+        ctx.beginPath(); ctx.arc(ox, -32, 3.2, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      });
     }
     ctx.restore();
   }
@@ -5526,6 +5523,7 @@
   function drawSaleTalks() {
     const t = saleTalks[0];
     if (!t) return;
+    drawSpeech(t, () => {
     const a = clamp(t.life / 0.4, 0, 1);
     const scr = worldToScreen(t.wx, t.wy - 10);
     ctx.font = "800 20px Fredoka, sans-serif";
@@ -5560,6 +5558,7 @@
     ctx.textAlign = "center";
     ctx.fillText(label, x, y + 5);
     ctx.restore();
+    });
   }
   function boxesOverlap(a, b, pad) {
     const p = pad == null ? 6 : pad;
@@ -6124,7 +6123,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 30", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 31", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -6164,7 +6163,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 30", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 31", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -6181,7 +6180,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 30", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 31", W / 2, 632);
     }
   }
 
