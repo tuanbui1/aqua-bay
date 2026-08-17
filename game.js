@@ -27,6 +27,11 @@
     Nico: { sailor: true, hat: "#f4efe6", shirt: "#3d8bfd", hair: "#1b1b1b", hairCut: 0, idle: "whistle" },
     Jun: { visor: true, hat: "#e85d4c", shirt: "#f0b429", hair: "#8a4a1a", hairCut: 2, idle: "bounce" },
   };
+  const REGULAR_TINTS = {
+    Maya: { fill: "rgba(18, 78, 68, 0.95)", ink: "#ffe27a", stroke: "#7ad0b0" },
+    Nico: { fill: "rgba(16, 48, 108, 0.95)", ink: "#d6ecff", stroke: "#8eb8ff" },
+    Jun: { fill: "rgba(122, 36, 30, 0.95)", ink: "#ffe27a", stroke: "#f0a060" },
+  };
   const BOOK_FLAVOR = [
     "Orange stripes and zero fear — first regular of the bay.",
     "A blue streak that treats the reef like a racetrack.",
@@ -126,6 +131,8 @@
   const stockHops = [];
   const bagGhosts = [];
   const pathGlints = [];
+  const saleTalks = [];
+  const tankRipples = [];
   let saleBarkDeck = [];
   const saleBarkRecent = [];
   const keys = new Set();
@@ -456,6 +463,7 @@
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
     stockHops.length = 0; bagGhosts.length = 0; pathGlints.length = 0;
+    saleTalks.length = 0; tankRipples.length = 0;
     saleBarkDeck.length = 0; saleBarkRecent.length = 0;
     browseTimer = 0.35;
     for (let i = 0; i < 5; i++) tankFish[i].length = 0;
@@ -483,12 +491,30 @@
     return x > AISLE.x + 10 && x < AISLE.x + AISLE.w - 10 &&
       y > AISLE.y + 16 && y < AISLE.y + AISLE.h - 16;
   }
+  function inTankWater(x, y) {
+    for (let i = 0; i < 5; i++) {
+      const t = TANK_POS[i];
+      if (x > t.x + 10 && x < t.x + TANK_W - 10 && y > t.y + 10 && y < t.y + TANK_H - 10) return true;
+    }
+    return false;
+  }
+  function inDockWater(x, y) {
+    return y > 900;
+  }
+  function onDryWood(x, y) {
+    if (inAisleWater(x, y) || inTankWater(x, y) || inDockWater(x, y)) return false;
+    return x > 70 && x < 1700 && y > 70 && y < 900;
+  }
   function confineShopSwimmer(sw) {
     const pad = 28;
     const top = AISLE.y + pad;
     const bot = AISLE.y + AISLE.h - pad;
-    sw.x = aisleMidX() + Math.sin(state.time * 1.55 + sw.ph) * (AISLE.w * 0.22);
+    sw.x = aisleMidX() + Math.sin(state.time * 1.55 + sw.ph) * (AISLE.w * 0.18);
     sw.y = clamp(sw.y, top, bot);
+    if (!inAisleWater(sw.x, sw.y) || onDryWood(sw.x, sw.y)) {
+      sw.x = aisleMidX();
+      sw.y = clamp(sw.y, top, bot);
+    }
   }
   function regularLinePool(c) {
     if (c && REGULAR_LINES[c.name]) return REGULAR_LINES[c.name];
@@ -637,12 +663,18 @@
     }
     if (o.x != null && o.y != null) pop(o.x, o.y, o.msg || "Not yet", "#ff6a5a", 1.05, 1.15);
   }
-  function playSale(who, speciesName, pay, wx, wy, first) {
+  function playSale(who, speciesName, pay, wx, wy, first, line) {
     pop(wx, wy - 10, "+$" + pay, "#ffe27a", first ? 2.2 : 1.9, first ? 2.55 : 2.15);
     if (who && REGULAR_LOOKS[who]) {
-      pop(wx, wy - 42, who, "#fff6e8", 1.15, 0.95);
+      pop(wx, wy - 42, who, "#fff6e8", 1.35, 1.05);
     }
+    const bark = line && isGoldTalk(line) ? line : "";
+    if (bark) spawnSaleTalk(who, bark, wx, wy);
     state.registerPunch = first ? 1.48 : 1.36;
+  }
+  function spawnSaleTalk(who, line, wx, wy) {
+    const tint = REGULAR_TINTS[who] || { fill: "rgba(40, 28, 10, 0.94)", ink: "#ffe27a", stroke: "#e8c04a" };
+    saleTalks.push({ who: who || "", line, wx, wy, life: 2.75, max: 2.75, tint });
   }
   function expeditionUnlocked() { return !!state.unlocked[1] || (state.peakMoney | 0) >= 60; }
   function nearBoat() {
@@ -786,7 +818,7 @@
   }
   function beatMoment(kind, x, y) {
     const specs = {
-      catch: { stop: 0.07, punch: 0.11, n: 20, cols: ["#fff6e8", "#ffe27a", "#9ef0ff"], spread: 160, sfx: "catch" },
+      catch: { stop: 0.12, punch: 0.16, n: 22, cols: ["#fff6e8", "#ffe27a", "#9ef0ff"], spread: 180, sfx: "catch" },
       shiny: { stop: 0.13, punch: 0.22, n: 34, cols: ["#ffd24a", "#fff6e8", "#ffe27a"], spread: 270, sfx: "shiny" },
       sale: { stop: 0.05, punch: 0.09, n: 14, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 110, sfx: "sale" },
       firstsale: { stop: 0.12, punch: 0.18, n: 28, cols: ["#ffe27a", "#ffd24a", "#fff"], spread: 190, sfx: "firstsale" },
@@ -1479,6 +1511,7 @@
     };
     state.coneFlash = f.rare ? 0.34 : escape ? 0.48 : 0.22;
     state.camPunch = f.rare ? 0.16 : escape ? 0.14 : 0.08;
+    state.hitStop = Math.max(state.hitStop || 0, f.rare ? 0.12 : escape ? 0.1 : 0.1);
     if (f.rare) state.flash = 0.2;
   }
   function tickCatchClimax(dt) {
@@ -1497,9 +1530,9 @@
       f.y = cl.oy + Math.sin(away) * pull * (1 - snap) + Math.cos(cl.t * 30) * 7 * back;
       if (u > 0.52 && !cl.yelled) {
         cl.yelled = true;
-        pop(f.x, f.y - 26, "almost!", "#fff6e8", 1.05, 1.55);
-        state.hitStop = Math.max(state.hitStop || 0, 0.11);
-        state.camPunch = Math.max(state.camPunch || 0, 0.14);
+        pop(f.x, f.y - 26, "almost!", "#fff6e8", 1.45, 1.7);
+        state.hitStop = Math.max(state.hitStop || 0, 0.16);
+        state.camPunch = Math.max(state.camPunch || 0, 0.16);
         sfx("almost");
       }
     } else if (cl.snap) {
@@ -1542,7 +1575,16 @@
       state.bagBonus = 1.1;
       const word = state.diveCatches >= 5 ? "AMAZING" : state.diveCatches === 4 ? "GREAT" : "STREAK!";
       const col = state.diveCatches >= 5 ? "#ff8ad4" : state.diveCatches === 4 ? "#9ef0ff" : "#ffe27a";
-      state.comboPop = { text: word, col, life: state.diveCatches === 3 ? 1.15 : 0.6, max: state.diveCatches === 3 ? 1.15 : 0.6 };
+      const isStreak = state.diveCatches === 3;
+      const hold = isStreak ? 2.2 : 0.7;
+      const blocked = state.comboPop && state.comboPop.keep && state.comboPop.life > 0.45;
+      if (!blocked) {
+        state.comboPop = { text: word, col, life: hold, max: hold, keep: isStreak };
+      }
+      if (isStreak) {
+        state.hitStop = Math.max(state.hitStop || 0, 0.36);
+        state.freezeFrame = Math.max(state.freezeFrame || 0, 0.36);
+      }
     } else if (state.diveCatches >= 3) {
       state.bagBonus = 1.1;
     }
@@ -1787,10 +1829,10 @@
       bagGhosts.push({ s: hopped[k].s, rare: hopped[k].rare });
       stockHops.push({
         s: hopped[k].s, rare: hopped[k].rare, tank: i,
-        wait: k * 0.09, life: 0.32, max: 0.32,
-        sx: player.x + rand(-10, 10), sy: player.y - 12,
-        tx: tx + rand(-16, 16), ty: ty + rand(-10, 10),
-        x: player.x, y: player.y - 12, launched: false,
+        wait: k * 0.1, life: 0.24, max: 0.24,
+        sx: player.x + (k % 2 ? -44 : 44), sy: player.y + 26,
+        tx: tx + rand(-14, 14), ty: ty + rand(-8, 8),
+        x: player.x, y: player.y + 26, launched: false,
       });
     }
     state.camPunch = Math.max(state.camPunch || 0, 0.1);
@@ -1904,9 +1946,9 @@
       toast("The boat is ready — $35 on the right dock", "#ffe27a", 4.6, { big: true });
       state.boatHint = 6.5;
       state.boatGlance = 2.2;
-      state.aisleSchoolWait = 1.15;
+      state.aisleSchoolWait = 1.35;
     } else {
-      state.aisleSchoolWait = Math.max(state.aisleSchoolWait || 0, 0.85);
+      state.aisleSchoolWait = Math.max(state.aisleSchoolWait || 0, 0.95);
     }
     if (!state.didFirstUnlock) { state.didFirstUnlock = true; triggerFlash(); }
     ensureOceanStock(); persist();
@@ -2057,6 +2099,8 @@
   function ensureBaySchool() {
     if (!state.unlocked[1]) return;
     if ((state.aisleSchoolWait || 0) > 0) return;
+    if (state.unlockBanner) return;
+    if (state.scene !== "shop") return;
     let n = 0;
     for (const sw of state.shopSwimmers) if (sw.school === 2) n++;
     while (n < 4) {
@@ -2187,7 +2231,7 @@
               });
             }
             const who = c.name || "A guest";
-            playSale(who, SPECIES[c.carry].name, pay, c.x, c.y - 28, first);
+            playSale(who, SPECIES[c.carry].name, pay, c.x, c.y - 28, first, c.saidLine || c.emote);
             beatMoment(first ? "firstsale" : "sale", c.x, c.y - 20);
             c.buyHop = 0.55;
             if (!state.didFirstSale) state.didFirstSale = true;
@@ -2415,8 +2459,17 @@
     }
     if (state.flash > 0) state.flash = Math.max(0, state.flash - dt);
     if (state.freezeFrame > 0) state.freezeFrame = Math.max(0, state.freezeFrame - dt);
+    for (let i = saleTalks.length - 1; i >= 0; i--) {
+      saleTalks[i].life -= dt;
+      if (saleTalks[i].life <= 0) saleTalks.splice(i, 1);
+    }
+    for (let i = tankRipples.length - 1; i >= 0; i--) {
+      tankRipples[i].life -= dt;
+      if (tankRipples[i].life <= 0) tankRipples.splice(i, 1);
+    }
     for (let i = state.shopSwimmers.length - 1; i >= 0; i--) {
       const sw = state.shopSwimmers[i];
+      if (state.scene !== "shop") continue;
       const dir = sw.vx >= 0 ? 1 : -1;
       sw.y += Math.abs(sw.vx) * 0.7 * dir * dt;
       confineShopSwimmer(sw);
@@ -2441,6 +2494,7 @@
       for (const t of dockTeasers) {
         t.x += t.vx * dt;
         t.y += Math.sin(state.time * 1.5 + t.ph) * 10 * dt + Math.sin(state.time * 2.4 + t.ph) * 4 * dt;
+        t.y = clamp(t.y, 1108, 1236);
         if (t.x > SHOP.w + 70) {
           t.x = -70;
           t.y = rand(1120, 1220);
@@ -2464,13 +2518,15 @@
       const u = 1 - clamp(h.life / max, 0, 1);
       const e = u * u * (3 - 2 * u);
       h.x = lerp(h.sx, h.tx, e);
-      h.y = lerp(h.sy, h.ty, e) - Math.sin(u * Math.PI) * 56;
+      h.y = lerp(h.sy, h.ty, e) - Math.sin(u * Math.PI) * 92;
       if (h.life <= 0) {
         tankFish[h.tank].push({
           x: rand(24, TANK_W - 24), y: rand(36, TANK_H - 18), a: rand(0, 6), ph: rand(0, 20),
         });
-        spawnP(h.tx, h.ty, 7, [SPECIES[h.s].color, "#b8f3ff", "#fff"], 58);
-        state.camPunch = Math.max(state.camPunch || 0, 0.055);
+        spawnP(h.tx, h.ty, 14, [SPECIES[h.s].color, "#b8f3ff", "#fff", "#9ef0ff"], 78);
+        tankRipples.push({ i: h.tank, x: h.tx, y: h.ty, life: 0.48, max: 0.48 });
+        state.camPunch = Math.max(state.camPunch || 0, 0.07);
+        sfx("stock");
         stockHops.splice(i, 1);
       }
     }
@@ -2716,6 +2772,19 @@
     }
     ctx.restore();
   }
+  function drawCarryParcel(x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(0.18);
+    ctx.fillStyle = "#c4894a";
+    roundRect(-7, -6, 14, 11, 2); ctx.fill();
+    ctx.strokeStyle = "#8b5a2b"; ctx.lineWidth = 1.1;
+    roundRect(-7, -6, 14, 11, 2); ctx.stroke();
+    ctx.strokeStyle = "#ffe27a"; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(0, -6); ctx.lineTo(0, 5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-7, 0); ctx.lineTo(7, 0); ctx.stroke();
+    ctx.restore();
+  }
   function drawPerson(x, y, opt) {
     const hop = opt.buyHop > 0 ? Math.sin((1 - opt.buyHop / 0.55) * Math.PI) * 7 : 0;
     const bounce = opt.idle === "bounce" ? 3.5 : 2.2;
@@ -2813,13 +2882,14 @@
       ctx.beginPath(); ctx.arc(15, 16, 2.4, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(25, 16, 2.4, 0, Math.PI * 2); ctx.fill();
     }
-    if (opt.carry >= 0) drawFishBody(SPECIES[opt.carry], 14, -2, 0.2, 0.55, state.time);
+    if (opt.carry >= 0) drawCarryParcel(14, -2);
     if (opt.emote) {
       let ox = opt.emoteOff || 0;
       const label = String(opt.emote);
       const gold = isGoldTalk(label);
+      const tint = gold ? (REGULAR_TINTS[opt.name] || null) : null;
       const tangTalk = /tang/i.test(label);
-      let ey = gold ? -44 : -40;
+      let ey = gold ? -56 : -40;
       let alpha = 1;
       if (tangTalk) {
         ox += (ox >= 0 ? 38 : -38);
@@ -2833,20 +2903,20 @@
         }
       }
       const pulse = gold ? 1 + 0.08 * Math.sin(state.time * 7) : 1;
-      const bw = Math.max(20, label.length * (gold ? 8.6 : 8) + (gold ? 16 : 10)) * pulse;
-      const bh = gold ? 20 : 16;
+      const bw = Math.max(28, label.length * (gold ? 10.2 : 8) + (gold ? 22 : 10)) * pulse;
+      const bh = gold ? 26 : 16;
       ctx.save();
       ctx.globalAlpha = alpha;
-      ctx.fillStyle = gold ? "rgba(255, 236, 170, 0.96)" : "rgba(255,255,255,0.94)";
-      roundRect(-bw / 2 + ox, ey, bw, bh, 6); ctx.fill();
+      ctx.fillStyle = tint ? tint.fill : gold ? "rgba(255, 236, 170, 0.96)" : "rgba(255,255,255,0.94)";
+      roundRect(-bw / 2 + ox, ey, bw, bh, 8); ctx.fill();
       if (gold) {
-        ctx.strokeStyle = "rgba(200, 140, 30, 0.55)";
-        ctx.lineWidth = 1.6;
-        roundRect(-bw / 2 + ox, ey, bw, bh, 6); ctx.stroke();
+        ctx.strokeStyle = tint ? tint.stroke : "rgba(200, 140, 30, 0.55)";
+        ctx.lineWidth = 2;
+        roundRect(-bw / 2 + ox, ey, bw, bh, 8); ctx.stroke();
       }
-      ctx.fillStyle = "#2a1a12";
-      ctx.font = (gold ? "800 13px" : "800 12px") + " Fredoka, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(label, ox, ey + (gold ? 14 : 12));
+      ctx.fillStyle = tint ? tint.ink : "#2a1a12";
+      ctx.font = (gold ? "800 16px" : "800 12px") + " Fredoka, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(label, ox, ey + (gold ? 18 : 12));
       ctx.restore();
     }
     ctx.restore();
@@ -3265,6 +3335,7 @@
     }
     ctx.restore();
     for (const t of dockTeasers) {
+      if (onDryWood(t.x, t.y) || t.y < 1080) continue;
       ctx.save();
       if (state.unlocked[1]) {
         ctx.globalAlpha = 0.78;
@@ -3302,12 +3373,34 @@
       ctx.fillRect(90 + i * 72, 54, 72, 28);
     }
     ctx.fillStyle = "#c4483a"; ctx.fillRect(80, 50, 1600, 8);
-    // teal aisle runner down the center
-    ctx.fillStyle = state.unlocked[1] ? "rgba(40, 200, 196, 0.32)" : "rgba(32, 168, 168, 0.22)";
-    roundRect(802, 318, 156, 560, 18); ctx.fill();
-    ctx.strokeStyle = state.unlocked[1] ? "rgba(90, 240, 230, 0.62)" : "rgba(80, 220, 210, 0.45)"; ctx.lineWidth = 2;
+    // aisle water — opaque enough that school never reads as dry plank
+    const aisleWet = ctx.createLinearGradient(AISLE.x, AISLE.y, AISLE.x, AISLE.y + AISLE.h);
+    if (state.unlocked[1]) {
+      aisleWet.addColorStop(0, "rgba(36, 196, 196, 0.88)");
+      aisleWet.addColorStop(1, "rgba(12, 110, 124, 0.92)");
+    } else {
+      aisleWet.addColorStop(0, "rgba(28, 160, 168, 0.72)");
+      aisleWet.addColorStop(1, "rgba(16, 96, 112, 0.8)");
+    }
+    ctx.fillStyle = aisleWet;
+    roundRect(AISLE.x, AISLE.y, AISLE.w, AISLE.h, 18); ctx.fill();
+    ctx.save();
+    roundRect(AISLE.x, AISLE.y, AISLE.w, AISLE.h, 18); ctx.clip();
+    ctx.globalAlpha = 0.28;
+    ctx.strokeStyle = "#e8ffff"; ctx.lineWidth = 1.6;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      const yy = AISLE.y + 36 + i * 108 + Math.sin(state.time * 1.3 + i) * 5;
+      for (let x = AISLE.x; x <= AISLE.x + AISLE.w; x += 10) {
+        const y = yy + Math.sin(x * 0.06 + state.time * 2.1 + i) * 4;
+        if (x === AISLE.x) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+    ctx.strokeStyle = state.unlocked[1] ? "rgba(90, 240, 230, 0.7)" : "rgba(80, 220, 210, 0.5)"; ctx.lineWidth = 2;
     ctx.setLineDash([10, 8]);
-    roundRect(802, 318, 156, 560, 18); ctx.stroke();
+    roundRect(AISLE.x, AISLE.y, AISLE.w, AISLE.h, 18); ctx.stroke();
     ctx.setLineDash([]);
     // warm lamp glows along the back wall
     for (const lx of [400, 880, 1360]) {
@@ -3384,15 +3477,18 @@
     ctx.fillText("the pier", WELCOME.x + WELCOME.w / 2, WELCOME.y + 54);
     drawRegister(); drawKiosk();
     for (let i = 0; i < 5; i++) drawTank(i);
-    ctx.save();
-    roundRect(AISLE.x, AISLE.y, AISLE.w, AISLE.h, 18);
-    ctx.clip();
-    for (const sw of state.shopSwimmers) {
-      if (!inAisleWater(sw.x, sw.y)) continue;
-      const ang = (sw.vx >= 0 ? 1 : -1) * Math.PI / 2;
-      drawFishBody(SPECIES[sw.s], sw.x, sw.y, ang + Math.sin(state.time * 2 + sw.ph) * 0.12, 1.15, state.time + sw.ph);
+    if (!state.unlockBanner && (state.aisleSchoolWait || 0) <= 0 &&
+        !(state.fadeDir && state.pendingScene === "ocean")) {
+      ctx.save();
+      roundRect(AISLE.x, AISLE.y, AISLE.w, AISLE.h, 18);
+      ctx.clip();
+      for (const sw of state.shopSwimmers) {
+        if (!inAisleWater(sw.x, sw.y) || onDryWood(sw.x, sw.y)) continue;
+        const ang = (sw.vx >= 0 ? 1 : -1) * Math.PI / 2;
+        drawFishBody(SPECIES[sw.s], sw.x, sw.y, ang + Math.sin(state.time * 2 + sw.ph) * 0.12, 1.15, state.time + sw.ph);
+      }
+      ctx.restore();
     }
-    ctx.restore();
     const sorted = customers.slice().sort((a, b) => a.y - b.y);
     let pDrawn = false;
     for (const c of sorted) {
@@ -3542,7 +3638,22 @@
           : i === 0 ? Math.sin(tm * 4.2 + f.ph) * 0.55
           : i === 4 ? Math.sin(tm * 2.2 + f.ph) * 0.18
           : Math.sin(tm * 0.7 + f.ph) * 0.28;
+        if (!inTankWater(fx, bobY)) continue;
         drawFishBody(sp, fx, bobY, lookA, sc, tm + f.ph);
+      }
+      for (const r of tankRipples) {
+        if (r.i !== i) continue;
+        const u = 1 - clamp(r.life / r.max, 0, 1);
+        ctx.strokeStyle = "rgba(230,250,255," + (0.75 * (1 - u)) + ")";
+        ctx.lineWidth = 3.2 - u * 1.6;
+        ctx.beginPath();
+        ctx.ellipse(r.x, r.y, 14 + u * 52, 6 + u * 18, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.strokeStyle = "rgba(180,230,255," + (0.4 * (1 - u)) + ")";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.ellipse(r.x, r.y, 8 + u * 32, 4 + u * 10, 0, 0, Math.PI * 2);
+        ctx.stroke();
       }
     }
     const sheen = ctx.createLinearGradient(t.x, t.y, t.x + TANK_W * 0.55, t.y + TANK_H);
@@ -3821,6 +3932,22 @@
         }
       }
     }
+    if (state.catchClimax && state.catchClimax.fish) {
+      const f = state.catchClimax.fish;
+      const tug = 0.5 + 0.5 * Math.sin(state.time * 26);
+      ctx.save();
+      ctx.strokeStyle = f.rare
+        ? "rgba(255,210,74," + (0.5 + tug * 0.45) + ")"
+        : "rgba(255,246,232," + (0.42 + tug * 0.4) + ")";
+      ctx.lineWidth = 2.6 + tug * 2.2;
+      ctx.beginPath();
+      ctx.moveTo(player.x, player.y);
+      const mx = (player.x + f.x) / 2;
+      const my = (player.y + f.y) / 2 + Math.sin(state.time * 20) * 7;
+      ctx.quadraticCurveTo(mx, my, f.x, f.y);
+      ctx.stroke();
+      ctx.restore();
+    }
     drawNearMiss();
     drawCone();
     drawDiver(player.x, player.y, player.facing, player.bob);
@@ -4001,6 +4128,14 @@
       }
       drawFishBody(SPECIES[h.s], h.x, h.y, 0.35 + u * 0.8, pop, state.time);
       ctx.globalAlpha = 1;
+    }
+    for (const r of tankRipples) {
+      const u = 1 - clamp(r.life / r.max, 0, 1);
+      ctx.strokeStyle = "rgba(230,250,255," + (0.55 * (1 - u)) + ")";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.ellipse(r.x, r.y, 10 + u * 36, 5 + u * 12, 0, 0, Math.PI * 2);
+      ctx.stroke();
     }
     for (const p of particles) {
       ctx.globalAlpha = clamp(p.life / 0.5, 0, 1);
@@ -4270,6 +4405,29 @@
       ctx.beginPath(); ctx.arc(x + 6, y, 10, -0.5, 0.5); ctx.stroke();
     }
   }
+  function drawSaleTalks() {
+    for (const t of saleTalks) {
+      const a = clamp(t.life / 0.4, 0, 1);
+      const scr = worldToScreen(t.wx, t.wy - 10);
+      const x = clamp(scr.x, 200, W - 200);
+      const y = clamp(scr.y, 196, H - 130);
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.font = "800 20px Fredoka, sans-serif";
+      const label = t.who ? (t.who + "  ·  " + t.line) : t.line;
+      const tw = Math.min(ctx.measureText(label).width + 40, 540);
+      const th = 42;
+      ctx.fillStyle = t.tint.fill;
+      roundRect(x - tw / 2, y - 24, tw, th, 12); ctx.fill();
+      ctx.strokeStyle = t.tint.stroke;
+      ctx.lineWidth = 2.3;
+      roundRect(x - tw / 2, y - 24, tw, th, 12); ctx.stroke();
+      ctx.fillStyle = t.tint.ink;
+      ctx.textAlign = "center";
+      ctx.fillText(label, x, y + 5);
+      ctx.restore();
+    }
+  }
   function boxesOverlap(a, b, pad) {
     const p = pad == null ? 6 : pad;
     return !(a.x + a.w < b.x - p || a.x > b.x + b.w + p || a.y + a.h < b.y - p || a.y > b.y + b.h + p);
@@ -4482,6 +4640,7 @@
       ctx.fillText(t.msg, tb.x + tb.w / 2, tb.y + (big ? 30 : 20));
       ctx.globalAlpha = 1;
     }
+    drawSaleTalks();
     for (const hp of hudPops) {
       const a = clamp(hp.life / Math.max(0.2, hp.max * 0.28), 0, 1);
       ctx.globalAlpha = a;
@@ -4531,7 +4690,9 @@
     if (state.comboPop) {
       const u = clamp(state.comboPop.life / state.comboPop.max, 0, 1);
       const t = 1 - u;
-      const a = t < 0.12 ? t / 0.12 : t > 0.65 ? (1 - t) / 0.35 : 1;
+      const late = state.comboPop.keep ? 0.9 : 0.65;
+      const fade = state.comboPop.keep ? 0.1 : 0.35;
+      const a = t < 0.08 ? t / 0.08 : t > late ? (1 - t) / fade : 1;
       const sc = 0.92 + u * 0.28;
       ctx.save();
       ctx.globalAlpha = a;
@@ -4801,7 +4962,7 @@
     ctx.fillStyle = "rgba(200,220,230,0.42)";
     ctx.font = "600 11px Nunito, sans-serif";
     ctx.textAlign = "right";
-      ctx.fillText("Aqua Bay · loop 21", W - 16, H - 14);
+      ctx.fillText("Aqua Bay · loop 22", W - 16, H - 14);
   }
 
   function drawSpeciesStrip(ribbon) {
