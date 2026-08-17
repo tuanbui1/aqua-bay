@@ -6270,12 +6270,14 @@
       xCol = clamp(shack.x - 12 - cw, 360, muteB.x - 12 - cw);
     }
     const locked = lockedTankScreenBoxes();
-    const hitsShelf = (x, y) => locked.some((b) => boxesOverlap(colAt(x, y), b, 12));
+    const shelfPad = 10;
+    const shelfGap = 16;
+    const hitsShelf = (x, y) => locked.some((b) => boxesOverlap(colAt(x, y), b, shelfPad));
     if (hitsShelf(xCol, startY)) {
       let below = startY;
       for (let i = 0; i < locked.length; i++) {
         const b = locked[i];
-        if (xCol + cw > b.x - 12 && xCol < b.x + b.w + 12) below = Math.max(below, b.y + b.h + 12);
+        if (xCol + cw > b.x - shelfGap && xCol < b.x + b.w + shelfGap) below = Math.max(below, b.y + b.h + shelfGap);
       }
       if (below + colH <= H - 18 && !hitsShelf(xCol, below)) {
         startY = below;
@@ -6283,10 +6285,17 @@
         let left = xCol;
         for (let i = 0; i < locked.length; i++) {
           const b = locked[i];
-          if (boxesOverlap(colAt(xCol, startY), b, 12)) left = Math.min(left, b.x - 14 - cw);
+          if (boxesOverlap(colAt(xCol, startY), b, shelfPad)) left = Math.min(left, b.x - shelfGap - cw);
         }
         xCol = clamp(left, 320, muteB.x - 12 - cw);
-        if (hitsShelf(xCol, startY) && below + colH <= H - 18) startY = below;
+        if (hitsShelf(xCol, startY)) {
+          let down = startY;
+          for (let i = 0; i < locked.length; i++) {
+            const b = locked[i];
+            if (xCol + cw > b.x - shelfGap && xCol < b.x + b.w + shelfGap) down = Math.max(down, b.y + b.h + shelfGap);
+          }
+          if (down + colH <= H - 18) startY = down;
+        }
       }
     }
     for (let i = 0; i < 5; i++) {
@@ -6486,8 +6495,8 @@
         const z = Math.max(0.7, cam.z);
         const shelfL = TANK_POS[0].x;
         const shelfR = TANK_POS[4].x + TANK_W;
-        const minCam = shelfR - (W / 2) / z + 16 / z;
-        const maxCam = shelfL + (W / 2) / z - 16 / z;
+        const minCam = shelfR - (W / 2) / z + 8 / z;
+        const maxCam = shelfL + (W / 2) / z - 8 / z;
         if (minCam <= maxCam) tx = lerp(tx, clamp(tx, minCam, maxCam), plaza);
         else tx = lerp(tx, (minCam + maxCam) * 0.5, plaza * 0.75);
       }
