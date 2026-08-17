@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Aqua Bay" />
   <title>Aqua Bay — dive, stock, sell</title>
   <meta name="description" content="Dive. Stock. Sell. A sunny pier aquarium tycoon in the browser. Free. No account. Also play Skipjack, a skipping-stone toy, from the games hub." />
   <link rel="canonical" href="https://tuanbui1.github.io/aqua-bay/" />
@@ -16,7 +19,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <a href="games/" style="position:fixed;top:10px;right:14px;z-index:5;font:600 13px Nunito,sans-serif;color:#f4efe6;text-decoration:none;opacity:.82">More games</a>
+  <a class="more-games" href="games/">More games</a>
   <div id="wrap">
     <canvas id="game" width="1280" height="720" aria-label="Aqua Bay game"></canvas>
   </div>
