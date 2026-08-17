@@ -23,7 +23,7 @@ Open `index.html` (or `python3 -m http.server` in this folder). No build step.
 - **Esc:** pause and help
 - **Who:** pick Reef, Skip, or Dino on the title (or pause)
 
-Plays on a phone in portrait or landscape — tap the pier to walk, no keyboard needed. Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 32**.
+Plays on a phone in portrait or landscape — tap the pier to walk, no keyboard needed. Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 33**. Plaza↔dock pans fade label chips before they cut in half; the upgrade tray stays off the DIVE bar.
 
 ## Why it’s fun
 

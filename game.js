@@ -801,22 +801,34 @@
   function actionPromptVisible() {
     return diveActionLegal() || surfaceActionLegal();
   }
+  function actionBtnSize() {
+    const compact = compactHud();
+    return {
+      w: compact ? thumbCanvas(168, 300, 540) : 340,
+      h: compact ? thumbCanvas(58, 64, 150) : 52,
+      pad: compact ? 22 : 18,
+    };
+  }
   function actionBtnBox() {
     const compact = compactHud();
-    const w = compact ? thumbCanvas(168, 300, 540) : 340;
-    const h = compact ? thumbCanvas(58, 64, 150) : 52;
+    const sz = actionBtnSize();
+    const w = sz.w, h = sz.h;
     let x = W / 2 - w / 2;
-    let y = H - (compact ? 22 : 18) - h;
+    let y = H - sz.pad - h;
+    if (compact && state.scene === "shop" && shopBarsReady()) {
+      x = clamp(W - 18 - w, 16, W - 18 - w);
+    }
+    const box = hudBox(x, y, w, h);
     if (state.scene === "shop" && shopBarsReady()) {
       const bar = upgradeBarBox();
-      y = bar.y - 12 - h;
-      if (compact) {
-        x = clamp(W - 18 - w, 16, W - 18 - w);
-        y = H - 18 - h;
-        if (y + h > bar.y - 8 && x < bar.x + bar.w + 8) y = bar.y - 10 - h;
+      const extra = decorHudReady() ? (compact ? thumbCanvas(72, 100, 140) : 118) + 8 : 0;
+      const tray = { x: bar.x, y: bar.y, w: bar.w + extra, h: bar.h };
+      if (boxesOverlap(box, tray, 8)) {
+        if (compact && box.x >= tray.x + tray.w + 8) return box;
+        return hudBox(box.x, bar.y - 10 - h, w, h);
       }
     }
-    return hudBox(x, y, w, h);
+    return box;
   }
   function welcomeScreenBox() {
     if (state.scene !== "shop") return null;
@@ -833,6 +845,15 @@
     const totalW = w + (chipW ? 8 + chipW : 0);
     let x = 16;
     let y = H - (compact ? 22 : 18) - h;
+    if (state.scene === "shop") {
+      const sz = actionBtnSize();
+      const diveTop = worldToScreen(DIVE_ZONE.x, 910).y;
+      const dockOn = diveTop < H - 4;
+      if (dockOn || actionPromptVisible()) {
+        y = Math.min(y, H - sz.pad - sz.h - 12 - h);
+        if (dockOn) y = Math.min(y, diveTop - 10 - h);
+      }
+    }
     const floor = topHudFloor();
     if (y < floor) y = clamp(floor, 10, Math.max(10, H - 10 - h));
     const welcome = welcomeScreenBox();
@@ -1614,6 +1635,21 @@
     const s = worldToScreen(wx, wy);
     if (s.y >= 78) return 1;
     return clamp((s.y - 14) / 64, 0.12, 1);
+  }
+  // Hide a chip before any edge bisects it. Fully on-canvas stays 1.
+  function screenBoxAlpha(x, y, w, h) {
+    const pad = 6;
+    const visW = Math.max(0, Math.min(x + w, W - pad) - Math.max(x, pad));
+    const visH = Math.max(0, Math.min(y + h, H - pad) - Math.max(y, pad));
+    const frac = (visW * visH) / Math.max(1, w * h);
+    if (frac >= 0.97) return 1;
+    if (frac < 0.86) return 0;
+    return (frac - 0.86) / 0.11;
+  }
+  function worldBoxAlpha(wx, wy, ww, wh) {
+    const s = worldToScreen(wx, wy);
+    const z = Math.max(0.001, cam.z);
+    return screenBoxAlpha(s.x, s.y, ww * z, wh * z);
   }
 
   // ===== OCEAN FISH =====
@@ -4280,7 +4316,12 @@
   }
   function drawShopBanner() {
     ctx.save();
-    ctx.globalAlpha = Math.max(0.78, worldHudFade(880, 90));
+    const sign = (state.decor && state.decor[1])
+      ? { x: 728, y: 58, w: 304, h: 80 }
+      : { x: 720, y: 78, w: 320, h: 36 };
+    const a = worldBoxAlpha(sign.x, sign.y, sign.w, sign.h);
+    if (a < 0.04) { ctx.restore(); return; }
+    ctx.globalAlpha = a;
     if (state.decor && state.decor[1]) {
       ctx.strokeStyle = "#c8a050"; ctx.lineWidth = 2.2;
       ctx.beginPath(); ctx.moveTo(768, 58); ctx.lineTo(786, 86); ctx.stroke();
@@ -4429,11 +4470,17 @@
     ctx.fillStyle = "rgba(80,230,255,0.12)";
     roundRect(DIVE_ZONE.x, DIVE_ZONE.y, DIVE_ZONE.w, DIVE_ZONE.h, 16); ctx.fill();
     ctx.strokeStyle = "rgba(180,255,255,0.35)"; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = "#1b4d6b";
-    roundRect(820, 910, 120, 36, 8); ctx.fill();
-    ctx.fillStyle = "#9ef0ff";
-    ctx.font = "800 18px Fredoka, sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("DIVE", 880, 934);
+    const diveA = worldBoxAlpha(820, 910, 120, 36);
+    if (diveA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = diveA;
+      ctx.fillStyle = "#1b4d6b";
+      roundRect(820, 910, 120, 36, 8); ctx.fill();
+      ctx.fillStyle = "#9ef0ff";
+      ctx.font = "800 18px Fredoka, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("DIVE", 880, 934);
+      ctx.restore();
+    }
     const pathPts = [
       [880, 1008], [880, 860], [880, 680], [880, 500], [880, 360],
       [720, 360], [520, 370], [340, 430], [250, 520],
@@ -4526,8 +4573,14 @@
     ctx.fillStyle = "#1b1b22"; roundRect(r.x + 18, r.y + 14, 70, 22, 4); ctx.fill();
     ctx.fillStyle = "#7dffa0"; ctx.font = "700 12px Nunito, sans-serif"; ctx.textAlign = "left";
     ctx.fillText("$" + state.registerCash, r.x + 24, r.y + 30);
-    ctx.fillStyle = "#fff6e8"; ctx.font = "700 13px Fredoka, sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("CASHIER", r.x + r.w / 2, r.y + r.h - 14);
+    const cashA = worldBoxAlpha(r.x + 18, r.y + r.h - 32, r.w - 36, 22);
+    if (cashA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = cashA;
+      ctx.fillStyle = "#fff6e8"; ctx.font = "700 13px Fredoka, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("CASHIER", r.x + r.w / 2, r.y + r.h - 14);
+      ctx.restore();
+    }
     if (state.hiredCashier) {
       drawPerson(r.x + 46, r.y + 20, {
         shirt: "#1b4d6b", hair: "#2a1a12", skin: "#d0a07a",
@@ -4550,10 +4603,16 @@
       ctx.fillText("$", r.x + r.w / 2, r.y - 6 - bounce);
     }
     if (nearRect(r.x, r.y, r.w, r.h, 40) && state.registerCash > 0) {
-      ctx.fillStyle = "rgba(255,226,122,0.9)";
-      roundRect(r.x - 10, r.y - 34, r.w + 20, 26, 8); ctx.fill();
-      ctx.fillStyle = "#3a2a10"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Collect  $" + state.registerCash, r.x + r.w / 2, r.y - 16);
+      const colA = worldBoxAlpha(r.x - 10, r.y - 34, r.w + 20, 26);
+      if (colA > 0.04) {
+        ctx.save();
+        ctx.globalAlpha = colA;
+        ctx.fillStyle = "rgba(255,226,122,0.9)";
+        roundRect(r.x - 10, r.y - 34, r.w + 20, 26, 8); ctx.fill();
+        ctx.fillStyle = "#3a2a10"; ctx.font = "700 13px Nunito, sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("Collect  $" + state.registerCash, r.x + r.w / 2, r.y - 16);
+        ctx.restore();
+      }
     }
     ctx.restore();
     btn("till", ...screenBtnFromWorld(r.x - 8, r.y - 8, r.w + 16, r.h + 24));
@@ -5730,11 +5789,17 @@
     if (missionVisible()) {
       const reached = Math.max(1, Math.min(6, firstSessionReached() || (firstSessionIndex() + 1)));
       const chip = hudBox(16, sessionY, 176, 30);
-      card(chip.x, chip.y, chip.w, chip.h, "rgba(16, 36, 46, 0.88)");
-      ctx.fillStyle = "#ffe27a";
-      ctx.font = "800 12px Nunito, sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText("FIRST SESSION  " + reached + " / 6", chip.x + 12, chip.y + 20);
+      const a = screenBoxAlpha(chip.x, chip.y, chip.w, chip.h);
+      if (a > 0.04) {
+        ctx.save();
+        ctx.globalAlpha = a;
+        card(chip.x, chip.y, chip.w, chip.h, "rgba(16, 36, 46, 0.88)");
+        ctx.fillStyle = "#ffe27a";
+        ctx.font = "800 12px Nunito, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("FIRST SESSION  " + reached + " / 6", chip.x + 12, chip.y + 20);
+        ctx.restore();
+      }
     } else if (sessionChipVisible()) {
       const goals = state.sessionGoals || [];
       let cur = "";
@@ -5746,11 +5811,17 @@
       ctx.font = "700 12px Nunito, sans-serif";
       const tw = Math.min(ctx.measureText(cur).width + 88, 320);
       const chip = hudBox(16, sessionY, tw, 30);
-      card(chip.x, chip.y, chip.w, chip.h, "rgba(16, 36, 46, 0.88)");
-      ctx.fillStyle = "#9ef0ff";
-      ctx.font = "800 12px Nunito, sans-serif";
-      ctx.textAlign = "left";
-      ctx.fillText("TODAY  ·  " + cur, chip.x + 12, chip.y + 20);
+      const a = screenBoxAlpha(chip.x, chip.y, chip.w, chip.h);
+      if (a > 0.04) {
+        ctx.save();
+        ctx.globalAlpha = a;
+        card(chip.x, chip.y, chip.w, chip.h, "rgba(16, 36, 46, 0.88)");
+        ctx.fillStyle = "#9ef0ff";
+        ctx.font = "800 12px Nunito, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("TODAY  ·  " + cur, chip.x + 12, chip.y + 20);
+        ctx.restore();
+      }
     }
     drawSpeciesStrip(ribbon);
     const { muteB, pauseB } = topCtrlBoxes();
@@ -6175,7 +6246,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 32", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 33", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -6215,7 +6286,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 32", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 33", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -6232,7 +6303,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 32", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 33", W / 2, 632);
     }
   }
 
