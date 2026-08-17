@@ -1095,6 +1095,15 @@
   }
   // Entire canvas: at most one full speech bubble. Clusters returning self
   // (C26 / C29 / C30) let every walker draw beside saleTalks.
+  // C31 compared speechFocus() === who on every head. Greetings (hey!/hi!)
+  // and VIP/tang (Blue Tang?/VIP) are customer objects, so that usually
+  // picked one — but nothing latched the winner. A later head that lost
+  // the === test had no second chance, yet a later speechFocus() call
+  // could return a *different* object (saleTalks vs walker, or the
+  // talker list shifting) and fire a second full(). Cache once per frame
+  // and refuse a second full().
+  let speechWinner = null;
+  let speechDrew = false;
   function speechFocus() {
     if (saleTalks[0]) return saleTalks[0];
     const talkers = [];
@@ -1103,11 +1112,16 @@
     talkers.sort(talkSort);
     return talkers[Math.floor(state.time / 1.65) % talkers.length];
   }
+  function beginSpeechFrame() {
+    speechWinner = speechFocus();
+    speechDrew = false;
+  }
   // THE gate. Greeting / VIP / sale / till emote all call this.
   // Winner draws the one full bubble; everyone else is a pearl or is not spawned.
   function drawSpeech(who, full, pearl) {
     if (!who) return false;
-    if (speechFocus() === who) {
+    if (!speechDrew && who === speechWinner) {
+      speechDrew = true;
       if (full) full();
       return true;
     }
@@ -4607,16 +4621,26 @@
     ctx.scale(punch, punch);
     ctx.translate(-(r.x + r.w / 2), -(r.y + r.h / 2));
     ctx.fillStyle = "#8b5a2b"; roundRect(r.x, r.y, r.w, r.h, 10); ctx.fill();
-    ctx.fillStyle = "#c4894a"; roundRect(r.x + 8, r.y + 8, r.w - 16, 36, 6); ctx.fill();
-    ctx.fillStyle = "#1b1b22"; roundRect(r.x + 18, r.y + 14, 70, 22, 4); ctx.fill();
-    ctx.fillStyle = "#7dffa0"; ctx.font = "700 12px Nunito, sans-serif"; ctx.textAlign = "left";
-    ctx.fillText("$" + state.registerCash, r.x + 24, r.y + 30);
-    const cashA = worldLabelAlpha(r.x + 8, r.y + r.h - 30, r.w - 16, 26);
+    // Same rule as Welcome: fade the inner plaque + $ chip as one unit
+    // before the left frame bisects them. C34 only boxed the CASHIER
+    // word (inset, 26px tall), so $0 / the bouncing $ sat at alpha 1
+    // while the counter sat flush-cut.
+    const cashA = worldLabelAlpha(r.x, r.y - 34, r.w, r.h + 34);
     if (cashA > 0.04) {
       ctx.save();
       ctx.globalAlpha = cashA;
+      ctx.fillStyle = "#c4894a"; roundRect(r.x + 8, r.y + 8, r.w - 16, 36, 6); ctx.fill();
+      ctx.fillStyle = "#1b1b22"; roundRect(r.x + 18, r.y + 14, 70, 22, 4); ctx.fill();
+      ctx.fillStyle = "#7dffa0"; ctx.font = "700 12px Nunito, sans-serif"; ctx.textAlign = "left";
+      ctx.fillText("$" + state.registerCash, r.x + 24, r.y + 30);
       ctx.fillStyle = "#fff6e8"; ctx.font = "700 13px Fredoka, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("CASHIER", r.x + r.w / 2, r.y + r.h - 14);
+      if (state.registerCash > 0 && !nearRect(r.x, r.y, r.w, r.h, 140)) {
+        const bounce = Math.abs(Math.sin(state.time * 6)) * 12;
+        ctx.fillStyle = "#ffe27a";
+        ctx.font = "800 26px Fredoka, sans-serif";
+        ctx.fillText("$", r.x + r.w / 2, r.y - 6 - bounce);
+      }
       ctx.restore();
     }
     if (state.hiredCashier) {
@@ -4633,12 +4657,6 @@
       ctx.fillStyle = "#a87410";
       ctx.font = "800 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("$", c.x, by + 4);
-    }
-    if (state.registerCash > 0 && !nearRect(r.x, r.y, r.w, r.h, 140)) {
-      const bounce = Math.abs(Math.sin(state.time * 6)) * 12;
-      ctx.fillStyle = "#ffe27a";
-      ctx.font = "800 26px Fredoka, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText("$", r.x + r.w / 2, r.y - 6 - bounce);
     }
     if (nearRect(r.x, r.y, r.w, r.h, 40) && state.registerCash > 0) {
       const colA = worldBoxAlpha(r.x - 10, r.y - 34, r.w + 20, 26);
@@ -4660,13 +4678,16 @@
     const ks = worldToScreen(k.x, k.y);
     const ke = worldToScreen(k.x + k.w, k.y + k.h);
     if (ks.y < 12 || ke.y > H - 12 || ks.x < 8 || ke.x > W - 8) return;
-    ctx.fillStyle = "#2a7d8a"; roundRect(k.x, k.y, k.w, k.h, 12); ctx.fill();
-    const labelA = worldLabelAlpha(k.x + 8, k.y + 28, k.w - 16, 80);
+    const labelA = worldLabelAlpha(k.x, k.y, k.w, k.h);
     const strip = speciesStripLayout();
     const kioskBox = { x: ks.x, y: ks.y, w: ke.x - ks.x, h: ke.y - ks.y };
+    // C35 hid UPGRADES text when the book chips sat in this box, but still
+    // painted the empty teal slab. Only draw the panel when its chips/copy
+    // actually go in it.
     if (labelA <= 0.04 || boxesOverlap(kioskBox, strip, 10)) return;
     ctx.save();
     ctx.globalAlpha = labelA;
+    ctx.fillStyle = "#2a7d8a"; roundRect(k.x, k.y, k.w, k.h, 12); ctx.fill();
     ctx.fillStyle = "#fff6e8"; ctx.font = "700 14px Fredoka, sans-serif"; ctx.textAlign = "center";
     ctx.fillText("UPGRADES", k.x + k.w / 2, k.y + 42);
     ctx.fillStyle = "#c8e8ee";
@@ -6301,7 +6322,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 35", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 36", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -6341,7 +6362,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 35", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 36", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -6358,7 +6379,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 35", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 36", W / 2, 632);
     }
   }
 
@@ -6857,6 +6878,7 @@
       } else {
         updateCam(dt);
       }
+      beginSpeechFrame();
       drawWorld();
       drawHUD();
       if (state.mode === "pause" || state.mode === "help") drawPause();

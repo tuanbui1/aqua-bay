@@ -23,7 +23,7 @@ Open `index.html` (or `python3 -m http.server` in this folder). No build step.
 - **Esc:** pause and help
 - **Who:** pick Reef, Skip, or Dino on the title (or pause)
 
-Plays on a phone in portrait or landscape — tap the pier to walk, no keyboard needed. Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 35**. Plaza↔dock pans fade every world label (Welcome, CASHIER, Pier Mart) and the whole tank/unlock card panel before any edge cuts it; the upgrade tray stays off the DIVE bar.
+Plays on a phone in portrait or landscape — tap the pier to walk, no keyboard needed. Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 36**. One full speech bubble on the canvas (greetings and VIP share the `drawSpeech` latch). Plaza↔dock pans fade every world label (Welcome, CASHIER + $ chip, Pier Mart) and the whole tank/unlock card panel before any edge cuts it; the empty teal kiosk slab stays gone unless its copy is in that box; the upgrade tray stays off the DIVE bar.
 
 ## Why it’s fun
 
