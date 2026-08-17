@@ -52,6 +52,7 @@
       background: linear-gradient(180deg, rgba(42,24,16,.18) 0%, rgba(42,24,16,.42) 100%);
     }
     #overlay.hidden { display: none; }
+    #overlay .hidden { display: none; }
     #overlay h1 {
       font-family: Fraunces, Georgia, serif;
       font-size: clamp(42px, 8vw, 84px);
@@ -84,8 +85,34 @@
       text-align: center; font-size: 11px; line-height: 1.35;
       color: rgba(255,246,232,.78); padding: 0 16px;
       text-shadow: 0 1px 3px rgba(0,0,0,.45);
+      pointer-events: none;
     }
-    footer a { color: #ffe0b0; }
+    footer a { color: #ffe0b0; pointer-events: auto; }
+    @media (max-width: 600px) {
+      #wrap {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      #stage {
+        width: 100vw;
+        height: min(calc(100vh - 52px), 100vw);
+      }
+      #overlay { padding: 12px 14px 16px; }
+      #overlay h1 { font-size: clamp(28px, 11vw, 44px); }
+      #overlay .tag { margin-top: 6px; font-size: 11px; letter-spacing: .14em; }
+      #overlay .how { margin-top: 10px; font-size: 13px; max-width: 94%; }
+      #overlay button { margin-top: 14px; padding: 10px 22px; font-size: 16px; }
+      #overlay .scoreline { font-size: 16px; }
+      #hud { font-size: 13px; top: 8px; }
+      footer {
+        position: static;
+        flex: 0 0 auto;
+        width: 100%;
+        padding: 6px 12px 10px;
+        font-size: 10px;
+      }
+    }
     .hud-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
     #mute {
       pointer-events: auto;
@@ -117,12 +144,12 @@
         <p class="scoreline hidden" id="scoreline"></p>
         <p class="best hidden" id="bestline"></p>
         <button type="button" id="go">Throw a stone</button>
-        <footer>
-          Written by an AI agent (Twitter Bot) for Tuan Bui. Tuan is the owner.
-          Play free. Later listing, if any, is $0 + donations on itch when the owner creates that account.
-        </footer>
       </div>
     </div>
+    <footer>
+      Written by an AI agent (Twitter Bot) for Tuan Bui. Tuan is the owner.
+      Play free. Later listing, if any, is $0 + donations on itch when the owner creates that account.
+    </footer>
   </div>
   <script>
 (function () {
@@ -256,7 +283,7 @@
   function finish(howText, kind) {
     state = "over";
     distM = meters();
-    score = skips * distM;
+    score = distM * (skips + 1);
     if (score > best) {
       best = score;
       try { localStorage.setItem(BEST_KEY, String(best)); } catch (e) {}
@@ -634,16 +661,16 @@
     ctx.stroke();
     if (tapPrompt > 0.55) {
       ctx.fillStyle = "#fff6e8";
-      ctx.font = "700 16px Outfit, sans-serif";
+      ctx.font = "700 22px Outfit, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("TAP", sx, WATER - 18);
+      ctx.fillText("TAP", sx, WATER - 22);
     }
     ctx.restore();
   }
 
   function drawPower() {
     if (state !== "ready" || !charging) return;
-    var x = 36, y = 200, h = 180, w = 14;
+    var x = 36, y = 200, h = 200, w = 18;
     ctx.fillStyle = "rgba(42,24,16,.4)";
     ctx.fillRect(x - 4, y - 4, w + 8, h + 8);
     ctx.fillStyle = "#3a2418";
