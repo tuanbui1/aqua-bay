@@ -2216,11 +2216,13 @@
           if (!performPendingAct()) {
             tryStockOnArrival();
             tryUnlockOnArrival();
-            if (player.pendingAct && player.pendingAct.kind === "cash") collectCash();
           }
         }
-        player.goto = null;
-        player.pendingAct = null;
+        // stockTank may have handed us a new cashier walk — keep that dest.
+        if (player.goto && Math.hypot(player.goto.x - player.x, player.goto.y - player.y) < 22) {
+          player.goto = null;
+          if (player.pendingAct && !canPerformAct(player.pendingAct)) player.pendingAct = null;
+        }
       } else { ax = dx / d; ay = dy / d; }
     }
     const accel = player.goto ? 2200 : 1650;
@@ -3258,11 +3260,11 @@
   function performPendingAct() {
     const act = player.pendingAct;
     if (!act || !canPerformAct(act)) return false;
+    player.pendingAct = null;
+    player.goto = null;
     if (act.kind === "stock") stockTank(act.i);
     else if (act.kind === "unlock") buyTank(act.i);
     else if (act.kind === "cash") collectCash();
-    player.pendingAct = null;
-    player.goto = null;
     return true;
   }
   function intentWalk(kind, dest, i) {
