@@ -16,14 +16,14 @@ Open `index.html` (or `python3 -m http.server` in this folder). No build step.
 
 - **Move:** WASD, tap/click-to-walk, or hold-drag
 - **Dive:** walk to the glowing dock, then Space or the DIVE button
-- **Catch:** hold with a fish in the cone until the bar fills (one scoop, then release)
+- **Catch:** hold (or tap a fish) until the bar fills — the cone locks on so walking does not break the grab (one scoop, then release)
 - **Surface:** full bag — Space, Enter, or the SURFACE button
-- **Sell:** walk into the glowing tank, then stand on the cashier
+- **Sell:** walk into the glowing tank, then stand in the till glow to collect
 - **Book:** tap a fish on the right strip
 - **Esc:** pause and help
 - **Who:** pick Reef, Skip, or Dino on the title (or pause)
 
-Plays on a phone in portrait or landscape — tap the pier to walk, no keyboard needed. Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 37**. Hold fills the catch bar (one fish per scoop); first stock is a tap, not an auto-walk. Locked right-rail $ chips unlock like tank cards. A corner **→ DIVE** walks you back when the dock is off-screen. Till receipt uses the real pay formula and clears on collect. Overlay sits under the HUD. One full speech bubble on the canvas (greetings and VIP share the `drawSpeech` latch). Plaza↔dock pans fade every world label (Welcome, CASHIER + $ chip, Pier Mart) and the whole tank/unlock card panel before any edge cuts it; the empty teal kiosk slab stays gone unless its copy is in that box; the upgrade tray stays off the DIVE bar.
+Plays on a phone in portrait or landscape — tap the pier to walk, no keyboard needed. Saves in `localStorage` under `aqua-bay-save`. Pause and title stamp **Aqua Bay · loop 38**. Hold fills the catch bar (one fish per scoop) and locks the cone on the fish; a tap on a fish starts the scoop. First two or three catches of dive 1 are forgiving, then the cone tapers. First stock is a tap, not an auto-walk. Locked right-rail $ chips show the species name under the price and unlock like tank cards. Stand in the till glow ~0.3s to collect (click from far still walks then acts). A fish that slips the cone mid-hold flashes **escaped!** with a shrinking leftover bar. A corner **→ DIVE** walks you back when the dock is off-screen. Till receipt uses the real pay formula and clears on collect. Overlay sits under the HUD. One full speech bubble on the canvas (greetings and VIP share the `drawSpeech` latch). Plaza↔dock pans fade every world label (Welcome, CASHIER + $ chip, Pier Mart) and the whole tank/unlock card panel before any edge cuts it; the empty teal kiosk slab stays gone unless its copy is in that box; the upgrade tray stays off the DIVE bar.
 
 ## Why it’s fun
 
