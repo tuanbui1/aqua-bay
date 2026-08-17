@@ -291,6 +291,8 @@
       tone(523, 0.06, "triangle", 0.07);
       setTimeout(() => { if (!state.muted) tone(784, 0.07, "square", 0.06, 1175); }, 45);
       setTimeout(() => { if (!state.muted) tone(1046, 0.1, "sine", 0.055); }, 100);
+    } else if (kind === "almost") {
+      tone(520, 0.08, "triangle", 0.065, 260);
     } else if (kind === "tang") {
       tone(494, 0.07, "sine", 0.07, 740);
       setTimeout(() => { if (!state.muted) tone(740, 0.08, "triangle", 0.07); }, 70);
@@ -1410,12 +1412,12 @@
     const flourish = !f.rare && n >= 5;
     state.catchClimax = {
       fish: f, t: 0,
-      max: f.rare ? 0.62 : escape ? 0.98 : snap ? 0.42 : flourish ? 0.78 : 0.62,
+      max: f.rare ? 0.62 : escape ? 1.18 : snap ? 0.42 : flourish ? 0.78 : 0.62,
       rare: !!f.rare, ox: f.x, oy: f.y,
       escape: escape, snap: snap, flourish: flourish, n,
     };
-    state.coneFlash = f.rare ? 0.34 : escape ? 0.4 : 0.22;
-    state.camPunch = f.rare ? 0.16 : escape ? 0.12 : 0.08;
+    state.coneFlash = f.rare ? 0.34 : escape ? 0.48 : 0.22;
+    state.camPunch = f.rare ? 0.16 : escape ? 0.14 : 0.08;
     if (f.rare) state.flash = 0.2;
   }
   function tickCatchClimax(dt) {
@@ -1425,16 +1427,19 @@
     cl.t += dt;
     const u = clamp(cl.t / cl.max, 0, 1);
     if (cl.escape) {
-      const yank = u < 0.58 ? (u / 0.58) : 0;
-      const snap = u >= 0.58 ? (u - 0.58) / 0.42 : 0;
+      const yank = u < 0.6 ? (u / 0.6) : 0;
+      const snap = u >= 0.6 ? (u - 0.6) / 0.4 : 0;
       const away = Math.atan2(cl.oy - player.y, cl.ox - player.x);
-      const pull = 54 * Math.sin(yank * Math.PI);
+      const pull = 86 * Math.sin(yank * Math.PI);
       const back = 1 - snap * snap * (3 - 2 * snap);
-      f.x = cl.ox + Math.cos(away) * pull * (1 - snap) + Math.sin(cl.t * 36) * 8 * back;
-      f.y = cl.oy + Math.sin(away) * pull * (1 - snap) + Math.cos(cl.t * 30) * 5 * back;
-      if (u > 0.56 && u < 0.62 && !cl.yelled) {
+      f.x = cl.ox + Math.cos(away) * pull * (1 - snap) + Math.sin(cl.t * 36) * 10 * back;
+      f.y = cl.oy + Math.sin(away) * pull * (1 - snap) + Math.cos(cl.t * 30) * 7 * back;
+      if (u > 0.52 && !cl.yelled) {
         cl.yelled = true;
-        pop(f.x, f.y - 22, "almost!", "#fff6e8", 0.7, 1.15);
+        pop(f.x, f.y - 26, "almost!", "#fff6e8", 1.05, 1.55);
+        state.hitStop = Math.max(state.hitStop || 0, 0.11);
+        state.camPunch = Math.max(state.camPunch || 0, 0.14);
+        sfx("almost");
       }
     } else if (cl.snap) {
       const wig = (1 - u) * 7;
@@ -1476,7 +1481,7 @@
       state.bagBonus = 1.1;
       const word = state.diveCatches >= 5 ? "AMAZING" : state.diveCatches === 4 ? "GREAT" : "STREAK!";
       const col = state.diveCatches >= 5 ? "#ff8ad4" : state.diveCatches === 4 ? "#9ef0ff" : "#ffe27a";
-      state.comboPop = { text: word, col, life: state.diveCatches === 3 ? 0.85 : 0.6, max: state.diveCatches === 3 ? 0.85 : 0.6 };
+      state.comboPop = { text: word, col, life: state.diveCatches === 3 ? 1.15 : 0.6, max: state.diveCatches === 3 ? 1.15 : 0.6 };
     } else if (state.diveCatches >= 3) {
       state.bagBonus = 1.1;
     }
