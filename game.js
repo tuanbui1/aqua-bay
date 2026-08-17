@@ -127,7 +127,7 @@
     tillSlip: null,
     escapeBar: null, escapeGate: 0,
   };
-  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0 };
+  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0 };
   const cam = { x: 880, y: 920, z: 1, rail: 28 };
   const oceanFish = [];
   const tankFish = [[], [], [], [], []];
@@ -494,7 +494,7 @@
       camNudge: 0, camNudgeMax: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     state.hasSave = false;
-    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0;
+    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
     cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
@@ -701,8 +701,15 @@
   }
   function swimSpeed() { return 215 + state.speedLv * 42; }
   function catchTime() { return (state.lifetimeCatches < 3 ? 0.62 : 0.74) / (1 + 0.24 * state.catchLv); }
-  function catchHolding() {
+  function catchHoldingRaw() {
     return !!(mouse.down || keys.has(" ") || keys.has("enter") || player.scoopTap);
+  }
+  function catchHolding() {
+    return catchHoldingRaw() || (player.holdGrace || 0) > 0;
+  }
+  function tickHoldGrace(dt) {
+    if (catchHoldingRaw()) player.holdGrace = 0.14;
+    else if ((player.holdGrace || 0) > 0) player.holdGrace = Math.max(0, player.holdGrace - (dt || 0));
   }
   function teasersAllowed() { return !!state.unlocked[1]; }
   function allowAutoStock() { return !!state.didFirstStock; }
@@ -732,6 +739,45 @@
   function walkToDock() {
     player.goto = dockWalkPoint();
     player.pendingAct = null;
+  }
+  function cashNeedsCollect() {
+    return tillWaiting() && !cashierHandlingIt();
+  }
+  function tillWorld() {
+    return { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 };
+  }
+  function tillOffScreen() {
+    if (state.scene !== "shop") return false;
+    const t = tillWorld();
+    const s = worldToScreen(t.x, t.y);
+    return s.x < 56 || s.x > W - 56 || s.y < 64 || s.y > H - 64;
+  }
+  function tillCornerBox() {
+    const t = tillWorld();
+    const s = worldToScreen(t.x, t.y);
+    const w = compactHud() ? 132 : 148;
+    const h = compactHud() ? 42 : 36;
+    return hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h);
+  }
+  function isDockDest(pt) {
+    if (!pt) return false;
+    return Math.hypot(pt.x - 880, pt.y - 1008) < 80 ||
+      (pt.x > DIVE_ZONE.x && pt.x < DIVE_ZONE.x + DIVE_ZONE.w &&
+       pt.y > DIVE_ZONE.y - 20 && pt.y < DIVE_ZONE.y + DIVE_ZONE.h + 20);
+  }
+  function clickOnDiveStrip() {
+    const w = screenToWorld(mouse.pressX, mouse.pressY);
+    return w.x > DIVE_ZONE.x + 24 && w.x < DIVE_ZONE.x + DIVE_ZONE.w - 24 &&
+           w.y > DIVE_ZONE.y && w.y < DIVE_ZONE.y + DIVE_ZONE.h;
+  }
+  function haulReadyToSurface() {
+    if (bagIsFull()) return true;
+    if (state.didFirstStock || (state.divesThisSession | 0) > 1) return true;
+    const n = state.bag.length | 0;
+    return n === 0 || n >= 3;
+  }
+  function canSurfaceNow() {
+    return state.scene === "ocean" && (bagIsFull() || (nearSurface() && haulReadyToSurface()));
   }
   function coneRange() { return 200 + state.catchLv * 8 + tutorialGrace() * 70; }
   function coneHalf() { return 0.85 + tutorialGrace() * 0.42; }
@@ -862,10 +908,10 @@
     return state.scene === "shop" && !inDiveZone() && player.y < 840 && (state.tutorial >= 5 || state.money >= 25);
   }
   function diveActionLegal() {
-    return state.mode === "play" && state.scene === "shop" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable();
+    return state.mode === "play" && state.scene === "shop" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect();
   }
   function surfaceActionLegal() {
-    return state.mode === "play" && state.scene === "ocean" && (bagIsFull() || nearSurface());
+    return state.mode === "play" && canSurfaceNow();
   }
   function actionPromptVisible() {
     return diveActionLegal() || surfaceActionLegal();
@@ -920,10 +966,15 @@
     if (actionPromptVisible() || (state.scene === "shop" && nearBoat() && expeditionUnlocked())) {
       y = Math.min(y, H - sz.pad - sz.h - 12 - h);
     }
-    if (state.scene === "shop" && dockOffScreen()) {
+    if (state.scene === "shop" && dockOffScreen() && !cashNeedsCollect()) {
       const dc = dockCornerBox();
       const tray = { x, y, w: totalW, h };
       if (boxesOverlap(tray, dc, 10)) y = Math.min(y, dc.y - 10 - h);
+    }
+    if (state.scene === "shop" && cashNeedsCollect() && tillOffScreen()) {
+      const tc = tillCornerBox();
+      const tray = { x, y, w: totalW, h };
+      if (boxesOverlap(tray, tc, 10)) y = Math.min(y, tc.y - 10 - h);
     }
     const floor = topHudFloor();
     if (y < floor) y = clamp(floor, 10, Math.max(10, H - 10 - h));
@@ -1528,13 +1579,14 @@
         }
         return tankWalkPoint(tankHit);
       }
-      const inDock = wx > DIVE_ZONE.x - 30 && wx < DIVE_ZONE.x + DIVE_ZONE.w + 30 &&
-          wy > DIVE_ZONE.y - 80 && wy < DIVE_ZONE.y + DIVE_ZONE.h + 50;
+      const inDock = wx > DIVE_ZONE.x - 10 && wx < DIVE_ZONE.x + DIVE_ZONE.w + 10 &&
+          wy > DIVE_ZONE.y - 12 && wy < DIVE_ZONE.y + DIVE_ZONE.h + 20;
       if (inDock) {
         // With fish in the bag, dock clicks must walk to the tanks — not snap-dive.
         if (bagHasStockable()) {
           return stockableTankTarget() || tankWalkPoint(0);
         }
+        if (cashNeedsCollect()) return registerWalkPoint();
         return { x: 880, y: 1008 };
       }
     }
@@ -1635,7 +1687,13 @@
       if (state.mode === "play") { player.goto = null; beginSurface(); }
       return;
     }
-    if (id === "dive") { if (state.mode === "play" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable()) beginDive(); return; }
+    if (id === "goto-till") {
+      if (state.mode === "play" && state.scene === "shop" && cashNeedsCollect()) {
+        intentWalk("cash", registerWalkPoint());
+      }
+      return;
+    }
+    if (id === "dive") { if (state.mode === "play" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect()) beginDive(); return; }
   }
   function startPlay() {
     if (oceanFish.length === 0) seedOcean();
@@ -1686,7 +1744,7 @@
     return player.y < 280;
   }
   function shouldSurface() {
-    return state.scene === "ocean" && (bagIsFull() || nearSurface());
+    return canSurfaceNow();
   }
   function tryAction(opts) {
     const fromKey = !!(opts && opts.fromKey);
@@ -1704,10 +1762,14 @@
     if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) { beginExpedition(); return true; }
     if (state.scene === "shop" && inDiveZone()) {
       if (state.surfaceLock > 0) return fromKey;
+      // Cash waiting: a walk-click toward the cashier must not dive.
+      if (cashNeedsCollect()) return false;
       // Clicks walk to the tanks while the bag still has fish; Space can still re-dive.
       if (!fromKey && bagHasStockable()) return false;
       // Touch uses the on-screen DIVE button; tap-to-walk still reaches the dock.
       if (fromTouch && !fromKey) return false;
+      // World clicks only dive on the dock strip — not a walk toward the till.
+      if (!fromKey && !clickOnDiveStrip()) return false;
       beginDive();
       return true;
     }
@@ -1725,7 +1787,7 @@
   function beginDive() {
     if (state.fadeDir || state.surfaceLock > 0) return;
     player.catchLatch = false;
-    player.scoopLock = null; player.scoopTap = false;
+    player.scoopLock = null; player.scoopTap = false; player.holdGrace = 0;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "ocean";
     state.decorOpen = false;
     if (state.tutorial === 0) state.tutorial = 1;
@@ -1738,7 +1800,7 @@
     clearCatchVerb();
     player.goto = null;
     player.catchLatch = false;
-    player.scoopLock = null; player.scoopTap = false;
+    player.scoopLock = null; player.scoopTap = false; player.holdGrace = 0;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "shop";
     if (state.tutorial === 2) state.tutorial = 3;
     if ((state.bagBonus || 1) > 1) {
@@ -2134,11 +2196,24 @@
       }
       const dx = f.x - px, dy = f.y - py;
       const d = Math.hypot(dx, dy) || 0.001;
-      const fleeR = f.rare ? sp.fleeR * 0.38 : sp.fleeR;
-      const fleeSp = f.rare ? sp.flee * 0.36 : sp.flee;
-      if (d < fleeR) {
-        f.fleeT = f.rare ? 0.22 : 0.45;
-        const boost = (!f.rare && d < 70) ? 1.25 : 1;
+      const locked = player.scoopLock === f && catchHolding();
+      const firstDive = (state.divesThisSession | 0) === 1;
+      let fleeR = f.rare ? sp.fleeR * 0.38 : sp.fleeR;
+      let fleeSp = f.rare ? sp.flee * 0.36 : sp.flee;
+      if (locked) {
+        fleeR *= 0.28;
+        fleeSp *= 0.16;
+      } else if (firstDive) {
+        fleeR *= 0.52;
+        fleeSp *= 0.38;
+      }
+      if (locked) {
+        applySpeciesGait(f, dt, sp);
+        f.vx *= 0.42;
+        f.vy *= 0.42;
+      } else if (d < fleeR) {
+        f.fleeT = f.rare ? 0.22 : (firstDive ? 0.22 : 0.45);
+        const boost = (!f.rare && !firstDive && d < 70) ? 1.25 : 1;
         f.vx = (dx / d) * fleeSp * boost;
         f.vy = (dy / d) * fleeSp * boost;
         f.ang = Math.atan2(f.vy, f.vx);
@@ -2391,6 +2466,7 @@
     state.catchVerb = null;
   }
   function updateCatch(dt) {
+    tickHoldGrace(dt);
     if (state.catchClimax) {
       tickCatchClimax(dt);
       return;
@@ -3337,8 +3413,11 @@
             c.buyHop = 0.55;
             if (!state.didFirstSale) state.didFirstSale = true;
             state.sessionSales = (state.sessionSales | 0) + 1;
-            if (!bagHasStockable() && state.registerCash > 0 && !cashierHandlingIt() && !player.goto) {
-              player.goto = { x: REGISTER.x + REGISTER.w / 2 + 36, y: REGISTER.y + REGISTER.h + 40 };
+            if (!bagHasStockable() && cashNeedsCollect()) {
+              if (!player.goto || isDockDest(player.goto)) {
+                player.goto = registerWalkPoint();
+                player.pendingAct = { kind: "cash" };
+              }
             }
             const usual = c.regular && (c.favorite == null || c.favorite === c.carry);
             const said = usual ? regularBark(c) : "";
@@ -4974,19 +5053,31 @@
     if (tillWaiting() && !cashierHandlingIt()) {
       const cx = r.x + r.w / 2, cy = r.y + r.h / 2 + 10;
       const rad = tillRingR();
-      const pulse = 0.42 + 0.22 * Math.sin(state.time * 3.2);
+      const pulse = 0.5 + 0.28 * Math.sin(state.time * 3.6);
       const dwell = clamp((player.tillDwell || 0) / 0.3, 0, 1);
       ctx.save();
       ctx.globalAlpha = pulse;
-      ctx.strokeStyle = "rgba(255,226,122,0.88)";
-      ctx.lineWidth = 5 + dwell * 3;
+      ctx.strokeStyle = "rgba(255,226,122,0.95)";
+      ctx.lineWidth = 6 + dwell * 4;
       ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = "rgba(255,226,122," + (0.08 + dwell * 0.10) + ")";
+      ctx.fillStyle = "rgba(255,226,122," + (0.12 + dwell * 0.12) + ")";
       ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "rgba(255,246,232,0.35)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(255,246,232,0.45)";
+      ctx.lineWidth = 2.2;
       ctx.beginPath(); ctx.arc(cx, cy, rad * 0.72, 0, Math.PI * 2); ctx.stroke();
       ctx.restore();
+      if (!inTillGlow()) {
+        const bounce = Math.abs(Math.sin(state.time * 5.2)) * 6;
+        ctx.save();
+        ctx.globalAlpha = 0.92;
+        ctx.fillStyle = "rgba(40, 24, 8, 0.82)";
+        roundRect(cx - 58, cy - rad - 28 - bounce, 116, 24, 8); ctx.fill();
+        ctx.fillStyle = "#ffe27a";
+        ctx.font = "800 13px Nunito, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("COLLECT  $" + state.registerCash, cx, cy - rad - 11 - bounce);
+        ctx.restore();
+      }
     }
     const punch = state.registerPunch || 1;
     ctx.save();
@@ -5412,7 +5503,7 @@
       }
       ctx.globalAlpha = 1;
     }
-    if ((player.y < 280 || bagIsFull()) && !scoopBlocksSurface()) {
+    if ((canSurfaceNow() || bagIsFull()) && !scoopBlocksSurface()) {
       ctx.globalAlpha = bagIsFull() ? 0.85 : clamp((280 - player.y) / 100, 0, 0.85);
       ctx.fillStyle = "#fff";
       ctx.font = "700 16px Fredoka, Nunito, sans-serif"; ctx.textAlign = "center";
@@ -5912,13 +6003,14 @@
       return 2;
     }
     if (bagHasStockable()) return 4;
-    if (state.registerCash > 0 && !cashierHandlingIt()) return 5;
-    if (inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable()) return 1;
+    if (cashNeedsCollect()) return 5;
+    if (inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect()) return 1;
     return 0;
   }
   function ribbonHidesForDock() {
+    if (cashNeedsCollect()) return false;
     if (state.scene === "shop" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable()) return true;
-    if (state.scene === "ocean" && (bagIsFull() || nearSurface())) return true;
+    if (state.scene === "ocean" && canSurfaceNow()) return true;
     return false;
   }
   function currentGoal() {
@@ -5963,6 +6055,13 @@
         return { text: "Expedition · catch rares, then surface", target: state.bag.length > 0 ? { x: player.x, y: 140 } : nearestOceanFish() };
       }
       if (state.bag.length > 0) {
+        if (!haulReadyToSurface()) {
+          const n = state.bag.length | 0;
+          if (state.shinyHold > 0 && state.shinyHoldName) {
+            return { text: "Shiny " + state.shinyHoldName + "! Keep scooping  ·  " + n + "/3", target: nearestOceanFish() };
+          }
+          return { text: "Nice catch! Keep scooping  ·  " + n + "/3", target: nearestOceanFish() };
+        }
         if (state.shinyHold > 0 && state.shinyHoldName) {
           return { text: "Shiny " + state.shinyHoldName + "! Grab more, or swim up to stock", target: { x: player.x, y: 140 } };
         }
@@ -5984,8 +6083,8 @@
     if (state.scene === "shop" && bagHasStockable()) {
       return { text: "Walk into the glowing tank to stock your catch", target: stockableTankTarget() || { x: TANK_POS[0].x + TANK_W / 2, y: TANK_POS[0].y + TANK_H / 2 } };
     }
-    if (state.scene === "shop" && state.registerCash > 0 && !cashierHandlingIt()) {
-      return { text: "Stand in the till glow to pocket $" + state.registerCash, target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
+    if (state.scene === "shop" && cashNeedsCollect()) {
+      return { text: "Collect  $" + state.registerCash + "  ·  stand in the till glow", target: tillWorld() };
     }
     if (inDiveZone() && state.surfaceLock <= 0) {
       return { text: compactHud() ? "Tap DIVE" : "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
@@ -6107,6 +6206,7 @@
   }
   function drawDockCorner() {
     if (state.mode !== "play" || state.scene !== "shop") return;
+    if (cashNeedsCollect()) return;
     if (!dockOffScreen()) return;
     const b = dockCornerBox();
     const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
@@ -6116,6 +6216,51 @@
     ctx.textAlign = "center";
     ctx.fillText("→ DIVE", b.x + b.w / 2, b.y + b.h / 2 + 6);
     btn("goto-dock", b.x, b.y, b.w, b.h);
+  }
+  function drawTillCollectCue() {
+    if (state.mode !== "play" || state.scene !== "shop") return;
+    if (!cashNeedsCollect()) return;
+    if (inTillGlow()) return;
+    const t = tillWorld();
+    const ts = worldToScreen(t.x, t.y);
+    const on = !tillOffScreen();
+    const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
+    const cash = "$" + state.registerCash;
+    const label = compactHud() ? "COLLECT  " + cash : "→ TILL  ·  collect  " + cash;
+    if (on) {
+      const bounce = Math.sin(state.time * 5) * 5;
+      const ax = ts.x, ay = ts.y - 64 + bounce;
+      ctx.save();
+      ctx.translate(ax, ay);
+      ctx.rotate(Math.PI / 2);
+      ctx.fillStyle = "#ffe27a";
+      ctx.strokeStyle = "rgba(80,50,10,0.45)";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(18, 0);
+      ctx.lineTo(-9, 10);
+      ctx.lineTo(-4, 0);
+      ctx.lineTo(-9, -10);
+      ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      ctx.restore();
+      ctx.font = "800 14px Nunito, sans-serif";
+      const tw = Math.min(ctx.measureText(label).width + 24, 280);
+      const chip = hudBox(ax - tw / 2, ay - 38, tw, 28);
+      card(chip.x, chip.y, chip.w, chip.h, "rgba(80, 48, 10, " + (0.84 + pulse * 0.1) + ")");
+      ctx.fillStyle = "#ffe27a";
+      ctx.textAlign = "center";
+      ctx.fillText(label, chip.x + chip.w / 2, chip.y + 19);
+      btn("goto-till", chip.x, chip.y, chip.w, chip.h);
+      return;
+    }
+    const b = tillCornerBox();
+    card(b.x, b.y, b.w, b.h, "rgba(200, 140, 30," + (0.8 + pulse * 0.16) + ")");
+    ctx.fillStyle = "#fff6e8";
+    ctx.font = (b.h > 38 ? "800 18px" : "800 15px") + " Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(compactHud() ? "→ TILL" : "→ TILL  ·  collect", b.x + b.w / 2, b.y + b.h / 2 + 6);
+    btn("goto-till", b.x, b.y, b.w, b.h);
   }
   function drawBoatEdgeHint() {
     if (state.boatHint <= 0 || state.scene !== "shop") return;
@@ -6524,6 +6669,7 @@
     }
     drawGuideArrow();
     drawStockWalkCue();
+    drawTillCollectCue();
     drawBoatEdgeHint();
     drawDockCorner();
     if (shopBarsReady()) {
@@ -6853,7 +6999,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 39", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 40", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -6875,12 +7021,12 @@
       ctx.fillStyle = "#e8f4f8"; ctx.font = "600 15px Nunito, sans-serif"; ctx.textAlign = "left";
       const lines = [
         "WASD or Arrows — move  ·  tap / click to walk  ·  hold to steer",
-        "DIVE button or SPACE at the dock — dive",
-        "SURFACE button or SPACE — full bag, or at the waterline",
+        "DIVE button or SPACE at the dock strip — dive",
+        "SURFACE button or SPACE — full bag, or at the waterline after a few catches",
         "Hold on a fish — the cone locks on  ·  tap a fish to scoop  ·  first catches are forgiving",
         "Tap a tank, till, or unlock card — act now, or walk there then act",
         "Walk into a matching tank — stock  ·  bag clears the instant it lands",
-        "Stand in the till glow to collect  ·  scoop coins on the path",
+        "→ TILL chip or stand in the till glow to collect  ·  scoop coins on the path",
         "Hire a cashier — they collect while you dive",
         "SPACE at the boat — $35 timed expedition",
         "Every 3rd expedition is a night dive (rares)",
@@ -6893,7 +7039,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 39", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 40", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -6910,7 +7056,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 39", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 40", W / 2, 632);
     }
   }
 
@@ -7197,6 +7343,16 @@
     } else if (player.goto && state.scene === "shop") {
       tx = lerp(tx, player.goto.x, 0.14);
       ty = lerp(ty, player.goto.y, 0.14);
+    }
+    if (state.scene === "shop" && cashNeedsCollect() && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
+      const tw = tillWorld();
+      if (isDockDest(player.goto) || tillOffScreen()) {
+        tx = lerp(tx, tw.x, 0.42);
+        ty = lerp(ty, tw.y + 36, 0.42);
+      } else {
+        tx = lerp(tx, tw.x, 0.18);
+        ty = lerp(ty, tw.y + 24, 0.18);
+      }
     }
     if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
       const plaza = clamp((640 - player.y) / 200, 0, 1);
