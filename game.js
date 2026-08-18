@@ -5,7 +5,8 @@
   // ===== CONFIG =====
   const W = 1280, H = 720;
   const SAVE_KEY = "aqua-bay-save";
-  const SHOP = { w: 2280, h: 1260 };
+  const SHOP = { w: 1760, h: 1260 };
+  const SHOP_GALLERY_W = 2280;
   const OCEAN = { w: 2520, h: 1960 };
   const OCEAN_BASE_H = 1960;
   const ZONE_STEP = 440;
@@ -142,6 +143,9 @@
   }
   function shopWalkMax() {
     return galleryOpen() ? 2200 : 1650;
+  }
+  function shopW() {
+    return galleryOpen() ? SHOP_GALLERY_W : SHOP.w;
   }
   function namedZoneBottom(s) {
     if (s <= 4) return OCEAN_BASE_H;
@@ -3988,7 +3992,7 @@
         t.x += t.vx * dt;
         t.y += Math.sin(state.time * 1.5 + t.ph) * 10 * dt + Math.sin(state.time * 2.4 + t.ph) * 4 * dt;
         t.y = clamp(t.y, 1108, 1236);
-        if (t.x > SHOP.w + 70) {
+        if (t.x > shopW() + 70) {
           t.x = -70;
           t.y = rand(1120, 1220);
         }
@@ -6003,9 +6007,9 @@
   function drawShop() {
     ensurePaint();
     ctx.fillStyle = "#0a3040";
-    ctx.fillRect(-480, -240, SHOP.w + 960, SHOP.h + 480);
-    drawBayWater(0, 860, SHOP.w, SHOP.h - 860, state.time, !!state.unlocked[1]);
-    drawFoamBand(-8, 898, SHOP.w + 16, state.time);
+    ctx.fillRect(-480, -240, shopW() + 960, SHOP.h + 480);
+    drawBayWater(0, 860, shopW(), SHOP.h - 860, state.time, !!state.unlocked[1]);
+    drawFoamBand(-8, 898, shopW() + 16, state.time);
     for (const t of dockTeasers) {
       if (onDryWood(t.x, t.y) || t.y < 1080) continue;
       ctx.save();
@@ -8660,7 +8664,7 @@
       state.camPunch = Math.max(0, state.camPunch - dt);
     }
     const look = state.scene === "ocean" ? 80 : (player.goto ? 72 : 40);
-    const ww = state.scene === "shop" ? SHOP.w : OCEAN.w;
+    const ww = state.scene === "shop" ? shopW() : OCEAN.w;
     const hh = state.scene === "shop" ? SHOP.h : OCEAN.h;
     const hw = (W / 2) / cam.z, hhv = (H / 2) / cam.z;
     const minX = hw, maxX = Math.max(hw, ww - hw);
