@@ -375,15 +375,17 @@ def paint_person(c: C, kind="generic", shirt="#3d8bfd", hair="#3a2415", skin="#f
         blush(c, 57, 38)
         smile(c, 48, 39.6, 3.0)
         return
-    # feet y~108, head ~30
-    c.capsule(40, 78, 38, 104, 3.6, "#3a3a48", INK, 1.5)
-    c.capsule(56, 78, 58, 104, 3.6, "#3a3a48", INK, 1.5)
-    c.ellipse(38, 106, 4.4, 2.0, "#1a1a22", INK, 1.1)
-    c.ellipse(58, 106, 4.4, 2.0, "#1a1a22", INK, 1.1)
-    c.capsule(32, 58, 26, 76, 2.8, skin, INK, 1.4)
-    c.capsule(64, 58, 70, 76, 2.8, skin, INK, 1.4)
-    c.rect(32, 52, 32, 30, shirt, INK, 2.0, 8)
-    c.ellipse(42, 58, 7, 4.4, lighten(shirt, 0.22), None)
+    # chunky chibi — reads at ~40px
+    c.capsule(38, 78, 36, 102, 5.0, "#3a3a48", INK, 1.6)
+    c.capsule(58, 78, 60, 102, 5.0, "#3a3a48", INK, 1.6)
+    c.ellipse(36, 104, 6.0, 2.4, "#1a1a22", INK, 1.1)
+    c.ellipse(60, 104, 6.0, 2.4, "#1a1a22", INK, 1.1)
+    c.capsule(28, 58, 20, 78, 3.6, skin, INK, 1.5)
+    c.capsule(68, 58, 76, 78, 3.6, skin, INK, 1.5)
+    c.ellipse(20, 80, 3.4, 3.0, skin, INK, 1.2)
+    c.ellipse(76, 80, 3.4, 3.0, skin, INK, 1.2)
+    c.rect(28, 50, 40, 34, shirt, INK, 2.1, 10)
+    c.ellipse(40, 58, 9, 6, lighten(shirt, 0.22), None)
     if kind == "maya":
         for fx, fy in ((40, 64), (50, 70), (56, 62)):
             c.ellipse(fx, fy, 2.3, 2.3, "#ffd24a" if fx == 40 else "#fff6e8" if fx == 50 else "#e85d4c", INK, 0.8)

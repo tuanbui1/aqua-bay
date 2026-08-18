@@ -5314,7 +5314,7 @@
     shadow(x, y + 4, opt.kid ? 8 : 10.5, opt.kid ? 3.6 : 4.6);
     const spr = blit(custSpriteName(opt), x, y + bob, {
       flip: (opt.vx || 0) < -8,
-      scale: (opt.kid ? 0.42 : 0.5) * (1 + walk * 0.03),
+      scale: (opt.kid ? 0.5 : 0.62) * (1 + walk * 0.03),
     });
     ctx.save();
     ctx.translate(x, y + bob);
@@ -5542,7 +5542,7 @@
     const short = skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1;
     shadow(x, y + 5, moving ? 13 : 11, moving ? 5.4 : 4.6);
     const frame = moving && Math.sin(phase) > 0 ? "walk" : "stand";
-    if (blit(skin + "_" + frame, x, y + bob, { flip: flip < 0, rot: lean * 0.35, scale: 0.5 * short })) return;
+    if (blit(skin + "_" + frame, x, y + bob, { flip: flip < 0, rot: lean * 0.35, scale: 0.56 * short })) return;
     ctx.save();
     ctx.translate(x, y + bob);
     ctx.scale(flip * short, short);
@@ -6242,6 +6242,31 @@
     ctx.fillStyle = state.unlocked[1] ? "#dce8d8" : "#e8d2ae"; ctx.fillRect(80, 70, 1600, 830);
     drawPierBoards(90, 80, 1580, 810, { plank: 28, wetY: 890, teal: !!state.unlocked[1] });
     drawPierShade();
+    const sunPatch = ctx.createRadialGradient(1240, 220, 20, 1100, 420, 520);
+    sunPatch.addColorStop(0, "rgba(255, 220, 130, 0.16)");
+    sunPatch.addColorStop(1, "rgba(255, 200, 100, 0)");
+    ctx.fillStyle = sunPatch;
+    ctx.fillRect(90, 80, 1580, 810);
+    ctx.fillStyle = "rgba(232, 192, 74, 0.16)";
+    const runner = [
+      [880, 860], [880, 680], [880, 500], [880, 360],
+      [720, 360], [520, 370], [340, 430], [250, 520],
+    ];
+    for (let i = 0; i < runner.length; i++) {
+      const p = runner[i];
+      ctx.beginPath(); ctx.ellipse(p[0], p[1], 18, 10, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = "rgba(90, 48, 20, 0.28)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(120, 860);
+    for (let x = 120; x < 1640; x += 36) ctx.lineTo(x, 852 + Math.sin(x * 0.04) * 3);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(196, 72, 58, 0.45)";
+    ctx.lineWidth = 2.2;
+    for (let x = 160; x < 1600; x += 70) {
+      ctx.beginPath(); ctx.moveTo(x, 848); ctx.lineTo(x, 868); ctx.stroke();
+    }
     ctx.fillStyle = "#f3e6d2";
     ctx.fillRect(80, 70, 1600, 48); ctx.fillRect(80, 70, 36, 830); ctx.fillRect(1644, 70, 36, 830);
     ctx.fillStyle = "#c9a06a"; ctx.fillRect(80, 112, 1600, 8);
