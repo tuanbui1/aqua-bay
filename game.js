@@ -220,7 +220,7 @@
   let canvasDpr = 1;
 
   // Loop 46 invented sprites — crushed sheet, drawImage (not live ovals).
-  const ATLAS = {"skip_stand":{"x":2,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"skip_walk":{"x":100,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"skip_dive":{"x":198,"y":2,"w":96,"h":128,"ax":50,"ay":64},"reef_stand":{"x":296,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"reef_walk":{"x":394,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"reef_dive":{"x":492,"y":2,"w":96,"h":128,"ax":50,"ay":64},"dino_stand":{"x":590,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"dino_walk":{"x":688,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"dino_dive":{"x":786,"y":2,"w":96,"h":128,"ax":50,"ay":64},"fish0":{"x":884,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish1":{"x":982,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish2":{"x":1080,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish3":{"x":1178,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish4":{"x":1276,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish5":{"x":2,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish6":{"x":100,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish7":{"x":198,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish8":{"x":296,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish9":{"x":394,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish10":{"x":492,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish11":{"x":590,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish12":{"x":688,"y":132,"w":96,"h":64,"ax":50,"ay":32},"maya":{"x":786,"y":132,"w":80,"h":112,"ax":40,"ay":96},"nico":{"x":868,"y":132,"w":80,"h":112,"ax":40,"ay":96},"jun":{"x":950,"y":132,"w":80,"h":112,"ax":40,"ay":96},"cashier":{"x":1032,"y":132,"w":80,"h":112,"ax":40,"ay":96},"vip":{"x":1114,"y":132,"w":80,"h":112,"ax":40,"ay":96},"kid":{"x":1196,"y":132,"w":80,"h":112,"ax":40,"ay":96},"g0":{"x":1278,"y":132,"w":80,"h":112,"ax":40,"ay":96},"g1":{"x":2,"y":246,"w":80,"h":112,"ax":40,"ay":96},"g2":{"x":84,"y":246,"w":80,"h":112,"ax":40,"ay":96},"g3":{"x":166,"y":246,"w":80,"h":112,"ax":40,"ay":96},"g4":{"x":248,"y":246,"w":80,"h":112,"ax":40,"ay":96},"g5":{"x":330,"y":246,"w":80,"h":112,"ax":40,"ay":96},"horizon":{"x":412,"y":246,"w":320,"h":90,"ax":160,"ay":90},"post":{"x":734,"y":246,"w":32,"h":80,"ax":16,"ay":80},"crown":{"x":768,"y":246,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":810,"y":246,"w":40,"h":20,"ax":20,"ay":12}};
+  const ATLAS = {"skip_stand":{"x":2,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":132,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":262,"y":2,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":440,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":570,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":700,"y":2,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":878,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1008,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1138,"y":2,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":1316,"y":2,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":2,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":116,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":230,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":344,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":458,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":572,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":686,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":800,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":914,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1028,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1142,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1256,"y":180,"w":112,"h":72,"ax":62,"ay":36},"harbor":{"x":2,"y":254,"w":540,"h":360,"ax":270.0,"ay":259.2},"plank":{"x":544,"y":254,"w":256,"h":56,"ax":128,"ay":28},"maya":{"x":802,"y":254,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":900,"y":254,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":998,"y":254,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":1096,"y":254,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":1194,"y":254,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":1292,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":2,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":100,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":198,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":296,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":394,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":492,"y":616,"w":96,"h":140,"ax":48,"ay":132},"post":{"x":590,"y":616,"w":32,"h":80,"ax":16.0,"ay":80},"crown":{"x":624,"y":616,"w":40,"h":32,"ax":20.0,"ay":28},"shades":{"x":666,"y":616,"w":40,"h":20,"ax":20.0,"ay":12}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
     const img = new Image();
@@ -241,12 +241,20 @@
     return true;
   }
   function blitHorizon(x, y, w, h) {
-    const c = ATLAS.horizon;
+    const c = ATLAS.harbor || ATLAS.horizon;
     if (!c || !ART.ready) return false;
-    const dh = h, dw = c.w * (dh / c.h);
-    for (let px = x; px < x + w; px += dw) {
-      ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, px, y, dw, dh);
-    }
+    ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, x, y, w, h);
+    return true;
+  }
+  function blitHarborPart(sx, sy, sw, sh, dx, dy, dw, dh) {
+    const c = ATLAS.harbor;
+    if (!c || !ART.ready) return false;
+    ctx.drawImage(
+      ART.img,
+      c.x + c.w * sx, c.y + c.h * sy,
+      Math.max(1, c.w * sw), Math.max(1, c.h * sh),
+      dx, dy, dw, dh
+    );
     return true;
   }
   function custSpriteName(opt) {
@@ -4332,14 +4340,44 @@
       g.beginPath(); g.ellipse(cx, cy, rad * 1.6, rad * 0.7, 0, 0, Math.PI * 2); g.fill();
     }
   }
+  function stampPlankTile(c, teal) {
+    const g = c.getContext("2d");
+    const f = ATLAS.plank;
+    g.clearRect(0, 0, c.width, c.height);
+    if (ART.ready && f) {
+      g.drawImage(ART.img, f.x, f.y, f.w, f.h, 0, 0, c.width, c.height);
+      if (teal) {
+        g.fillStyle = "rgba(36, 92, 72, 0.22)";
+        g.fillRect(0, 0, c.width, c.height);
+      }
+      const shine = g.createLinearGradient(0, 0, 0, c.height);
+      shine.addColorStop(0, "rgba(200, 230, 245, 0.22)");
+      shine.addColorStop(0.38, "rgba(255, 255, 255, 0)");
+      shine.addColorStop(1, "rgba(12, 28, 36, 0.22)");
+      g.fillStyle = shine;
+      g.fillRect(0, 0, c.width, c.height);
+      return true;
+    }
+    paintWoodTile(c, teal);
+    return false;
+  }
   function ensurePaint() {
+    if (!paint.wood) {
+      paint.wood = makeOff(256, 56);
+      paint.woodTeal = makeOff(256, 56);
+      paint.clouds = makeOff(520, 80);
+      paintCloudTile(paint.clouds);
+    }
+    if (ART.ready && ATLAS.plank && !paint.sprited) {
+      stampPlankTile(paint.wood, false);
+      stampPlankTile(paint.woodTeal, true);
+      paint.sprited = true;
+      paint.ready = true;
+      return;
+    }
     if (paint.ready) return;
-    paint.wood = makeOff(256, 48);
-    paint.woodTeal = makeOff(256, 48);
-    paint.clouds = makeOff(520, 80);
     paintWoodTile(paint.wood, false);
     paintWoodTile(paint.woodTeal, true);
-    paintCloudTile(paint.clouds);
     paint.ready = true;
   }
   function sunAmt(x, y) {
@@ -4482,10 +4520,7 @@
       ctx.drawImage(paint.clouds, x + w * 0.42 - drift * 0.6, y + 8, 400, 64);
       ctx.restore();
     }
-    ctx.save();
-    ctx.globalAlpha = 0.92;
-    blitHorizon(x - 8, y + h - 78, w + 16, 84);
-    ctx.restore();
+    blitHorizon(x - 8, y + h - 120, w + 16, 128);
   }
   function drawPierPost(x, footY, sc) {
     const s = sc || 1.15;
@@ -5270,7 +5305,7 @@
     if (sp.id === 5) rot = ang * 0.16;
     else if (sp.id === 8) rot = ang * 0.22;
     else if (sp.id === 9) rot = ang * 0.12;
-    if (blit("fish" + sp.id, x, y, { rot: rot + wob * 0.35, scale: s0 * 0.48 })) return;
+    if (blit("fish" + sp.id, x, y, { rot: rot + wob * 0.35, scale: s0 * 0.52 })) return;
     ctx.save();
     ctx.translate(x, y);
     if (sp.id === 4) { drawTurtle(ang, scale, t); ctx.restore(); return; }
@@ -5314,7 +5349,7 @@
     shadow(x, y + 4, opt.kid ? 8 : 10.5, opt.kid ? 3.6 : 4.6);
     const spr = blit(custSpriteName(opt), x, y + bob, {
       flip: (opt.vx || 0) < -8,
-      scale: (opt.kid ? 0.5 : 0.62) * (1 + walk * 0.03),
+      scale: (opt.kid ? 0.42 : 0.48) * (1 + walk * 0.03),
     });
     ctx.save();
     ctx.translate(x, y + bob);
@@ -5542,7 +5577,7 @@
     const short = skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1;
     shadow(x, y + 5, moving ? 13 : 11, moving ? 5.4 : 4.6);
     const frame = moving && Math.sin(phase) > 0 ? "walk" : "stand";
-    if (blit(skin + "_" + frame, x, y + bob, { flip: flip < 0, rot: lean * 0.35, scale: 0.56 * short })) return;
+    if (blit(skin + "_" + frame, x, y + bob, { flip: flip < 0, rot: lean * 0.28, scale: 0.42 * short })) return;
     ctx.save();
     ctx.translate(x, y + bob);
     ctx.scale(flip * short, short);
@@ -5662,7 +5697,7 @@
     const skin = normalizeSkin(skinId != null ? skinId : state.skin);
     shadow(x, y + 6, 12, 5);
     const sway = Math.sin(t * 11) * 0.06;
-    if (blit(skin + "_dive", x, y, { rot: ang + sway, scale: 0.48 })) return;
+    if (blit(skin + "_dive", x, y, { rot: ang + sway, scale: 0.5 })) return;
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
     const kick = Math.sin(t * 11) * 0.48;
     const stroke = Math.sin(t * 7.5) * 0.22;
@@ -6213,10 +6248,16 @@
     ensurePaint();
     ctx.fillStyle = "#0a3040";
     ctx.fillRect(-480, -240, shopW() + 960, SHOP.h + 480);
-    drawBayWater(0, 860, shopW(), SHOP.h - 860, state.time, !!state.unlocked[1]);
+    blitHarborPart(0, 0, 1, 0.44, -200, -280, shopW() + 400, 400);
+    blitHarborPart(0.08, 0.38, 0.92, 0.62, -160, 760, shopW() + 320, 560);
     ctx.save();
-    ctx.globalAlpha = 0.55;
-    blitHorizon(-20, 848, shopW() + 40, 72);
+    ctx.globalAlpha = 0.52;
+    drawBayWater(0, 900, shopW(), SHOP.h - 900, state.time, !!state.unlocked[1]);
+    ctx.restore();
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = "#3ec8de";
+    ctx.fillRect(0, 860, shopW(), 50);
     ctx.restore();
     drawFoamBand(-8, 898, shopW() + 16, state.time);
     for (const t of dockTeasers) {
@@ -6328,8 +6369,14 @@
       lg.addColorStop(1, "rgba(255, 170, 70, 0)");
       ctx.fillStyle = lg;
       ctx.beginPath(); ctx.arc(lx, 108, 110, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#f0c878";
-      ctx.beginPath(); ctx.arc(lx, 88, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2a241c";
+      roundRect(lx - 6, 58, 12, 16, 2); ctx.fill();
+      ctx.fillStyle = "#f4d078";
+      ctx.beginPath(); ctx.arc(lx, 90, 7.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#1a1610"; ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(40, 24, 10, 0.55)";
+      ctx.beginPath(); ctx.moveTo(lx - 6, 90); ctx.lineTo(lx + 6, 90); ctx.stroke();
     }
     if (state.unlocked[1]) drawFramedPrint(220, 76, 1);
     if (state.unlocked[2]) drawCoralSouvenir(508, 92);
@@ -8491,14 +8538,19 @@
   }
   function drawTitle() {
     ensurePaint();
-    drawPaintedSky(0, 0, W, H * 0.42, state.time);
-    drawSunDisc(1088, 78, 38);
-    drawBayWater(-20, H * 0.3, W + 40, H * 0.78, state.time, false);
+    if (!blitHorizon(0, 0, W, H)) {
+      drawPaintedSky(0, 0, W, H * 0.42, state.time);
+      drawSunDisc(1088, 78, 38);
+      drawBayWater(-20, H * 0.3, W + 40, H * 0.78, state.time, false);
+    }
     ctx.save();
-    ctx.globalAlpha = 0.88;
-    blitHorizon(-16, H * 0.3 - 62, W + 32, 78);
+    const wash = ctx.createLinearGradient(0, H * 0.55, 0, H);
+    wash.addColorStop(0, "rgba(8, 40, 56, 0)");
+    wash.addColorStop(1, "rgba(8, 30, 42, 0.28)");
+    ctx.fillStyle = wash;
+    ctx.fillRect(0, H * 0.55, W, H * 0.45);
     ctx.restore();
-    drawFoamBand(-10, H * 0.3 + 6, W + 20, state.time);
+    drawFoamBand(-10, H - 78, W + 20, state.time);
     drawPierBoards(-8, H - 64, W + 16, 72, { plank: 18, seg: 96, wetY: H - 52 });
     for (const px of [90, 240, 1040, 1190]) drawPierPost(px + 7, H - 52, 1.05);
     ctx.save(); ctx.globalCompositeOperation = "lighter";
