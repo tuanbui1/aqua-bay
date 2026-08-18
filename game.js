@@ -4695,10 +4695,32 @@
     const teal = !!(opts && opts.teal);
     const seg = (opts && opts.seg) || 112;
     const tile = teal ? paint.woodTeal : paint.wood;
+    const f = ATLAS.plank;
     ctx.save();
     ctx.beginPath();
     ctx.rect(x, y, w, h);
     ctx.clip();
+    if (ART.ready && f) {
+      for (let row = 0, yy = y; yy < y + h; row++, yy += plank) {
+        const ph = Math.min(plank - 2, y + h - yy);
+        if (ph <= 0) break;
+        const shift = (row % 2) * 48;
+        ctx.drawImage(ART.img, f.x, f.y, f.w, f.h, x - shift - 12, yy, w + 72, ph);
+        if (teal) {
+          ctx.fillStyle = "rgba(40, 90, 72, 0.14)";
+          ctx.fillRect(x, yy, w, ph);
+        }
+        const lit = sunAmt(x + w * 0.5, yy);
+        const shine = ctx.createLinearGradient(x, yy, x + w * 0.4, yy + ph);
+        shine.addColorStop(0, "rgba(200, 230, 245," + (0.1 + lit * 0.14) + ")");
+        shine.addColorStop(0.42, "rgba(255, 255, 255, 0)");
+        shine.addColorStop(1, "rgba(16, 10, 6," + (0.14 + (1 - lit) * 0.12) + ")");
+        ctx.fillStyle = shine;
+        ctx.fillRect(x, yy, w, ph);
+        ctx.fillStyle = "rgba(22, 12, 6, 0.4)";
+        ctx.fillRect(x, yy + ph, w, 2);
+      }
+    } else {
     for (let row = 0, yy = y; yy < y + h; row++, yy += plank) {
       const ph = Math.min(plank - 2, y + h - yy);
       if (ph <= 0) break;
@@ -4724,6 +4746,7 @@
       }
       ctx.fillStyle = "rgba(28,14,6,0.62)";
       ctx.fillRect(x, yy + ph, w, 2);
+    }
     }
     ctx.restore();
     if (wetY != null) {
@@ -5349,7 +5372,7 @@
     shadow(x, y + 4, opt.kid ? 8 : 10.5, opt.kid ? 3.6 : 4.6);
     const spr = blit(custSpriteName(opt), x, y + bob, {
       flip: (opt.vx || 0) < -8,
-      scale: (opt.kid ? 0.42 : 0.48) * (1 + walk * 0.03),
+      scale: (opt.kid ? 0.5 : 0.58) * (1 + walk * 0.03),
     });
     ctx.save();
     ctx.translate(x, y + bob);
