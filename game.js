@@ -232,6 +232,18 @@
     if (!c || !ART.ready) return false;
     opt = opt || {};
     const sc = opt.scale == null ? 1 : opt.scale;
+    if (!opt.flat && !opt.water) {
+      ctx.save();
+      const g = ctx.createRadialGradient(x - 3, y + 3, 0.4, x - 2, y + 5, 18 * sc);
+      g.addColorStop(0, "rgba(16, 8, 4, 0.34)");
+      g.addColorStop(0.55, "rgba(16, 8, 4, 0.12)");
+      g.addColorStop(1, "rgba(16, 8, 4, 0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.ellipse(x - 2, y + 5, 16 * sc, 4.2 * sc, -0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
     ctx.save();
     ctx.translate(x, y);
     if (opt.flip) ctx.scale(-1, 1);
@@ -322,7 +334,7 @@
     aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
     catchVerb: null, tankFlash: null, pierChirp: 0,
     camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0,
-    camHoldTill: 0,
+    camTillHold: 0,
     almostSfxAt: 0,
     skin: "skip",
     surfaceQuiet: 0,
@@ -705,7 +717,7 @@
       catchClimax: null, divesThisSession: 0, tangRumor: false, freezeFrame: 0,
       aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
       catchVerb: null, tankFlash: null, pierChirp: 0,
-      camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, camHoldTill: 0, almostSfxAt: 0, surfaceQuiet: 0,
+      camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, camTillHold: 0, almostSfxAt: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
@@ -1014,13 +1026,13 @@
     return { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 };
   }
   function holdTillView(secs) {
-    state.camHoldTill = Math.max(state.camHoldTill || 0, secs == null ? 1.6 : secs);
-    state.camEase = Math.max(state.camEase || 0, 0.85);
+    state.camTillHold = Math.max(state.camTillHold || 0, secs == null ? 1.6 : secs);
+    state.camEase = Math.max(state.camEase || 0, 0.38);
   }
   function wantTillFrame() {
     if (state.scene !== "shop") return false;
     if (state.bookOpen != null || (state.boatGlance || 0) > 0) return false;
-    if ((state.camHoldTill || 0) > 0) return true;
+    if ((state.camTillHold || 0) > 0) return true;
     if (cashNeedsCollect()) return true;
     if (player.pendingAct && player.pendingAct.kind === "cash") return true;
     if (player.goto) {
@@ -1421,9 +1433,9 @@
     const specs = {
       catch: { stop: 0.12, punch: 0.16, n: 22, cols: ["#fff6e8", "#ffe27a", "#9ef0ff"], spread: 180, sfx: "catch" },
       shiny: { stop: 0.13, punch: 0.22, n: 34, cols: ["#ffd24a", "#fff6e8", "#ffe27a"], spread: 270, sfx: "shiny" },
-      sale: { stop: 0.04, punch: 0.05, n: 14, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 110, sfx: "sale" },
-      firstsale: { stop: 0.1, punch: 0.08, n: 32, cols: ["#ffe27a", "#ffd24a", "#fff"], spread: 210, sfx: "firstsale" },
-      cashin: { stop: 0.06, punch: 0.07, n: 24, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 150, sfx: "cashin" },
+      sale: { stop: 0.04, punch: 0.027, n: 14, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 110, sfx: "sale" },
+      firstsale: { stop: 0.08, punch: 0.066, n: 32, cols: ["#ffe27a", "#ffd24a", "#fff"], spread: 210, sfx: "firstsale" },
+      cashin: { stop: 0.05, punch: 0.048, n: 24, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 150, sfx: "cashin" },
       tang: { stop: 0.15, punch: 0.24, n: 38, cols: ["#2f7dff", "#ffe14a", "#fff6e8"], spread: 230, sfx: "tang" },
     };
     const s = specs[kind] || specs.catch;
@@ -2021,7 +2033,7 @@
     if (state.scene === "shop") {
       player.x = 880; player.y = 920;
       cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28; cam.shopBand = null;
-      state.camHoldTill = 0;
+      state.camTillHold = 0;
       player.goto = null;
       if (state.tutorial === 0) state.didMove = false;
     }
@@ -4314,13 +4326,13 @@
   }
   function shadow(x, y, rx, ry) {
     ctx.save();
-    const g = ctx.createRadialGradient(x - 5, y + 8, 0.4, x - 4, y + 10, rx * 1.7);
-    g.addColorStop(0, "rgba(16, 8, 4, 0.40)");
-    g.addColorStop(0.42, "rgba(16, 8, 4, 0.16)");
+    const g = ctx.createRadialGradient(x - 2, y + 2, 0.2, x - 1, y + 3, rx * 1.15);
+    g.addColorStop(0, "rgba(16, 8, 4, 0.36)");
+    g.addColorStop(0.5, "rgba(16, 8, 4, 0.12)");
     g.addColorStop(1, "rgba(16, 8, 4, 0)");
     ctx.fillStyle = g;
     ctx.beginPath();
-    ctx.ellipse(x - 5, y + 10, rx * 1.32, ry * 0.92, -0.22, 0, Math.PI * 2);
+    ctx.ellipse(x - 1, y + 3, rx * 0.92, ry * 0.62, -0.16, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -4743,11 +4755,12 @@
     ctx.restore();
     drawSunGlitter(x, y + 6, w, t, 46);
     drawWaterMotes(x, y + 40, w, Math.max(40, h - 40), t, 28, "rgba(230,250,255,0.5)");
-    const abyss = ctx.createLinearGradient(x, y + h * 0.55, x, y + h);
+    const abyss = ctx.createLinearGradient(x, y + h * 0.38, x, y + h);
     abyss.addColorStop(0, "rgba(2,12,20,0)");
-    abyss.addColorStop(1, "rgba(2,8,14,0.42)");
+    abyss.addColorStop(0.45, "rgba(2,10,18,0.28)");
+    abyss.addColorStop(1, "rgba(1,6,12,0.62)");
     ctx.fillStyle = abyss;
-    ctx.fillRect(x, y + h * 0.55, w, h * 0.45);
+    ctx.fillRect(x, y + h * 0.38, w, h * 0.62);
   }
   function drawPierBoards(x, y, w, h, opts) {
     ensurePaint();
@@ -4811,17 +4824,24 @@
     }
     ctx.restore();
     if (wetY != null) {
-      const wet = ctx.createLinearGradient(x, wetY - 52, x, wetY + 14);
+      const wet = ctx.createLinearGradient(x, wetY - 72, x, wetY + 18);
       wet.addColorStop(0, "rgba(18,70,90,0)");
-      wet.addColorStop(0.45, "rgba(16,64,82,0.18)");
-      wet.addColorStop(0.78, "rgba(10,42,56,0.42)");
-      wet.addColorStop(1, "rgba(6,24,34,0.58)");
+      wet.addColorStop(0.38, "rgba(16,70,88,0.22)");
+      wet.addColorStop(0.72, "rgba(10,48,64,0.5)");
+      wet.addColorStop(1, "rgba(6,24,34,0.68)");
       ctx.fillStyle = wet;
-      ctx.fillRect(x, wetY - 52, w, 66);
+      ctx.fillRect(x, wetY - 72, w, 90);
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
-      ctx.fillStyle = "rgba(180,230,240,0.08)";
-      ctx.fillRect(x, wetY - 8, w, 10);
+      const t = state.time || 0;
+      const sheen = ctx.createLinearGradient(x + ((t * 46) % (w + 160)) - 80, wetY - 18, x + ((t * 46) % (w + 160)) + 90, wetY + 8);
+      sheen.addColorStop(0, "rgba(200,240,255,0)");
+      sheen.addColorStop(0.45, "rgba(220,250,255,0.16)");
+      sheen.addColorStop(1, "rgba(180,230,240,0)");
+      ctx.fillStyle = sheen;
+      ctx.fillRect(x, wetY - 16, w, 22);
+      ctx.fillStyle = "rgba(180,230,240,0.1)";
+      ctx.fillRect(x, wetY - 6, w, 8);
       ctx.restore();
     }
   }
@@ -7084,12 +7104,13 @@
       ctx.fillRect(0, 0, OCEAN.w, 640);
       drawSunGlitter(0, 148, OCEAN.w, state.time, 70);
     }
-    const murk = ctx.createLinearGradient(0, 420, 0, OCEAN.h);
+    const murk = ctx.createLinearGradient(0, 320, 0, OCEAN.h);
     murk.addColorStop(0, "rgba(4,18,28,0)");
-    murk.addColorStop(0.45, night ? "rgba(2,8,16,0.18)" : "rgba(4,22,32,0.16)");
-    murk.addColorStop(1, night ? "rgba(0,4,10,0.55)" : "rgba(2,10,16,0.48)");
+    murk.addColorStop(0.32, night ? "rgba(2,8,16,0.22)" : "rgba(4,22,32,0.2)");
+    murk.addColorStop(0.7, night ? "rgba(1,6,12,0.42)" : "rgba(2,12,18,0.38)");
+    murk.addColorStop(1, night ? "rgba(0,3,8,0.68)" : "rgba(1,8,14,0.6)");
     ctx.fillStyle = murk;
-    ctx.fillRect(0, 420, OCEAN.w, OCEAN.h - 420);
+    ctx.fillRect(0, 320, OCEAN.w, OCEAN.h - 320);
     drawWaterMotes(0, 220, OCEAN.w, OCEAN.h - 280, state.time, night ? 40 : 70, night ? "rgba(160,220,255,0.4)" : "rgba(220,245,255,0.45)");
     if (state.unlocked[1]) {
       const rg = ctx.createLinearGradient(0, 820, 0, OCEAN.h);
@@ -8973,9 +8994,9 @@
         cam.x = player.x;
         cam.y = player.y;
         cam.z = 1.1;
-        state.camPunch = 0.04;
-        state.camSettle = 0.85;
-        state.camEase = 0.85;
+        state.camPunch = 0;
+        state.camSettle = 0.4;
+        state.camEase = 0.4;
         if (state.expedition) { seedExpeditionPocket(); seedOceanScenery(); }
         else seedFrontSchool();
         ensureOceanStock();
@@ -9013,8 +9034,9 @@
         cam.x = player.x;
         cam.y = player.y;
         cam.z = 1.02;
-        state.camSettle = 0.9;
-        state.camEase = 0.9;
+        state.camPunch = 0;
+        state.camSettle = 0.4;
+        state.camEase = 0.4;
       }
       state.pendingScene = null; state.fadeDir = -1;
     }
@@ -9026,7 +9048,7 @@
       : 1.00;
     cam.z = lerp(cam.z, tz, 1 - Math.pow(0.001, dt));
     if (state.camPunch > 0) {
-      cam.z *= 1 + 0.028 * clamp(state.camPunch / 0.12, 0, 1);
+      cam.z *= 1 + 0.006 * clamp(state.camPunch / 0.12, 0, 1);
       state.camPunch = Math.max(0, state.camPunch - dt);
     }
     const look = state.scene === "ocean" ? 80 : (player.goto ? 72 : 40);
@@ -9061,21 +9083,21 @@
       const pull = u > 0.35 ? 0.78 : 0.78 * (u / 0.35);
       tx = lerp(tx, BOAT.x, pull);
       ty = lerp(ty, BOAT.y, pull);
-    } else if (player.goto && state.scene === "shop" && !wantTillFrame()) {
+    } else if (player.goto && state.scene === "shop" && !wantTillFrame() && !isDockDest(player.goto)) {
       tx = lerp(tx, player.goto.x, 0.10);
       ty = lerp(ty, player.goto.y, 0.10);
     }
     const tillFrame = wantTillFrame();
     if (tillFrame) {
       const tw = tillWorld();
-      tx = lerp(tx, tw.x + 72, 0.18);
-      ty = lerp(ty, tw.y + 32, 0.16);
-      state.camEase = Math.max(state.camEase || 0, 0.28);
+      tx = lerp(tx, tw.x + 72, 0.14);
+      ty = lerp(ty, tw.y + 32, 0.12);
+      state.camEase = Math.max(state.camEase || 0, 0.38);
     }
     if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
       const band = player.y < 680 ? "plaza" : (player.y > 860 ? "dock" : "mid");
       if (cam.shopBand && cam.shopBand !== band && (band === "plaza" || band === "dock")) {
-        state.camEase = Math.max(state.camEase || 0, 0.95);
+        state.camEase = Math.max(state.camEase || 0, 0.38);
       }
       cam.shopBand = band;
       const glowI = glowingStockIndex();
@@ -9109,36 +9131,47 @@
         }
       }
     }
-    if ((state.camHoldTill || 0) > 0) state.camHoldTill = Math.max(0, state.camHoldTill - dt);
+    if ((state.camTillHold || 0) > 0) state.camTillHold = Math.max(0, state.camTillHold - dt);
     if ((state.camSettle || 0) > 0) state.camSettle = Math.max(0, state.camSettle - dt);
     if ((state.camEase || 0) > 0) state.camEase = Math.max(0, state.camEase - dt);
     const easing = (state.camEase || 0) > 0 || (state.camSettle || 0) > 0 || tillFrame;
-    const followPow = easing ? 0.0007 : 0.00115;
+    const followPow = easing ? 0.0009 : 0.0014;
     const follow = 1 - Math.pow(followPow, dt);
     let nx = lerp(cam.x, tx, follow);
     let ny = lerp(cam.y, ty, follow);
     const rightRail = 70;
     const wantRail = shopBarsReady() ? 112 : (state.tutorial === 0 && !state.didMove ? 100 : 28);
     cam.rail = cam.rail == null ? wantRail : lerp(cam.rail, wantRail, 1 - Math.pow(0.05, Math.min(dt, 0.05)));
+    const padL = 88, padR = rightRail + 48;
+    const padT = Math.max(topHudFloor() + 12, 64);
+    const padB = cam.rail + 36;
     let psx = (player.x - nx) * cam.z + W / 2;
     let psy = (player.y - ny) * cam.z + H / 2;
-    if (psx > W - rightRail - 40) nx = lerp(nx, nx + (psx - (W - rightRail - 40)) / cam.z, 0.12);
-    if (psy > H - cam.rail - 30) ny = lerp(ny, ny + (psy - (H - cam.rail - 30)) / cam.z, 0.12);
+    if (psx < padL) nx = player.x - (padL - W / 2) / cam.z;
+    if (psx > W - padR) nx = player.x - (W - padR - W / 2) / cam.z;
+    if (psy < padT) ny = player.y - (padT - H / 2) / cam.z;
+    if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
     const step = Math.hypot(nx - cam.x, ny - cam.y);
-    const pace = (state.scene === "ocean" ? swimSpeed() : walkSpeed()) + 90;
-    const cap = (easing ? Math.max(120, pace * 0.32) : Math.max(168, pace * 0.44)) * Math.min(dt, 0.05);
+    const pace = state.scene === "ocean" ? swimSpeed() : walkSpeed();
+    const cap = Math.max(pace, easing ? pace : pace + 40) * Math.min(dt, 0.05);
     if (step > cap && step > 0.001) {
       nx = cam.x + (nx - cam.x) * (cap / step);
       ny = cam.y + (ny - cam.y) * (cap / step);
     }
+    psx = (player.x - nx) * cam.z + W / 2;
+    psy = (player.y - ny) * cam.z + H / 2;
+    if (psx < padL) nx = player.x - (padL - W / 2) / cam.z;
+    if (psx > W - padR) nx = player.x - (W - padR - W / 2) / cam.z;
+    if (psy < padT) ny = player.y - (padT - H / 2) / cam.z;
+    if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
     cam.x = clamp(nx, minX, maxX);
     cam.y = clamp(ny, minY, maxY);
     if (state.camNudge > 0) {
       const max = state.camNudgeMax || 0.48;
       const u = 1 - state.camNudge / max;
       const kick = Math.sin(u * Math.PI);
-      cam.y = clamp(cam.y + kick * 9, minY, maxY);
-      cam.x = clamp(cam.x + Math.sin(u * Math.PI * 2) * 4, minX, maxX);
+      cam.y = clamp(cam.y + kick * 2.0, minY, maxY);
+      cam.x = clamp(cam.x + Math.sin(u * Math.PI * 2) * 0.9, minX, maxX);
       state.camNudge = Math.max(0, state.camNudge - dt);
     }
   }
