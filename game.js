@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 46 invented sprites — crushed sheet, drawImage (not live ovals).
+  // Loop 47 painted sprites — crushed sheet, drawImage (not live ovals).
   const ATLAS = {"skip_stand":{"x":2,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":132,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":262,"y":2,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":440,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":570,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":700,"y":2,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":878,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1008,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1138,"y":2,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":1316,"y":2,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":2,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":116,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":230,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":344,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":458,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":572,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":686,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":800,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":914,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1028,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1142,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1256,"y":180,"w":112,"h":72,"ax":62,"ay":36},"harbor":{"x":2,"y":254,"w":540,"h":360,"ax":270.0,"ay":259.2},"plank":{"x":544,"y":254,"w":256,"h":56,"ax":128,"ay":28},"maya":{"x":802,"y":254,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":900,"y":254,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":998,"y":254,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":1096,"y":254,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":1194,"y":254,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":1292,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":2,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":100,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":198,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":296,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":394,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":492,"y":616,"w":96,"h":140,"ax":48,"ay":132},"post":{"x":590,"y":616,"w":32,"h":80,"ax":16.0,"ay":80},"crown":{"x":624,"y":616,"w":40,"h":32,"ax":20.0,"ay":28},"shades":{"x":666,"y":616,"w":40,"h":20,"ax":20.0,"ay":12}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -237,6 +237,22 @@
     if (opt.flip) ctx.scale(-1, 1);
     if (opt.rot) ctx.rotate(opt.rot);
     ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, -c.ax * sc, -c.ay * sc, c.w * sc, c.h * sc);
+    if (!opt.flat) {
+      ctx.globalCompositeOperation = "source-atop";
+      const sun = state.scene === "shop" ? sunAmt(x, y) : 0.52;
+      const lg = ctx.createLinearGradient(-c.ax * sc, -c.ay * sc, c.w * sc * 0.38, c.h * sc);
+      if (opt.water) {
+        lg.addColorStop(0, "rgba(190,236,255," + (0.14 + 0.06 * Math.sin((state.time || 0) * 1.6)) + ")");
+        lg.addColorStop(0.48, "rgba(40,100,130,0.05)");
+        lg.addColorStop(1, "rgba(8,36,62,0.16)");
+      } else {
+        lg.addColorStop(0, "rgba(255,228,170," + (0.10 + sun * 0.10) + ")");
+        lg.addColorStop(0.42, "rgba(255,255,255,0)");
+        lg.addColorStop(1, "rgba(22,26,46," + (0.11 + (1 - sun) * 0.10) + ")");
+      }
+      ctx.fillStyle = lg;
+      ctx.fillRect(-c.ax * sc - 1, -c.ay * sc - 1, c.w * sc + 2, c.h * sc + 2);
+    }
     ctx.restore();
     return true;
   }
@@ -306,6 +322,7 @@
     aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
     catchVerb: null, tankFlash: null, pierChirp: 0,
     camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0,
+    camHoldTill: 0,
     almostSfxAt: 0,
     skin: "skip",
     surfaceQuiet: 0,
@@ -688,7 +705,7 @@
       catchClimax: null, divesThisSession: 0, tangRumor: false, freezeFrame: 0,
       aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
       catchVerb: null, tankFlash: null, pierChirp: 0,
-      camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, almostSfxAt: 0, surfaceQuiet: 0,
+      camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, camHoldTill: 0, almostSfxAt: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
@@ -995,6 +1012,22 @@
   }
   function tillWorld() {
     return { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 };
+  }
+  function holdTillView(secs) {
+    state.camHoldTill = Math.max(state.camHoldTill || 0, secs == null ? 1.6 : secs);
+    state.camEase = Math.max(state.camEase || 0, 0.85);
+  }
+  function wantTillFrame() {
+    if (state.scene !== "shop") return false;
+    if (state.bookOpen != null || (state.boatGlance || 0) > 0) return false;
+    if ((state.camHoldTill || 0) > 0) return true;
+    if (cashNeedsCollect()) return true;
+    if (player.pendingAct && player.pendingAct.kind === "cash") return true;
+    if (player.goto) {
+      const tw = tillWorld();
+      if (Math.hypot(player.goto.x - tw.x, player.goto.y - tw.y) < 160) return true;
+    }
+    return false;
   }
   function tillOffScreen() {
     if (state.scene !== "shop") return false;
@@ -1388,18 +1421,17 @@
     const specs = {
       catch: { stop: 0.12, punch: 0.16, n: 22, cols: ["#fff6e8", "#ffe27a", "#9ef0ff"], spread: 180, sfx: "catch" },
       shiny: { stop: 0.13, punch: 0.22, n: 34, cols: ["#ffd24a", "#fff6e8", "#ffe27a"], spread: 270, sfx: "shiny" },
-      sale: { stop: 0.05, punch: 0.09, n: 14, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 110, sfx: "sale" },
-      firstsale: { stop: 0.14, punch: 0.22, n: 32, cols: ["#ffe27a", "#ffd24a", "#fff"], spread: 210, sfx: "firstsale" },
-      cashin: { stop: 0.1, punch: 0.16, n: 24, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 150, sfx: "cashin" },
+      sale: { stop: 0.04, punch: 0.05, n: 14, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 110, sfx: "sale" },
+      firstsale: { stop: 0.1, punch: 0.08, n: 32, cols: ["#ffe27a", "#ffd24a", "#fff"], spread: 210, sfx: "firstsale" },
+      cashin: { stop: 0.06, punch: 0.07, n: 24, cols: ["#ffe27a", "#ffd24a", "#fff6e8"], spread: 150, sfx: "cashin" },
       tang: { stop: 0.15, punch: 0.24, n: 38, cols: ["#2f7dff", "#ffe14a", "#fff6e8"], spread: 230, sfx: "tang" },
     };
     const s = specs[kind] || specs.catch;
     state.hitStop = Math.max(state.hitStop || 0, s.stop);
     state.freezeFrame = Math.max(state.freezeFrame || 0, s.stop + 0.04);
     state.camPunch = Math.max(state.camPunch || 0, s.punch);
-    if (kind === "firstsale") {
-      state.camNudge = 0.48;
-      state.camNudgeMax = 0.48;
+    if (kind === "firstsale" || kind === "sale" || kind === "cashin") {
+      holdTillView(kind === "cashin" ? 1.8 : 1.45);
     }
     if (x != null && y != null) spawnP(x, y, s.n, s.cols, s.spread);
     sfx(s.sfx);
@@ -1989,6 +2021,7 @@
     if (state.scene === "shop") {
       player.x = 880; player.y = 920;
       cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28; cam.shopBand = null;
+      state.camHoldTill = 0;
       player.goto = null;
       if (state.tutorial === 0) state.didMove = false;
     }
@@ -3387,6 +3420,7 @@
     advanceMission();
     checkSessionGoals();
     state.tillSlip = null;
+    holdTillView(1.9);
     if (!fromStaff && !state.missionDone && !bagHasStockable()) {
       walkToDock();
       seedPathCoins([[player.x, player.y], [720, 640], [880, 1008]], 2);
@@ -3754,6 +3788,7 @@
             const who = c.name || "A guest";
             playSale(who, SPECIES[c.carry].name, pay, c.x, c.y - 28, first, c.saidLine || c.emote);
             beatMoment(first ? "firstsale" : "sale", c.x, c.y - 20);
+            holdTillView(1.5);
             c.buyHop = 0.55;
             if (!state.didFirstSale) state.didFirstSale = true;
             state.sessionSales = (state.sessionSales | 0) + 1;
@@ -4279,10 +4314,14 @@
   }
   function shadow(x, y, rx, ry) {
     ctx.save();
-    ctx.fillStyle = "rgba(10, 6, 4, 0.22)";
-    ctx.beginPath(); ctx.ellipse(x - 9, y + 13, rx * 1.75, ry * 1.55, -0.24, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "rgba(10, 6, 4, 0.44)";
-    ctx.beginPath(); ctx.ellipse(x - 3, y + 11, rx * 1.08, ry * 0.88, -0.18, 0, Math.PI * 2); ctx.fill();
+    const g = ctx.createRadialGradient(x - 5, y + 8, 0.4, x - 4, y + 10, rx * 1.7);
+    g.addColorStop(0, "rgba(16, 8, 4, 0.40)");
+    g.addColorStop(0.42, "rgba(16, 8, 4, 0.16)");
+    g.addColorStop(1, "rgba(16, 8, 4, 0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(x - 5, y + 10, rx * 1.32, ry * 0.92, -0.22, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
   function groundBlob(x, y, rx, ry) {
@@ -4658,12 +4697,12 @@
       g.addColorStop(0.82, "#064850");
       g.addColorStop(1, "#021820");
     } else {
-      g.addColorStop(0, "#9aecf6");
-      g.addColorStop(0.07, "#4ec8de");
-      g.addColorStop(0.22, "#1a86a4");
-      g.addColorStop(0.48, "#0c5a74");
-      g.addColorStop(0.74, "#063848");
-      g.addColorStop(1, "#021018");
+      g.addColorStop(0, "#b4f4fc");
+      g.addColorStop(0.06, "#62d8ea");
+      g.addColorStop(0.2, "#2a9ec0");
+      g.addColorStop(0.44, "#0e6a86");
+      g.addColorStop(0.7, "#08485c");
+      g.addColorStop(1, "#031820");
     }
     ctx.fillStyle = g;
     ctx.fillRect(x, y, w, h);
@@ -5350,7 +5389,7 @@
     if (sp.id === 5) rot = ang * 0.16;
     else if (sp.id === 8) rot = ang * 0.22;
     else if (sp.id === 9) rot = ang * 0.12;
-    if (blit("fish" + sp.id, x, y, { rot: rot + wob * 0.35, scale: s0 * 0.52 })) return;
+    if (blit("fish" + sp.id, x, y, { rot: rot + wob * 0.35, scale: s0 * 0.52, water: true })) return;
     ctx.save();
     ctx.translate(x, y);
     if (sp.id === 4) { drawTurtle(ang, scale, t); ctx.restore(); return; }
@@ -6295,8 +6334,18 @@
     ctx.fillRect(-480, -240, shopW() + 960, SHOP.h + 480);
     blitHarborPart(0, 0, 1, 0.44, -200, -280, shopW() + 400, 400);
     blitHarborPart(0.08, 0.38, 0.92, 0.62, -160, 760, shopW() + 320, 560);
+    const harborFade = ctx.createLinearGradient(0, 40, 0, 220);
+    harborFade.addColorStop(0, "rgba(90, 170, 210, 0)");
+    harborFade.addColorStop(1, "rgba(12, 48, 62, 0.22)");
+    ctx.fillStyle = harborFade;
+    ctx.fillRect(-200, 40, shopW() + 400, 200);
+    const bayFade = ctx.createLinearGradient(0, 760, 0, 980);
+    bayFade.addColorStop(0, "rgba(18, 70, 86, 0.18)");
+    bayFade.addColorStop(1, "rgba(6, 28, 40, 0)");
+    ctx.fillStyle = bayFade;
+    ctx.fillRect(-160, 760, shopW() + 320, 220);
     ctx.save();
-    ctx.globalAlpha = 0.52;
+    ctx.globalAlpha = 0.58;
     drawBayWater(0, 900, shopW(), SHOP.h - 900, state.time, !!state.unlocked[1]);
     ctx.restore();
     ctx.save();
@@ -6333,15 +6382,19 @@
     sunPatch.addColorStop(1, "rgba(255, 200, 100, 0)");
     ctx.fillStyle = sunPatch;
     ctx.fillRect(90, 80, 1580, 810);
-    ctx.fillStyle = "rgba(232, 192, 74, 0.16)";
-    const runner = [
-      [880, 860], [880, 680], [880, 500], [880, 360],
-      [720, 360], [520, 370], [340, 430], [250, 520],
-    ];
-    for (let i = 0; i < runner.length; i++) {
-      const p = runner[i];
-      ctx.beginPath(); ctx.ellipse(p[0], p[1], 18, 10, 0, 0, Math.PI * 2); ctx.fill();
-    }
+    ctx.strokeStyle = "rgba(255, 214, 130, 0.18)";
+    ctx.lineWidth = 14;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(880, 860);
+    ctx.lineTo(880, 360);
+    ctx.quadraticCurveTo(760, 348, 520, 370);
+    ctx.quadraticCurveTo(340, 410, 250, 520);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(255, 236, 180, 0.10)";
+    ctx.lineWidth = 6;
+    ctx.stroke();
     ctx.strokeStyle = "rgba(90, 48, 20, 0.28)";
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -6565,6 +6618,10 @@
       }
     }
     const punch = state.registerPunch || 1;
+    ctx.fillStyle = "rgba(12, 8, 4, 0.28)";
+    ctx.beginPath();
+    ctx.ellipse(r.x + r.w / 2, r.y + r.h + 10, r.w * 0.48, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
     ctx.save();
     ctx.translate(r.x + r.w / 2, r.y + r.h / 2);
     ctx.scale(punch, punch);
@@ -6705,32 +6762,45 @@
       : 0;
     ctx.save();
     ctx.translate(shake, 0);
+    ctx.fillStyle = "rgba(12, 8, 4, 0.28)";
+    ctx.beginPath();
+    ctx.ellipse(t.x + TANK_W / 2, t.y + TANK_H + 16, TANK_W * 0.42, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
     ctx.fillStyle = "#6a3a18";
     roundRect(t.x + 8, t.y + TANK_H - 4, TANK_W - 16, 24, 4); ctx.fill();
     ctx.fillStyle = "#8a5224";
     roundRect(t.x + 14, t.y + TANK_H - 2, TANK_W - 28, 8, 2); ctx.fill();
+    ctx.fillStyle = "rgba(255, 210, 140, 0.16)";
+    ctx.fillRect(t.x + 16, t.y + TANK_H - 2, 18, 6);
     const stocked = state.unlocked[i] && state.stock[i] > 0;
     const water = ctx.createLinearGradient(t.x, t.y, t.x, t.y + TANK_H);
     if (i === 0 && stocked) {
-      water.addColorStop(0, "rgba(255,236,200,0.12)");
-      water.addColorStop(0.14, "rgba(255,214,150,0.22)");
-      water.addColorStop(0.38, "rgba(50,170,190,0.62)");
-      water.addColorStop(1, "rgba(10,62,88,0.92)");
+      water.addColorStop(0, "rgba(255,244,210,0.22)");
+      water.addColorStop(0.12, "rgba(255,214,150,0.18)");
+      water.addColorStop(0.34, "rgba(56,186,198,0.58)");
+      water.addColorStop(0.72, "rgba(16,86,112,0.86)");
+      water.addColorStop(1, "rgba(8,42,68,0.96)");
     } else {
-      water.addColorStop(0, "rgba(220,245,255,0.1)");
-      water.addColorStop(0.14, "rgba(150,220,240,0.38)");
-      water.addColorStop(0.5, "rgba(28,120,160,0.68)");
-      water.addColorStop(1, "rgba(8,48,72,0.9)");
+      water.addColorStop(0, "rgba(230,250,255,0.18)");
+      water.addColorStop(0.12, "rgba(150,226,240,0.34)");
+      water.addColorStop(0.42, "rgba(32,140,176,0.64)");
+      water.addColorStop(0.78, "rgba(10,62,88,0.9)");
+      water.addColorStop(1, "rgba(6,32,52,0.96)");
     }
-    ctx.fillStyle = "#d8e6ee";
-    roundRect(t.x - 2, t.y - 2, TANK_W + 4, TANK_H + 4, 11); ctx.fill();
-    ctx.fillStyle = "#6a8490";
-    roundRect(t.x + 2, t.y + 2, TANK_W - 4, TANK_H - 4, 8); ctx.fill();
+    ctx.fillStyle = "#e8f2f6";
+    roundRect(t.x - 4, t.y - 4, TANK_W + 8, TANK_H + 8, 13); ctx.fill();
+    ctx.fillStyle = "#6e8894";
+    roundRect(t.x + 1, t.y + 1, TANK_W - 2, TANK_H - 2, 10); ctx.fill();
     ctx.save();
-    roundRect(t.x + 4, t.y + 4, TANK_W - 8, TANK_H - 8, 8); ctx.clip();
-    ctx.fillStyle = "#0c2430";
+    roundRect(t.x + 5, t.y + 5, TANK_W - 10, TANK_H - 10, 8); ctx.clip();
+    ctx.fillStyle = "#0a2230";
     ctx.fillRect(t.x, t.y, TANK_W, TANK_H);
     ctx.fillStyle = water; ctx.fillRect(t.x, t.y, TANK_W, TANK_H);
+    const depth = ctx.createLinearGradient(t.x, t.y + 20, t.x, t.y + TANK_H);
+    depth.addColorStop(0, "rgba(8,24,36,0)");
+    depth.addColorStop(1, "rgba(4,16,28,0.38)");
+    ctx.fillStyle = depth;
+    ctx.fillRect(t.x, t.y, TANK_W, TANK_H);
     const lineY = t.y + 18;
     ctx.fillStyle = "rgba(255,255,255,0.06)";
     ctx.fillRect(t.x, t.y, TANK_W, 18);
@@ -6752,12 +6822,15 @@
     ctx.stroke();
     ctx.fillStyle = i === 0 && stocked ? "rgba(180,100,42,0.58)" : "rgba(140,112,62,0.5)";
     ctx.fillRect(t.x, t.y + TANK_H - 26, TANK_W, 22);
-    ctx.fillStyle = i === 0 && stocked ? "rgba(230,160,80,0.4)" : "rgba(200,170,100,0.32)";
-    for (let p = 0; p < 11; p++) {
-      ctx.beginPath();
-      ctx.ellipse(t.x + 12 + p * 18, t.y + TANK_H - 13 + (p % 3) * 2.4, 4.6, 2.2, 0.1 * (p % 2), 0, Math.PI * 2);
-      ctx.fill();
+    ctx.fillStyle = i === 0 && stocked ? "rgba(230,160,80,0.36)" : "rgba(200,170,100,0.28)";
+    ctx.beginPath();
+    ctx.moveTo(t.x, t.y + TANK_H - 18);
+    for (let p = 0; p <= 10; p++) {
+      ctx.lineTo(t.x + p * (TANK_W / 10), t.y + TANK_H - 16 + Math.sin(p * 1.3 + i) * 3.2);
     }
+    ctx.lineTo(t.x + TANK_W, t.y + TANK_H);
+    ctx.lineTo(t.x, t.y + TANK_H);
+    ctx.closePath(); ctx.fill();
     ctx.strokeStyle = i % 2 ? "#2e8b4a" : "#3aa35a";
     ctx.lineWidth = 1.8;
     for (let p = 0; p < 4; p++) {
@@ -6768,9 +6841,17 @@
       ctx.quadraticCurveTo(px + sway, t.y + TANK_H - 48, px + sway * 0.4, t.y + TANK_H - 70);
       ctx.stroke();
     }
-    ctx.fillStyle = "#5a6a70";
-    ctx.beginPath(); ctx.ellipse(t.x + 28, t.y + TANK_H - 22, 10, 6, -0.2, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(t.x + TANK_W - 34, t.y + TANK_H - 20, 12, 7, 0.15, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#4a5a50";
+    ctx.beginPath();
+    ctx.moveTo(t.x + 16, t.y + TANK_H - 18);
+    ctx.quadraticCurveTo(t.x + 28, t.y + TANK_H - 30, t.x + 42, t.y + TANK_H - 16);
+    ctx.quadraticCurveTo(t.x + 30, t.y + TANK_H - 12, t.x + 16, t.y + TANK_H - 18);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(t.x + TANK_W - 48, t.y + TANK_H - 16);
+    ctx.quadraticCurveTo(t.x + TANK_W - 32, t.y + TANK_H - 28, t.x + TANK_W - 16, t.y + TANK_H - 15);
+    ctx.quadraticCurveTo(t.x + TANK_W - 30, t.y + TANK_H - 10, t.x + TANK_W - 48, t.y + TANK_H - 16);
+    ctx.fill();
     drawCaustics(t.x, t.y + 18, TANK_W, TANK_H - 40, state.time + i, 0.14);
     ctx.save();
     ctx.globalAlpha = 0.2;
@@ -6872,10 +6953,14 @@
       ctx.lineWidth = 6;
       roundRect(t.x - 3, t.y - 3, TANK_W + 6, TANK_H + 6, 12); ctx.stroke();
     }
-    ctx.strokeStyle = "rgba(255,255,255,0.75)"; ctx.lineWidth = 3;
+    ctx.strokeStyle = "rgba(255,255,255,0.82)"; ctx.lineWidth = 3.4;
     roundRect(t.x, t.y, TANK_W, TANK_H, 10); ctx.stroke();
-    ctx.strokeStyle = "rgba(190,235,255,0.5)"; ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(12, 28, 40, 0.28)"; ctx.lineWidth = 5;
+    roundRect(t.x + 3, t.y + 3, TANK_W - 6, TANK_H - 6, 8); ctx.stroke();
+    ctx.strokeStyle = "rgba(210,240,255,0.58)"; ctx.lineWidth = 2.2;
     ctx.beginPath(); ctx.moveTo(t.x + 10, t.y + 3); ctx.lineTo(t.x + TANK_W - 12, t.y + 3); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,0.28)"; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(t.x + 8, t.y + 10); ctx.lineTo(t.x + 8, t.y + TANK_H - 14); ctx.stroke();
     if (state.unlocked[i]) {
       const nameA = Math.min(
         worldLabelAlpha(t.x + 8, t.y + TANK_H - 32, TANK_W - 16, 24),
@@ -6981,13 +7066,13 @@
       g.addColorStop(0.55, "#061828");
       g.addColorStop(1, "#020810");
     } else {
-      g.addColorStop(0, "#a8eef8");
-      g.addColorStop(0.06, "#4ec8de");
-      g.addColorStop(0.16, "#1a86a8");
-      g.addColorStop(0.36, "#0c5a78");
-      g.addColorStop(0.58, "#063848");
-      g.addColorStop(0.8, "#021820");
-      g.addColorStop(1, "#01080e");
+      g.addColorStop(0, "#c4f6fc");
+      g.addColorStop(0.05, "#6adcec");
+      g.addColorStop(0.14, "#2aa8c8");
+      g.addColorStop(0.32, "#0e6a88");
+      g.addColorStop(0.54, "#084c64");
+      g.addColorStop(0.78, "#032838");
+      g.addColorStop(1, "#021018");
     }
     ctx.fillStyle = g; ctx.fillRect(0, 0, OCEAN.w, OCEAN.h);
     if (!night) {
@@ -8643,7 +8728,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 46", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 47", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -8683,7 +8768,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 46", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 47", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -8700,7 +8785,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 46", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 47", W / 2, 632);
     }
   }
 
@@ -8976,59 +9061,60 @@
       const pull = u > 0.35 ? 0.78 : 0.78 * (u / 0.35);
       tx = lerp(tx, BOAT.x, pull);
       ty = lerp(ty, BOAT.y, pull);
-    } else if (player.goto && state.scene === "shop") {
-      tx = lerp(tx, player.goto.x, 0.14);
-      ty = lerp(ty, player.goto.y, 0.14);
+    } else if (player.goto && state.scene === "shop" && !wantTillFrame()) {
+      tx = lerp(tx, player.goto.x, 0.10);
+      ty = lerp(ty, player.goto.y, 0.10);
     }
-    if (state.scene === "shop" && cashNeedsCollect() && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
+    const tillFrame = wantTillFrame();
+    if (tillFrame) {
       const tw = tillWorld();
-      const tillPull = (isDockDest(player.goto) || tillOffScreen()) ? 0.12 : 0.07;
-      tx = lerp(tx, tw.x, tillPull);
-      ty = lerp(ty, tw.y + 28, tillPull);
+      tx = lerp(tx, tw.x + 72, 0.18);
+      ty = lerp(ty, tw.y + 32, 0.16);
+      state.camEase = Math.max(state.camEase || 0, 0.28);
     }
     if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
       const band = player.y < 680 ? "plaza" : (player.y > 860 ? "dock" : "mid");
       if (cam.shopBand && cam.shopBand !== band && (band === "plaza" || band === "dock")) {
-        state.camEase = Math.max(state.camEase || 0, 0.9);
+        state.camEase = Math.max(state.camEase || 0, 0.95);
       }
       cam.shopBand = band;
-      const plaza = clamp((640 - player.y) / 280, 0, 1);
       const glowI = glowingStockIndex();
       const z = Math.max(0.7, cam.z);
       const hudClear = Math.max(topHudFloor() + 16, 176);
       const onPlaza = player.y < 720;
-      if (onPlaza && (plaza > 0.08 || glowI >= 0)) {
+      if (!tillFrame && onPlaza && glowI >= 0) {
+        const plaza = clamp((640 - player.y) / 280, 0, 1);
         const shelfL = TANK_POS[0].x;
         const shelfR = TANK_POS[4].x + TANK_W;
         const minCam = shelfR - (W / 2) / z + 8 / z;
         const maxCam = shelfL + (W / 2) / z - 8 / z;
-        const pull = glowI >= 0 ? Math.max(plaza * 0.45, 0.14) : plaza * 0.42;
+        const pull = Math.max(plaza * 0.28, 0.10);
         if (glowI >= CORE_SPECIES && TANK_POS[glowI]) {
           tx = lerp(tx, TANK_POS[glowI].x + TANK_W / 2, pull);
         } else if (minCam <= maxCam) tx = lerp(tx, clamp(tx, minCam, maxCam), pull);
-        else tx = lerp(tx, (minCam + maxCam) * 0.5, pull * 0.55);
-        const t = TANK_POS[glowI >= 0 ? glowI : 0];
-        const nameBand = t.y + TANK_H - 20;
-        const camForName = nameBand - (hudClear - H / 2) / z;
-        const camForGlow = glowI >= 0 ? (t.y - 10) - (hudClear - H / 2) / z : camForName;
+        else tx = lerp(tx, (minCam + maxCam) * 0.5, pull * 0.45);
+        const t = TANK_POS[glowI];
+        const camForGlow = (t.y - 10) - (hudClear - H / 2) / z;
         const bottomKeep = shopBarsReady() ? 136 : 88;
         const minCamForPlayer = player.y - (H / 2 - bottomKeep) / z;
-        const tankCam = Math.max(glowI >= 0 ? camForGlow : camForName, minCamForPlayer);
-        const rowPull = glowI >= 0 ? Math.max(plaza * 0.4, 0.16) : plaza * 0.38;
-        if (ty > tankCam) ty = lerp(ty, tankCam, rowPull);
+        const tankCam = Math.max(camForGlow, minCamForPlayer);
+        if (ty > tankCam) ty = lerp(ty, tankCam, Math.max(plaza * 0.26, 0.10));
       }
-      // Top safe-area = HUD height: never let a tank card sit flush-cut on the frame.
-      const cardTop = TANK_POS[0].y;
-      const maxCamForCards = cardTop - (hudClear - H / 2) / z;
-      const cardScr = (cardTop - ty) * z + H / 2;
-      if (cardScr > 4 && cardScr < hudClear) {
-        ty = lerp(ty, maxCamForCards, 0.16);
+      if (!tillFrame && glowI >= 0) {
+        const cardTop = TANK_POS[0].y;
+        const maxCamForCards = cardTop - (hudClear - H / 2) / z;
+        const cardScr = (cardTop - ty) * z + H / 2;
+        if (cardScr > 4 && cardScr < hudClear) {
+          ty = lerp(ty, maxCamForCards, 0.10);
+        }
       }
     }
+    if ((state.camHoldTill || 0) > 0) state.camHoldTill = Math.max(0, state.camHoldTill - dt);
     if ((state.camSettle || 0) > 0) state.camSettle = Math.max(0, state.camSettle - dt);
     if ((state.camEase || 0) > 0) state.camEase = Math.max(0, state.camEase - dt);
-    const easing = (state.camEase || 0) > 0 || (state.camSettle || 0) > 0;
-    const follow = 1 - Math.pow(easing ? 0.00035 : 0.002, dt);
+    const easing = (state.camEase || 0) > 0 || (state.camSettle || 0) > 0 || tillFrame;
+    const followPow = easing ? 0.0007 : 0.00115;
+    const follow = 1 - Math.pow(followPow, dt);
     let nx = lerp(cam.x, tx, follow);
     let ny = lerp(cam.y, ty, follow);
     const rightRail = 70;
@@ -9036,11 +9122,11 @@
     cam.rail = cam.rail == null ? wantRail : lerp(cam.rail, wantRail, 1 - Math.pow(0.05, Math.min(dt, 0.05)));
     let psx = (player.x - nx) * cam.z + W / 2;
     let psy = (player.y - ny) * cam.z + H / 2;
-    if (psx > W - rightRail - 40) nx = lerp(nx, nx + (psx - (W - rightRail - 40)) / cam.z, 0.18);
-    if (psy > H - cam.rail - 30) ny = lerp(ny, ny + (psy - (H - cam.rail - 30)) / cam.z, 0.18);
+    if (psx > W - rightRail - 40) nx = lerp(nx, nx + (psx - (W - rightRail - 40)) / cam.z, 0.12);
+    if (psy > H - cam.rail - 30) ny = lerp(ny, ny + (psy - (H - cam.rail - 30)) / cam.z, 0.12);
     const step = Math.hypot(nx - cam.x, ny - cam.y);
     const pace = (state.scene === "ocean" ? swimSpeed() : walkSpeed()) + 90;
-    const cap = (easing ? Math.max(110, pace * 0.28) : Math.max(240, pace * 0.7)) * Math.min(dt, 0.05);
+    const cap = (easing ? Math.max(120, pace * 0.32) : Math.max(168, pace * 0.44)) * Math.min(dt, 0.05);
     if (step > cap && step > 0.001) {
       nx = cam.x + (nx - cam.x) * (cap / step);
       ny = cam.y + (ny - cam.y) * (cap / step);
