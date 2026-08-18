@@ -5110,15 +5110,21 @@
     ctx.rotate(lean);
     ctx.scale(1, hMul);
     const spr = blit("post", 0, 0, { scale: s, flat: true });
+    const wood = stain > 0.66 ? "#5a3214" : (stain > 0.33 ? "#3a2818" : "#4a3a22");
+    const lite = stain > 0.66 ? "#8a5a28" : (stain > 0.33 ? "#6a4a28" : "#7a6238");
     if (!spr) {
-      ctx.fillStyle = stain > 0.5 ? "#4a2a14" : "#3a2210";
+      ctx.fillStyle = wood;
       ctx.fillRect(-7 * s, -42 * s, 14 * s, 42 * s);
-      ctx.fillStyle = "#8a5a30";
+      ctx.fillStyle = lite;
       ctx.fillRect(-7 * s, -42 * s, 5 * s, 42 * s);
     }
+    ctx.fillStyle = wood;
+    ctx.fillRect(-8 * s, -36 * s, 16 * s, 30 * s);
+    ctx.fillStyle = lite;
+    ctx.fillRect(-8 * s, -36 * s, 5 * s, 30 * s);
     ctx.fillStyle = stain > 0.55
-      ? "rgba(90, 48, 18, 0.38)"
-      : (stain > 0.25 ? "rgba(40, 70, 56, 0.28)" : "rgba(120, 72, 28, 0.22)");
+      ? "rgba(90, 48, 18, 0.28)"
+      : (stain > 0.25 ? "rgba(40, 70, 56, 0.22)" : "rgba(120, 72, 28, 0.16)");
     ctx.fillRect(-8 * s, -42 * s, 16 * s, 42 * s);
     ctx.fillStyle = "rgba(20, 10, 4," + (0.12 + hash2(id, 13) * 0.28) + ")";
     ctx.fillRect(-8 * s, -36 * s, 16 * s, 8 * s + hash2(id, 14) * 22 * s);
@@ -5280,6 +5286,18 @@
     }
     ctx.fillStyle = g;
     ctx.fillRect(x - 12, y - 12, w + 24, h + 24);
+    ctx.save();
+    for (let n = 0; n < 90; n++) {
+      const px = x + hash2(n, 1) * w;
+      const py = y + hash2(n, 4) * h;
+      ctx.fillStyle = n % 2
+        ? "rgba(200, 245, 250," + (0.03 + hash2(n, 7) * 0.05) + ")"
+        : "rgba(4, 24, 36," + (0.04 + hash2(n, 8) * 0.06) + ")";
+      ctx.beginPath();
+      ctx.ellipse(px, py, 18 + hash2(n, 9) * 40, 8 + hash2(n, 11) * 22, hash2(n, 13) * 1.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
     for (let i = 0; i < 22; i++) {
       const bx = x + hash2(i, 3) * w;
       const by = y + 10 + hash2(i, 8) * h;
@@ -5474,9 +5492,13 @@
     return "mid";
   }
   function midWoodAlpha() {
+    const z = Math.max(0.5, (cam && cam.z) || 1);
+    const viewTop = (cam && cam.y || 900) - (H / 2) / z;
+    if (viewTop > 420) return 0;
+    if (viewTop > 220) return 0.4;
     const band = shopViewBand();
     if (band === "dock") return 0;
-    if (band === "mid") return 0.62;
+    if (band === "mid") return 0.55;
     return 1;
   }
   function drawWalkRail(x, y, w, h) {
@@ -7060,19 +7082,24 @@
     sunPatch.addColorStop(1, "rgba(255, 200, 100, 0)");
     ctx.fillStyle = sunPatch;
     ctx.fillRect(90, 80, 1580, 300);
-    ctx.strokeStyle = "rgba(255, 214, 130, 0.18)";
-    ctx.lineWidth = 14;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.beginPath();
-    ctx.moveTo(880, 860);
-    ctx.lineTo(880, 360);
-    ctx.quadraticCurveTo(760, 348, 520, 370);
-    ctx.quadraticCurveTo(340, 410, 250, 520);
-    ctx.stroke();
-    ctx.strokeStyle = "rgba(255, 236, 180, 0.10)";
-    ctx.lineWidth = 6;
-    ctx.stroke();
+    if (midA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = midA;
+      ctx.strokeStyle = "rgba(255, 214, 130, 0.18)";
+      ctx.lineWidth = 14;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(880, 860);
+      ctx.lineTo(880, 360);
+      ctx.quadraticCurveTo(760, 348, 520, 370);
+      ctx.quadraticCurveTo(340, 410, 250, 520);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(255, 236, 180, 0.10)";
+      ctx.lineWidth = 6;
+      ctx.stroke();
+      ctx.restore();
+    }
     ctx.strokeStyle = "rgba(90, 48, 20, 0.28)";
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -7088,6 +7115,7 @@
     // Hidden on the dock camera so it does not become a leftover teal column
     // over the harbor town.
     const ax = AISLE.x, ay = AISLE.y, aw = AISLE.w, ah = AISLE.h;
+    if (midA > 0.04) {
     ctx.save();
     ctx.globalAlpha = midA;
     ctx.fillStyle = "rgba(18, 70, 88, 0.28)";
@@ -7119,15 +7147,15 @@
     ctx.save();
     ctx.clip();
     if (ATLAS.water && ART.ready) {
-      ctx.globalAlpha = 0.18;
+      ctx.globalAlpha = 0.18 * midA;
       for (let iy = 0; iy < ah + 20; iy += 70) {
         const jx = ax - 20 + Math.sin(state.time * 0.8 + iy * 0.04) * 12;
         blitTile("water", jx, ay - 10 + iy, aw + 40, 86);
       }
-      ctx.globalAlpha = 1;
     }
+    ctx.globalAlpha = midA;
     drawCaustics(ax, ay, aw, ah, state.time, 0.2);
-    ctx.globalAlpha = 0.28;
+    ctx.globalAlpha = 0.28 * midA;
     ctx.strokeStyle = "#e8ffff"; ctx.lineWidth = 1.6;
     for (let i = 0; i < 5; i++) {
       ctx.beginPath();
@@ -7148,6 +7176,7 @@
     }
     ctx.stroke();
     ctx.restore();
+    }
     // warm sun key + lamp glows along the back wall
     drawSunDisc(1588, 28, 22);
     const key = ctx.createRadialGradient(1520, 40, 20, 1100, 420, 920);
@@ -7200,6 +7229,7 @@
     ];
     ctx.fillStyle = "rgba(255, 236, 180, 0.42)";
     for (let i = 0; i < pathPts.length - 1; i++) {
+      if (midA < 0.04 && pathPts[i][1] < 880 && pathPts[i + 1][1] < 880) continue;
       const [x0, y0] = pathPts[i], [x1, y1] = pathPts[i + 1];
       const steps = 5;
       for (let s = 0; s < steps; s++) {
@@ -7775,6 +7805,18 @@
       g.addColorStop(1, "#021018");
     }
     ctx.fillStyle = g; ctx.fillRect(0, 0, OCEAN.w, OCEAN.h);
+    ctx.save();
+    for (let n = 0; n < 70; n++) {
+      const px = hash2(n, 1) * OCEAN.w;
+      const py = 40 + hash2(n, 4) * Math.min(OCEAN.h, 1600);
+      ctx.fillStyle = n % 2
+        ? "rgba(190, 240, 250," + (0.03 + hash2(n, 7) * 0.05) + ")"
+        : "rgba(4, 20, 32," + (0.04 + hash2(n, 8) * 0.06) + ")";
+      ctx.beginPath();
+      ctx.ellipse(px, py, 28 + hash2(n, 9) * 70, 12 + hash2(n, 11) * 36, hash2(n, 13) * 1.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
     if (!night) {
       for (let i = 0; i < 20; i++) {
         const bx = hash2(i, 2) * OCEAN.w;
@@ -9406,7 +9448,7 @@
     ctx.restore();
     drawFoamBand(-10, H - 78, W + 20, state.time);
     drawPierBoards(-8, H - 64, W + 16, 72, { plank: 18, seg: 96, wetY: H - 52 });
-    const titlePosts = [[90, 0.98, 21], [240, 1.12, 22], [1040, 1.04, 23], [1190, 1.2, 24]];
+    const titlePosts = [[78, 0.78, 21], [268, 1.36, 22], [1012, 0.88, 23], [1218, 1.28, 24]];
     for (const [px, sc, id] of titlePosts) drawPierPost(px + 7, H - 52, sc, id);
     ctx.save(); ctx.globalCompositeOperation = "lighter";
     for (let i = 0; i < 5; i++) {
