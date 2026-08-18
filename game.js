@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 49 pier boards / foam + loop 50 harbor town.
+  // Loop 48 characters/fish + loop 49 pier boards / foam + loop 51 dock harbor.
   const ATLAS = {"skip_stand":{"x":2,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":132,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":262,"y":2,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":440,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":570,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":700,"y":2,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":878,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1008,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1138,"y":2,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":1316,"y":2,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":2,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":116,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":230,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":344,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":458,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":572,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":686,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":800,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":914,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1028,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1142,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1256,"y":180,"w":112,"h":72,"ax":62,"ay":36},"harbor":{"x":2,"y":254,"w":480,"h":320,"ax":240.0,"ay":230.39999999999998},"maya":{"x":484,"y":254,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":582,"y":254,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":680,"y":254,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":778,"y":254,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":876,"y":254,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":974,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":1072,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":1170,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":1268,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":1366,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":2,"y":576,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":100,"y":576,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":198,"y":576,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":240,"y":576,"w":40,"h":20,"ax":20,"ay":12},"sky":{"x":282,"y":576,"w":360,"h":91,"ax":180.0,"ay":91},"tankglass":{"x":644,"y":576,"w":140,"h":110,"ax":70,"ay":55},"plank":{"x":786,"y":576,"w":196,"h":54,"ax":98,"ay":27},"plank1":{"x":984,"y":576,"w":196,"h":54,"ax":98,"ay":27},"plank2":{"x":1182,"y":576,"w":196,"h":54,"ax":98,"ay":27},"water":{"x":2,"y":718,"w":320,"h":176,"ax":160,"ay":70},"waterline":{"x":324,"y":718,"w":360,"h":60,"ax":180,"ay":40},"post":{"x":686,"y":718,"w":44,"h":110,"ax":22,"ay":104},"bed0":{"x":732,"y":718,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":954,"y":718,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":1176,"y":718,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":2,"y":896,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":224,"y":896,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":446,"y":896,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":668,"y":896,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":890,"y":896,"w":220,"h":92,"ax":110,"ay":68}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -2289,10 +2289,11 @@
       s, x: clamp(x, 80, OCEAN.w - 80), y: clamp(y, 260, OCEAN.h - 80),
       vx: rand(-30, 30), vy: rand(-18, 18), ang: rand(-0.4, 0.6), ph: rand(0, 40), fleeT: 0, caught: false,
       rare: !!(extra && extra.rare),
-      sc: s === 0 ? rand(0.78, 1.22) : 1,
-      hue: s === 0 ? rand(-18, 22) : 0,
-      sat: s === 0 ? rand(0.8, 1.2) : 1,
-      flip: Math.random() < 0.42,
+      sc: s === 0 ? rand(0.56, 1.48) : 1,
+      hue: s === 0 ? rand(-48, 42) : 0,
+      sat: s === 0 ? rand(0.55, 1.38) : 1,
+      br: s === 0 ? rand(0.78, 1.22) : 1,
+      flip: s === 0 ? Math.random() < 0.5 : Math.random() < 0.42,
     });
   }
   function seedFrontSchool() {
@@ -2451,10 +2452,11 @@
       s, x: clamp(cx + rand(-90, 90), 80, OCEAN.w - 80),
       y: clamp(cy + rand(-80, 80), 260, OCEAN.h - 80),
       vx: rand(-40, 40), vy: rand(-30, 30), ang: rand(0, Math.PI * 2), ph: rand(0, 40), fleeT: 0, caught: false,
-      sc: s === 0 ? rand(0.78, 1.24) : 1,
-      hue: s === 0 ? rand(-18, 22) : 0,
-      sat: s === 0 ? rand(0.8, 1.2) : 1,
-      flip: Math.random() < 0.42,
+      sc: s === 0 ? rand(0.56, 1.48) : 1,
+      hue: s === 0 ? rand(-48, 42) : 0,
+      sat: s === 0 ? rand(0.55, 1.38) : 1,
+      br: s === 0 ? rand(0.78, 1.22) : 1,
+      flip: s === 0 ? Math.random() < 0.5 : Math.random() < 0.42,
     });
   }
   function ensureOceanStock() {
@@ -4393,7 +4395,9 @@
     ctx.beginPath(); ctx.ellipse(x - 4, y, rx * 1.08, ry, -0.18, 0, Math.PI * 2); ctx.fill();
   }
   // C43 — painted harbor art. Cached tiles only; no downloaded photos.
-  const paint = { ready: false, wood: null, woodTeal: null, clouds: null, harbor: null };
+  // C51 — a second, taller pier canvas so the dock camera sees roofs, not the
+  // water-half of the title painting.
+  const paint = { ready: false, wood: null, woodTeal: null, clouds: null, harbor: null, pier: null };
   function hash2(x, y) {
     const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123;
     return n - Math.floor(n);
@@ -4645,6 +4649,196 @@
       g.fill();
     }
   }
+  // Dock-facing harbor: lots of sky, then hills, then a readable waterfront
+  // that sits on the world waterline. C50 stretched the title canvas so the
+  // dock camera only saw the painting's water half (teal + leftover plank decks).
+  function paintPierBackdrop(c) {
+    const g = c.getContext("2d");
+    const w = c.width, h = c.height;
+    g.clearRect(0, 0, w, h);
+    const sky = g.createLinearGradient(0, 0, 0, h * 0.62);
+    sky.addColorStop(0, "#c8eefc");
+    sky.addColorStop(0.18, "#8ed0f0");
+    sky.addColorStop(0.48, "#5eb4dc");
+    sky.addColorStop(0.78, "#6ab8c4");
+    sky.addColorStop(1, "#8eccc4");
+    g.fillStyle = sky;
+    g.fillRect(0, 0, w, h);
+    const sx = w * 0.82, sy = h * 0.09, sr = h * 0.042;
+    const halo = g.createRadialGradient(sx, sy, sr * 0.15, sx, sy, sr * 5);
+    halo.addColorStop(0, "rgba(255,248,214,0.96)");
+    halo.addColorStop(0.2, "rgba(255,214,120,0.36)");
+    halo.addColorStop(1, "rgba(255,176,80,0)");
+    g.fillStyle = halo;
+    g.beginPath(); g.arc(sx, sy, sr * 5, 0, Math.PI * 2); g.fill();
+    const core = g.createRadialGradient(sx - sr * 0.2, sy - sr * 0.22, sr * 0.12, sx, sy, sr);
+    core.addColorStop(0, "#fff8dc");
+    core.addColorStop(0.48, "#ffe27a");
+    core.addColorStop(1, "#f0b429");
+    g.fillStyle = core;
+    g.beginPath(); g.arc(sx, sy, sr, 0, Math.PI * 2); g.fill();
+    const clouds = [
+      [0.08, 0.06, 0.14, 0.028], [0.24, 0.04, 0.1, 0.022],
+      [0.44, 0.08, 0.16, 0.026], [0.62, 0.05, 0.12, 0.024],
+      [0.33, 0.11, 0.08, 0.018], [0.74, 0.07, 0.11, 0.02],
+    ];
+    for (let i = 0; i < clouds.length; i++) {
+      const [fx, fy, rw, rh] = clouds[i];
+      const puff = g.createRadialGradient(w * fx, h * fy, 4, w * fx, h * fy + 6, w * rw);
+      puff.addColorStop(0, "rgba(255,255,255,0.8)");
+      puff.addColorStop(0.5, "rgba(236,244,255,0.38)");
+      puff.addColorStop(1, "rgba(200,220,240,0)");
+      g.fillStyle = puff;
+      g.beginPath();
+      g.ellipse(w * fx, h * fy, w * rw, h * rh, -0.08 + i * 0.03, 0, Math.PI * 2);
+      g.fill();
+      g.beginPath();
+      g.ellipse(w * fx + w * rw * 0.36, h * fy + 3, w * rw * 0.52, h * rh * 0.76, 0.1, 0, Math.PI * 2);
+      g.fill();
+    }
+    function hill(pts, col, base) {
+      g.fillStyle = col;
+      g.beginPath();
+      g.moveTo(0, h * pts[1]);
+      for (let i = 0; i < pts.length; i += 2) g.lineTo(w * pts[i], h * pts[i + 1]);
+      g.lineTo(w, h * base);
+      g.lineTo(0, h * base);
+      g.fill();
+    }
+    hill([0, 0.38, 0.14, 0.30, 0.28, 0.36, 0.46, 0.28, 0.62, 0.34, 0.78, 0.26, 0.9, 0.33, 1, 0.29], "#7aab88", 0.78);
+    hill([0, 0.46, 0.12, 0.40, 0.26, 0.45, 0.42, 0.38, 0.58, 0.44, 0.74, 0.37, 0.88, 0.43, 1, 0.40], "#4e7e62", 0.82);
+    hill([0, 0.56, 0.18, 0.50, 0.36, 0.54, 0.54, 0.49, 0.72, 0.53, 0.9, 0.50, 1, 0.52], "#3d6a52", 0.88);
+    function house(fx, fw, fh, wall, roof, base, flag) {
+      const bx = w * fx, bw = w * fw, bh = h * fh, by = h * base - bh;
+      g.fillStyle = "rgba(20, 28, 24, 0.2)";
+      g.fillRect(bx + 4, h * base, bw, h * 0.01);
+      g.fillStyle = wall;
+      g.fillRect(bx, by, bw, bh + 2);
+      g.fillStyle = "rgba(255, 236, 200, 0.18)";
+      g.fillRect(bx, by, bw * 0.34, bh);
+      g.fillStyle = "rgba(40, 24, 12, 0.12)";
+      g.fillRect(bx + bw * 0.62, by, bw * 0.38, bh);
+      g.fillStyle = roof;
+      g.beginPath();
+      g.moveTo(bx - 5, by + 6);
+      g.lineTo(bx + bw * 0.5, by - h * 0.028 - hash2(fx * 40, 2) * 8);
+      g.lineTo(bx + bw + 5, by + 6);
+      g.closePath();
+      g.fill();
+      if (flag) {
+        g.fillStyle = "#fff6e8";
+        g.fillRect(bx + bw * 0.44, by - h * 0.045, 3.2, h * 0.045);
+        g.fillStyle = "#e85d4c";
+        g.beginPath();
+        g.moveTo(bx + bw * 0.44 + 1.6, by - h * 0.06);
+        g.lineTo(bx + bw * 0.44 + 14, by - h * 0.032);
+        g.lineTo(bx + bw * 0.44 + 1.6, by - h * 0.03);
+        g.fill();
+      }
+      const cols = 2 + ((fw * 30) | 0) % 2, rows = 2 + ((fh * 20) | 0) % 2;
+      for (let r = 0; r < rows; r++) {
+        for (let c0 = 0; c0 < cols; c0++) {
+          const lit = ((r * 3 + c0 + (fx * 17) | 0) % 5) !== 1;
+          g.fillStyle = lit ? "#ffe27a" : "#6a90a0";
+          const ww = Math.max(3, bw * 0.12), hh = Math.max(3.2, bh * 0.12);
+          g.fillRect(bx + bw * 0.16 + c0 * (bw * 0.32), by + bh * 0.28 + r * (bh * 0.28), ww, hh);
+        }
+      }
+    }
+    const far = [
+      [0.04, 0.05, 0.07, "#d8c4a0", "#8a6a48"],
+      [0.10, 0.04, 0.09, "#c8b090", "#6a4a30"],
+      [0.16, 0.048, 0.06, "#e0d0b0", "#8a5a38"],
+      [0.23, 0.06, 0.08, "#c45c4a", "#8b3a2a"],
+      [0.31, 0.044, 0.055, "#e8c04a", "#a88820"],
+      [0.38, 0.05, 0.07, "#d4c2a0", "#7a5a38"],
+      [0.46, 0.055, 0.075, "#c8b090", "#6a4830"],
+      [0.54, 0.042, 0.09, "#d8c8a8", "#8a6a40"],
+      [0.62, 0.05, 0.07, "#c45c4a", "#8b3a2a"],
+      [0.70, 0.038, 0.06, "#d0be9a", "#7a5838"],
+      [0.78, 0.055, 0.08, "#e8d4b0", "#8a6a48"],
+      [0.86, 0.046, 0.065, "#c8b090", "#6a4a30"],
+      [0.93, 0.05, 0.055, "#d8c4a0", "#8a6a48"],
+    ];
+    for (let i = 0; i < far.length; i++) {
+      const [fx, fw, fh, wall, roof] = far[i];
+      house(fx, fw, fh, wall, roof, 0.70, i === 3 || i === 8);
+    }
+    const near = [
+      [0.02, 0.09, 0.14, "#e2c8a0", "#8a5a32"],
+      [0.12, 0.07, 0.11, "#c45c4a", "#8b3a2a"],
+      [0.21, 0.085, 0.16, "#d8c090", "#6a4024"],
+      [0.32, 0.06, 0.10, "#e8c04a", "#a88820"],
+      [0.40, 0.08, 0.13, "#c8b090", "#6a4830"],
+      [0.51, 0.07, 0.12, "#d0a878", "#7a4a28"],
+      [0.60, 0.09, 0.15, "#c45c4a", "#8b3a2a"],
+      [0.72, 0.075, 0.11, "#e8d4b0", "#8a6a48"],
+      [0.82, 0.08, 0.14, "#c8b090", "#6a4a30"],
+      [0.91, 0.07, 0.12, "#d8c4a0", "#8a6a48"],
+    ];
+    for (let i = 0; i < near.length; i++) {
+      const [fx, fw, fh, wall, roof] = near[i];
+      house(fx, fw, fh, wall, roof, 0.90, i === 1 || i === 6);
+    }
+    const trees = [
+      [0.015, 0.68], [0.185, 0.67], [0.355, 0.685], [0.495, 0.672],
+      [0.655, 0.678], [0.805, 0.67], [0.96, 0.682],
+      [0.07, 0.86], [0.29, 0.855], [0.48, 0.868], [0.68, 0.852], [0.88, 0.86],
+    ];
+    for (let i = 0; i < trees.length; i++) {
+      const [fx, fy] = trees[i];
+      g.fillStyle = "#5a3618";
+      g.fillRect(w * fx, h * fy, 3.4, h * 0.024);
+      g.fillStyle = i % 2 ? "#3d8b4a" : "#2e7a3c";
+      g.beginPath();
+      g.ellipse(w * fx + 1.7, h * fy - 5, w * 0.018 + i * 0.5, h * 0.016 + (i % 3), 0, 0, Math.PI * 2);
+      g.fill();
+    }
+    const wf = g.createLinearGradient(0, h * 0.88, 0, h);
+    wf.addColorStop(0, "#8ed4d0");
+    wf.addColorStop(0.35, "#4ab4c0");
+    wf.addColorStop(1, "#1e88a0");
+    g.fillStyle = wf;
+    g.beginPath();
+    g.moveTo(0, h);
+    g.lineTo(0, h * 0.905);
+    for (let x = 0; x <= w; x += 6) {
+      const yy = h * 0.892 + Math.sin(x * 0.016) * h * 0.01 + Math.sin(x * 0.05 + 1.1) * h * 0.005;
+      g.lineTo(x, yy);
+    }
+    g.lineTo(w, h);
+    g.closePath();
+    g.fill();
+    function boat(fx, fy, len, hull, sail) {
+      const bx = w * fx, by = h * fy, bw = w * len;
+      g.fillStyle = hull;
+      g.beginPath();
+      g.moveTo(bx, by);
+      g.lineTo(bx + bw, by - 2);
+      g.lineTo(bx + bw * 0.92, by + h * 0.012);
+      g.lineTo(bx + bw * 0.08, by + h * 0.012);
+      g.closePath();
+      g.fill();
+      g.fillStyle = "#fff6e8";
+      g.fillRect(bx + bw * 0.46, by - h * 0.03, 2.2, h * 0.03);
+      g.fillStyle = sail;
+      g.beginPath();
+      g.moveTo(bx + bw * 0.48, by - h * 0.032);
+      g.lineTo(bx + bw * 0.7, by - h * 0.008);
+      g.lineTo(bx + bw * 0.48, by - h * 0.005);
+      g.fill();
+    }
+    boat(0.07, 0.915, 0.08, "#5a3a22", "#fff6e8");
+    boat(0.58, 0.922, 0.1, "#1b4d6b", "#e85d4c");
+    boat(0.86, 0.91, 0.07, "#3a2415", "#ffe27a");
+    g.fillStyle = "rgba(255,255,255,0.38)";
+    for (let x = 0; x < w; x += 16) {
+      const py = h * 0.896 + Math.sin(x * 0.04) * 2.6;
+      g.beginPath();
+      g.ellipse(x, py, 7 + (x % 5), 1.8, 0, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
   function drawHarborTown(x, y, w, h, teal) {
     ensurePaint();
     if (paint.harbor) ctx.drawImage(paint.harbor, x, y, w, h);
@@ -4655,6 +4849,30 @@
     if (teal) {
       ctx.fillStyle = "rgba(18, 132, 124, 0.12)";
       ctx.fillRect(x, y, w, h);
+    }
+    return true;
+  }
+  // Shop / dock backdrop. Town sits on the bay waterline (y≈886) so the dock
+  // camera — which cannot see the plaza-height title framing — still gets sky,
+  // hills, and roofs. Never a tiled plank wall.
+  function drawShopHarbor(teal) {
+    ensurePaint();
+    const waterY = 886;
+    const topY = -200;
+    const x = -420;
+    const w = shopW() + 840;
+    const h = waterY - topY;
+    if (paint.pier) ctx.drawImage(paint.pier, x, topY, w, h);
+    else if (paint.harbor) {
+      const sw = paint.harbor.width, sh = paint.harbor.height;
+      ctx.drawImage(paint.harbor, 0, 0, sw, sh * 0.545, x, topY, w, h);
+    } else {
+      ctx.fillStyle = "#5eb8e6";
+      ctx.fillRect(x, topY, w, h);
+    }
+    if (teal) {
+      ctx.fillStyle = "rgba(18, 132, 124, 0.10)";
+      ctx.fillRect(x, topY, w, h);
     }
     return true;
   }
@@ -4689,8 +4907,10 @@
       paint.woodTeal = makeOff(196, 54);
       paint.clouds = makeOff(520, 80);
       paint.harbor = makeOff(1024, 576);
+      paint.pier = makeOff(1024, 900);
       paintCloudTile(paint.clouds);
       paintHarborScene(paint.harbor);
+      paintPierBackdrop(paint.pier);
     }
     if (ART.ready && ATLAS.plank && !paint.sprited) {
       stampPlankTile(paint.wood, false, "plank");
@@ -4859,52 +5079,70 @@
     const s = sc || 1.15;
     const id = seed == null ? ((Math.abs(x) * 17 + Math.abs(footY) * 3) | 0) : seed;
     const t = state.time || 0;
-    const lean = (hash2(id, 1) - 0.5) * 0.16;
-    const hMul = 0.76 + hash2(id, 2) * 0.46;
-    const footW = (11 + hash2(id, 4) * 8) * s;
-    const footH = (2.8 + hash2(id, 5) * 3.2) * s;
-    const shear = Math.sin(t * 1.35 + id * 1.7) * (0.16 + hash2(id, 6) * 0.2);
-    const bob = Math.sin(t * 1.9 + id * 0.85) * (1.6 + hash2(id, 7) * 2.2);
-    ctx.fillStyle = "rgba(8, 24, 32," + (0.18 + hash2(id, 8) * 0.22) + ")";
+    const lean = (hash2(id, 1) - 0.5) * 0.22;
+    const hMul = 0.62 + hash2(id, 2) * 0.72;
+    const footW = (10 + hash2(id, 4) * 11) * s;
+    const footH = (2.4 + hash2(id, 5) * 4.4) * s;
+    const shear = Math.sin(t * 1.15 + id * 1.7) * (0.22 + hash2(id, 6) * 0.38);
+    const bob = Math.sin(t * 1.55 + id * 0.85) * (2.2 + hash2(id, 7) * 3.4);
+    const stain = hash2(id, 12);
+    ctx.fillStyle = "rgba(8, 24, 32," + (0.16 + hash2(id, 8) * 0.2) + ")";
     ctx.beginPath();
-    ctx.ellipse(x + shear * 10, footY + 5 + bob * 0.15, footW, footH, shear * 0.5, 0, Math.PI * 2);
+    ctx.ellipse(x + shear * 14, footY + 6 + bob * 0.2, footW, footH, shear * 0.7, 0, Math.PI * 2);
     ctx.fill();
     ctx.save();
-    ctx.globalAlpha = 0.18 + hash2(id, 9) * 0.2;
-    ctx.translate(x + Math.sin(t * 1.7 + id) * 4.2, footY + 11 + bob);
-    ctx.scale(1.02 + hash2(id, 10) * 0.22, -(0.24 + hash2(id, 11) * 0.22));
-    ctx.transform(1, 0, shear, 1, 0, 0);
-    ctx.rotate(lean * 0.6);
-    if (!blit("post", 0, 0, { scale: s * hMul, flat: true })) {
-      ctx.fillStyle = "#152028";
-      ctx.fillRect(-6 * s, -38 * hMul * s, 12 * s, 38 * hMul * s);
+    ctx.translate(x + Math.sin(t * 1.4 + id) * (5 + hash2(id, 9) * 6), footY + 14 + bob);
+    ctx.globalAlpha = 0.12 + hash2(id, 10) * 0.16;
+    ctx.beginPath();
+    const rw = 8 * s * hMul, rh = 18 * s * hMul * (0.28 + hash2(id, 11) * 0.22);
+    for (let i = 0; i <= 8; i++) {
+      const u = i / 8;
+      const px = Math.sin(u * Math.PI * 2 + t * 2.1 + id) * rw * (0.7 + 0.3 * Math.sin(t + i));
+      const py = u * rh * 2;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     }
+    ctx.strokeStyle = "rgba(6, 18, 24, 0.55)";
+    ctx.lineWidth = 7 * s * (0.7 + hash2(id, 19) * 0.6);
+    ctx.stroke();
     ctx.restore();
     ctx.save();
     ctx.translate(x, footY);
     ctx.rotate(lean);
     ctx.scale(1, hMul);
-    const spr = blit("post", 0, 0, { scale: s });
+    const spr = blit("post", 0, 0, { scale: s, flat: true });
     if (!spr) {
-      ctx.fillStyle = hash2(id, 12) > 0.5 ? "#4a2a14" : "#3a2210";
+      ctx.fillStyle = stain > 0.5 ? "#4a2a14" : "#3a2210";
       ctx.fillRect(-7 * s, -42 * s, 14 * s, 42 * s);
       ctx.fillStyle = "#8a5a30";
       ctx.fillRect(-7 * s, -42 * s, 5 * s, 42 * s);
     }
-    ctx.fillStyle = "rgba(36, 18, 8," + (0.1 + hash2(id, 13) * 0.22) + ")";
-    ctx.fillRect(-8 * s, -34 * s, 16 * s, 10 * s + hash2(id, 14) * 16 * s);
-    if (hash2(id, 15) > 0.35) {
-      ctx.strokeStyle = "rgba(196, 160, 80, 0.72)";
-      ctx.lineWidth = 2.2 + hash2(id, 16);
+    ctx.fillStyle = stain > 0.55
+      ? "rgba(90, 48, 18, 0.38)"
+      : (stain > 0.25 ? "rgba(40, 70, 56, 0.28)" : "rgba(120, 72, 28, 0.22)");
+    ctx.fillRect(-8 * s, -42 * s, 16 * s, 42 * s);
+    ctx.fillStyle = "rgba(20, 10, 4," + (0.12 + hash2(id, 13) * 0.28) + ")";
+    ctx.fillRect(-8 * s, -36 * s, 16 * s, 8 * s + hash2(id, 14) * 22 * s);
+    ctx.fillStyle = "rgba(255, 214, 150," + (0.06 + hash2(id, 21) * 0.1) + ")";
+    ctx.fillRect(-8 * s, -42 * s, 5 * s, 42 * s);
+    const ringKind = hash2(id, 15);
+    if (ringKind > 0.62) {
+      ctx.strokeStyle = "rgba(196, 96, 48, 0.8)";
+      ctx.lineWidth = 2.4 + hash2(id, 16) * 2.2;
       ctx.beginPath();
-      ctx.arc(0, -16 * s - hash2(id, 17) * 12 * s, 9 * s, 0.35, 2.7);
+      ctx.arc(0, -12 * s - hash2(id, 17) * 18 * s, 8 * s + hash2(id, 22) * 3, 0.2, 2.9);
+      ctx.stroke();
+    } else if (ringKind > 0.28) {
+      ctx.strokeStyle = "rgba(160, 128, 64, 0.7)";
+      ctx.lineWidth = 1.6 + hash2(id, 16);
+      ctx.beginPath();
+      ctx.arc(0, -20 * s - hash2(id, 17) * 10 * s, 7.2 * s, 0.4, 2.6);
       ctx.stroke();
     }
     ctx.fillStyle = "rgba(210, 200, 180, 0.7)";
-    const barn = 2 + ((hash2(id, 18) * 4) | 0);
+    const barn = 1 + ((hash2(id, 18) * 5) | 0);
     for (let i = 0; i < barn; i++) {
       ctx.beginPath();
-      ctx.arc((-5 + hash2(id, 20 + i) * 10) * s, (-8 - hash2(id, 30 + i) * 18) * s, 1.1 + hash2(id, 40 + i), 0, Math.PI * 2);
+      ctx.arc((-5 + hash2(id, 20 + i) * 10) * s, (-6 - hash2(id, 30 + i) * 22) * s, 1.0 + hash2(id, 40 + i) * 1.4, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
@@ -5028,45 +5266,46 @@
     ctx.clip();
     const g = ctx.createLinearGradient(x, y, x, y + h);
     if (teal) {
-      g.addColorStop(0, "#8af4ea");
-      g.addColorStop(0.08, "#3ed8d0");
-      g.addColorStop(0.28, "#18a8a8");
-      g.addColorStop(0.58, "#0c6e78");
-      g.addColorStop(0.82, "#064850");
+      g.addColorStop(0, "#7aeee4");
+      g.addColorStop(0.22, "#2ec4bc");
+      g.addColorStop(0.48, "#148e96");
+      g.addColorStop(0.74, "#0a5a62");
       g.addColorStop(1, "#021820");
     } else {
-      g.addColorStop(0, "#b4f4fc");
-      g.addColorStop(0.06, "#62d8ea");
-      g.addColorStop(0.2, "#2a9ec0");
-      g.addColorStop(0.44, "#0e6a86");
-      g.addColorStop(0.7, "#08485c");
+      g.addColorStop(0, "#a8eef8");
+      g.addColorStop(0.2, "#4ab8d0");
+      g.addColorStop(0.46, "#1a7a96");
+      g.addColorStop(0.72, "#0a5068");
       g.addColorStop(1, "#031820");
     }
     ctx.fillStyle = g;
     ctx.fillRect(x - 12, y - 12, w + 24, h + 24);
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 22; i++) {
       const bx = x + hash2(i, 3) * w;
-      const by = y + 24 + hash2(i, 8) * h;
-      const rad = 70 + hash2(i, 5) * 160;
-      const blob = ctx.createRadialGradient(bx, by, 8, bx, by, rad);
-      blob.addColorStop(0, teal ? "rgba(90, 230, 210, 0.1)" : "rgba(160, 236, 246, 0.12)");
+      const by = y + 10 + hash2(i, 8) * h;
+      const rad = 50 + hash2(i, 5) * 210;
+      const blob = ctx.createRadialGradient(bx, by, 6, bx, by, rad);
+      blob.addColorStop(0, teal
+        ? (i % 3 ? "rgba(90, 230, 210, 0.14)" : "rgba(8, 50, 56, 0.16)")
+        : (i % 3 ? "rgba(170, 240, 250, 0.14)" : "rgba(8, 40, 56, 0.14)"));
       blob.addColorStop(1, "rgba(8, 40, 56, 0)");
       ctx.fillStyle = blob;
       ctx.beginPath();
-      ctx.ellipse(bx, by + Math.sin(t * 0.7 + i) * 10, rad, rad * 0.42, hash2(i, 9) * 0.4, 0, Math.PI * 2);
+      ctx.ellipse(bx, by + Math.sin(t * 0.55 + i) * 16, rad, rad * (0.28 + hash2(i, 7) * 0.4), hash2(i, 9) * 1.2, 0, Math.PI * 2);
       ctx.fill();
     }
     const cell = ATLAS.water;
     if (ART.ready && cell) {
       ctx.save();
-      ctx.globalAlpha = 0.16;
-      for (let ix = -20, n = 0; ix < w + 20; ix += 90, n++) {
-        const jy = y - 10 + Math.sin(t * 0.9 + n * 1.3) * 14 + hash2(n, 2) * 10;
-        ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, x + ix, jy, 110, Math.min(h + 20, 200));
+      ctx.globalAlpha = 0.08;
+      for (let n = 0; n < 8; n++) {
+        const jx = x - 30 + hash2(n, 1) * (w + 40) + Math.sin(t * 0.4 + n) * 18;
+        const jy = y - 8 + hash2(n, 4) * (h * 0.7);
+        ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, jx, jy, 90 + hash2(n, 6) * 50, 70 + hash2(n, 8) * 50);
       }
       ctx.restore();
       if (teal) {
-        ctx.fillStyle = "rgba(18, 140, 132, 0.1)";
+        ctx.fillStyle = "rgba(18, 140, 132, 0.08)";
         ctx.fillRect(x - 8, y - 8, w + 16, h + 16);
       }
     }
@@ -5092,15 +5331,19 @@
     ctx.restore();
     drawCaustics(x, y, w, h, t, teal ? 0.2 : 0.15);
     ctx.save();
-    ctx.globalAlpha = 0.22;
+    ctx.globalAlpha = 0.16;
     ctx.strokeStyle = "#e8ffff";
-    ctx.lineWidth = 1.6;
-    for (let i = 0; i < 7; i++) {
+    ctx.lineWidth = 1.3;
+    for (let i = 0; i < 9; i++) {
+      const yy = y + 18 + hash2(i, 2) * (h * 0.72) + Math.sin(t * 0.9 + i) * 10;
+      const tilt = (hash2(i, 4) - 0.5) * 0.08;
       ctx.beginPath();
-      const yy = y + 28 + i * 42 + Math.sin(t * 1.15 + i) * 7;
-      for (let px = x; px <= x + w; px += 16) {
-        const py = yy + Math.sin(px * 0.018 + t * 2.1 + i) * 6 + Math.sin(px * 0.05 - t + i) * 2.4;
-        if (px === x) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      let started = false;
+      for (let px = x; px <= x + w; px += 14) {
+        if (hash2(i, px | 0) < 0.18) { started = false; continue; }
+        const py = yy + (px - x) * tilt + Math.sin(px * 0.014 + t * 1.7 + i) * 8 + Math.sin(px * 0.04 - t + i) * 3;
+        if (!started) { ctx.moveTo(px, py); started = true; }
+        else ctx.lineTo(px, py);
       }
       ctx.stroke();
     }
@@ -5215,6 +5458,48 @@
       ctx.restore();
       drawWetWaterline(x, wetY - 8, w, state.time || 0);
     }
+  }
+  function drawDeckPosts(x, y, w, h, n) {
+    const count = Math.max(2, n || 3);
+    for (let i = 0; i < count; i++) {
+      const px = x + 16 + (w - 32) * (i / Math.max(1, count - 1));
+      const id = 40 + i + ((x + y) | 0) % 17;
+      drawPierPost(px, y + h + 6, 0.62 + hash2(id, 3) * 0.28, id);
+    }
+  }
+  function shopViewBand() {
+    if (cam && cam.shopBand) return cam.shopBand;
+    if (player && player.y > 860) return "dock";
+    if (player && player.y < 680) return "plaza";
+    return "mid";
+  }
+  function midWoodAlpha() {
+    const band = shopViewBand();
+    if (band === "dock") return 0;
+    if (band === "mid") return 0.62;
+    return 1;
+  }
+  function drawWalkRail(x, y, w, h) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(90, 48, 20, 0.42)";
+    ctx.lineWidth = 3.2;
+    ctx.beginPath();
+    ctx.moveTo(x + 5, y + 8);
+    ctx.lineTo(x + 5, y + h - 10);
+    ctx.moveTo(x + w - 5, y + 8);
+    ctx.lineTo(x + w - 5, y + h - 10);
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(196, 160, 80, 0.4)";
+    ctx.lineWidth = 2;
+    for (let yy = y + 24; yy < y + h - 16; yy += 46) {
+      ctx.beginPath();
+      ctx.moveTo(x + 2, yy);
+      ctx.lineTo(x + 10, yy);
+      ctx.moveTo(x + w - 10, yy + 8);
+      ctx.lineTo(x + w - 2, yy + 8);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
   function drawPierShade() {
     const sh = ctx.createLinearGradient(80, 70, 1680, 110);
@@ -6714,9 +6999,9 @@
   // ===== SHOP SCENE =====
   function drawEastGallery() {
     ctx.save();
-    drawHarborTown(1660, -80, 580, 980, !!state.unlocked[1]);
     drawPierBoards(1688, 80, 524, 300, { plank: 26, teal: !!state.unlocked[1] });
-    drawPierBoards(1760, 360, 380, 540, { plank: 24, wetY: 890, teal: !!state.unlocked[1] });
+    drawPierBoards(1760, 360, 200, 530, { plank: 24, wetY: 890, teal: !!state.unlocked[1] });
+    drawDeckPosts(1760, 360, 200, 530, 4);
     ctx.fillStyle = "#c4483a"; ctx.fillRect(1680, 50, 540, 8);
     const a = worldLabelAlpha(1860, 86, 160, 22);
     if (a > 0.04) {
@@ -6734,7 +7019,7 @@
     ensurePaint();
     ctx.fillStyle = "#0a3040";
     ctx.fillRect(-480, -240, shopW() + 960, SHOP.h + 480);
-    drawHarborTown(-280, -300, shopW() + 560, 1180, !!state.unlocked[1]);
+    drawShopHarbor(!!state.unlocked[1]);
     drawBayWater(-8, 888, shopW() + 16, SHOP.h - 880, state.time, !!state.unlocked[1]);
     drawWetWaterline(-8, 886, shopW() + 16, state.time);
     for (const t of dockTeasers) {
@@ -6751,17 +7036,24 @@
       ctx.restore();
     }
     const posts = [
-      [180, 1074, 0.96, 0], [500, 1072, 1.24, 1], [628, 1064, 1.06, 2],
-      [752, 1078, 1.30, 3], [890, 1068, 1.12, 4], [1020, 1076, 1.34, 5],
-      [1148, 1066, 1.04, 6], [1280, 1074, 1.18, 7], [shopW() - 80, 1074, 1.0, 8],
+      [148, 1086, 0.82, 0], [392, 1062, 1.46, 1], [574, 1080, 0.94, 2],
+      [718, 1056, 1.40, 3], [886, 1074, 1.08, 4], [1062, 1090, 1.52, 5],
+      [1218, 1060, 0.86, 6], [1394, 1078, 1.26, 7], [shopW() - 48, 1068, 1.16, 8],
     ];
     for (const [px, py, sc, id] of posts) drawPierPost(px, py, sc, id);
     const teal = !!state.unlocked[1];
     drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal });
-    drawPierBoards(760, 360, 240, 540, { plank: 24, wetY: 890, teal: teal });
-    drawPierBoards(140, 468, 210, 176, { plank: 20, teal: teal });
-    drawPierBoards(268, 636, 210, 136, { plank: 20, teal: teal });
-    drawPierBoards(1240, 448, 230, 186, { plank: 20, teal: teal });
+    const midA = midWoodAlpha();
+    if (midA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = midA;
+      drawPierBoards(800, 360, 176, 530, { plank: 24, wetY: 890, teal: teal });
+      drawWalkRail(800, 360, 176, 530);
+      drawPierBoards(156, 380, 172, 240, { plank: 20, teal: teal });
+      drawPierBoards(1272, 380, 188, 246, { plank: 20, teal: teal });
+      drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal });
+      ctx.restore();
+    }
     drawPierShade();
     const sunPatch = ctx.createRadialGradient(1240, 220, 20, 1100, 420, 520);
     sunPatch.addColorStop(0, "rgba(255, 220, 130, 0.16)");
@@ -6792,8 +7084,12 @@
       ctx.fillRect(90 + i * 72, 54, 72, 28);
     }
     ctx.fillStyle = "#c4483a"; ctx.fillRect(80, 50, 1600, 8);
-    // aisle water — painted channel, wet wood lip, no hard teal slab
+    // aisle water — painted channel, wet wood lip, no hard teal slab.
+    // Hidden on the dock camera so it does not become a leftover teal column
+    // over the harbor town.
     const ax = AISLE.x, ay = AISLE.y, aw = AISLE.w, ah = AISLE.h;
+    ctx.save();
+    ctx.globalAlpha = midA;
     ctx.fillStyle = "rgba(18, 70, 88, 0.28)";
     roundRect(ax - 10, ay - 8, aw + 20, ah + 16, 22); ctx.fill();
     const aisleWet = ctx.createLinearGradient(ax, ay, ax, ay + ah);
@@ -6851,6 +7147,7 @@
       if (x === ax) ctx.moveTo(x, y); else ctx.lineTo(x, y);
     }
     ctx.stroke();
+    ctx.restore();
     // warm sun key + lamp glows along the back wall
     drawSunDisc(1588, 28, 22);
     const key = ctx.createRadialGradient(1520, 40, 20, 1100, 420, 920);
@@ -6933,7 +7230,7 @@
     drawCrate(1014, 928, 34, 22);
     drawMopBucket(748, 944);
     drawHangingSign(1020, 888);
-    drawBench(1088, 780);
+    drawBench(1096, 928);
     drawLifeRing(548, 888);
     drawVending(1396, 688);
     drawBaitShack(1488, 812);
@@ -6962,9 +7259,10 @@
     for (let i = 0; i < SPECIES.length; i++) {
       if (tankLive(i)) drawTank(i);
     }
-    if (!state.unlockBanner && (state.aisleSchoolWait || 0) <= 0 &&
+    if (midA > 0.04 && !state.unlockBanner && (state.aisleSchoolWait || 0) <= 0 &&
         !(state.fadeDir && state.pendingScene === "ocean")) {
       ctx.save();
+      ctx.globalAlpha = midA;
       roundRect(AISLE.x, AISLE.y, AISLE.w, AISLE.h, 18);
       ctx.clip();
       for (const sw of state.shopSwimmers) {
@@ -7466,30 +7764,28 @@
     const g = ctx.createLinearGradient(0, 0, 0, OCEAN.h);
     if (night) {
       g.addColorStop(0, "#1a3a58");
-      g.addColorStop(0.12, "#0c2848");
-      g.addColorStop(0.55, "#061828");
+      g.addColorStop(0.28, "#0c2848");
+      g.addColorStop(0.62, "#061828");
       g.addColorStop(1, "#020810");
     } else {
-      g.addColorStop(0, "#c4f6fc");
-      g.addColorStop(0.05, "#6adcec");
-      g.addColorStop(0.14, "#2aa8c8");
-      g.addColorStop(0.32, "#0e6a88");
-      g.addColorStop(0.54, "#084c64");
-      g.addColorStop(0.78, "#032838");
+      g.addColorStop(0, "#b8eef6");
+      g.addColorStop(0.18, "#46b8d0");
+      g.addColorStop(0.4, "#147898");
+      g.addColorStop(0.64, "#0a4c64");
       g.addColorStop(1, "#021018");
     }
     ctx.fillStyle = g; ctx.fillRect(0, 0, OCEAN.w, OCEAN.h);
     if (!night) {
-      for (let i = 0; i < 12; i++) {
+      for (let i = 0; i < 20; i++) {
         const bx = hash2(i, 2) * OCEAN.w;
-        const by = 80 + hash2(i, 5) * 720;
-        const rad = 160 + hash2(i, 7) * 280;
+        const by = 40 + hash2(i, 5) * 980;
+        const rad = 120 + hash2(i, 7) * 340;
         const blob = ctx.createRadialGradient(bx, by, 10, bx, by, rad);
-        blob.addColorStop(0, i % 2 ? "rgba(180, 240, 246, 0.1)" : "rgba(8, 48, 64, 0.1)");
+        blob.addColorStop(0, i % 3 ? "rgba(180, 240, 246, 0.12)" : "rgba(8, 48, 64, 0.12)");
         blob.addColorStop(1, "rgba(10, 50, 70, 0)");
         ctx.fillStyle = blob;
         ctx.beginPath();
-        ctx.ellipse(bx, by, rad, rad * 0.4, hash2(i, 9) * 0.5, 0, Math.PI * 2);
+        ctx.ellipse(bx, by, rad, rad * (0.28 + hash2(i, 11) * 0.36), hash2(i, 9) * 1.1, 0, Math.PI * 2);
         ctx.fill();
       }
       const sunWash = ctx.createRadialGradient(1980, 40, 20, 1680, 280, 980);
@@ -7542,13 +7838,17 @@
     }
     ctx.restore();
     if (!night) drawCaustics(0, 180, OCEAN.w, OCEAN.h - 180, state.time, 0.08);
-    ctx.save(); ctx.globalAlpha = 0.08; ctx.strokeStyle = "#c8f4ff"; ctx.lineWidth = 2;
-    for (let i = 0; i < 10; i++) {
+    ctx.save(); ctx.globalAlpha = 0.06; ctx.strokeStyle = "#c8f4ff"; ctx.lineWidth = 1.6;
+    for (let i = 0; i < 12; i++) {
+      const yy = 160 + hash2(i, 3) * (OCEAN.h * 0.7);
+      const tilt = (hash2(i, 6) - 0.5) * 0.05;
       ctx.beginPath();
-      const yy = 200 + i * 160;
-      for (let x = 0; x < OCEAN.w; x += 16) {
-        const y = yy + Math.sin(x * 0.01 + state.time * 1.4 + i) * 18 + Math.sin(x * 0.02 - state.time + i) * 10;
-        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      let started = false;
+      for (let x = 0; x < OCEAN.w; x += 18) {
+        if (hash2(i, x) < 0.2) { started = false; continue; }
+        const y = yy + x * tilt + Math.sin(x * 0.008 + state.time * 1.2 + i) * 22 + Math.sin(x * 0.02 - state.time + i) * 10;
+        if (!started) { ctx.moveTo(x, y); started = true; }
+        else ctx.lineTo(x, y);
       }
       ctx.stroke();
     }
@@ -7696,7 +7996,9 @@
       }
       ctx.save();
       if (f.flip) { ctx.translate(f.x, f.y); ctx.scale(-1, 1); ctx.translate(-f.x, -f.y); }
-      if (f.hue || (f.sat != null && f.sat !== 1)) {
+      if (f.s === 0) {
+        ctx.filter = "hue-rotate(" + ((f.hue || 0) | 0) + "deg) saturate(" + (f.sat == null ? 1 : f.sat) + ") brightness(" + (f.br == null ? 1 : f.br) + ")";
+      } else if (f.hue || (f.sat != null && f.sat !== 1)) {
         ctx.filter = "hue-rotate(" + ((f.hue || 0) | 0) + "deg) saturate(" + (f.sat == null ? 1 : f.sat) + ")";
       }
       drawFishBody(SPECIES[f.s], f.x, f.y, dang, SPECIES[f.s].size / 15 * (f.rare ? 1.18 : 1) * (f.sc || 1), state.time + f.ph);
@@ -9154,7 +9456,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 50", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 51", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -9194,7 +9496,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 50", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 51", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -9211,7 +9513,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 50", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 51", W / 2, 632);
     }
   }
 
