@@ -4793,15 +4793,9 @@
     ctx.fillRect(x - 12, y - 12, w + 24, h + 24);
     const cell = ATLAS.water;
     if (ART.ready && cell) {
-      const tw = 280, th = 168;
       ctx.save();
-      ctx.globalAlpha = 0.55;
-      for (let row = 0, iy = y - 28; iy < y + h + 20; row++, iy += th * 0.58) {
-        const shift = (row % 2) * (tw * 0.34);
-        for (let ix = x - 50 - shift; ix < x + w + 40; ix += tw * 0.62) {
-          ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, ix, iy, tw, th);
-        }
-      }
+      ctx.globalAlpha = 0.38;
+      ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, x - 20, y - 16, w + 40, Math.min(h + 24, 320));
       ctx.restore();
       if (teal) {
         ctx.fillStyle = "rgba(18, 140, 132, 0.16)";
@@ -4889,6 +4883,16 @@
         } else if (tile) {
           ctx.drawImage(tile, sx, yy, pw, ph);
         }
+        const stain = (row * 13 + n * 19) % 5;
+        const stains = [
+          "rgba(255, 214, 140, 0.16)",
+          "rgba(62, 32, 12, 0.18)",
+          "rgba(196, 128, 64, 0.10)",
+          "rgba(28, 14, 8, 0.14)",
+          "rgba(255, 236, 190, 0.10)",
+        ];
+        ctx.fillStyle = stains[stain];
+        ctx.fillRect(sx, yy, pw, ph);
         if (teal) {
           ctx.fillStyle = "rgba(40, 90, 72, 0.12)";
           ctx.fillRect(sx, yy, pw, ph);
@@ -4900,8 +4904,8 @@
         shine.addColorStop(1, "rgba(28,14,6," + (0.12 + (1 - lit) * 0.12) + ")");
         ctx.fillStyle = shine;
         ctx.fillRect(sx, yy, pw, ph);
-        ctx.fillStyle = "rgba(32,16,8,0.55)";
-        ctx.fillRect(sx + pw - 1.4, yy, 2.2, ph);
+        ctx.fillStyle = "rgba(28,12,6,0.72)";
+        ctx.fillRect(sx + pw - 2.2, yy, 3.2, ph);
         ctx.fillStyle = "rgba(22,12,6,0.78)";
         ctx.beginPath(); ctx.arc(sx + 8, yy + 6, 1.45, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(sx + pw - 8, yy + 6, 1.45, 0, Math.PI * 2); ctx.fill();
@@ -4913,6 +4917,12 @@
       }
       ctx.fillStyle = "rgba(24,12,6,0.48)";
       ctx.fillRect(x, yy + ph, w, 1.8);
+    }
+    for (let jx = x + 36, j = 0; jx < x + w; jx += 168 + (j % 3) * 18, j++) {
+      ctx.fillStyle = "rgba(42, 20, 8, 0.2)";
+      ctx.fillRect(jx, y, 5, h);
+      ctx.fillStyle = "rgba(255, 220, 160, 0.08)";
+      ctx.fillRect(jx, y, 1.4, h);
     }
     ctx.restore();
     if (wetY != null) {
@@ -6498,8 +6508,10 @@
     ctx.fillStyle = state.unlocked[1] ? "#dce8d8" : "#e8d2ae"; ctx.fillRect(80, 70, 1600, 830);
     drawPierBoards(90, 80, 1580, 810, { plank: 28, wetY: 890, teal: !!state.unlocked[1] });
     ctx.save();
-    ctx.globalAlpha = 0.22;
-    blitHarborPart(0.02, 0.70, 0.96, 0.28, 90, 620, 1580, 270);
+    ctx.globalAlpha = 0.18;
+    blitHarborPart(0.02, 0.68, 0.96, 0.30, 90, 80, 1580, 810);
+    ctx.globalAlpha = 0.26;
+    blitHarborPart(0.02, 0.72, 0.96, 0.26, 90, 640, 1580, 250);
     ctx.restore();
     drawPierShade();
     const sunPatch = ctx.createRadialGradient(1240, 220, 20, 1100, 420, 520);
