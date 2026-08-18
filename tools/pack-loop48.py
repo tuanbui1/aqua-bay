@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Loop 48 reshoot: crush newly invented drawings into art/bay.png."""
+"""Loop 48 reshoot: crush player-facing target drawings into art/bay.png."""
 from __future__ import annotations
 
 import json
@@ -177,30 +177,56 @@ def main():
         items.append((name, img, ax, ay))
 
     for skin in ("skip", "reef", "dino"):
-        stand = fit_bottom(flood_key(Image.open(SRC / f"{skin}-stand.png"), 40, 2), 128, 176)
+        stand_src = SRC / f"{skin}.png"
+        if not stand_src.exists():
+            stand_src = SRC / f"{skin}-stand.png"
+        stand = fit_bottom(flood_key(Image.open(stand_src), 40, 2), 128, 176)
         walk = fit_bottom(flood_key(Image.open(SRC / f"{skin}-walk.png"), 40, 2), 128, 176)
         dive = fit_center(flood_key(Image.open(SRC / f"{skin}-dive.png"), 44, 1), 176, 96)
         add(f"{skin}_stand", stand, 64, 168)
         add(f"{skin}_walk", walk, 64, 168)
         add(f"{skin}_dive", dive, 96, 48)
 
-    fish_picks = [
-        (0, 0), (1, 0), (2, 0), (3, 0),
-        (0, 1), (1, 1), (2, 1), (3, 1),
-        (0, 2), (1, 2), (2, 2), (3, 2),
-    ]
-    for i, cell in enumerate(cut_grid(SRC / "animals-sheet.png", 4, 4, fish_picks, 112, 72, True, 8, 52)):
-        add(f"fish{i}", cell, 62, 36)
-    whale = fit_center(flood_key(Image.open(SRC / "whale.png"), 44, 1, 640), 112, 72)
-    add("fish12", whale, 62, 36)
+    # Target animals.png: 4x3 grid on navy + whale along the bottom.
+    animal_sheet = SRC / "animals.png"
+    if animal_sheet.exists():
+        sheet = flood_key(Image.open(animal_sheet), 55, 1, 900)
+        w, h = sheet.size
+        grid = sheet.crop((0, 0, w, int(h * 0.70)))
+        gw, gh = grid.size
+        cw, ch = gw / 4, gh / 3
+        for i, (col, row) in enumerate((c, r) for r in range(3) for c in range(4)):
+            x0 = int(col * cw) + 10
+            y0 = int(row * ch) + 8
+            x1 = int((col + 1) * cw) - 10
+            y1 = int((row + 1) * ch) - 8
+            cell = fit_center(autocrop(grid.crop((x0, y0, x1, y1)), 2), 112, 72)
+            add(f"fish{i}", cell, 62, 36)
+        whale = fit_center(autocrop(sheet.crop((int(w * 0.10), int(h * 0.70), int(w * 0.90), h - 4)), 2), 112, 72)
+        add("fish12", whale, 62, 36)
+    else:
+        fish_picks = [
+            (0, 0), (1, 0), (2, 0), (3, 0),
+            (0, 1), (1, 1), (2, 1), (3, 1),
+            (0, 2), (1, 2), (2, 2), (3, 2),
+        ]
+        for i, cell in enumerate(cut_grid(SRC / "animals-sheet.png", 4, 4, fish_picks, 112, 72, True, 8, 52)):
+            add(f"fish{i}", cell, 62, 36)
+        whale = fit_center(flood_key(Image.open(SRC / "whale.png"), 44, 1, 640), 112, 72)
+        add("fish12", whale, 62, 36)
 
-    harbor_src = shrink(Image.open(SRC / "harbor.png"), 720)
+    harbor_path = SRC / "harbor-target.png"
+    if not harbor_path.exists():
+        harbor_path = SRC / "harbor.png"
+    harbor_src = shrink(Image.open(harbor_path), 720)
     harbor = crush_rgb(harbor_src, 150)
     harbor.thumbnail((560, 320), Image.Resampling.LANCZOS)
     add("harbor", harbor, harbor.width / 2, harbor.height * 0.72)
 
-    plank_src = crush_rgb(shrink(Image.open(SRC / "plank.png"), 640), 70)
-    plank = plank_src.resize((256, 56), Image.Resampling.LANCZOS)
+    # Wet planks from the harbor foreground, not a 1:1 dump.
+    hw, hh = harbor_src.size
+    plank_crop = harbor_src.crop((0, int(hh * 0.72), hw, hh))
+    plank = crush_rgb(plank_crop, 70).resize((256, 56), Image.Resampling.LANCZOS)
     add("plank", plank, 128, 28)
 
     names_a = ("maya", "nico", "jun", "cashier", "vip", "kid")
@@ -216,11 +242,11 @@ def main():
     add("crown", paint_crown(), 20, 28)
     add("shades", paint_shades(), 20, 12)
 
-    sky = crush_rgb(shrink(Image.open(SRC / "sky.png"), 640), 80)
+    sky = crush_rgb(harbor_src.crop((0, 0, hw, int(hh * 0.38))), 80)
     sky.thumbnail((360, 120), Image.Resampling.LANCZOS)
     add("sky", sky, sky.width / 2, sky.height)
 
-    water = crush_rgb(shrink(Image.open(SRC / "water.png"), 640), 80)
+    water = crush_rgb(harbor_src.crop((0, int(hh * 0.38), int(hw * 0.42), int(hh * 0.78))), 80)
     water.thumbnail((360, 140), Image.Resampling.LANCZOS)
     add("water", water, water.width / 2, water.height * 0.4)
 
