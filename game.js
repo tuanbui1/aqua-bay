@@ -6629,7 +6629,6 @@
     if (state.unlocked[4]) drawCoralSouvenir(1508, 92);
     if (state.decor && state.decor[0]) drawStringLights();
     drawPierBoards(500, 890, 760, 130, { plank: 22, wetY: 1010 });
-    drawWetWaterline(488, 1008, 784, state.time + 0.7);
     ctx.fillStyle = "rgba(80,230,255,0.12)";
     roundRect(DIVE_ZONE.x, DIVE_ZONE.y, DIVE_ZONE.w, DIVE_ZONE.h, 16); ctx.fill();
     ctx.strokeStyle = "rgba(180,255,255,0.35)"; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
