@@ -219,8 +219,8 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 47 painted sprites — crushed sheet, drawImage (not live ovals).
-  const ATLAS = {"skip_stand":{"x":2,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":132,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":262,"y":2,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":440,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":570,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":700,"y":2,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":878,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1008,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1138,"y":2,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":1316,"y":2,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":2,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":116,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":230,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":344,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":458,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":572,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":686,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":800,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":914,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1028,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1142,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1256,"y":180,"w":112,"h":72,"ax":62,"ay":36},"harbor":{"x":2,"y":254,"w":540,"h":360,"ax":270.0,"ay":259.2},"plank":{"x":544,"y":254,"w":256,"h":56,"ax":128,"ay":28},"maya":{"x":802,"y":254,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":900,"y":254,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":998,"y":254,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":1096,"y":254,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":1194,"y":254,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":1292,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":2,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":100,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":198,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":296,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":394,"y":616,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":492,"y":616,"w":96,"h":140,"ax":48,"ay":132},"post":{"x":590,"y":616,"w":32,"h":80,"ax":16.0,"ay":80},"crown":{"x":624,"y":616,"w":40,"h":32,"ax":20.0,"ay":28},"shades":{"x":666,"y":616,"w":40,"h":20,"ax":20.0,"ay":12}};
+  // Loop 48 reshoot — invented crushed drawings, drawImage (not live ovals).
+  const ATLAS = {"skip_stand":{"x":2,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":132,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":262,"y":2,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":440,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":570,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":700,"y":2,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":878,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1008,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1138,"y":2,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":1316,"y":2,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":2,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":116,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":230,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":344,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":458,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":572,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":686,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":800,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":914,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1028,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1142,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1256,"y":180,"w":112,"h":72,"ax":62,"ay":36},"harbor":{"x":2,"y":254,"w":480,"h":320,"ax":240.0,"ay":230.39999999999998},"plank":{"x":484,"y":254,"w":256,"h":56,"ax":128,"ay":28},"maya":{"x":742,"y":254,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":840,"y":254,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":938,"y":254,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":1036,"y":254,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":1134,"y":254,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":1232,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":1330,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":2,"y":576,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":100,"y":576,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":198,"y":576,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":296,"y":576,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":394,"y":576,"w":96,"h":140,"ax":48,"ay":132},"post":{"x":492,"y":576,"w":36,"h":88,"ax":18,"ay":86},"crown":{"x":530,"y":576,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":572,"y":576,"w":40,"h":20,"ax":20,"ay":12},"sky":{"x":614,"y":576,"w":180,"h":120,"ax":90.0,"ay":120},"water":{"x":796,"y":576,"w":210,"h":140,"ax":105.0,"ay":56.0},"tankglass":{"x":1008,"y":576,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1150,"y":576,"w":120,"h":56,"ax":60,"ay":40},"bed1":{"x":1272,"y":576,"w":120,"h":56,"ax":60,"ay":40},"bed2":{"x":2,"y":718,"w":120,"h":56,"ax":60,"ay":40},"bed3":{"x":124,"y":718,"w":120,"h":56,"ax":60,"ay":40},"bed4":{"x":246,"y":718,"w":120,"h":56,"ax":60,"ay":40},"bed5":{"x":368,"y":718,"w":120,"h":56,"ax":60,"ay":40},"bed6":{"x":490,"y":718,"w":120,"h":56,"ax":60,"ay":40},"bed7":{"x":612,"y":718,"w":120,"h":56,"ax":60,"ay":40}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
     const img = new Image();
@@ -270,6 +270,12 @@
   }
   function blitHorizon(x, y, w, h) {
     const c = ATLAS.harbor || ATLAS.horizon;
+    if (!c || !ART.ready) return false;
+    ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, x, y, w, h);
+    return true;
+  }
+  function blitTile(name, x, y, w, h) {
+    const c = ATLAS[name];
     if (!c || !ART.ready) return false;
     ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, x, y, w, h);
     return true;
@@ -1027,7 +1033,7 @@
   }
   function holdTillView(secs) {
     state.camTillHold = Math.max(state.camTillHold || 0, secs == null ? 1.6 : secs);
-    state.camEase = Math.max(state.camEase || 0, 0.38);
+    state.camEase = Math.max(state.camEase || 0, 0.46);
   }
   function wantTillFrame() {
     if (state.scene !== "shop") return false;
@@ -4571,6 +4577,15 @@
   }
   function drawPaintedSky(x, y, w, h, t) {
     ensurePaint();
+    if (blitTile("sky", x, y, w, h)) {
+      const haze = ctx.createLinearGradient(x, y + h * 0.5, x, y + h);
+      haze.addColorStop(0, "rgba(255,220,160,0)");
+      haze.addColorStop(1, "rgba(255,196,120,0.22)");
+      ctx.fillStyle = haze;
+      ctx.fillRect(x, y, w, h);
+      blitHorizon(x - 8, y + h - 120, w + 16, 128);
+      return;
+    }
     const sky = ctx.createLinearGradient(x, y, x, y + h);
     sky.addColorStop(0, "#8fd4f4");
     sky.addColorStop(0.22, "#5eb8e6");
@@ -4636,6 +4651,17 @@
     g.addColorStop(1, pair[1]);
     ctx.fillStyle = g;
     ctx.fillRect(0, sandY + 8, OCEAN.w, y1 - sandY);
+    const bedId = z.forever
+      ? ((FOREVER_ZONE_NAMES.indexOf((z.name || "").split(" · ")[0]) + 8) % 8)
+      : Math.min(s, 7);
+    if (ATLAS["bed" + bedId]) {
+      ctx.save();
+      ctx.globalAlpha = 0.88;
+      for (let x = -20; x < OCEAN.w; x += 168) {
+        blitTile("bed" + bedId, x, sandY - 22, 176, 78);
+      }
+      ctx.restore();
+    }
     if (z.forever) {
       const kind = (FOREVER_ZONE_NAMES.indexOf((z.name || "").split(" · ")[0]) + 8) % 8;
       if (kind === 0) {
@@ -4700,6 +4726,12 @@
     }
   }
   function drawBayWater(x, y, w, h, t, teal) {
+    if (blitTile("water", x, y, w, h)) {
+      if (teal) {
+        ctx.fillStyle = "rgba(18, 140, 132, 0.18)";
+        ctx.fillRect(x, y, w, h);
+      }
+    }
     const g = ctx.createLinearGradient(x, y, x, y + h);
     if (teal) {
       g.addColorStop(0, "#8af4ea");
@@ -4717,7 +4749,12 @@
       g.addColorStop(1, "#031820");
     }
     ctx.fillStyle = g;
-    ctx.fillRect(x, y, w, h);
+    if (!ATLAS.water || !ART.ready) ctx.fillRect(x, y, w, h);
+    else {
+      ctx.globalAlpha = 0.42;
+      ctx.fillRect(x, y, w, h);
+      ctx.globalAlpha = 1;
+    }
     const sg = ctx.createRadialGradient(x + w * 0.78, y + 4, 6, x + w * 0.68, y + 48, w * 0.58);
     sg.addColorStop(0, "rgba(255,236,170,0.38)");
     sg.addColorStop(0.35, "rgba(255,210,120,0.12)");
@@ -6352,7 +6389,9 @@
     ensurePaint();
     ctx.fillStyle = "#0a3040";
     ctx.fillRect(-480, -240, shopW() + 960, SHOP.h + 480);
+    blitTile("sky", -200, -280, shopW() + 400, 400);
     blitHarborPart(0, 0, 1, 0.44, -200, -280, shopW() + 400, 400);
+    blitTile("water", -160, 760, shopW() + 320, 560);
     blitHarborPart(0.08, 0.38, 0.92, 0.62, -160, 760, shopW() + 320, 560);
     const harborFade = ctx.createLinearGradient(0, 40, 0, 220);
     harborFade.addColorStop(0, "rgba(90, 170, 210, 0)");
@@ -6816,6 +6855,10 @@
     ctx.fillStyle = "#0a2230";
     ctx.fillRect(t.x, t.y, TANK_W, TANK_H);
     ctx.fillStyle = water; ctx.fillRect(t.x, t.y, TANK_W, TANK_H);
+    ctx.save();
+    ctx.globalAlpha = 0.55;
+    blitTile("tankglass", t.x + 4, t.y + 4, TANK_W - 8, TANK_H - 8);
+    ctx.restore();
     const depth = ctx.createLinearGradient(t.x, t.y + 20, t.x, t.y + TANK_H);
     depth.addColorStop(0, "rgba(8,24,36,0)");
     depth.addColorStop(1, "rgba(4,16,28,0.38)");
@@ -8686,6 +8729,7 @@
   }
   function drawTitle() {
     ensurePaint();
+    blitTile("sky", 0, 0, W, H * 0.52);
     if (!blitHorizon(0, 0, W, H)) {
       drawPaintedSky(0, 0, W, H * 0.42, state.time);
       drawSunDisc(1088, 78, 38);
@@ -8749,7 +8793,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 47", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 48", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -8789,7 +8833,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 47", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 48", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -8806,7 +8850,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 47", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 48", W / 2, 632);
     }
   }
 
@@ -9084,20 +9128,20 @@
       tx = lerp(tx, BOAT.x, pull);
       ty = lerp(ty, BOAT.y, pull);
     } else if (player.goto && state.scene === "shop" && !wantTillFrame() && !isDockDest(player.goto)) {
-      tx = lerp(tx, player.goto.x, 0.10);
-      ty = lerp(ty, player.goto.y, 0.10);
+      tx = lerp(tx, player.goto.x, 0.07);
+      ty = lerp(ty, player.goto.y, 0.07);
     }
     const tillFrame = wantTillFrame();
     if (tillFrame) {
       const tw = tillWorld();
-      tx = lerp(tx, tw.x + 72, 0.14);
-      ty = lerp(ty, tw.y + 32, 0.12);
-      state.camEase = Math.max(state.camEase || 0, 0.38);
+      tx = lerp(tx, tw.x + 72, 0.10);
+      ty = lerp(ty, tw.y + 32, 0.08);
+      state.camEase = Math.max(state.camEase || 0, 0.46);
     }
     if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
       const band = player.y < 680 ? "plaza" : (player.y > 860 ? "dock" : "mid");
       if (cam.shopBand && cam.shopBand !== band && (band === "plaza" || band === "dock")) {
-        state.camEase = Math.max(state.camEase || 0, 0.38);
+        state.camEase = Math.max(state.camEase || 0, 0.46);
       }
       cam.shopBand = band;
       const glowI = glowingStockIndex();
@@ -9110,7 +9154,7 @@
         const shelfR = TANK_POS[4].x + TANK_W;
         const minCam = shelfR - (W / 2) / z + 8 / z;
         const maxCam = shelfL + (W / 2) / z - 8 / z;
-        const pull = Math.max(plaza * 0.28, 0.10);
+        const pull = Math.max(plaza * 0.18, 0.08);
         if (glowI >= CORE_SPECIES && TANK_POS[glowI]) {
           tx = lerp(tx, TANK_POS[glowI].x + TANK_W / 2, pull);
         } else if (minCam <= maxCam) tx = lerp(tx, clamp(tx, minCam, maxCam), pull);
@@ -9120,14 +9164,14 @@
         const bottomKeep = shopBarsReady() ? 136 : 88;
         const minCamForPlayer = player.y - (H / 2 - bottomKeep) / z;
         const tankCam = Math.max(camForGlow, minCamForPlayer);
-        if (ty > tankCam) ty = lerp(ty, tankCam, Math.max(plaza * 0.26, 0.10));
+        if (ty > tankCam) ty = lerp(ty, tankCam, Math.max(plaza * 0.16, 0.08));
       }
       if (!tillFrame && glowI >= 0) {
         const cardTop = TANK_POS[0].y;
         const maxCamForCards = cardTop - (hudClear - H / 2) / z;
         const cardScr = (cardTop - ty) * z + H / 2;
         if (cardScr > 4 && cardScr < hudClear) {
-          ty = lerp(ty, maxCamForCards, 0.10);
+          ty = lerp(ty, maxCamForCards, 0.08);
         }
       }
     }
@@ -9135,7 +9179,7 @@
     if ((state.camSettle || 0) > 0) state.camSettle = Math.max(0, state.camSettle - dt);
     if ((state.camEase || 0) > 0) state.camEase = Math.max(0, state.camEase - dt);
     const easing = (state.camEase || 0) > 0 || (state.camSettle || 0) > 0 || tillFrame;
-    const followPow = easing ? 0.0009 : 0.0014;
+    const followPow = easing ? 0.00065 : 0.0014;
     const follow = 1 - Math.pow(followPow, dt);
     let nx = lerp(cam.x, tx, follow);
     let ny = lerp(cam.y, ty, follow);

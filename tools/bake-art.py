@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake original Aqua Bay cartoon sprites. Loop 46 invented art — not ovals."""
+"""Legacy oval baker. Loop 48 reshoot lives in tools/pack-loop48.py."""
 from __future__ import annotations
 
 import json
