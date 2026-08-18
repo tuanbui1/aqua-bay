@@ -219,6 +219,49 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
+  // Loop 46 invented sprites — crushed sheet, drawImage (not live ovals).
+  const ATLAS = {"skip_stand":{"x":2,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"skip_walk":{"x":100,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"skip_dive":{"x":198,"y":2,"w":96,"h":128,"ax":50,"ay":64},"reef_stand":{"x":296,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"reef_walk":{"x":394,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"reef_dive":{"x":492,"y":2,"w":96,"h":128,"ax":50,"ay":64},"dino_stand":{"x":590,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"dino_walk":{"x":688,"y":2,"w":96,"h":128,"ax":48,"ay":92.16},"dino_dive":{"x":786,"y":2,"w":96,"h":128,"ax":50,"ay":64},"fish0":{"x":884,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish1":{"x":982,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish2":{"x":1080,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish3":{"x":1178,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish4":{"x":1276,"y":2,"w":96,"h":64,"ax":50,"ay":32},"fish5":{"x":2,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish6":{"x":100,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish7":{"x":198,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish8":{"x":296,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish9":{"x":394,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish10":{"x":492,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish11":{"x":590,"y":132,"w":96,"h":64,"ax":50,"ay":32},"fish12":{"x":688,"y":132,"w":96,"h":64,"ax":50,"ay":32},"maya":{"x":786,"y":132,"w":80,"h":112,"ax":40,"ay":96},"nico":{"x":868,"y":132,"w":80,"h":112,"ax":40,"ay":96},"jun":{"x":950,"y":132,"w":80,"h":112,"ax":40,"ay":96},"cashier":{"x":1032,"y":132,"w":80,"h":112,"ax":40,"ay":96},"vip":{"x":1114,"y":132,"w":80,"h":112,"ax":40,"ay":96},"kid":{"x":1196,"y":132,"w":80,"h":112,"ax":40,"ay":96},"g0":{"x":1278,"y":132,"w":80,"h":112,"ax":40,"ay":96},"g1":{"x":2,"y":246,"w":80,"h":112,"ax":40,"ay":96},"g2":{"x":84,"y":246,"w":80,"h":112,"ax":40,"ay":96},"g3":{"x":166,"y":246,"w":80,"h":112,"ax":40,"ay":96},"g4":{"x":248,"y":246,"w":80,"h":112,"ax":40,"ay":96},"g5":{"x":330,"y":246,"w":80,"h":112,"ax":40,"ay":96},"horizon":{"x":412,"y":246,"w":320,"h":90,"ax":160,"ay":90},"post":{"x":734,"y":246,"w":32,"h":80,"ax":16,"ay":80},"crown":{"x":768,"y":246,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":810,"y":246,"w":40,"h":20,"ax":20,"ay":12}};
+  const ART = { img: null, ready: false };
+  (function loadBayArt() {
+    const img = new Image();
+    img.onload = function () { ART.img = img; ART.ready = true; };
+    img.src = "art/bay.png";
+  })();
+  function blit(name, x, y, opt) {
+    const c = ATLAS[name];
+    if (!c || !ART.ready) return false;
+    opt = opt || {};
+    const sc = opt.scale == null ? 1 : opt.scale;
+    ctx.save();
+    ctx.translate(x, y);
+    if (opt.flip) ctx.scale(-1, 1);
+    if (opt.rot) ctx.rotate(opt.rot);
+    ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, -c.ax * sc, -c.ay * sc, c.w * sc, c.h * sc);
+    ctx.restore();
+    return true;
+  }
+  function blitHorizon(x, y, w, h) {
+    const c = ATLAS.horizon;
+    if (!c || !ART.ready) return false;
+    const dh = h, dw = c.w * (dh / c.h);
+    for (let px = x; px < x + w; px += dw) {
+      ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, px, y, dw, dh);
+    }
+    return true;
+  }
+  function custSpriteName(opt) {
+    if (opt.kid) return "kid";
+    if (opt.name === "Maya" || opt.hawaii) return "maya";
+    if (opt.name === "Nico" || opt.sailor) return "nico";
+    if (opt.name === "Jun" || opt.visor) return "jun";
+    if (opt.vip || opt.crown) return "vip";
+    if (opt.hat === "#c4483a" && opt.shirt === "#1b4d6b") return "cashier";
+    let h = 0;
+    const s = String(opt.name || "") + String(opt.shirt || "") + String(opt.hairCut || 0);
+    for (let i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) | 0;
+    return "g" + ((h >>> 0) % 6);
+  }
+
   // ===== STATE =====
   const state = {
     mode: "title", scene: "shop", money: 0, speedLv: 0, bagLv: 0, catchLv: 0,
@@ -4418,15 +4461,16 @@
   function drawPaintedSky(x, y, w, h, t) {
     ensurePaint();
     const sky = ctx.createLinearGradient(x, y, x, y + h);
-    sky.addColorStop(0, "#7ec8ee");
-    sky.addColorStop(0.35, "#4eb4e0");
-    sky.addColorStop(0.72, "#3aa0cc");
-    sky.addColorStop(1, "#2a8eb4");
+    sky.addColorStop(0, "#8fd4f4");
+    sky.addColorStop(0.22, "#5eb8e6");
+    sky.addColorStop(0.55, "#3aa0cc");
+    sky.addColorStop(0.82, "#2f8eb4");
+    sky.addColorStop(1, "#4ea8b0");
     ctx.fillStyle = sky;
     ctx.fillRect(x, y, w, h);
-    const haze = ctx.createLinearGradient(x, y + h * 0.55, x, y + h);
+    const haze = ctx.createLinearGradient(x, y + h * 0.5, x, y + h);
     haze.addColorStop(0, "rgba(255,220,160,0)");
-    haze.addColorStop(1, "rgba(255,196,120,0.22)");
+    haze.addColorStop(1, "rgba(255,196,120,0.28)");
     ctx.fillStyle = haze;
     ctx.fillRect(x, y, w, h);
     if (paint.clouds) {
@@ -4437,6 +4481,114 @@
       ctx.globalAlpha = 0.38;
       ctx.drawImage(paint.clouds, x + w * 0.42 - drift * 0.6, y + 8, 400, 64);
       ctx.restore();
+    }
+    ctx.save();
+    ctx.globalAlpha = 0.92;
+    blitHorizon(x - 8, y + h - 78, w + 16, 84);
+    ctx.restore();
+  }
+  function drawPierPost(x, footY, sc) {
+    const s = sc || 1.15;
+    if (blit("post", x, footY, { scale: s })) {
+      ctx.fillStyle = "rgba(8, 24, 32, 0.32)";
+      ctx.beginPath(); ctx.ellipse(x, footY + 3, 13 * s, 4.2 * s, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.save();
+      ctx.globalAlpha = 0.22;
+      ctx.translate(x, footY + 6);
+      ctx.scale(1, -0.45);
+      blit("post", 0, 0, { scale: s });
+      ctx.restore();
+      return;
+    }
+    ctx.fillStyle = "#3a2210";
+    ctx.fillRect(x - 7, footY - 40, 14, 40);
+    ctx.fillStyle = "#8a5a30";
+    ctx.fillRect(x - 7, footY - 40, 5, 40);
+  }
+  function drawZoneBed(z) {
+    const y0 = z.y0, y1 = z.y1, s = z.s | 0;
+    const sandY = y1 - 56;
+    const cols = [
+      ["#e8d090", "#c8a868"], ["#d8b878", "#6a8a60"], ["#e0c070", "#c8a040"],
+      ["#d4b090", "#b07050"], ["#c8c070", "#4a8a50"], ["#b8a068", "#3a7a4a"],
+      ["#d0c060", "#8a7a30"], ["#e8d8b0", "#c8a878"], ["#6a5a70", "#3a2850"],
+      ["#c8a868", "#a06040"], ["#4a7080", "#204050"], ["#7a90a0", "#3a5060"],
+      ["#3a4a58", "#1a2830"],
+    ];
+    const pair = cols[Math.min(s, cols.length - 1)];
+    ctx.save();
+    ctx.fillStyle = pair[0];
+    ctx.beginPath(); ctx.moveTo(0, sandY + 20);
+    for (let x = 0; x <= OCEAN.w; x += 28) {
+      ctx.lineTo(x, sandY + Math.sin(x * 0.012 + y1 * 0.01) * 14);
+    }
+    ctx.lineTo(OCEAN.w, y1 + 8); ctx.lineTo(0, y1 + 8); ctx.closePath(); ctx.fill();
+    const g = ctx.createLinearGradient(0, sandY, 0, y1);
+    g.addColorStop(0, "rgba(40,24,10,0)");
+    g.addColorStop(1, pair[1]);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, sandY + 8, OCEAN.w, y1 - sandY);
+    if (z.forever) {
+      const kind = (FOREVER_ZONE_NAMES.indexOf((z.name || "").split(" · ")[0]) + 8) % 8;
+      if (kind === 0) {
+        ctx.fillStyle = "rgba(80,220,255,0.35)";
+        for (let i = 0; i < 18; i++) {
+          ctx.globalAlpha = 0.2 + 0.35 * (0.5 + 0.5 * Math.sin(state.time * 2 + i));
+          ctx.beginPath(); ctx.arc((i * 137 + 40) % OCEAN.w, sandY - 20 - (i % 5) * 16, 2.2, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      } else if (kind === 1) {
+        ctx.fillStyle = "rgba(200,240,255,0.28)";
+        for (let i = 0; i < 10; i++) {
+          const px = 80 + i * 240, py = sandY - 10;
+          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + 8, py - 36); ctx.lineTo(px + 16, py); ctx.fill();
+        }
+      } else if (kind === 2) {
+        ctx.fillStyle = "rgba(180,90,255,0.16)";
+        ctx.fillRect(0, y0, OCEAN.w, y1 - y0);
+      }
+    } else if (s === 0) {
+      ctx.strokeStyle = "#3d8b4a"; ctx.lineWidth = 2.2;
+      for (let i = 0; i < 16; i++) {
+        const px = 60 + i * 150;
+        ctx.beginPath();
+        ctx.moveTo(px, sandY + 8);
+        ctx.quadraticCurveTo(px + Math.sin(state.time + i) * 10, sandY - 18, px + 6, sandY - 40);
+        ctx.stroke();
+      }
+    } else if (s === 1) {
+      for (let i = 0; i < 12; i++) {
+        const px = 90 + i * 190, py = sandY + 4;
+        ctx.fillStyle = i % 2 ? "#e85d6a" : "#c45ec8";
+        ctx.beginPath(); ctx.ellipse(px, py - 8, 16, 7, i * 0.4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#5a6a70";
+        ctx.beginPath(); ctx.ellipse(px + 22, py, 18, 10, 0.2, 0, Math.PI * 2); ctx.fill();
+      }
+    } else if (s === 2) {
+      ctx.fillStyle = "rgba(232, 192, 74, 0.18)";
+      ctx.fillRect(0, y0, OCEAN.w, y1 - y0);
+    } else if (s >= 5) {
+      ctx.strokeStyle = s === 5 ? "#2a8a5a" : "rgba(120,200,220,0.35)";
+      ctx.lineWidth = 2.4;
+      for (let i = 0; i < 10; i++) {
+        const px = 120 + i * 220;
+        ctx.beginPath();
+        ctx.moveTo(px, sandY);
+        ctx.quadraticCurveTo(px + Math.sin(state.time * 1.2 + i) * 12, sandY - 30, px + 4, sandY - 70);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+  function drawDiveBeds() {
+    const top = cam.y - (H * 0.7) / Math.max(0.6, cam.z);
+    const bot = cam.y + (H * 0.7) / Math.max(0.6, cam.z);
+    const seen = {};
+    let y = Math.max(220, top);
+    while (y < bot + 90) {
+      const z = zoneAtDepth(y);
+      if (!seen[z.y0]) { seen[z.y0] = 1; drawZoneBed(z); }
+      y += 90;
     }
   }
   function drawBayWater(x, y, w, h, t, teal) {
@@ -5110,6 +5262,15 @@
     drawFishEye(s, 12.6, -1.6, look.x, look.y);
   }
   function drawFishBody(sp, x, y, ang, scale, t) {
+    const s0 = scale || 1;
+    const rates = [10, 14, 6.2, 7.2, 4, 5.4, 4.6, 8.2, 3.4, 9, 12, 6.4, 3.2];
+    const amts = [0.12, 0.2, 0.16, 0.1, 0.08, 0.1, 0.08, 0.14, 0.1, 0.16, 0.18, 0.1, 0.06];
+    const wob = Math.sin((t || 0) * (rates[sp.id] || 10)) * (amts[sp.id] || 0.12);
+    let rot = ang;
+    if (sp.id === 5) rot = ang * 0.16;
+    else if (sp.id === 8) rot = ang * 0.22;
+    else if (sp.id === 9) rot = ang * 0.12;
+    if (blit("fish" + sp.id, x, y, { rot: rot + wob * 0.35, scale: s0 * 0.48 })) return;
     ctx.save();
     ctx.translate(x, y);
     if (sp.id === 4) { drawTurtle(ang, scale, t); ctx.restore(); return; }
@@ -5117,9 +5278,6 @@
     if (sp.id === 9) { ctx.rotate(ang * 0.15); drawCrab(scale, t, Math.sin(t * 8) * 0.8, fishLook(sp, t)); ctx.restore(); return; }
     ctx.rotate(ang);
     const s = scale;
-    const rates = [10, 14, 6.2, 7.2, 4, 5.4, 4.6, 8.2, 3.4, 9, 12, 6.4, 3.2];
-    const amts = [0.12, 0.2, 0.16, 0.1, 0.08, 0.1, 0.08, 0.14, 0.1, 0.16, 0.18, 0.1, 0.06];
-    const wob = Math.sin(t * (rates[sp.id] || 10)) * (amts[sp.id] || 0.12);
     const look = fishLook(sp, t);
     if (sp.id === 0) drawClownfish(s, t, wob, look);
     else if (sp.id === 1) drawBlueTang(s, t, wob, look);
@@ -5154,8 +5312,30 @@
     const walk = Math.sin((opt.bob || 0) * 1.6);
     const squash = 1 + walk * 0.07 + (hop ? 0.08 : 0);
     shadow(x, y + 4, opt.kid ? 8 : 10.5, opt.kid ? 3.6 : 4.6);
+    const spr = blit(custSpriteName(opt), x, y + bob, {
+      flip: (opt.vx || 0) < -8,
+      scale: (opt.kid ? 0.42 : 0.5) * (1 + walk * 0.03),
+    });
     ctx.save();
     ctx.translate(x, y + bob);
+    if (spr) {
+      if (opt.cart) {
+        ctx.fillStyle = "#c4894a";
+        roundRect(14, 2, 18, 12, 3); ctx.fill();
+        ctx.fillStyle = "#8b5a2b";
+        ctx.fillRect(15, -1, 16, 4);
+        ctx.fillStyle = "#2a2a32";
+        ctx.beginPath(); ctx.arc(18, 14, 2.4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(28, 14, 2.4, 0, Math.PI * 2); ctx.fill();
+      }
+      if (opt.carry >= 0) drawCarryParcel(16, -6);
+      if (opt.idle === "whistle" && Math.sin(state.time * 2.2 + (opt.bob || 0)) > 0.35) {
+        ctx.fillStyle = "#2a1a12";
+        ctx.font = "800 11px Fredoka, sans-serif";
+        ctx.textAlign = "left";
+        ctx.fillText("♪", 14, -36);
+      }
+    } else {
     if (opt.kid) ctx.scale(0.82, 0.82);
     else ctx.scale(1.08, 1.08);
     ctx.scale(1 / Math.sqrt(Math.max(0.85, squash)), squash);
@@ -5257,6 +5437,7 @@
       ctx.beginPath(); ctx.arc(25, 16, 2.4, 0, Math.PI * 2); ctx.fill();
     }
     if (opt.carry >= 0) drawCarryParcel(14, -2);
+    }
     if (talkVisible(opt)) {
       let ox = opt.emoteOff || 0;
       const label = String(opt.emote);
@@ -5360,6 +5541,8 @@
     const lean = leanAmt * flip;
     const short = skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1;
     shadow(x, y + 5, moving ? 13 : 11, moving ? 5.4 : 4.6);
+    const frame = moving && Math.sin(phase) > 0 ? "walk" : "stand";
+    if (blit(skin + "_" + frame, x, y + bob, { flip: flip < 0, rot: lean * 0.35, scale: 0.5 * short })) return;
     ctx.save();
     ctx.translate(x, y + bob);
     ctx.scale(flip * short, short);
@@ -5478,6 +5661,8 @@
   function drawDiver(x, y, ang, t, skinId) {
     const skin = normalizeSkin(skinId != null ? skinId : state.skin);
     shadow(x, y + 6, 12, 5);
+    const sway = Math.sin(t * 11) * 0.06;
+    if (blit(skin + "_dive", x, y, { rot: ang + sway, scale: 0.48 })) return;
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
     const kick = Math.sin(t * 11) * 0.48;
     const stroke = Math.sin(t * 7.5) * 0.22;
@@ -5761,12 +5946,32 @@
     const z = zoneAtDepth(y0 + 40);
     ctx.save();
     const g = ctx.createLinearGradient(0, y0, 0, y0 + ZONE_STEP);
-    g.addColorStop(0, "rgba(4,16,28,0)");
-    g.addColorStop(0.5, "rgba(8,28,48,0.18)");
-    g.addColorStop(1, "rgba(2,10,20,0.28)");
+    const kind = ((y0 / ZONE_STEP) | 0) % 8;
+    if (kind === 0) {
+      g.addColorStop(0, "rgba(2,8,18,0)");
+      g.addColorStop(1, "rgba(0,4,12,0.42)");
+    } else if (kind === 1) {
+      g.addColorStop(0, "rgba(40,80,110,0)");
+      g.addColorStop(1, "rgba(80,160,200,0.16)");
+    } else if (kind === 2) {
+      g.addColorStop(0, "rgba(40,10,60,0)");
+      g.addColorStop(1, "rgba(90,30,120,0.2)");
+    } else {
+      g.addColorStop(0, "rgba(4,16,28,0)");
+      g.addColorStop(0.5, "rgba(8,28,48,0.18)");
+      g.addColorStop(1, "rgba(2,10,20,0.28)");
+    }
     ctx.fillStyle = g;
     ctx.fillRect(0, y0, OCEAN.w, ZONE_STEP);
-    ctx.fillStyle = "rgba(180,230,255,0.12)";
+    if (kind === 0) {
+      ctx.fillStyle = "rgba(90,230,255,0.22)";
+      for (let i = 0; i < 24; i++) {
+        ctx.globalAlpha = 0.15 + 0.3 * (0.5 + 0.5 * Math.sin(state.time * 1.8 + i));
+        ctx.beginPath(); ctx.arc((i * 173) % OCEAN.w, y0 + 80 + (i * 37) % 300, 1.8, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = "rgba(180,230,255,0.16)";
     ctx.font = "800 22px Fredoka, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(z.name, OCEAN.w * 0.5, y0 + 36);
@@ -6009,6 +6214,10 @@
     ctx.fillStyle = "#0a3040";
     ctx.fillRect(-480, -240, shopW() + 960, SHOP.h + 480);
     drawBayWater(0, 860, shopW(), SHOP.h - 860, state.time, !!state.unlocked[1]);
+    ctx.save();
+    ctx.globalAlpha = 0.55;
+    blitHorizon(-20, 848, shopW() + 40, 72);
+    ctx.restore();
     drawFoamBand(-8, 898, shopW() + 16, state.time);
     for (const t of dockTeasers) {
       if (onDryWood(t.x, t.y) || t.y < 1080) continue;
@@ -6023,14 +6232,9 @@
       ctx.filter = "none";
       ctx.restore();
     }
-    for (let i = 0; i < 6; i++) {
-      const px = 540 + i * 120;
-      const lit = sunAmt(px, 1040);
-      ctx.fillStyle = "rgb(" + ((70 + lit * 40) | 0) + "," + ((42 + lit * 22) | 0) + "," + ((18 + lit * 8) | 0) + ")";
-      ctx.fillRect(px, 1000, 16, 80);
-      ctx.fillStyle = "rgb(" + ((120 + lit * 50) | 0) + "," + ((78 + lit * 28) | 0) + "," + ((36 + lit * 12) | 0) + ")";
-      ctx.fillRect(px, 1000, 6, 80);
-    }
+    for (let i = 0; i < 7; i++) drawPierPost(500 + i * 130, 1072, 1.2);
+    drawPierPost(180, 1074, 1.05);
+    drawPierPost(shopW() - 80, 1074, 1.05);
     ctx.fillStyle = "#6b4423";
     ctx.fillRect(-40, 70, 120, 830);
     ctx.fillStyle = "#5a3618";
@@ -6437,6 +6641,19 @@
       ctx.ellipse(t.x + 12 + p * 18, t.y + TANK_H - 13 + (p % 3) * 2.4, 4.6, 2.2, 0.1 * (p % 2), 0, Math.PI * 2);
       ctx.fill();
     }
+    ctx.strokeStyle = i % 2 ? "#2e8b4a" : "#3aa35a";
+    ctx.lineWidth = 1.8;
+    for (let p = 0; p < 4; p++) {
+      const px = t.x + 22 + p * 48 + (i % 3) * 6;
+      const sway = Math.sin(state.time * 1.4 + i + p) * 4;
+      ctx.beginPath();
+      ctx.moveTo(px, t.y + TANK_H - 24);
+      ctx.quadraticCurveTo(px + sway, t.y + TANK_H - 48, px + sway * 0.4, t.y + TANK_H - 70);
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#5a6a70";
+    ctx.beginPath(); ctx.ellipse(t.x + 28, t.y + TANK_H - 22, 10, 6, -0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(t.x + TANK_W - 34, t.y + TANK_H - 20, 12, 7, 0.15, 0, Math.PI * 2); ctx.fill();
     drawCaustics(t.x, t.y + 18, TANK_W, TANK_H - 40, state.time + i, 0.14);
     ctx.save();
     ctx.globalAlpha = 0.2;
@@ -6758,6 +6975,7 @@
       for (let x = 1480; x <= OCEAN.w; x += 30) ctx.lineTo(x, OCEAN.h - 54 - Math.sin(x * 0.01) * 16);
       ctx.lineTo(OCEAN.w, OCEAN.h); ctx.closePath(); ctx.fill();
     }
+    drawDiveBeds();
     drawDecorOcean();
     if (state.splash) {
       const u = 1 - clamp(state.splash.life / state.splash.max, 0, 1);
@@ -8250,27 +8468,14 @@
     ensurePaint();
     drawPaintedSky(0, 0, W, H * 0.42, state.time);
     drawSunDisc(1088, 78, 38);
-    ctx.fillStyle = "rgba(40,80,70,0.28)";
-    ctx.beginPath();
-    ctx.moveTo(-20, H * 0.3 + 8);
-    ctx.quadraticCurveTo(180, H * 0.22, 320, H * 0.3);
-    ctx.lineTo(-20, H * 0.3); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "rgba(50,70,80,0.22)";
-    ctx.beginPath();
-    ctx.moveTo(900, H * 0.3 + 6);
-    ctx.quadraticCurveTo(1080, H * 0.2, 1320, H * 0.3);
-    ctx.lineTo(900, H * 0.3); ctx.closePath(); ctx.fill();
     drawBayWater(-20, H * 0.3, W + 40, H * 0.78, state.time, false);
+    ctx.save();
+    ctx.globalAlpha = 0.88;
+    blitHorizon(-16, H * 0.3 - 62, W + 32, 78);
+    ctx.restore();
     drawFoamBand(-10, H * 0.3 + 6, W + 20, state.time);
     drawPierBoards(-8, H - 64, W + 16, 72, { plank: 18, seg: 96, wetY: H - 52 });
-    for (const px of [90, 240, 1040, 1190]) {
-      ctx.fillStyle = "#3a2210";
-      ctx.fillRect(px, H - 92, 14, 40);
-      ctx.fillStyle = "#8a5a30";
-      ctx.fillRect(px, H - 92, 5, 40);
-      ctx.fillStyle = "rgba(8,20,28,0.35)";
-      ctx.fillRect(px - 2, H - 56, 18, 8);
-    }
+    for (const px of [90, 240, 1040, 1190]) drawPierPost(px + 7, H - 52, 1.05);
     ctx.save(); ctx.globalCompositeOperation = "lighter";
     for (let i = 0; i < 5; i++) {
       ctx.fillStyle = "rgba(255,236,180," + (0.045 + 0.025 * Math.sin(state.time + i)) + ")";
@@ -8319,7 +8524,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 45", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 46", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -8359,7 +8564,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 45", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 46", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -8376,7 +8581,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 45", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 46", W / 2, 632);
     }
   }
 
