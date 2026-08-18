@@ -761,7 +761,7 @@
     const s = worldToScreen(880, 1008);
     const w = compactHud() ? 118 : 132;
     const h = compactHud() ? 42 : 36;
-    return hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h);
+    return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h));
   }
   function walkToDock() {
     player.goto = dockWalkPoint();
@@ -784,7 +784,7 @@
     const s = worldToScreen(t.x, t.y);
     const w = compactHud() ? 132 : 148;
     const h = compactHud() ? 42 : 36;
-    return hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h);
+    return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h));
   }
   function isDockDest(pt) {
     if (!pt) return false;
@@ -932,7 +932,7 @@
     return (state.speedLv | 0) > 0 || (state.bagLv | 0) > 0 || (state.catchLv | 0) > 0 || !!state.hiredCashier;
   }
   function shopBarsReady() {
-    return state.scene === "shop" && !inDiveZone() && player.y < 840 && (state.tutorial >= 5 || state.money >= 25);
+    return state.scene === "shop" && !inDiveZone() && (state.tutorial >= 5 || state.money >= 25);
   }
   function diveActionLegal() {
     return state.mode === "play" && state.scene === "shop" && inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect();
@@ -960,23 +960,7 @@
     if (compact && state.scene === "shop" && shopBarsReady()) {
       x = clamp(W - 18 - w, 16, W - 18 - w);
     }
-    const box = hudBox(x, y, w, h);
-    if (state.scene === "shop" && shopBarsReady()) {
-      const bar = upgradeBarBox();
-      const extra = decorHudReady() ? (compact ? thumbCanvas(72, 100, 140) : 118) + 8 : 0;
-      const tray = { x: bar.x, y: bar.y, w: bar.w + extra, h: bar.h };
-      if (boxesOverlap(box, tray, 8)) {
-        if (compact && box.x >= tray.x + tray.w + 8) return box;
-        // DIVE / SURFACE stay on the bottom edge; the tray sits above them.
-        return box;
-      }
-    }
-    return box;
-  }
-  function welcomeScreenBox() {
-    if (state.scene !== "shop") return null;
-    const p = worldToScreen(WELCOME.x, WELCOME.y);
-    return { x: p.x, y: p.y, w: WELCOME.w * cam.z, h: WELCOME.h * cam.z };
+    return dodgeUpgradeTray(hudBox(x, y, w, h));
   }
   function upgradeBarBox() {
     const compact = compactHud();
@@ -984,40 +968,26 @@
     const ch = compact ? thumbCanvas(50, 64, 96) : 66;
     const w = compact ? cw * 2 + 24 : 688;
     const h = compact ? ch * 2 + 24 : 82;
-    const chipW = decorHudReady() ? (compact ? thumbCanvas(72, 100, 140) : 118) : 0;
-    const totalW = w + (chipW ? 8 + chipW : 0);
-    let x = 16;
-    // Anchor to the bottom edge; only lift above the DIVE / SURFACE bar and → DIVE chip.
-    let y = H - (compact ? 22 : 18) - h;
-    const sz = actionBtnSize();
-    if (actionPromptVisible() || (state.scene === "shop" && nearBoat() && expeditionUnlocked())) {
-      y = Math.min(y, H - sz.pad - sz.h - 12 - h);
-    }
-    if (state.scene === "shop" && dockOffScreen() && !cashNeedsCollect()) {
-      const dc = dockCornerBox();
-      const tray = { x, y, w: totalW, h };
-      if (boxesOverlap(tray, dc, 10)) y = Math.min(y, dc.y - 10 - h);
-    }
-    if (state.scene === "shop" && cashNeedsCollect() && tillOffScreen()) {
-      const tc = tillCornerBox();
-      const tray = { x, y, w: totalW, h };
-      if (boxesOverlap(tray, tc, 10)) y = Math.min(y, tc.y - 10 - h);
-    }
-    const floor = topHudFloor();
-    if (y < floor) y = clamp(floor, 10, Math.max(10, H - 10 - h));
-    const welcome = welcomeScreenBox();
-    const footprint = { x, y, w: totalW, h };
-    if (welcome && boxesOverlap(footprint, welcome, 14)) {
-      const right = welcome.x + welcome.w + 16;
-      const left = welcome.x - 16 - totalW;
-      if (right + totalW <= W - 10) x = right;
-      else if (left >= 10) x = left;
-      else {
-        const up = welcome.y - 14 - h;
-        if (up >= floor) y = up;
-      }
-    }
-    return Object.assign(hudBox(x, Math.max(y, floor), w, h), { cw, ch, compact });
+    const x = 16;
+    const y = H - (compact ? 22 : 18) - h;
+    return Object.assign(hudBox(x, y, w, h), { cw, ch, compact });
+  }
+  function upgradeTrayFootprint() {
+    const bar = upgradeBarBox();
+    const extra = decorHudReady() ? (compactHud() ? thumbCanvas(72, 100, 140) : 118) + 8 : 0;
+    return { x: bar.x, y: bar.y, w: bar.w + extra, h: bar.h };
+  }
+  function dodgeUpgradeTray(box) {
+    if (!box || !shopBarsReady()) return box;
+    const tray = upgradeTrayFootprint();
+    if (!boxesOverlap(box, tray, 8)) return box;
+    const rightX = tray.x + tray.w + 10;
+    if (rightX + box.w <= W - 10) return hudBox(rightX, box.y, box.w, box.h);
+    const upY = tray.y - 10 - box.h;
+    if (upY >= topHudFloor()) return hudBox(box.x, upY, box.w, box.h);
+    const leftX = tray.x - 10 - box.w;
+    if (leftX >= 10) return hudBox(leftX, box.y, box.w, box.h);
+    return box;
   }
   function decorHudReady() {
     return shopBarsReady() && (boughtAnUpgrade() || !!state.unlocked[1]);
@@ -6922,7 +6892,7 @@
       ctx.restore();
       ctx.font = "800 14px Nunito, sans-serif";
       const tw = Math.min(ctx.measureText(label).width + 24, 280);
-      const chip = hudBox(ax - tw / 2, ay - 38, tw, 28);
+      const chip = dodgeUpgradeTray(hudBox(ax - tw / 2, ay - 38, tw, 28));
       card(chip.x, chip.y, chip.w, chip.h, "rgba(80, 48, 10, " + (0.84 + pulse * 0.1) + ")");
       ctx.fillStyle = "#ffe27a";
       ctx.textAlign = "center";
@@ -7559,13 +7529,6 @@
       stackX = chipX - 10 - pw;
       if (stackX < 10) stackX = clamp(chipX + chipW + 10, 10, W - 10 - pw);
     }
-    const welcome = welcomeScreenBox();
-    if (welcome && boxesOverlap({ x: stackX, y: stackY, w: pw, h: stackH }, welcome, 10)) {
-      const right = welcome.x + welcome.w + 12;
-      const left = welcome.x - 12 - pw;
-      if (right + pw <= W - 10) stackX = right;
-      else if (left >= 10) stackX = left;
-    }
     for (let i = 0; i < 3; i++) {
       const x = stackX;
       const y = stackY + i * (ph + 6);
@@ -7725,7 +7688,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 43", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 44", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -7765,7 +7728,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 43", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 44", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -7782,7 +7745,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 43", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 44", W / 2, 632);
     }
   }
 
