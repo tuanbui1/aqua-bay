@@ -1988,7 +1988,7 @@
     if (state.scene !== "shop" && state.scene !== "ocean") state.scene = "shop";
     if (state.scene === "shop") {
       player.x = 880; player.y = 920;
-      cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28;
+      cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28; cam.shopBand = null;
       player.goto = null;
       if (state.tutorial === 0) state.didMove = false;
     }
