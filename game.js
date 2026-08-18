@@ -85,6 +85,7 @@
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = true;
+  let canvasDpr = 1;
 
   // ===== STATE =====
   const state = {
@@ -562,8 +563,28 @@
     const cw = wrap.clientWidth || w;
     const ch = wrap.clientHeight || h;
     const scale = Math.min(cw / W, ch / H);
-    canvas.style.width = Math.max(1, W * scale) + "px";
-    canvas.style.height = Math.max(1, H * scale) + "px";
+    let cssW = Math.max(1, Math.round(W * scale));
+    let cssH = Math.max(1, Math.round(cssW * H / W));
+    if (cssH > ch) {
+      cssH = Math.max(1, Math.round(H * scale));
+      cssW = Math.max(1, Math.round(cssH * W / H));
+    }
+    canvas.style.width = cssW + "px";
+    canvas.style.height = cssH + "px";
+    const dpr = Math.min(2.5, window.devicePixelRatio || 1);
+    const bw = Math.max(1, Math.round(cssW * dpr));
+    const bh = Math.max(1, Math.round(cssH * dpr));
+    if (canvas.width !== bw || canvas.height !== bh) {
+      canvas.width = bw;
+      canvas.height = bh;
+    }
+    canvasDpr = bw / W;
+    beginCanvas();
+  }
+  function beginCanvas() {
+    ctx.setTransform(canvasDpr, 0, 0, canvasDpr, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = "high";
   }
   function normAng(a) {
     while (a > Math.PI) a -= Math.PI * 2;
@@ -3956,8 +3977,16 @@
     ctx.closePath();
   }
   function shadow(x, y, rx, ry) {
-    ctx.fillStyle = "rgba(0,0,0,0.22)";
-    ctx.beginPath(); ctx.ellipse(x, y + 10, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save();
+    ctx.fillStyle = "rgba(18, 10, 6, 0.2)";
+    ctx.beginPath(); ctx.ellipse(x - 6, y + 12, rx * 1.55, ry * 1.4, -0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(18, 10, 6, 0.36)";
+    ctx.beginPath(); ctx.ellipse(x - 3, y + 11, rx * 1.12, ry * 1.02, -0.16, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+  function groundBlob(x, y, rx, ry) {
+    ctx.fillStyle = "rgba(18, 10, 6, 0.3)";
+    ctx.beginPath(); ctx.ellipse(x - 3, y, rx, ry, -0.16, 0, Math.PI * 2); ctx.fill();
   }
   // C42 — canvas-only sunny-pier art. No image assets.
   function sunAmt(x, y) {
@@ -4398,24 +4427,33 @@
     const bob = Math.sin(opt.bob || 0) * bounce - hop;
     const walk = Math.sin((opt.bob || 0) * 1.6);
     const squash = 1 + walk * 0.07 + (hop ? 0.08 : 0);
-    shadow(x, y + 4, opt.kid ? 7 : 9, opt.kid ? 3.2 : 4);
+    shadow(x, y + 4, opt.kid ? 8 : 10.5, opt.kid ? 3.6 : 4.6);
     ctx.save();
     ctx.translate(x, y + bob);
-    if (opt.kid) ctx.scale(0.78, 0.78);
+    if (opt.kid) ctx.scale(0.82, 0.82);
+    else ctx.scale(1.08, 1.08);
     ctx.scale(1 / Math.sqrt(Math.max(0.85, squash)), squash);
     ctx.fillStyle = "#3a3a48";
-    ctx.fillRect(-6, 8, 4, 8 + walk * 2);
-    ctx.fillRect(2, 8, 4, 8 - walk * 2);
+    fillCapsule(-5.2, 8, -4.6, 17.2 + walk * 2.2, 2.4);
+    fillCapsule(4.8, 8, 5.2, 17.2 - walk * 2.2, 2.4);
+    ctx.fillStyle = "#1a1a22";
+    ctx.beginPath(); ctx.ellipse(-4.6, 17.6 + walk * 2.2, 3.2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(5.2, 17.6 - walk * 2.2, 3.2, 1.5, 0, 0, Math.PI * 2); ctx.fill();
     const swing = walk * 6;
     const waving = (opt.wave || 0) > 0 && !(opt.carry >= 0);
     const waveAmt = waving ? 1.15 + 0.55 * Math.sin(state.time * 10) : 0;
     ctx.fillStyle = opt.skin;
-    ctx.save(); ctx.translate(-9, -1); ctx.rotate(0.12 + swing * 0.07);
-    ctx.fillRect(-2, 0, 3.5, 9); ctx.restore();
-    ctx.save(); ctx.translate(9, -1); ctx.rotate(-0.12 - swing * 0.07 - waveAmt);
-    ctx.fillRect(-1.5, 0, 3.5, waving ? 11 : 9); ctx.restore();
-    ctx.fillStyle = opt.shirt;
-    roundRect(-9, -6, 18, 16, 5); ctx.fill();
+    ctx.save(); ctx.translate(-10, -1); ctx.rotate(0.12 + swing * 0.07);
+    fillCapsule(0, 0, 0.2, waving ? 12 : 10, 2.1); ctx.restore();
+    ctx.save(); ctx.translate(10, -1); ctx.rotate(-0.12 - swing * 0.07 - waveAmt);
+    fillCapsule(0, 0, -0.2, waving ? 12 : 10, 2.1); ctx.restore();
+    const shirtG = ctx.createLinearGradient(-6, -8, 8, 12);
+    shirtG.addColorStop(0, opt.shirt);
+    shirtG.addColorStop(1, "rgba(20,12,8,0.22)");
+    ctx.fillStyle = shirtG;
+    roundRect(-10, -7, 20, 17, 6); ctx.fill();
+    ctx.fillStyle = "rgba(255,230,180,0.12)";
+    ctx.beginPath(); ctx.ellipse(-2, -3, 6, 4, -0.3, 0, Math.PI * 2); ctx.fill();
     if (opt.hawaii) {
       ctx.fillStyle = "#ffd24a"; ctx.beginPath(); ctx.arc(-3, 0, 2.2, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(4, 3, 1.8, 0, Math.PI * 2); ctx.fill();
@@ -4579,7 +4617,7 @@
     const swing = Math.sin(phase) * (moving ? 11 : 4);
     const flip = Math.cos(facing) < -0.12 ? -1 : 1;
     const lean = leanAmt * flip;
-    const short = skin === "reef" ? 0.9 : skin === "dino" ? 0.94 : 1;
+    const short = skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1;
     shadow(x, y + 5, moving ? 12 : 10, moving ? 5.2 : 4.5);
     ctx.save();
     ctx.translate(x, y + bob);
@@ -4759,6 +4797,7 @@
   }
   function drawPot(x, y, leaf, sc) {
     const s = sc || 1;
+    groundBlob(x, y + 18 * s, 13 * s, 4.2 * s);
     ctx.fillStyle = "#c45c3a";
     ctx.beginPath();
     ctx.moveTo(x - 12 * s, y); ctx.lineTo(x + 12 * s, y); ctx.lineTo(x + 8 * s, y + 18 * s); ctx.lineTo(x - 8 * s, y + 18 * s);
@@ -4769,6 +4808,7 @@
     ctx.beginPath(); ctx.ellipse(x - 8 * s, y - 2 * s, 8 * s, 10 * s, -0.4, 0, Math.PI * 2); ctx.fill();
   }
   function drawCrate(x, y, w, h) {
+    groundBlob(x + w / 2, y + h + 3, w * 0.46, 5);
     ctx.fillStyle = "#b07a3a";
     roundRect(x, y, w, h, 3); ctx.fill();
     ctx.strokeStyle = "#7a4e1e"; ctx.lineWidth = 2;
@@ -4783,6 +4823,7 @@
     drawCrate(x + 10, y - 22, 38, 26);
   }
   function drawLifeRing(x, y) {
+    groundBlob(x, y + 18, 16, 5);
     ctx.save();
     ctx.translate(x, y);
     ctx.strokeStyle = "#e85d4c"; ctx.lineWidth = 8;
@@ -4797,8 +4838,7 @@
     ctx.restore();
   }
   function drawBaitShack(x, y) {
-    ctx.fillStyle = "rgba(20, 16, 10, 0.22)";
-    ctx.beginPath(); ctx.ellipse(x + 4, y + 78, 54, 12, 0, 0, Math.PI * 2); ctx.fill();
+    groundBlob(x + 4, y + 78, 56, 13);
     ctx.fillStyle = "#8a4a22";
     roundRect(x - 40, y + 18, 88, 58, 4); ctx.fill();
     ctx.fillStyle = "#6b3416";
@@ -4828,8 +4868,7 @@
     ctx.beginPath(); ctx.ellipse(x + 28, y + 50, 4, 3, 0, 0, Math.PI * 2); ctx.fill();
   }
   function drawVending(x, y) {
-    ctx.fillStyle = "rgba(16, 20, 24, 0.2)";
-    ctx.beginPath(); ctx.ellipse(x + 2, y + 78, 22, 7, 0, 0, Math.PI * 2); ctx.fill();
+    groundBlob(x + 2, y + 78, 22, 7);
     ctx.fillStyle = "#2a4a58";
     roundRect(x - 18, y, 40, 76, 5); ctx.fill();
     ctx.fillStyle = "#1a3038";
@@ -4851,6 +4890,7 @@
     ctx.fillRect(x + 14, y + 64, 4, 6);
   }
   function drawBench(x, y) {
+    groundBlob(x + 40, y + 30, 38, 7);
     ctx.fillStyle = "#6b4423";
     ctx.fillRect(x + 6, y + 16, 6, 14);
     ctx.fillRect(x + 68, y + 16, 6, 14);
@@ -7342,10 +7382,16 @@
       ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill();
     }
     card(W / 2 - 250, 48, 500, 168, "rgba(12, 28, 36, 0.78)");
-    ctx.fillStyle = "#6b3a18";
-    roundRect(W / 2 - 210, 64, 420, 72, 10); ctx.fill();
+    ctx.save();
+    roundRect(W / 2 - 210, 64, 420, 72, 10); ctx.clip();
+    drawPierBoards(W / 2 - 210, 64, 420, 72, { plank: 16, seg: 78 });
+    ctx.fillStyle = "rgba(40, 20, 8, 0.18)";
+    ctx.fillRect(W / 2 - 210, 64, 420, 72);
+    ctx.restore();
     ctx.strokeStyle = "#e8c04a"; ctx.lineWidth = 3;
     roundRect(W / 2 - 204, 69, 408, 62, 8); ctx.stroke();
+    ctx.strokeStyle = "rgba(90, 48, 16, 0.55)"; ctx.lineWidth = 1.4;
+    roundRect(W / 2 - 210, 64, 420, 72, 10); ctx.stroke();
     drawFishBody(SPECIES[0], W / 2 - 168, 100, 0.08, 1.35, state.time);
     ctx.fillStyle = "#fff6e8"; ctx.font = "700 28px Fredoka, sans-serif"; ctx.textAlign = "center";
     ctx.fillText("Aqua Bay Pier Mart", W / 2 + 18, 96);
@@ -7418,8 +7464,8 @@
 
   function baitShackScreenBox() {
     if (state.scene !== "shop") return null;
-    const p = worldToScreen(1438, 804);
-    return { x: p.x, y: p.y, w: 108 * cam.z, h: 96 * cam.z };
+    const p = worldToScreen(1428, 786);
+    return { x: p.x, y: p.y, w: 156 * cam.z, h: 136 * cam.z };
   }
   function tankScreenBox(i) {
     const t = TANK_POS[i];
@@ -7446,8 +7492,16 @@
     const colH = 5 * (ch + 6);
     const colAt = (x, y) => ({ x, y, w: cw, h: colH });
     const shack = baitShackScreenBox();
-    if (shack && boxesOverlap(colAt(xCol, startY), shack, 10)) {
-      xCol = clamp(shack.x - 12 - cw, 360, muteB.x - 12 - cw);
+    const hitsShack = (x, y) => shack && boxesOverlap(colAt(x, y), shack, 16);
+    if (hitsShack(xCol, startY)) {
+      const left = clamp(shack.x - 18 - cw, 300, muteB.x - 12 - cw);
+      if (!hitsShack(left, startY)) {
+        xCol = left;
+      } else {
+        const below = shack.y + shack.h + 14;
+        if (below + colH <= H - 18 && !hitsShack(xCol, below)) startY = below;
+        else xCol = left;
+      }
     }
     const locked = lockedTankScreenBoxes();
     const shelfPad = 10;
@@ -7487,7 +7541,8 @@
       const b = hudBox(xCol, startY + i * (ch + 6), cw, ch);
       const x = b.x, y = b.y;
       const chip = { x, y, w: cw, h: ch + 2 };
-      if (boxesOverlap(chip, muteB, 6) || boxesOverlap(chip, pauseB, 6)) continue;
+      const shack = baitShackScreenBox();
+      if (boxesOverlap(chip, muteB, 6) || boxesOverlap(chip, pauseB, 6) || (shack && boxesOverlap(chip, shack, 12))) continue;
       const hover = mouse.x >= x && mouse.x <= x + cw && mouse.y >= y && mouse.y <= y + ch + 2;
       const affordable = !state.unlocked[i] && i === next && state.money >= SPECIES[i].unlock;
       const need = !state.unlocked[i] ? Math.max(0, SPECIES[i].unlock - (state.money | 0)) : 0;
@@ -7947,6 +8002,7 @@
     state.time += dt;
     uiHits = [];
     tickMusic(dt);
+    beginCanvas();
     if (state.mode === "title") {
       updateTitleFX(dt);
       drawTitle();
