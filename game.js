@@ -1768,7 +1768,7 @@
           const w = screenToWorld(p.x, p.y);
           const f = fishAtWorld(w.x, w.y) || nearestScoopFish();
           if (f && startScoopOnFish(f)) { mouse.acted = true; mouse.scoopPress = true; return; }
-          if (scoopBlocksSurface()) return;
+          if (scoopBlocksSurface() || scoopHoldActive()) return;
         }
       }
       mouse.ui = true; mouse.acted = true; onUI(hit); return;
@@ -1796,11 +1796,22 @@
     if (mouse.scoopPress && mouse.held < 0.22 && player.scoopLock) player.scoopTap = true;
     if (state.mode === "play" && !mouse.ui && !mouse.acted && mouse.held < 0.22) {
       const touch = e && e.pointerType === "touch";
-      if (!(state.scene === "ocean" && bagIsFull() && !touch)) {
+      if (mouse.scoopPress || player.scoopLock) {
+        // Scoop tap / hold — do not turn the release into a swim dash.
+      } else if (!(state.scene === "ocean" && bagIsFull() && !touch)) {
         const w = screenToWorld(mouse.pressX, mouse.pressY);
         player.scoopTap = false;
         player.scoopLock = null;
-        player.goto = clickWalkTarget(w.x, w.y);
+        if (state.scene === "shop") {
+          const tankHit = tankAtWorld(w.x, w.y);
+          if (tankHit >= 0 && state.unlocked[tankHit] && bagCanStock(tankHit)) {
+            intentWalk("stock", tankWalkPoint(tankHit), tankHit);
+          } else {
+            player.goto = clickWalkTarget(w.x, w.y);
+          }
+        } else {
+          player.goto = clickWalkTarget(w.x, w.y);
+        }
       }
     }
     mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.acted = false; mouse.scoopPress = false;
@@ -2008,8 +2019,13 @@
     const f = player.scoopLock || player.target;
     return !!(f && !f.caught && oceanFish.indexOf(f) >= 0);
   }
+  function scoopHoldActive() {
+    return state.scene === "ocean" && !bagIsFull() &&
+      !!(mouse.scoopPress || player.scoopLock || catchHolding());
+  }
   function scoopBlocksSurface() {
     if (state.scene !== "ocean" || bagIsFull()) return false;
+    if (scoopHoldActive()) return true;
     if (scoopTargetingFish() && catchHolding()) return true;
     if (nearestScoopFish()) return true;
     return false;
@@ -2049,7 +2065,7 @@
     }
     if (shouldSurface()) {
       if (fromTouch && !fromKey) return false;
-      if (scoopBlocksSurface()) return false;
+      if (scoopBlocksSurface() || scoopHoldActive()) return false;
       player.goto = null; beginSurface(); return true;
     }
     return false;
@@ -2163,8 +2179,8 @@
     ctx.save();
     const ribbon = ribbonLayout();
     const chips = {
-      money: parkHudFromGlow(parkChip(hudBox(16, 14, 200, 52), ribbon)),
-      bag: parkHudFromGlow(parkChip(hudBox(224, 14, 168, 52), ribbon)),
+      money: dodgeUpgradeTray(parkChip(hudBox(16, 14, 200, 52), ribbon)),
+      bag: dodgeUpgradeTray(parkChip(hudBox(224, 14, 168, 52), ribbon)),
     };
     ctx.restore();
     return chips;
@@ -3031,10 +3047,14 @@
       const m = Math.hypot(ax, ay) || 1; ax /= m; ay /= m;
       player.goto = null;
     } else if (mouse.down && !mouse.ui && !mouse.acted && state.mode === "play" && mouse.held > 0.16) {
-      player.goto = null;
-      const w = screenToWorld(mouse.x, mouse.y);
-      const dx = w.x - player.x, dy = w.y - player.y, d = Math.hypot(dx, dy);
-      if (d > 8) { ax = dx / d; ay = dy / d; }
+      if (state.scene === "ocean" && !bagIsFull()) {
+        // Hold is scoop. Never dash or buoyancy-steer from the same drag.
+      } else {
+        player.goto = null;
+        const w = screenToWorld(mouse.x, mouse.y);
+        const dx = w.x - player.x, dy = w.y - player.y, d = Math.hypot(dx, dy);
+        if (d > 8) { ax = dx / d; ay = dy / d; }
+      }
     } else if (player.goto && state.mode === "play") {
       const dx = player.goto.x - player.x, dy = player.goto.y - player.y, d = Math.hypot(dx, dy);
       if (d < 22) {
@@ -3146,9 +3166,9 @@
     return Math.hypot(player.x - p.x, player.y - p.y) < 56;
   }
   function tryStockOnArrival() {
-    if (!allowAutoStock() || !bagHasStockable()) return;
+    if (!bagHasStockable()) return;
     for (let i = 0; i < SPECIES.length; i++) {
-      if (state.unlocked[i] && state.bag.some((s) => s === i) && nearStockPad(i)) stockTank(i);
+      if (state.unlocked[i] && bagCanStock(i) && nearStockPad(i)) stockTank(i);
     }
   }
   function tryUnlockOnArrival() {
@@ -3236,6 +3256,8 @@
       for (let i = 0; i < SPECIES.length; i++) {
         if (state.unlocked[i] && nearStockPad(i)) stockTank(i);
       }
+    } else {
+      tryStockOnArrival();
     }
     const pendingCash = player.pendingAct && player.pendingAct.kind === "cash";
     if (tillWaiting() && inTillGlow() && !pendingCash && !cashierHandlingIt()) {
@@ -8016,7 +8038,7 @@
     }
   }
   function moneyHudBox(ribbon) {
-    return parkHudFromGlow(parkChip(hudBox(16, 14, 200, 52), ribbon));
+    return dodgeUpgradeTray(parkChip(hudBox(16, 14, 200, 52), ribbon));
   }
   function drawMoneyReadout(moneyBox) {
     ctx.save();
@@ -8042,7 +8064,7 @@
     ctx.globalAlpha = chipAlpha(moneyBox, ribbon);
     drawMoneyReadout(moneyBox);
     ctx.restore();
-    const bagBox = parkHudFromGlow(parkChip(hudBox(224, 14, 168, 52), ribbon));
+    const bagBox = dodgeUpgradeTray(parkChip(hudBox(224, 14, 168, 52), ribbon));
     ctx.save();
     ctx.globalAlpha = chipAlpha(bagBox, ribbon);
     ctx.translate(bagBox.x + 84, bagBox.y + 26);
@@ -8347,9 +8369,6 @@
       const fb = hudBox(W / 2 - 150, by, 300, 32);
       btn("surface", fb.x, fb.y, fb.w, fb.h);
     }
-    if (scoopBlocksSurface()) return;
-    const sp = worldToScreen(OCEAN.w / 2, 70);
-    btn("surface", sp.x - 170, sp.y - 28, 340, 48);
   }
   function drawUpIcon(kind, x, y) {
     ctx.save();
@@ -8710,51 +8729,9 @@
     const cw = compactHud() ? thumbCanvas(64, 70, 92) : 86;
     const ch = compactHud() ? thumbCanvas(50, 56, 72) : 64;
     const { muteB, pauseB } = topCtrlBoxes();
-    let startY = muteB.y + muteB.h + 12;
-    let xCol = muteB.x - 12 - cw;
     const colH = railSpeciesIds().length * (ch + 6);
-    const colAt = (x, y) => ({ x, y, w: cw, h: colH });
-    const shack = baitShackScreenBox();
-    const hitsShack = (x, y) => shack && boxesOverlap(colAt(x, y), shack, 16);
-    if (hitsShack(xCol, startY)) {
-      const left = clamp(shack.x - 18 - cw, 300, muteB.x - 12 - cw);
-      if (!hitsShack(left, startY)) {
-        xCol = left;
-      } else {
-        const below = shack.y + shack.h + 14;
-        if (below + colH <= H - 18 && !hitsShack(xCol, below)) startY = below;
-        else xCol = left;
-      }
-    }
-    const locked = lockedTankScreenBoxes();
-    const shelfPad = 10;
-    const shelfGap = 16;
-    const hitsShelf = (x, y) => locked.some((b) => boxesOverlap(colAt(x, y), b, shelfPad));
-    if (hitsShelf(xCol, startY)) {
-      let below = startY;
-      for (let i = 0; i < locked.length; i++) {
-        const b = locked[i];
-        if (xCol + cw > b.x - shelfGap && xCol < b.x + b.w + shelfGap) below = Math.max(below, b.y + b.h + shelfGap);
-      }
-      if (below + colH <= H - 18 && !hitsShelf(xCol, below)) {
-        startY = below;
-      } else {
-        let left = xCol;
-        for (let i = 0; i < locked.length; i++) {
-          const b = locked[i];
-          if (boxesOverlap(colAt(xCol, startY), b, shelfPad)) left = Math.min(left, b.x - shelfGap - cw);
-        }
-        xCol = clamp(left, 320, muteB.x - 12 - cw);
-        if (hitsShelf(xCol, startY)) {
-          let down = startY;
-          for (let i = 0; i < locked.length; i++) {
-            const b = locked[i];
-            if (xCol + cw > b.x - shelfGap && xCol < b.x + b.w + shelfGap) down = Math.max(down, b.y + b.h + shelfGap);
-          }
-          if (down + colH <= H - 18) startY = down;
-        }
-      }
-    }
+    const xCol = muteB.x - 12 - cw;
+    const startY = muteB.y + muteB.h + 12;
     return { x: xCol, y: startY, w: cw, h: colH, cw, ch, muteB, pauseB };
   }
   function railSpeciesIds() {
@@ -8776,8 +8753,7 @@
       const b = hudBox(xCol, startY + n * (ch + 6), cw, ch);
       const x = b.x, y = b.y;
       const chip = { x, y, w: cw, h: ch + 2 };
-      const shack = baitShackScreenBox();
-      if (boxesOverlap(chip, muteB, 6) || boxesOverlap(chip, pauseB, 6) || (shack && boxesOverlap(chip, shack, 12))) continue;
+      if (boxesOverlap(chip, muteB, 6) || boxesOverlap(chip, pauseB, 6)) continue;
       const hover = mouse.x >= x && mouse.x <= x + cw && mouse.y >= y && mouse.y <= y + ch + 2;
       const affordable = !state.unlocked[i] && i === next && state.money >= SPECIES[i].unlock;
       const need = !state.unlocked[i] ? Math.max(0, SPECIES[i].unlock - (state.money | 0)) : 0;
@@ -9011,11 +8987,17 @@
       ty = lerp(ty, tw.y + 28, tillPull);
     }
     if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
-      const plaza = clamp((640 - player.y) / 200, 0, 1);
+      const band = player.y < 680 ? "plaza" : (player.y > 860 ? "dock" : "mid");
+      if (cam.shopBand && cam.shopBand !== band && (band === "plaza" || band === "dock")) {
+        state.camEase = Math.max(state.camEase || 0, 0.9);
+      }
+      cam.shopBand = band;
+      const plaza = clamp((640 - player.y) / 280, 0, 1);
       const glowI = glowingStockIndex();
       const z = Math.max(0.7, cam.z);
       const hudClear = Math.max(topHudFloor() + 16, 176);
-      if (plaza > 0.04 || glowI >= 0) {
+      const onPlaza = player.y < 720;
+      if (onPlaza && (plaza > 0.08 || glowI >= 0)) {
         const shelfL = TANK_POS[0].x;
         const shelfR = TANK_POS[4].x + TANK_W;
         const minCam = shelfR - (W / 2) / z + 8 / z;
