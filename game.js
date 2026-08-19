@@ -5434,10 +5434,10 @@
     const w = shopW() + 840;
     const townH = 152;
     const townTop = 714;
-    // Gradient fills the high sky so a 176px atlas cell is not stretched
-    // into horizontal cloud / water strips. The sky tile sits on the
-    // horizon and meets the town — C71 left a 120px dark gap (tile ended
-    // at y=594, town at 714) that read as an empty band over the dock.
+    // Gradient fills the high sky and meets the town. Stretching the
+    // 176px sky atlas across the bay painted cloud / water strips into
+    // the dock view; C71 also left a 120px dark gap (tile ended at
+    // y=594, town at 714).
     const sky = ctx.createLinearGradient(x, -280, x, townTop);
     sky.addColorStop(0, "#c8eefc");
     sky.addColorStop(0.42, "#8ed0f0");
@@ -5445,12 +5445,6 @@
     sky.addColorStop(1, "#6eb8b4");
     ctx.fillStyle = sky;
     ctx.fillRect(x, -280, w, townTop + 8);
-    if (ATLAS.sky && ART.ready) {
-      ctx.save();
-      ctx.globalAlpha = 0.72;
-      blitTile("sky", x, townTop - 168, w, 176);
-      ctx.restore();
-    }
     // Crop the C55 skyline to hills + roofs (skip the empty upper sky so
     // the waterfront sits on the horizon instead of tiling the bay).
     if (!blitHarborPart(0, 0.46, 1, 0.54, x, townTop, w, townH)) {
@@ -6676,7 +6670,9 @@
     if (band === "dock") return 0;
     if (band === "plaza") return 1;
     const py = player && player.y != null ? player.y : 760;
-    return clamp((850 - py) / 170, 0, 1);
+    // Hold east furniture until the walker is actually on the plaza
+    // so a mid-aisle camera cannot park a half-POP on the rail.
+    return clamp((720 - py) / 90, 0, 1);
   }
   function midWoodAlpha() {
     const band = shopViewBand();
@@ -8537,16 +8533,11 @@
     const teal = !!state.unlocked[1];
     const plazaA = plazaPropAlpha();
     const midA = midWoodAlpha();
-    // Plaza deck + east/west shop floors fade with the plaza band so a
-    // dock camera cannot stack shop-interior tiles over the sky / town.
-    // Aisle pier stays visible from the dock — hiding it made the walk to
-    // the plaza look like crossing the painted sky.
-    if (plazaA > 0.04) {
-      ctx.save();
-      ctx.globalAlpha = plazaA;
-      drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal, alignY: 80 });
-      ctx.restore();
-    }
+    // Main plaza deck stays opaque — fading it punched sky through the
+    // aisle. It sits off-screen at the dock camera (cam.y ≥ 848).
+    // East/west shop floors still follow plazaA so they cannot tile into
+    // the dock view as a strip. Aisle pier stays visible from the dock.
+    drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal, alignY: 80 });
     ctx.save();
     ctx.globalAlpha = Math.max(0.82, midA);
     drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
