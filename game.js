@@ -5982,26 +5982,32 @@
       let x = 80 + hash2(seed, 6) * 60;
       let m = 0;
       while (x < OCEAN.w - 50) {
-        const cy = ridgeY - 6;
-        const rw = 48 + hash2(seed, 260 + m) * 28;
-        const rh = 22 + hash2(seed, 270 + m) * 14;
+        const cy = ridgeY - 4;
+        const rw = 52 + hash2(seed, 260 + m) * 26;
+        const rh = 18 + hash2(seed, 270 + m) * 10;
         ctx.fillStyle = pair[1];
         ctx.beginPath();
-        ctx.ellipse(x, cy + 10, rw + 10, 8, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, cy + 12, rw + 16, 7, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = pair[0];
+        ctx.fillStyle = "#6a5830";
         ctx.beginPath();
-        ctx.moveTo(x - rw, cy + 8);
-        ctx.quadraticCurveTo(x - rw * 0.7, cy - rh, x, cy - rh * 0.15);
-        ctx.quadraticCurveTo(x + rw * 0.7, cy - rh, x + rw, cy + 8);
-        ctx.closePath();
+        ctx.ellipse(x, cy + 2, rw, rh, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = "rgba(28, 20, 10, 0.38)";
+        ctx.fillStyle = "#1a140c";
         ctx.beginPath();
-        ctx.ellipse(x, cy + 2, rw * 0.58, rh * 0.55, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, cy + 4, rw * 0.62, rh * 0.72, 0, 0, Math.PI * 2);
         ctx.fill();
-        sites.push({ x, y: cy + 4, hw: rw, hh: rh * 2, footY: ridgeY });
-        x += rw * 2.4 + 70 + hash2(seed, 275 + m) * 70;
+        ctx.fillStyle = "rgba(40, 28, 12, 0.55)";
+        ctx.beginPath();
+        ctx.ellipse(x + 2, cy + 6, rw * 0.38, rh * 0.42, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = pair[0];
+        ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.ellipse(x, cy + 1, rw * 0.98, rh * 0.92, 0, Math.PI, Math.PI * 2);
+        ctx.stroke();
+        sites.push({ x, y: cy + 6, hw: rw, hh: rh * 2, footY: ridgeY });
+        x += rw * 2.2 + 56 + hash2(seed, 275 + m) * 60;
         m++;
       }
     } else if (lang === "angel") {
@@ -6037,13 +6043,24 @@
       while (x < OCEAN.w - 40) {
         const n = 3 + ((hash2(seed, 300 + m) * 3) | 0);
         for (let g = 0; g < n; g++) {
-          const gx = x + g * (16 + hash2(seed, 305 + m + g) * 10);
-          const foot = ridgeY - 1;
-          const hw = 10 + hash2(seed, 310 + m + g) * 8;
-          const hh = 36 + hash2(seed, 320 + m + g) * 28;
-          sites.push(paintDuneLobe(gx, foot, hw, hh, seed + 500 + m * 17 + g, pair, (id.stamp + 2 + g) % 8));
+          const gx = x + g * (14 + hash2(seed, 305 + m + g) * 9);
+          const foot = ridgeY;
+          const hh = 42 + hash2(seed, 320 + m + g) * 34;
+          const lean = (hash2(seed, 310 + m + g) - 0.5) * 16;
+          plantInSand(gx, foot, 9, 4, 0.35);
+          ctx.strokeStyle = hash2(seed, 312 + g) > 0.5 ? "#2a6a40" : "#1e4a30";
+          ctx.lineWidth = 2.4 + hash2(seed, 314 + g) * 1.6;
+          ctx.beginPath();
+          ctx.moveTo(gx, foot);
+          ctx.quadraticCurveTo(gx + lean * 0.4, foot - hh * 0.45, gx + lean, foot - hh);
+          ctx.stroke();
+          ctx.fillStyle = hash2(seed, 316 + g) > 0.45 ? "#3d8b4a" : "#c8a040";
+          ctx.beginPath();
+          ctx.ellipse(gx + lean, foot - hh - 2, 7 + hash2(seed, 318 + g) * 5, 11 + hash2(seed, 319 + g) * 6, lean * 0.04, 0, Math.PI * 2);
+          ctx.fill();
+          sites.push({ x: gx, y: foot - 4, hw: 12, hh, footY: ridgeY });
         }
-        x += 130 + n * 18 + hash2(seed, 330 + m) * 90;
+        x += 120 + n * 16 + hash2(seed, 330 + m) * 80;
         m++;
       }
     } else {
