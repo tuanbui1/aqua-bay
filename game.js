@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -392,10 +392,36 @@
     const sy = opt.scaleY == null ? 1 : opt.scaleY;
     if (sx !== 1 || sy !== 1) ctx.scale(sx, sy);
     if (opt.rot) ctx.rotate(opt.rot);
-    // Water fish: painted edges only. No source-atop wash on the dest.
+    // Water fish: painted edges only. No source-atop wash on the dest
+    // (C59 scratch-pad isolation). Depth tint + 1px sprite AA live on
+    // the pad so they cannot leave a pale dest-rect.
     if (!incoming && !litLand) {
       ctx.filter = "none";
-      ctx.drawImage(src, sx0, sy0, sw0, sh0, -c.ax * sc, -c.ay * sc, c.w * sc, c.h * sc);
+      if (!opt.water) {
+        ctx.drawImage(src, sx0, sy0, sw0, sh0, -c.ax * sc, -c.ay * sc, c.w * sc, c.h * sc);
+        ctx.restore();
+        return true;
+      }
+      const dw = Math.max(1, Math.ceil(c.w * sc));
+      const dh = Math.max(1, Math.ceil(c.h * sc));
+      const pad = 2;
+      const g = blitScratch(dw + pad * 2, dh + pad * 2);
+      g.globalAlpha = 0.3;
+      g.drawImage(src, sx0, sy0, sw0, sh0, pad - 0.55, pad, dw, dh);
+      g.drawImage(src, sx0, sy0, sw0, sh0, pad + 0.55, pad, dw, dh);
+      g.drawImage(src, sx0, sy0, sw0, sh0, pad, pad - 0.55, dw, dh);
+      g.drawImage(src, sx0, sy0, sw0, sh0, pad, pad + 0.55, dw, dh);
+      g.globalAlpha = 1;
+      g.drawImage(src, sx0, sy0, sw0, sh0, pad, pad, dw, dh);
+      const deep = state.scene === "ocean" ? clamp((y - 240) / 1700, 0, 0.7) : 0.1;
+      g.globalCompositeOperation = "source-atop";
+      const tg = g.createLinearGradient(pad, pad, pad, dh + pad);
+      tg.addColorStop(0, "rgba(170, 226, 236, " + (0.03 + deep * 0.05) + ")");
+      tg.addColorStop(1, "rgba(6, 26, 42, " + (0.08 + deep * 0.26) + ")");
+      g.fillStyle = tg;
+      g.fillRect(0, 0, dw + pad * 2, dh + pad * 2);
+      g.globalCompositeOperation = "source-over";
+      ctx.drawImage(blitPad, 0, 0, dw + pad * 2, dh + pad * 2, -c.ax * sc - pad, -c.ay * sc - pad, dw + pad * 2, dh + pad * 2);
       ctx.restore();
       return true;
     }
@@ -5221,12 +5247,8 @@
         const c = makeOff(240, 40);
         paintWoodTile(c, false);
         const g = c.getContext("2d");
-        g.fillStyle = i % 2 ? "rgba(40, 18, 8, 0.10)" : "rgba(255, 220, 150, 0.08)";
+        g.fillStyle = i % 2 ? "rgba(40, 18, 8, 0.06)" : "rgba(255, 220, 150, 0.05)";
         g.fillRect(0, 0, 240, 40);
-        if (i % 3 === 0) {
-          g.fillStyle = "rgba(20, 80, 72, 0.10)";
-          g.fillRect(40, 8, 80, 24);
-        }
         paint.planks.push(c);
       }
       paintCloudTile(paint.clouds);
@@ -5585,7 +5607,44 @@
   function waterlineY(x, y, t) {
     return y + Math.sin(x * 0.026 + t * 1.35) * 6.5 + Math.sin(x * 0.07 - t * 0.9) * 2.8;
   }
-  function drawBayWater(x, y, w, h, t, teal) {
+  function appendDeckPoly(d) {
+    if (d.taper) {
+      const topW = d.w * (d.topW != null ? d.topW : 0.56);
+      const inset = (d.w - topW) / 2;
+      ctx.moveTo(d.x + inset, d.y);
+      ctx.lineTo(d.x + d.w - inset, d.y);
+      ctx.lineTo(d.x + d.w + 2, d.y + d.h);
+      ctx.lineTo(d.x - 2, d.y + d.h);
+      ctx.closePath();
+    } else {
+      ctx.rect(d.x, d.y, d.w, d.h);
+    }
+  }
+  function clipOutDecks(decks) {
+    if (!decks || !decks.length) return;
+    ctx.beginPath();
+    ctx.rect(-8000, -8000, 16000, 16000);
+    for (let i = 0; i < decks.length; i++) appendDeckPoly(decks[i]);
+    ctx.clip("evenodd");
+  }
+  function shopDryDecks() {
+    // Leave a thin front lip so water can kiss the deck edge.
+    const lip = 10;
+    const decks = [
+      { x: 90, y: 80, w: 1580, h: 300 },
+      { x: 800, y: 360, w: 176, h: 530 - lip, taper: true, topW: 0.56 },
+      { x: 156, y: 380, w: 172, h: 240 },
+      { x: 1272, y: 380, w: 188, h: 246 },
+      { x: 304, y: 668, w: 148, h: 78 },
+      { x: 500, y: 890, w: 760, h: 130 - lip },
+    ];
+    if (galleryOpen()) {
+      decks.push({ x: 1688, y: 80, w: 524, h: 300 });
+      decks.push({ x: 1760, y: 360, w: 200, h: 530 - lip, taper: true, topW: 0.58 });
+    }
+    return decks;
+  }
+  function drawBayWater(x, y, w, h, t, teal, dry) {
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(x - 10, y + h + 12);
@@ -5596,6 +5655,9 @@
     ctx.lineTo(x + w + 10, y + h + 12);
     ctx.closePath();
     ctx.clip();
+    // Wet wash / caustics / glitter stay in the water. Dry boards are
+    // punched out so a refraction band cannot sweep the deck.
+    clipOutDecks(dry);
     const g = ctx.createLinearGradient(x, y, x, y + h);
     if (teal) {
       g.addColorStop(0, "#8af0e6");
@@ -5704,7 +5766,9 @@
     ctx.fillRect(x, y + h * 0.38, w, h * 0.62);
     ctx.restore();
   }
-  function drawWetWaterline(x, y, w, t) {
+  function drawWetWaterline(x, y, w, t, dry) {
+    ctx.save();
+    clipOutDecks(dry);
     const a = ATLAS.waterline;
     const b = ATLAS.waterline2 || a;
     if (ART.ready && a) {
@@ -5721,6 +5785,7 @@
       ctx.restore();
     }
     drawFoamBand(x - 6, y + 4, w + 12, t);
+    ctx.restore();
   }
   function drawPierBoards(x, y, w, h, opts) {
     ensurePaint();
@@ -5732,6 +5797,7 @@
     const wetY = opts && opts.wetY;
     const teal = !!(opts && opts.teal);
     const tile = teal ? paint.woodTeal : paint.wood;
+    const alignY = opts && opts.alignY != null ? Math.round(opts.alignY) : y;
     const taper = !!(opts && opts.taper) || (h > w * 1.85);
     const topW = taper ? w * (opts && opts.topW != null ? opts.topW : 0.56) : w;
     ctx.save();
@@ -5762,8 +5828,9 @@
     }
     ctx.fillStyle = under;
     ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
-    const sheets = paint.planks;
-    for (let row = 0, yy = y; yy < y + h; row++, yy += plank) {
+    const startY = alignY + Math.floor((y - alignY) / plank) * plank;
+    for (let yy = startY; yy < y + h; yy += plank) {
+      const row = Math.round((yy - alignY) / plank);
       const ph = Math.min(plank + 1, y + h - yy);
       if (ph <= 0) break;
       const u = taper ? clamp((yy - y) / Math.max(1, h), 0, 1) : 1;
@@ -5777,16 +5844,10 @@
       while (sx < rowX + rowW + 8) {
         const pw = 220 + Math.round(hash2(row * 19 + n * 13, 1) * 170) + ((row + n * 5) % 5) * 14;
         const overlap = 14;
-        // One honey-pine family so rows are not a stack of unmatched
-        // atlas colors (pale / teak / amber bands). Unique boards via
-        // flip, length, wear, and a rare sibling tile.
-        const pick = hash2(row * 17 + n * 9, 4);
-        const pc = tile || (sheets && sheets[0]);
-        const src = (sheets && sheets.length)
-          ? (pick > 0.78 && sheets[1] ? sheets[1]
-            : pick < 0.14 && sheets[4] ? sheets[4]
-            : pc)
-          : pc;
+        // One honey-pine tile. Sibling atlas cells (pale / teak / amber)
+        // left rectangular patches whose edges cut the grain.
+        const src = tile;
+        const grade = hash2(row * 17 + n * 9, 4);
         ctx.save();
         if (src) {
           const pad = 2;
@@ -5801,13 +5862,30 @@
           }
         }
         ctx.restore();
+        if (grade > 0.72) {
+          ctx.fillStyle = "rgba(255, 214, 150, 0.035)";
+          ctx.fillRect(sx, yy, pw, ph);
+        } else if (grade < 0.16) {
+          ctx.fillStyle = "rgba(70, 36, 12, 0.04)";
+          ctx.fillRect(sx, yy, pw, ph);
+        }
         const wear = hash2(row, n + 3);
         if (wear > 0.78) {
-          ctx.fillStyle = "rgba(255, 226, 160," + (0.03 + wear * 0.03) + ")";
-          ctx.fillRect(sx + pw * 0.12, yy, pw * 0.4, ph * 0.32);
+          ctx.strokeStyle = "rgba(255, 226, 160, 0.12)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          const gy = yy + 3 + hash2(n, 9) * (ph * 0.5);
+          ctx.moveTo(sx + 12, gy);
+          ctx.lineTo(sx + pw * 0.55, gy + 1);
+          ctx.stroke();
         } else if (wear < 0.16) {
-          ctx.fillStyle = "rgba(40, 18, 8, 0.08)";
-          ctx.fillRect(sx + pw * 0.22, yy, pw * 0.28, ph);
+          ctx.strokeStyle = "rgba(40, 18, 8, 0.14)";
+          ctx.lineWidth = 1.1;
+          ctx.beginPath();
+          const gy = yy + ph * 0.45;
+          ctx.moveTo(sx + pw * 0.18, gy);
+          ctx.lineTo(sx + pw * 0.62, gy + 0.8);
+          ctx.stroke();
         }
         if (teal) {
           ctx.fillStyle = "rgba(36, 82, 68, 0.06)";
@@ -5857,36 +5935,23 @@
     ctx.fillRect(x, y, w, h);
     ctx.restore();
     if (wetY != null) {
-      // Clip to this deck. Title boardwalk is 72px — an unclipped 90px
-      // wash painted sky/water bands across the boards and the bay.
+      // Thin front lip only. The old 36+16 wash + sweeping sheen +
+      // waterline tiles painted a refraction band across dry boards.
       ctx.save();
       ctx.beginPath();
       ctx.rect(x, y, w, h);
       ctx.clip();
-      const wetTop = Math.max(y, wetY - 36);
-      const wetBot = Math.min(y + h, wetY + 16);
-      const wetH = wetBot - wetTop;
-      if (wetH > 2) {
-        const wet = ctx.createLinearGradient(x, wetTop, x, wetBot);
+      const lip = 10;
+      const lipBot = Math.min(y + h, (wetY | 0) + 4);
+      const lipTop = Math.max(y, lipBot - lip);
+      const wetH = lipBot - lipTop;
+      if (wetH > 1) {
+        const wet = ctx.createLinearGradient(x, lipTop, x, lipBot);
         wet.addColorStop(0, "rgba(18,70,90,0)");
-        wet.addColorStop(0.38, "rgba(16,70,88,0.18)");
-        wet.addColorStop(0.72, "rgba(10,48,64,0.42)");
-        wet.addColorStop(1, "rgba(6,24,34,0.58)");
+        wet.addColorStop(0.55, "rgba(16,60,78,0.10)");
+        wet.addColorStop(1, "rgba(10,40,52,0.22)");
         ctx.fillStyle = wet;
-        ctx.fillRect(x, wetTop, w, wetH);
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-        const t = state.time || 0;
-        const sheen = ctx.createLinearGradient(x + ((t * 46) % (w + 160)) - 80, wetY - 18, x + ((t * 46) % (w + 160)) + 90, wetY + 8);
-        sheen.addColorStop(0, "rgba(200,240,255,0)");
-        sheen.addColorStop(0.45, "rgba(220,250,255,0.14)");
-        sheen.addColorStop(1, "rgba(180,230,240,0)");
-        ctx.fillStyle = sheen;
-        ctx.fillRect(x, Math.max(y, wetY - 16), w, 22);
-        ctx.fillStyle = "rgba(180,230,240,0.08)";
-        ctx.fillRect(x, Math.max(y, wetY - 6), w, 8);
-        ctx.restore();
-        drawWetWaterline(x, Math.min(wetY, y + h - 6) - 8, w, state.time || 0);
+        ctx.fillRect(x, lipTop, w, wetH);
       }
       ctx.restore();
     }
@@ -6810,21 +6875,26 @@
     shadow(x, y + 3, moving ? 13 : 11, moving ? 4.8 : 4.0);
     const fi = moving ? gaitIndex(walkPhase, 6) : 0;
     const skipAtlas = !!p.paintOnly;
+    const skipCard = skipAtlas || skin === "dino";
     if (!skipAtlas && moving) {
       if (blitGait(skin, "walk", fi, x, plant, {
         scaleX: faceS * squashX, scaleY: squashY + turnThin * 0.08,
         rot: lean * 0.16, scale: blitSc, flat: true,
       })) return;
-    } else if (!skipAtlas && (
-      blit(skin + "_card", x, plant, {
+    } else if (
+      (!skipCard && blit(skin + "_card", x, plant, {
         scaleX: faceS, scaleY: 1 + turnThin * 0.06,
         rot: lean * 0.1, scale: blitSc, flat: true,
-      }) ||
-      blit(skin + "_stand", x, plant, {
+      })) ||
+      (!skipAtlas && blit(skin + "_stand", x, plant, {
         scaleX: faceS, scaleY: 1 + turnThin * 0.06,
         rot: lean * 0.1, scale: blitSc, flat: true,
-      })
-    )) return;
+      })) ||
+      (skin === "dino" && blit("dino_walk0", x, plant, {
+        scaleX: faceS, scaleY: 1 + turnThin * 0.06,
+        rot: lean * 0.1, scale: blitSc, flat: true,
+      }))
+    ) return;
     ctx.save();
     ctx.translate(x, plant);
     ctx.scale(flip * short, short);
@@ -6837,30 +6907,28 @@
       ctx.beginPath(); ctx.ellipse(5.2, 24.2 - walk * 3.4, 3.8, 1.7, 0, 0, Math.PI * 2); ctx.fill();
       drawLimbChain(-11, 1, 0.28 + swing, 7.2, 0.35, 6.4, 2.35, "#3d9a4a", "#2a6a34");
       drawLimbChain(11, 1, -0.28 - swing, 7.2, -0.35, 6.4, 2.35, "#3d9a4a", "#2a6a34");
-      const dinoBody = ctx.createLinearGradient(-4, -10, 8, 12);
-      dinoBody.addColorStop(0, "#4aa454");
-      dinoBody.addColorStop(0.55, "#3a8a44");
-      dinoBody.addColorStop(1, "#2a6a34");
-      ctx.fillStyle = dinoBody;
+      ctx.fillStyle = "#3a8a44";
       ctx.beginPath();
       ctx.moveTo(-11, -8);
       ctx.quadraticCurveTo(-13, 2, -9, 12);
       ctx.lineTo(9, 12);
       ctx.quadraticCurveTo(13, 2, 11, -8);
       ctx.closePath(); ctx.fill();
-      // Matte paint dabs — same kids-paint read as Reef / Skip, not a glossy toy.
-      ctx.fillStyle = "rgba(30, 74, 36, 0.24)";
+      // Matte kids-paint dabs — same read as Reef / Skip, not a glossy toy.
+      ctx.fillStyle = "rgba(30, 74, 36, 0.32)";
       ctx.beginPath(); ctx.ellipse(-3.2, 2, 3.4, 2.2, -0.3, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(4.4, 6, 2.8, 1.8, 0.4, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "rgba(210, 190, 120, 0.10)";
-      ctx.beginPath(); ctx.ellipse(-2, -4, 3.6, 2.0, -0.4, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#2f7a3a";
       ctx.beginPath(); ctx.ellipse(-4, -1, 2.2, 1.6, 0, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(5, 3, 2.5, 1.7, 0.4, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#b8c4ce";
+      ctx.fillStyle = "#e85d4c";
+      ctx.beginPath(); ctx.arc(3.4, -3.2, 1.5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#ffd24a";
+      ctx.beginPath(); ctx.arc(-5.2, 5.2, 1.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#8a96a0";
       roundRect(-17, -9, 8, 16, 3); ctx.fill();
-      ctx.fillStyle = "#7a8c9c"; ctx.fillRect(-15.2, -9, 3.4, 16);
-      ctx.fillStyle = "#46b35a";
+      ctx.fillStyle = "#5a6874"; ctx.fillRect(-15.2, -9, 3.4, 16);
+      ctx.fillStyle = "#3a8a44";
       ctx.save(); ctx.translate(-10, 6); ctx.rotate(-0.55 + walk * 0.18);
       ctx.beginPath();
       ctx.moveTo(0, 0); ctx.quadraticCurveTo(-10, 4, -17, 1);
@@ -6869,17 +6937,16 @@
       ctx.save();
       ctx.translate(moving ? 1.4 : 0, 0);
       ctx.rotate(lean * 0.2);
-      ctx.fillStyle = "#3d9a4a";
+      ctx.fillStyle = "#2f7a3a";
       fillCapsule(0, -9, 0, -13.4, 2.5);
-      ctx.fillStyle = "#46b35a";
+      ctx.fillStyle = "#3a8a44";
       ctx.beginPath(); ctx.ellipse(0, -18.2, 8.2, 8.8, 0, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(8.8, -16.2, 5.8, 3.5, 0.12, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#2a1a12";
       ctx.beginPath(); ctx.arc(-2.4, -18.4, 1.2, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(2.6, -18.2, 1.2, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "rgba(255, 236, 200, 0.38)";
-      ctx.beginPath(); ctx.arc(-3.1, -19.2, 0.4, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(10.2, -16.6, 0.65, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "rgba(255, 236, 200, 0.14)";
+      ctx.beginPath(); ctx.arc(-3.1, -19.2, 0.35, 0, Math.PI * 2); ctx.fill();
       drawMaskVisor(1.4, -18.6, 5.4, 3.5, false);
       drawSnorkel(4.2, -22.8, 6.2, -31.4);
       ctx.restore();
@@ -7646,8 +7713,8 @@
   // ===== SHOP SCENE =====
   function drawEastGallery() {
     ctx.save();
-    drawPierBoards(1688, 80, 524, 300, { plank: 26, teal: !!state.unlocked[1] });
-    drawPierBoards(1760, 360, 200, 530, { plank: 24, wetY: 890, teal: !!state.unlocked[1], taper: true, topW: 0.58 });
+    drawPierBoards(1688, 80, 524, 300, { plank: 26, teal: !!state.unlocked[1], alignY: 80 });
+    drawPierBoards(1760, 360, 200, 530, { plank: 26, wetY: 890, teal: !!state.unlocked[1], taper: true, topW: 0.58, alignY: 80 });
     drawDeckPosts(1760, 360, 200, 530, 4);
     ctx.fillStyle = "#c4483a"; ctx.fillRect(1680, 50, 540, 8);
     const a = worldLabelAlpha(1860, 86, 160, 22);
@@ -7669,8 +7736,9 @@
     drawShopHarbor(!!state.unlocked[1]);
     // Bay water starts under the distant shore so the mid-shop sides are
     // ocean (foam / depth), not town tiles floating on the surface.
-    drawBayWater(-8, 772, shopW() + 16, SHOP.h - 764, state.time, !!state.unlocked[1]);
-    drawWetWaterline(-8, 886, shopW() + 16, state.time);
+    const dryDecks = shopDryDecks();
+    drawBayWater(-8, 772, shopW() + 16, SHOP.h - 764, state.time, !!state.unlocked[1], dryDecks);
+    drawWetWaterline(-8, 886, shopW() + 16, state.time, dryDecks);
     for (const t of dockTeasers) {
       if (onDryWood(t.x, t.y) || t.y < 1080) continue;
       ctx.save();
@@ -7695,21 +7763,21 @@
       if (py < 1008) drawPierPost(px, py, sc, id);
     }
     const teal = !!state.unlocked[1];
-    drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal });
+    drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal, alignY: 80 });
     const midA = midWoodAlpha();
     // Aisle pier stays visible from the dock — hiding it made the walk to
     // the plaza look like crossing the painted sky.
     ctx.save();
     ctx.globalAlpha = Math.max(0.82, midA);
-    drawPierBoards(800, 360, 176, 530, { plank: 24, wetY: 890, teal: teal, taper: true, topW: 0.56 });
+    drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
     drawWalkRail(800, 360, 176, 530, true);
     ctx.restore();
     if (midA > 0.04) {
       ctx.save();
       ctx.globalAlpha = midA;
-      drawPierBoards(156, 380, 172, 240, { plank: 20, teal: teal });
-      drawPierBoards(1272, 380, 188, 246, { plank: 20, teal: teal });
-      drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal });
+      drawPierBoards(156, 380, 172, 240, { plank: 20, teal: teal, alignY: 80 });
+      drawPierBoards(1272, 380, 188, 246, { plank: 20, teal: teal, alignY: 80 });
+      drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal, alignY: 80 });
       ctx.restore();
     }
     drawPierShade();
@@ -10146,9 +10214,9 @@
         plate.addColorStop(0.46, "#3d8b9a");
         plate.addColorStop(1, "#d4a070");
       } else {
-        plate.addColorStop(0, "#f4d48a");
-        plate.addColorStop(0.36, "#8ab8c4");
-        plate.addColorStop(1, "#c4894a");
+        plate.addColorStop(0, "#f2c878");
+        plate.addColorStop(0.42, "#d07850");
+        plate.addColorStop(1, "#b07a42");
       }
       ctx.fillStyle = plate;
       ctx.fillRect(x + 6, cy + 8, cardW - 12, cardH * 0.64);
@@ -10156,7 +10224,7 @@
         const crops = {
           skip: [0.00, 0.06, 0.46, 0.70],
           reef: [0.28, 0.00, 0.50, 0.68],
-          dino: [0.50, 0.32, 0.48, 0.66],
+          dino: [0.64, 0.00, 0.36, 0.58],
         };
         const [sx, sy, sw, sh] = crops[id];
         ctx.globalAlpha = 0.92;
@@ -10174,9 +10242,9 @@
         ctx.fillRect(x + 6, cy + 8 + cardH * 0.46, cardW - 12, cardH * 0.20);
         drawPierBoards(x + 4, cy + 8 + cardH * 0.50, cardW - 8, cardH * 0.16, { plank: 14, wetY: cy + 8 + cardH * 0.58 });
       } else {
-        // Dusk harbor strip: town sits on a wide pier, not a teal slab.
-        drawPierBoards(x + 3, cy + 8 + cardH * 0.42, cardW - 6, cardH * 0.24, {
-          plank: 10, wetY: cy + 8 + cardH * 0.56,
+        // Dusk harbor strip: right-side town + wide pier, not a teal slab.
+        drawPierBoards(x + 3, cy + 8 + cardH * 0.44, cardW - 6, cardH * 0.22, {
+          plank: 10,
         });
         ctx.save();
         ctx.translate(x + 18, cy + 8 + cardH * 0.60);
@@ -10205,6 +10273,7 @@
         skin: id, vx: 0, vy: 0, facing: 0.08,
         walkPhase: 0, lean: 0.05, bob: Math.sin(state.time * 1.5 + i) * 0.6,
         faceS: 1, drawScale: id === "dino" ? 1.82 : 1.65, paintOnly: id === "dino",
+
       });
       ctx.fillStyle = "#fff6e8";
       ctx.font = "800 16px Fredoka, sans-serif";
@@ -10220,21 +10289,25 @@
   function drawTitle() {
     ensurePaint();
     const waterY = H * 0.50;
+    const titleDry = [{ x: -8, y: H - 64, w: W + 16, h: 52 }];
     if (ATLAS.sky && ART.ready) blitTile("sky", 0, -20, W, 200);
     drawTownSkyline(0, waterY, W, waterY + 8, false);
-    drawBayWater(-20, waterY - 10, W + 40, H - waterY + 28, state.time, false);
+    drawBayWater(-20, waterY - 10, W + 40, H - waterY + 28, state.time, false, titleDry);
     ctx.save();
+    clipOutDecks(titleDry);
     const wash = ctx.createLinearGradient(0, H * 0.55, 0, H);
     wash.addColorStop(0, "rgba(8, 40, 56, 0)");
     wash.addColorStop(1, "rgba(8, 30, 42, 0.28)");
     ctx.fillStyle = wash;
     ctx.fillRect(0, H * 0.55, W, H * 0.45);
-    ctx.restore();
     drawFoamBand(-10, H - 78, W + 20, state.time);
-    drawPierBoards(-8, H - 64, W + 16, 72, { plank: 30, wetY: H - 12 });
+    ctx.restore();
+    drawPierBoards(-8, H - 64, W + 16, 72, { plank: 30, wetY: H - 8 });
     const titlePosts = [[78, 0.78, 21], [268, 1.36, 22], [1012, 0.88, 23], [1218, 1.28, 24]];
     for (const [px, sc, id] of titlePosts) drawPierPost(px + 7, H - 52, sc, id);
-    ctx.save(); ctx.globalCompositeOperation = "lighter";
+    ctx.save();
+    clipOutDecks(titleDry);
+    ctx.globalCompositeOperation = "lighter";
     for (let i = 0; i < 5; i++) {
       ctx.fillStyle = "rgba(255,236,180," + (0.045 + 0.025 * Math.sin(state.time + i)) + ")";
       ctx.beginPath();
@@ -10284,7 +10357,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 62", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 63", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -10325,7 +10398,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 62", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 63", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -10342,7 +10415,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 62", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 63", W / 2, 632);
     }
   }
 
