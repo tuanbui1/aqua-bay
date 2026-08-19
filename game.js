@@ -104,8 +104,8 @@
   const DIVE_ZONE = { x: 520, y: 980, w: 720, h: 160 };
   // East dressing sits on painted wood, fully left of the reserved well.
   // Hut / POP / crates used to straddle the C70 clip and read as sawed.
-  const BAIT_HUT = { x: 1362, y: 548 };
-  const POP_VEND = { x: 1290, y: 548 };
+  const BAIT_HUT = { x: 1316, y: 548 };
+  const POP_VEND = { x: 1292, y: 548 };
   const EAST_CRATES = { x: 1188, y: 936 };
   const AISLE = { x: 802, y: 318, w: 156, h: 560 };
   const EXPEDITION_COST = 35;
@@ -2509,6 +2509,9 @@
   function inWorldPlayfield(sx) {
     return sx < viewWidth();
   }
+  function playfieldWorldRight() {
+    return cam.x + (viewWidth() - viewCenterX()) / Math.max(0.001, cam.z);
+  }
   function hudGutterLeft() {
     return railGutterLeft();
   }
@@ -2537,15 +2540,15 @@
   }
   // Furniture near the reserved well fades as a whole sprite before the
   // hard clip, so the hut / POP / crates never read as sawed in half.
-  function railPropAlpha(wx, wy, rad) {
-    const s = worldToScreen(wx, wy);
-    const r = (rad == null ? 48 : rad) * Math.max(0.6, cam.z || 1);
-    const fade = 28;
-    const rightEdge = viewWidth() - 3;
-    return clamp((rightEdge - (s.x + r)) / fade, 0, 1);
+  // Compare world AABB to the rail — screen-radius guesses were too tight
+  // and still let the roof / boards meet the gutter.
+  function railPropAlpha(wx, halfW) {
+    const fade = 22;
+    const limit = playfieldWorldRight() - 6;
+    return clamp((limit - (wx + halfW)) / fade, 0, 1);
   }
-  function paintRailProp(wx, wy, rad, draw) {
-    const a = railPropAlpha(wx, wy, rad);
+  function paintRailProp(wx, halfW, draw) {
+    const a = railPropAlpha(wx, halfW);
     if (a <= 0.04) return false;
     ctx.save();
     ctx.globalAlpha *= a;
@@ -8511,7 +8514,10 @@
       }
     }
     const teal = !!state.unlocked[1];
-    drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal, alignY: 80 });
+    {
+      const plazaW = Math.max(200, Math.min(1580, playfieldWorldRight() - 4 - 90));
+      drawPierBoards(90, 80, plazaW, 300, { plank: 26, teal: teal, alignY: 80 });
+    }
     const midA = midWoodAlpha();
     // Aisle pier stays visible from the dock — hiding it made the walk to
     // the plaza look like crossing the painted sky.
@@ -8524,7 +8530,11 @@
       ctx.save();
       ctx.globalAlpha = midA;
       drawPierBoards(156, 380, 172, 240, { plank: 20, teal: teal, alignY: 80 });
-      drawPierBoards(1272, 380, 188, 246, { plank: 20, teal: teal, alignY: 80 });
+      {
+        // End the east landing at the rail so the hut pad is not sawed.
+        const eastW = Math.max(0, Math.min(188, playfieldWorldRight() - 4 - 1272));
+        if (eastW > 16) drawPierBoards(1272, 380, eastW, 246, { plank: 20, teal: teal, alignY: 80 });
+      }
       drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal, alignY: 80 });
       ctx.restore();
     }
@@ -8703,7 +8713,7 @@
     paintWorldSprite(168, 780, 36, function () { drawPot(168, 780, "#3aa35a", 1.7); });
     paintWorldSprite(1588, 780, 36, function () { drawPot(1588, 780, "#2e8b4a", 1.75); });
     paintWorldSprite(381, 748, 52, function () { drawCrateStack(360, 760); });
-    paintRailProp(EAST_CRATES.x + 21, EAST_CRATES.y - 12, 52, function () {
+    paintRailProp(EAST_CRATES.x + 21, 42, function () {
       drawCrateStack(EAST_CRATES.x, EAST_CRATES.y);
     });
     paintWorldSprite(1024, 961, 36, function () { drawCrate(1004, 948, 40, 26); });
@@ -8722,8 +8732,8 @@
       }
     }
     paintWorldSprite(1196, 952, 32, function () { drawAnchor(1196, 952); });
-    paintRailProp(POP_VEND.x, POP_VEND.y + 38, 42, function () { drawVending(POP_VEND.x, POP_VEND.y); });
-    paintRailProp(BAIT_HUT.x, BAIT_HUT.y + 36, 62, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
+    paintRailProp(POP_VEND.x, 22, function () { drawVending(POP_VEND.x, POP_VEND.y); });
+    paintRailProp(BAIT_HUT.x, 62, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
     drawSkiff(pierLife.skiff);
     drawGull(pierLife.gull);
     drawGull(pierLife.gull2);
