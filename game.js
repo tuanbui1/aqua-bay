@@ -6394,6 +6394,7 @@
     const walk = passing;
     const swing = passing * (moving ? 0.55 : 0.18);
     const faceS = p.faceS != null ? p.faceS : (Math.cos(facing) < -0.1 ? -1 : 1);
+    const flip = faceS < 0 ? -1 : 1;
     const turnThin = 1 - Math.abs(faceS);
     const lean = leanAmt * (faceS >= 0 ? 1 : -1);
     const short = skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1;
@@ -9580,7 +9581,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 53", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 54", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -9620,7 +9621,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 53", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 54", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -9637,7 +9638,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 53", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 54", W / 2, 632);
     }
   }
 
