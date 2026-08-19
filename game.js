@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -534,7 +534,7 @@
     tillSlip: null,
     escapeBar: null, escapeGate: 0,
   };
-  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, faceS: 1, pitch: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0 };
+  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, route: null, blockT: 0, walkPhase: 0, lean: 0, faceS: 1, pitch: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0 };
   const cam = { x: 880, y: 920, z: 1, rail: 28 };
   const oceanFish = [];
   const tankFish = SPECIES.map(() => []);
@@ -912,7 +912,7 @@
       camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, camTillHold: 0, almostSfxAt: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     state.hasSave = false;
-    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.faceS = 1; player.pitch = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
+    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.route = null; player.blockT = 0; player.walkPhase = 0; player.lean = 0; player.faceS = 1; player.pitch = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
     cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
@@ -1208,8 +1208,13 @@
     return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h));
   }
   function walkToDock() {
-    player.goto = dockWalkPoint();
     player.pendingAct = null;
+    setWalkDest(dockWalkPoint());
+    // C67 — do not pin the camera on the till while the walker heads back
+    // to the pier. A 1.9s hold made the auto-walk look like a freeze, and
+    // the next Space / → DIVE / ArrowRight then cancelled a dead straight
+    // line into the mid-left wood pocket.
+    if ((state.camTillHold || 0) > 0.28) state.camTillHold = 0.28;
   }
   function cashNeedsCollect() {
     return tillWaiting() && !cashierHandlingIt();
@@ -1224,6 +1229,8 @@
   function wantTillFrame() {
     if (state.scene !== "shop") return false;
     if (state.bookOpen != null || (state.boatGlance || 0) > 0) return false;
+    const routeEnd = player.route && player.route.length ? player.route[player.route.length - 1] : player.goto;
+    if (isDockDest(routeEnd) || isDockDest(player.goto)) return false;
     if ((state.camTillHold || 0) > 0) return true;
     if (cashNeedsCollect()) return true;
     if (player.pendingAct && player.pendingAct.kind === "cash") return true;
@@ -2014,10 +2021,10 @@
       else if (state.mode === "play") state.mode = "pause";
       else if (state.mode === "pause" || state.mode === "help") state.mode = "play";
     }
-    if (e.key === " " || e.code === "Space" || e.key === "Enter") {
+    if (e.key === " " || e.code === "Space" || e.key === "Enter" || e.key === "e" || e.key === "E") {
       // Full bag + Space/Enter always surfaces, even with a walk target.
       if (state.mode === "play" && state.scene === "ocean" && bagIsFull() && !state.fadeDir) {
-        player.goto = null;
+        clearWalk();
         beginSurface();
       } else {
         tryAction({ fromKey: true });
@@ -2086,10 +2093,10 @@
           if (tankHit >= 0 && state.unlocked[tankHit] && bagCanStock(tankHit)) {
             intentWalk("stock", tankWalkPoint(tankHit), tankHit);
           } else {
-            player.goto = clickWalkTarget(w.x, w.y);
+            setWalkDest(clickWalkTarget(w.x, w.y));
           }
         } else {
-          player.goto = clickWalkTarget(w.x, w.y);
+          setWalkDest(clickWalkTarget(w.x, w.y));
         }
       }
     }
@@ -2274,7 +2281,7 @@
       player.x = 880; player.y = 920;
       cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28; cam.shopBand = null;
       state.camTillHold = 0;
-      player.goto = null;
+      clearWalk();
       if (state.tutorial === 0) state.didMove = false;
     }
     state.displayMoney = state.money;
@@ -2335,6 +2342,14 @@
     }
     if (state.bookOpen != null) return false;
     if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) { beginExpedition(); return true; }
+    // C67 — Space / E in the till glow always pockets. A leftover cash
+    // pendingAct used to stall tillDwell, so the first sale never cleared
+    // and dive stayed illegal.
+    if (state.scene === "shop" && fromKey && cashNeedsCollect()) {
+      if (inTillGlow()) { collectCash(); return true; }
+      intentWalk("cash", registerWalkPoint());
+      return true;
+    }
     if (state.scene === "shop" && (inDiveZone() || (clickOnDiveChip() && nearDivePad()))) {
       if (state.surfaceLock > 0) return fromKey;
       // Cash waiting: a walk-click toward the cashier must not dive.
@@ -2346,6 +2361,15 @@
       // World clicks only dive on the dock strip / DIVE chip — not a walk toward the till.
       if (!fromKey && !clickOnDiveStrip() && !clickOnDiveChip()) return false;
       beginDive();
+      return true;
+    }
+    // C67 — Space / E after the till must walk the pier back to the pad.
+    // Off the dock they used to no-op, so the objective froze on
+    // "Walk to the glowing dock" while the walker sat at the register.
+    if (state.scene === "shop" && fromKey && !bagHasStockable() && !cashNeedsCollect()) {
+      if (state.surfaceLock > 0) return true;
+      if (nearDivePad()) { beginDive(); return true; }
+      walkToDock();
       return true;
     }
     if (shouldSurface()) {
@@ -3359,6 +3383,7 @@
   function updatePlayer(dt) {
     const ocean = state.scene === "ocean";
     const max = ocean ? swimSpeed() : walkSpeed();
+    const ox = player.x, oy = player.y;
     let ax = 0, ay = 0;
     if (mouse.down) mouse.held += dt; else mouse.held = 0;
     if (keys.has("w") || keys.has("arrowup")) ay -= 1;
@@ -3367,12 +3392,12 @@
     if (keys.has("d") || keys.has("arrowright")) ax += 1;
     if (ax || ay) {
       const m = Math.hypot(ax, ay) || 1; ax /= m; ay /= m;
-      player.goto = null;
+      clearWalk();
     } else if (mouse.down && !mouse.ui && !mouse.acted && state.mode === "play" && mouse.held > 0.16) {
       if (state.scene === "ocean" && !bagIsFull()) {
         // Hold is scoop. Never dash or buoyancy-steer from the same drag.
       } else {
-        player.goto = null;
+        clearWalk();
         const w = screenToWorld(mouse.x, mouse.y);
         const dest = state.scene === "shop" ? snapToShopWalk(w.x, w.y) : w;
         const dx = dest.x - player.x, dy = dest.y - player.y, d = Math.hypot(dx, dy);
@@ -3381,18 +3406,27 @@
     } else if (player.goto && state.mode === "play") {
       const dx = player.goto.x - player.x, dy = player.goto.y - player.y, d = Math.hypot(dx, dy);
       if (d < 22) {
-        if (state.scene === "shop") {
+        if (player.route && player.route.length > 1) {
+          player.route.shift();
+          player.goto = player.route[0];
+        } else if (state.scene === "shop") {
           if (!performPendingAct()) {
             tryStockOnArrival();
             tryUnlockOnArrival();
           }
+          // stockTank may have handed us a new cashier walk — keep that dest.
+          if (player.goto && Math.hypot(player.goto.x - player.x, player.goto.y - player.y) < 22) {
+            clearWalk();
+            if (player.pendingAct && !canPerformAct(player.pendingAct)) player.pendingAct = null;
+          }
+        } else {
+          clearWalk();
         }
-        // stockTank may have handed us a new cashier walk — keep that dest.
-        if (player.goto && Math.hypot(player.goto.x - player.x, player.goto.y - player.y) < 22) {
-          player.goto = null;
-          if (player.pendingAct && !canPerformAct(player.pendingAct)) player.pendingAct = null;
-        }
-      } else { ax = dx / d; ay = dy / d; }
+      }
+      if (player.goto) {
+        const rdx = player.goto.x - player.x, rdy = player.goto.y - player.y, rd = Math.hypot(rdx, rdy);
+        if (rd > 8) { ax = rdx / rd; ay = rdy / rd; }
+      }
     }
     const accel = player.goto ? 2200 : 1650;
     player.vx += ax * accel * dt; player.vy += ay * accel * dt;
@@ -3443,6 +3477,31 @@
       }
     } else {
       constrainShop();
+      const stepped = Math.hypot(player.x - ox, player.y - oy);
+      if ((ax || ay) && stepped < 0.45) {
+        player.blockT = (player.blockT || 0) + dt;
+        if (player.blockT > 0.16) {
+          const tgt = currentGoal() && currentGoal().target;
+          if (tgt) {
+            const path = shopPath(ox, oy, tgt.x, tgt.y);
+            const n = path && path[0];
+            if (n) {
+              const pdx = n.x - ox, pdy = n.y - oy, pd = Math.hypot(pdx, pdy);
+              if (pd > 8) {
+                player.x = ox; player.y = oy;
+                player.vx += (pdx / pd) * 2200 * dt;
+                player.vy += (pdy / pd) * 2200 * dt;
+                const sp2 = Math.hypot(player.vx, player.vy);
+                if (sp2 > max) { player.vx *= max / sp2; player.vy *= max / sp2; }
+                player.x += player.vx * dt; player.y += player.vy * dt;
+                constrainShop();
+              }
+            }
+          }
+        }
+      } else {
+        player.blockT = 0;
+      }
       if (moving) {
         state.dustTimer -= dt;
         if (state.dustTimer <= 0) {
@@ -3498,6 +3557,68 @@
       if (d < bestD) { bestD = d; nx = cx; ny = cy; }
     }
     return { x: nx, y: ny };
+  }
+  function shopRectOverlap(a, b) {
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
+  function shopRectHas(rc, x, y) {
+    return x >= rc.x && x <= rc.x + rc.w && y >= rc.y && y <= rc.y + rc.h;
+  }
+  function shopPortal(a, b) {
+    const x0 = Math.max(a.x, b.x), x1 = Math.min(a.x + a.w, b.x + b.w);
+    const y0 = Math.max(a.y, b.y), y1 = Math.min(a.y + a.h, b.y + b.h);
+    return { x: (x0 + x1) * 0.5, y: (y0 + y1) * 0.5 };
+  }
+  function shopPath(sx, sy, dx, dy) {
+    const rects = shopWalkRects();
+    const start = snapToShopWalk(sx, sy);
+    const end = snapToShopWalk(dx, dy);
+    let si = -1, ei = -1;
+    for (let i = 0; i < rects.length; i++) {
+      if (si < 0 && shopRectHas(rects[i], start.x, start.y)) si = i;
+      if (ei < 0 && shopRectHas(rects[i], end.x, end.y)) ei = i;
+    }
+    if (si < 0 || ei < 0 || si === ei) return [end];
+    const prev = [];
+    for (let i = 0; i < rects.length; i++) prev[i] = -1;
+    const q = [si];
+    prev[si] = si;
+    for (let qi = 0; qi < q.length; qi++) {
+      const u = q[qi];
+      if (u === ei) break;
+      for (let v = 0; v < rects.length; v++) {
+        if (prev[v] >= 0 || v === u || !shopRectOverlap(rects[u], rects[v])) continue;
+        prev[v] = u;
+        q.push(v);
+      }
+    }
+    if (prev[ei] < 0) return [end];
+    const chain = [];
+    for (let v = ei; v !== si; v = prev[v]) chain.push(v);
+    chain.reverse();
+    const pts = [];
+    let cur = si;
+    for (let i = 0; i < chain.length; i++) {
+      pts.push(shopPortal(rects[cur], rects[chain[i]]));
+      cur = chain[i];
+    }
+    pts.push(end);
+    return pts;
+  }
+  function clearWalk() {
+    player.goto = null;
+    player.route = null;
+  }
+  function setWalkDest(pt) {
+    if (!pt) { clearWalk(); return; }
+    if (state.scene !== "shop") {
+      player.route = null;
+      player.goto = pt;
+      return;
+    }
+    const path = shopPath(player.x, player.y, pt.x, pt.y);
+    player.route = path;
+    player.goto = path && path[0] ? path[0] : pt;
   }
   function constrainShop() {
     const r = player.radius;
@@ -3630,14 +3751,19 @@
     } else {
       tryStockOnArrival();
     }
-    const pendingCash = player.pendingAct && player.pendingAct.kind === "cash";
-    if (tillWaiting() && inTillGlow() && !pendingCash && !cashierHandlingIt()) {
-      player.tillDwell = (player.tillDwell || 0) + (dt || 0);
-      if (player.tillDwell >= 0.3) {
+    if (tillWaiting() && inTillGlow() && !cashierHandlingIt()) {
+      if (player.pendingAct && player.pendingAct.kind === "cash") {
+        player.pendingAct = null;
         player.tillDwell = 0;
         collectCash();
+      } else {
+        player.tillDwell = (player.tillDwell || 0) + (dt || 0);
+        if (player.tillDwell >= 0.3) {
+          player.tillDwell = 0;
+          collectCash();
+        }
       }
-    } else if (!pendingCash) {
+    } else {
       player.tillDwell = 0;
     }
   }
@@ -3720,8 +3846,8 @@
     checkSessionGoals();
     if (!bagHasStockable() && state.registerCash > 0 && !cashierHandlingIt()) {
       const dest = registerWalkPoint();
-      player.goto = dest;
       player.pendingAct = { kind: "cash" };
+      setWalkDest(dest);
       seedPathCoins([[player.x, player.y], [520, 380], [dest.x, dest.y]], 3);
     }
   }
@@ -4132,8 +4258,8 @@
             state.sessionSales = (state.sessionSales | 0) + 1;
             if (!bagHasStockable() && cashNeedsCollect()) {
               if (!player.goto || isDockDest(player.goto)) {
-                player.goto = registerWalkPoint();
                 player.pendingAct = { kind: "cash" };
+                setWalkDest(registerWalkPoint());
               }
             }
             const usual = c.regular && (c.favorite == null || c.favorite === c.carry);
@@ -4552,7 +4678,7 @@
     const act = player.pendingAct;
     if (!act || !canPerformAct(act)) return false;
     player.pendingAct = null;
-    player.goto = null;
+    clearWalk();
     if (act.kind === "stock") stockTank(act.i);
     else if (act.kind === "unlock") buyTank(act.i);
     else if (act.kind === "cash") collectCash();
@@ -4565,7 +4691,7 @@
       performPendingAct();
       return true;
     }
-    player.goto = dest;
+    setWalkDest(dest);
     return true;
   }
   function tryClickShop(wx, wy) {
@@ -5427,78 +5553,112 @@
     const s = sc || 1.15;
     const id = seed == null ? ((Math.abs(x) * 17 + Math.abs(footY) * 3) | 0) : seed;
     const t = state.time || 0;
-    const lean = (hash2(id, 1) - 0.5) * 0.22;
-    const hMul = 0.62 + hash2(id, 2) * 0.72;
-    const footW = (10 + hash2(id, 4) * 11) * s;
-    const footH = (2.4 + hash2(id, 5) * 4.4) * s;
-    const shear = Math.sin(t * 1.15 + id * 1.7) * (0.22 + hash2(id, 6) * 0.38);
-    const bob = Math.sin(t * 1.55 + id * 0.85) * (2.2 + hash2(id, 7) * 3.4);
+    const kind = (id + ((hash2(id, 0) * 7) | 0)) % 7;
+    const lean = (hash2(id, 1) - 0.5) * (0.14 + kind * 0.05);
+    const hMul = 0.72 + hash2(id, 2) * 0.55 + (kind === 1 ? -0.18 : kind === 4 ? 0.22 : 0);
+    const footW = (9 + hash2(id, 4) * 10 + (kind === 5 ? 4 : 0)) * s;
+    const footH = (2.2 + hash2(id, 5) * 3.6) * s;
     const stain = hash2(id, 12);
-    ctx.fillStyle = "rgba(8, 24, 32," + (0.16 + hash2(id, 8) * 0.2) + ")";
+    const woods = [
+      ["#4a3018", "#8a5a28"], ["#2e2216", "#6a4a28"], ["#5a3a1c", "#c09048"],
+      ["#3a2814", "#7a4a22"], ["#4a3820", "#9a7040"], ["#2a2018", "#5a4030"],
+      ["#5a2814", "#a06030"],
+    ];
+    const pair = woods[kind];
+    ctx.fillStyle = "rgba(8, 24, 32," + (0.18 + hash2(id, 8) * 0.16) + ")";
     ctx.beginPath();
-    ctx.ellipse(x + shear * 14, footY + 6 + bob * 0.2, footW, footH, shear * 0.7, 0, Math.PI * 2);
+    ctx.ellipse(x + lean * 10, footY + 6, footW, footH, lean * 0.5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.save();
-    ctx.translate(x + Math.sin(t * 1.4 + id) * (5 + hash2(id, 9) * 6), footY + 14 + bob);
-    ctx.globalAlpha = 0.12 + hash2(id, 10) * 0.16;
-    ctx.beginPath();
-    const rw = 8 * s * hMul, rh = 18 * s * hMul * (0.28 + hash2(id, 11) * 0.22);
-    for (let i = 0; i <= 8; i++) {
-      const u = i / 8;
-      const px = Math.sin(u * Math.PI * 2 + t * 2.1 + id) * rw * (0.7 + 0.3 * Math.sin(t + i));
-      const py = u * rh * 2;
-      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-    }
-    ctx.strokeStyle = "rgba(6, 18, 24, 0.55)";
-    ctx.lineWidth = 7 * s * (0.7 + hash2(id, 19) * 0.6);
-    ctx.stroke();
-    ctx.restore();
     ctx.save();
     ctx.translate(x, footY);
     ctx.rotate(lean);
     ctx.scale(1, hMul);
-    const spr = blit("post", 0, 0, { scale: s, flat: true });
-    const wood = stain > 0.66 ? "#5a3214" : (stain > 0.33 ? "#3a2818" : "#4a3a22");
-    const lite = stain > 0.66 ? "#8a5a28" : (stain > 0.33 ? "#6a4a28" : "#7a6238");
-    if (!spr) {
-      ctx.fillStyle = wood;
-      ctx.fillRect(-7 * s, -42 * s, 14 * s, 42 * s);
-      ctx.fillStyle = lite;
-      ctx.fillRect(-7 * s, -42 * s, 5 * s, 42 * s);
+    const hw = (6.2 + (kind === 5 ? 2.2 : kind === 1 ? -0.8 : 0) + hash2(id, 3) * 1.4) * s;
+    const hh = (38 + hash2(id, 6) * 10) * s;
+    const trunk = ctx.createLinearGradient(-hw, -hh, hw, 4);
+    trunk.addColorStop(0, pair[1]);
+    trunk.addColorStop(0.35, pair[0]);
+    trunk.addColorStop(1, "#1a1008");
+    ctx.fillStyle = trunk;
+    ctx.beginPath();
+    if (kind === 1) {
+      ctx.moveTo(-hw * 0.7, 2);
+      ctx.lineTo(-hw * 1.05, -hh * 0.55);
+      ctx.lineTo(-hw * 0.2, -hh);
+      ctx.lineTo(hw * 0.55, -hh * 0.92);
+      ctx.lineTo(hw, 2);
+    } else if (kind === 4) {
+      ctx.moveTo(-hw, 2);
+      ctx.quadraticCurveTo(-hw * 1.15, -hh * 0.5, -hw * 0.55, -hh);
+      ctx.lineTo(hw * 0.4, -hh * 0.96);
+      ctx.quadraticCurveTo(hw * 0.9, -hh * 0.4, hw * 0.75, 2);
+    } else {
+      ctx.moveTo(-hw, 2);
+      ctx.lineTo(-hw * (0.85 + hash2(id, 7) * 0.15), -hh);
+      ctx.lineTo(hw * (0.7 + hash2(id, 9) * 0.2), -hh);
+      ctx.lineTo(hw, 2);
     }
-    ctx.fillStyle = wood;
-    ctx.fillRect(-8 * s, -36 * s, 16 * s, 30 * s);
-    ctx.fillStyle = lite;
-    ctx.fillRect(-8 * s, -36 * s, 5 * s, 30 * s);
-    ctx.fillStyle = stain > 0.55
-      ? "rgba(90, 48, 18, 0.28)"
-      : (stain > 0.25 ? "rgba(40, 70, 56, 0.22)" : "rgba(120, 72, 28, 0.16)");
-    ctx.fillRect(-8 * s, -42 * s, 16 * s, 42 * s);
-    ctx.fillStyle = "rgba(20, 10, 4," + (0.12 + hash2(id, 13) * 0.28) + ")";
-    ctx.fillRect(-8 * s, -36 * s, 16 * s, 8 * s + hash2(id, 14) * 22 * s);
-    ctx.fillStyle = "rgba(255, 214, 150," + (0.06 + hash2(id, 21) * 0.1) + ")";
-    ctx.fillRect(-8 * s, -42 * s, 5 * s, 42 * s);
-    const ringKind = hash2(id, 15);
-    if (ringKind > 0.62) {
-      ctx.strokeStyle = "rgba(196, 96, 48, 0.8)";
-      ctx.lineWidth = 2.4 + hash2(id, 16) * 2.2;
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "rgba(255, 214, 150," + (0.08 + hash2(id, 21) * 0.1) + ")";
+    ctx.fillRect(-hw * 0.85, -hh, hw * 0.38, hh);
+    if (kind === 2 || kind === 6) {
+      ctx.fillStyle = "rgba(40, 70, 48, 0.28)";
+      ctx.fillRect(-hw, -hh * (0.35 + hash2(id, 14) * 0.2), hw * 2, hh * 0.22);
+    }
+    if (kind === 3) {
+      ctx.fillStyle = "#3a3a3a";
+      ctx.fillRect(-hw * 1.15, -hh * 0.62, hw * 2.3, 3.4 * s);
+      ctx.fillRect(-hw * 1.15, -hh * 0.28, hw * 2.3, 3.2 * s);
+      ctx.fillStyle = "#8a8a88";
+      ctx.fillRect(-hw * 1.15, -hh * 0.62, hw * 2.3, 1.1 * s);
+    }
+    if (kind === 0 || kind === 5) {
+      ctx.strokeStyle = "rgba(196, 96, 48, 0.88)";
+      ctx.lineWidth = 2.6 + hash2(id, 16);
       ctx.beginPath();
-      ctx.arc(0, -12 * s - hash2(id, 17) * 18 * s, 8 * s + hash2(id, 22) * 3, 0.2, 2.9);
-      ctx.stroke();
-    } else if (ringKind > 0.28) {
-      ctx.strokeStyle = "rgba(160, 128, 64, 0.7)";
-      ctx.lineWidth = 1.6 + hash2(id, 16);
-      ctx.beginPath();
-      ctx.arc(0, -20 * s - hash2(id, 17) * 10 * s, 7.2 * s, 0.4, 2.6);
+      ctx.arc(0, -hh * (0.28 + hash2(id, 17) * 0.2), hw * 1.15, 0.15, 2.95);
       ctx.stroke();
     }
-    ctx.fillStyle = "rgba(210, 200, 180, 0.7)";
-    const barn = 1 + ((hash2(id, 18) * 5) | 0);
-    for (let i = 0; i < barn; i++) {
+    if (kind === 2 || kind === 4 || kind === 6) {
+      ctx.strokeStyle = kind === 4 ? "rgba(90, 64, 32, 0.85)" : "rgba(160, 120, 64, 0.78)";
+      ctx.lineWidth = 1.8 + hash2(id, 16) * 1.4;
+      const wraps = 1 + (kind === 4 ? 2 : 0);
+      for (let w = 0; w < wraps; w++) {
+        ctx.beginPath();
+        ctx.arc(0, -hh * (0.18 + w * 0.16 + hash2(id, 17 + w) * 0.08), hw * (1.05 + w * 0.08), 0.25, 2.85);
+        ctx.stroke();
+      }
+    }
+    if (kind === 5) {
+      ctx.strokeStyle = "#2a2218";
+      ctx.lineWidth = 3.2 * s;
       ctx.beginPath();
-      ctx.arc((-5 + hash2(id, 20 + i) * 10) * s, (-6 - hash2(id, 30 + i) * 22) * s, 1.0 + hash2(id, 40 + i) * 1.4, 0, Math.PI * 2);
+      ctx.ellipse(hw * 1.35, -hh * 0.22, hw * 1.15, hw * 0.85, 0.4, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = "#4a4030";
+      ctx.lineWidth = 1.4 * s;
+      ctx.stroke();
+    }
+    if (kind === 1) {
+      ctx.fillStyle = "rgba(48, 88, 52, 0.55)";
+      ctx.beginPath();
+      ctx.moveTo(-hw * 0.2, -hh * 0.15);
+      ctx.quadraticCurveTo(hw * 0.8, -hh * 0.05, hw * 0.2, hh * 0.02);
+      ctx.quadraticCurveTo(-hw * 0.4, -hh * 0.02, -hw * 0.2, -hh * 0.15);
       ctx.fill();
     }
+    ctx.fillStyle = "rgba(210, 200, 180, 0.72)";
+    const barn = 1 + ((hash2(id, 18) * 4) | 0) + (kind === 6 ? 2 : 0);
+    for (let i = 0; i < barn; i++) {
+      ctx.beginPath();
+      ctx.arc((-hw + hash2(id, 20 + i) * hw * 2) * 0.7, -hash2(id, 30 + i) * hh * 0.7, 1.0 + hash2(id, 40 + i) * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = pair[0];
+    ctx.beginPath();
+    ctx.ellipse(0, -hh, hw * 0.72, 2.2 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
   function plantInSand(x, y, rx, ry, tone) {
@@ -5751,15 +5911,17 @@
       ctx.fillStyle = "rgba(180,90,255,0.10)";
       ctx.fillRect(0, y0, OCEAN.w, y1 - y0);
     }
-    // Ribbon langs keep a contour strip. Feature langs (gold / horse /
-    // puffer / angel / …) sit on a thin shelf so they are not a tinted
-    // copy of the shallows dunes.
+    // Ribbon langs keep a contour strip at y1. Feature langs (gold / horse /
+    // puffer / angel / …) plant their silhouette on the lip you cross (y0)
+    // so 79m named "Puffer pockets" is craters under the diver — not the
+    // previous band's dune strip sitting 15m below the name change.
     const feature = /^(gold|horse|puffer|angel|octo|squid|starfall|cathedral|lantern)$/.test(lang);
+    const ridgeY = feature ? y0 + 8 : y1;
     const step = lang === "reef" || lang === "koi" || lang === "crystal" ? 8 : 6;
     const pts = [];
     for (let x = -24; x <= OCEAN.w + 24; x += step) {
       const rise = feature ? (3 + bedSmooth(seed, x, 420, 1) * 4) : bedRise(x, id, y1);
-      pts.push([x, y1 + 3 - rise]);
+      pts.push([x, ridgeY + 3 - rise]);
     }
     const thick = feature ? 6 : (lang === "crab" || lang === "turtle" ? 14 : (lang === "whale" ? 22 : 16));
     ctx.beginPath();
@@ -5777,7 +5939,7 @@
       ctx.quadraticCurveTo(a[0], a[1] + thick, (a[0] + b[0]) * 0.5, (a[1] + b[1]) * 0.5 + thick);
     }
     ctx.closePath();
-    const sandG = ctx.createLinearGradient(0, y1 - 64, 160, y1 + 8);
+    const sandG = ctx.createLinearGradient(0, ridgeY - 64, 160, ridgeY + 8);
     sandG.addColorStop(0, pair[0]);
     sandG.addColorStop(0.55, pair[0]);
     sandG.addColorStop(1, pair[1]);
@@ -5801,15 +5963,15 @@
     }
     for (let p = 6; p < pts.length - 6; p += 5) {
       const left = pts[p - 2][1], mid = pts[p][1], right = pts[p + 2][1];
-      if (mid < left - 2 && mid < right - 2 && y1 - mid > 14) {
-        sites.push({ x: pts[p][0], y: mid + 8, hw: 28, hh: y1 - mid, footY: y1 });
+      if (mid < left - 2 && mid < right - 2 && ridgeY - mid > 14) {
+        sites.push({ x: pts[p][0], y: mid + 8, hw: 28, hh: ridgeY - mid, footY: ridgeY });
       }
     }
     if (lang === "gold") {
       let x = 70 + hash2(seed, 4) * 80;
       let m = 0;
       while (x < OCEAN.w - 60) {
-        const foot = y1 - 2;
+        const foot = ridgeY - 2;
         const hw = 70 + hash2(seed, 220 + m) * 55;
         const hh = 28 + hash2(seed, 230 + m) * 22;
         sites.push(paintDuneLobe(x, foot, hw, hh, seed + 400 + m * 23, pair, (id.stamp + m) % 8));
@@ -5820,33 +5982,39 @@
       let x = 80 + hash2(seed, 6) * 60;
       let m = 0;
       while (x < OCEAN.w - 50) {
-        const cy = y1 - 6;
-        const rw = 48 + hash2(seed, 260 + m) * 28;
-        const rh = 22 + hash2(seed, 270 + m) * 14;
+        const cy = ridgeY - 4;
+        const rw = 52 + hash2(seed, 260 + m) * 26;
+        const rh = 18 + hash2(seed, 270 + m) * 10;
         ctx.fillStyle = pair[1];
         ctx.beginPath();
-        ctx.ellipse(x, cy + 10, rw + 10, 8, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, cy + 12, rw + 16, 7, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = pair[0];
+        ctx.fillStyle = "#6a5830";
         ctx.beginPath();
-        ctx.moveTo(x - rw, cy + 8);
-        ctx.quadraticCurveTo(x - rw * 0.7, cy - rh, x, cy - rh * 0.15);
-        ctx.quadraticCurveTo(x + rw * 0.7, cy - rh, x + rw, cy + 8);
-        ctx.closePath();
+        ctx.ellipse(x, cy + 2, rw, rh, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = "rgba(28, 20, 10, 0.38)";
+        ctx.fillStyle = "#1a140c";
         ctx.beginPath();
-        ctx.ellipse(x, cy + 2, rw * 0.58, rh * 0.55, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, cy + 4, rw * 0.62, rh * 0.72, 0, 0, Math.PI * 2);
         ctx.fill();
-        sites.push({ x, y: cy + 4, hw: rw, hh: rh * 2, footY: y1 });
-        x += rw * 2.4 + 70 + hash2(seed, 275 + m) * 70;
+        ctx.fillStyle = "rgba(40, 28, 12, 0.55)";
+        ctx.beginPath();
+        ctx.ellipse(x + 2, cy + 6, rw * 0.38, rh * 0.42, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = pair[0];
+        ctx.lineWidth = 3.2;
+        ctx.beginPath();
+        ctx.ellipse(x, cy + 1, rw * 0.98, rh * 0.92, 0, Math.PI, Math.PI * 2);
+        ctx.stroke();
+        sites.push({ x, y: cy + 6, hw: rw, hh: rh * 2, footY: ridgeY });
+        x += rw * 2.2 + 56 + hash2(seed, 275 + m) * 60;
         m++;
       }
     } else if (lang === "angel") {
       let x = 90 + hash2(seed, 7) * 70;
       let m = 0;
       while (x < OCEAN.w - 70) {
-        const cy = y1 - 4;
+        const cy = ridgeY - 4;
         ctx.fillStyle = pair[1];
         ctx.beginPath();
         ctx.ellipse(x, cy + 8, 56, 9, 0, 0, Math.PI * 2);
@@ -5865,7 +6033,7 @@
         ctx.beginPath();
         ctx.ellipse(x, cy - 10, 18, 8, 0, 0, Math.PI * 2);
         ctx.fill();
-        sites.push({ x, y: cy - 8, hw: 48, hh: 28, footY: y1 });
+        sites.push({ x, y: cy - 8, hw: 48, hh: 28, footY: ridgeY });
         x += 150 + hash2(seed, 296 + m) * 90;
         m++;
       }
@@ -5875,20 +6043,31 @@
       while (x < OCEAN.w - 40) {
         const n = 3 + ((hash2(seed, 300 + m) * 3) | 0);
         for (let g = 0; g < n; g++) {
-          const gx = x + g * (16 + hash2(seed, 305 + m + g) * 10);
-          const foot = y1 - 1;
-          const hw = 10 + hash2(seed, 310 + m + g) * 8;
-          const hh = 36 + hash2(seed, 320 + m + g) * 28;
-          sites.push(paintDuneLobe(gx, foot, hw, hh, seed + 500 + m * 17 + g, pair, (id.stamp + 2 + g) % 8));
+          const gx = x + g * (14 + hash2(seed, 305 + m + g) * 9);
+          const foot = ridgeY;
+          const hh = 42 + hash2(seed, 320 + m + g) * 34;
+          const lean = (hash2(seed, 310 + m + g) - 0.5) * 16;
+          plantInSand(gx, foot, 9, 4, 0.35);
+          ctx.strokeStyle = hash2(seed, 312 + g) > 0.5 ? "#2a6a40" : "#1e4a30";
+          ctx.lineWidth = 2.4 + hash2(seed, 314 + g) * 1.6;
+          ctx.beginPath();
+          ctx.moveTo(gx, foot);
+          ctx.quadraticCurveTo(gx + lean * 0.4, foot - hh * 0.45, gx + lean, foot - hh);
+          ctx.stroke();
+          ctx.fillStyle = hash2(seed, 316 + g) > 0.45 ? "#3d8b4a" : "#c8a040";
+          ctx.beginPath();
+          ctx.ellipse(gx + lean, foot - hh - 2, 7 + hash2(seed, 318 + g) * 5, 11 + hash2(seed, 319 + g) * 6, lean * 0.04, 0, Math.PI * 2);
+          ctx.fill();
+          sites.push({ x: gx, y: foot - 4, hw: 12, hh, footY: ridgeY });
         }
-        x += 130 + n * 18 + hash2(seed, 330 + m) * 90;
+        x += 120 + n * 16 + hash2(seed, 330 + m) * 80;
         m++;
       }
     } else {
       const extra = 1 + ((hash2(seed, 5) * 2) | 0);
       for (let m = 0; m < extra; m++) {
         const cx = 90 + hash2(seed, 200 + m) * (OCEAN.w - 180);
-        const foot = y1 - 8 - hash2(seed, 210 + m) * 28;
+        const foot = ridgeY - 8 - hash2(seed, 210 + m) * 28;
         const hw = 36 + hash2(seed, 220 + m) * 40;
         const hh = 12 + hash2(seed, 230 + m) * 16;
         sites.push(paintDuneLobe(cx, foot, hw, hh, seed + 400 + m * 23, pair, (id.stamp + 5 + m * 2) % 8));
@@ -10798,7 +10977,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 66", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 67", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -10821,7 +11000,7 @@
       ctx.fillStyle = "#e8f4f8"; ctx.font = "600 15px Nunito, sans-serif"; ctx.textAlign = "left";
       const lines = [
         "WASD or Arrows — move  ·  tap / click to walk  ·  hold to steer",
-        "DIVE chip, DIVE button, or SPACE at the dock — dive (chip works once you are near the pad)",
+        "DIVE chip, DIVE button, or SPACE / E — dive at the pad, or walk the pier back to it",
         "↑ SURFACE swims up  ·  SURFACE / SPACE — full bag, or waterline after a few catches",
         "Hold on a fish — the cone locks on  ·  tap a fish to scoop  ·  first catches are forgiving",
         "Tap a tank, till, or unlock card — act now, or walk there then act",
@@ -10839,7 +11018,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 66", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 67", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -10856,7 +11035,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 66", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 67", W / 2, 632);
     }
   }
 
@@ -11081,12 +11260,13 @@
           for (let i = 0; i < SPECIES.length; i++) {
             if (state.unlocked[i] && state.bag.some((s) => (s | 0) === i)) { si = i; break; }
           }
-          player.goto = stockableTankTarget() || tankWalkPoint(si);
+          const tankDest = stockableTankTarget() || tankWalkPoint(si);
           player.pendingAct = { kind: "stock", i: si };
+          setWalkDest(tankDest);
           cuePathWelcome();
-          seedPathCoins([[880, 1008], [880, 820], [880, 640], [880, 460], [player.goto.x, player.goto.y]], 3);
+          seedPathCoins([[880, 1008], [880, 820], [880, 640], [880, 460], [tankDest.x, tankDest.y]], 3);
         } else if (bagHasStockable()) {
-          player.goto = null;
+          clearWalk();
           player.pendingAct = null;
         } else if (state.registerCash <= 0) {
           seedPathCoins([[880, 860], [880, 1008]], 2);
