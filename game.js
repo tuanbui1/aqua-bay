@@ -5751,14 +5751,17 @@
       ctx.fillStyle = "rgba(180,90,255,0.10)";
       ctx.fillRect(0, y0, OCEAN.w, y1 - y0);
     }
-    // Contour ribbon — follows the ridge, no flat ruler band under it.
-    // Each named band uses its own seed + silhouette language.
+    // Ribbon langs keep a contour strip. Feature langs (gold / horse /
+    // puffer / angel / …) sit on a thin shelf so they are not a tinted
+    // copy of the shallows dunes.
+    const feature = /^(gold|horse|puffer|angel|octo|squid|starfall|cathedral|lantern)$/.test(lang);
     const step = lang === "reef" || lang === "koi" || lang === "crystal" ? 8 : 6;
     const pts = [];
     for (let x = -24; x <= OCEAN.w + 24; x += step) {
-      pts.push([x, y1 + 3 - bedRise(x, id, y1)]);
+      const rise = feature ? (3 + bedSmooth(seed, x, 420, 1) * 4) : bedRise(x, id, y1);
+      pts.push([x, y1 + 3 - rise]);
     }
-    const thick = lang === "crab" || lang === "turtle" ? 14 : (lang === "whale" ? 22 : 16);
+    const thick = feature ? 6 : (lang === "crab" || lang === "turtle" ? 14 : (lang === "whale" ? 22 : 16));
     ctx.beginPath();
     ctx.moveTo(pts[0][0], pts[0][1] + thick);
     ctx.lineTo(pts[0][0], pts[0][1]);
@@ -5780,21 +5783,22 @@
     sandG.addColorStop(1, pair[1]);
     ctx.fillStyle = sandG;
     ctx.fill();
-    ctx.save();
-    ctx.clip();
-    let k = 0;
-    const stampGap = lang === "gold" || lang === "puffer" ? 11 : 7;
-    for (let p = 8; p < pts.length - 8; p += stampGap + ((hash2(seed, 140 + p) * 4) | 0)) {
-      const pt = pts[p];
-      if (y1 - pt[1] < 10) continue;
-      const sid = (id.stamp + k * 3 + ((hash2(seed, 150 + k) * 8) | 0)) % 8;
-      ctx.globalAlpha = 0.24 + hash2(seed, 160 + k) * 0.26;
-      blitBedStamp(sid, pt[0], pt[1] + 10, 48 + hash2(seed, 170 + k) * 64, 14 + hash2(seed, 180 + k) * 16,
-        (hash2(seed, 190 + k) - 0.5) * 0.32, hash2(seed, 195 + k) > 0.5, seed + k * 13);
-      ctx.globalAlpha = 1;
-      k++;
+    if (!feature) {
+      ctx.save();
+      ctx.clip();
+      let k = 0;
+      for (let p = 8; p < pts.length - 8; p += 7 + ((hash2(seed, 140 + p) * 4) | 0)) {
+        const pt = pts[p];
+        if (y1 - pt[1] < 10) continue;
+        const sid = (id.stamp + k * 3 + ((hash2(seed, 150 + k) * 8) | 0)) % 8;
+        ctx.globalAlpha = 0.24 + hash2(seed, 160 + k) * 0.26;
+        blitBedStamp(sid, pt[0], pt[1] + 10, 48 + hash2(seed, 170 + k) * 64, 14 + hash2(seed, 180 + k) * 16,
+          (hash2(seed, 190 + k) - 0.5) * 0.32, hash2(seed, 195 + k) > 0.5, seed + k * 13);
+        ctx.globalAlpha = 1;
+        k++;
+      }
+      ctx.restore();
     }
-    ctx.restore();
     for (let p = 6; p < pts.length - 6; p += 5) {
       const left = pts[p - 2][1], mid = pts[p][1], right = pts[p + 2][1];
       if (mid < left - 2 && mid < right - 2 && y1 - mid > 14) {
@@ -5802,60 +5806,83 @@
       }
     }
     if (lang === "gold") {
-      const n = 5 + ((hash2(seed, 5) * 3) | 0);
-      for (let m = 0; m < n; m++) {
-        const cx = 80 + hash2(seed, 200 + m) * (OCEAN.w - 160);
-        const foot = y1 - 4 - hash2(seed, 210 + m) * 18;
-        const hw = 56 + hash2(seed, 220 + m) * 70;
-        const hh = 20 + hash2(seed, 230 + m) * 26;
-        sites.push(paintDuneLobe(cx, foot, hw, hh, seed + 400 + m * 23, pair, (id.stamp + m) % 8));
+      let x = 70 + hash2(seed, 4) * 80;
+      let m = 0;
+      while (x < OCEAN.w - 60) {
+        const foot = y1 - 2;
+        const hw = 70 + hash2(seed, 220 + m) * 55;
+        const hh = 28 + hash2(seed, 230 + m) * 22;
+        sites.push(paintDuneLobe(x, foot, hw, hh, seed + 400 + m * 23, pair, (id.stamp + m) % 8));
+        x += hw * 2.2 + 90 + hash2(seed, 235 + m) * 80;
+        m++;
       }
     } else if (lang === "puffer") {
-      const n = 6 + ((hash2(seed, 6) * 3) | 0);
-      for (let m = 0; m < n; m++) {
-        const cx = 70 + hash2(seed, 240 + m) * (OCEAN.w - 140);
-        const cy = y1 - 10 - hash2(seed, 250 + m) * 22;
-        const rw = 34 + hash2(seed, 260 + m) * 28;
-        const rh = 12 + hash2(seed, 270 + m) * 10;
+      let x = 80 + hash2(seed, 6) * 60;
+      let m = 0;
+      while (x < OCEAN.w - 50) {
+        const cy = y1 - 6;
+        const rw = 48 + hash2(seed, 260 + m) * 28;
+        const rh = 22 + hash2(seed, 270 + m) * 14;
         ctx.fillStyle = pair[1];
         ctx.beginPath();
-        ctx.ellipse(cx, cy + 6, rw, rh * 0.55, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, cy + 10, rw + 10, 8, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = pair[0];
         ctx.beginPath();
-        ctx.ellipse(cx, cy, rw * 0.82, rh, 0, Math.PI, 0, true);
+        ctx.moveTo(x - rw, cy + 8);
+        ctx.quadraticCurveTo(x - rw * 0.7, cy - rh, x, cy - rh * 0.15);
+        ctx.quadraticCurveTo(x + rw * 0.7, cy - rh, x + rw, cy + 8);
+        ctx.closePath();
         ctx.fill();
-        ctx.fillStyle = "rgba(40, 28, 12, 0.28)";
+        ctx.fillStyle = "rgba(28, 20, 10, 0.38)";
         ctx.beginPath();
-        ctx.ellipse(cx, cy + 2, rw * 0.55, rh * 0.42, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, cy + 2, rw * 0.58, rh * 0.55, 0, 0, Math.PI * 2);
         ctx.fill();
-        sites.push({ x: cx, y: cy + rh * 0.4, hw: rw, hh: rh * 2, footY: y1 });
+        sites.push({ x, y: cy + 4, hw: rw, hh: rh * 2, footY: y1 });
+        x += rw * 2.4 + 70 + hash2(seed, 275 + m) * 70;
+        m++;
       }
     } else if (lang === "angel") {
-      const n = 4 + ((hash2(seed, 7) * 3) | 0);
-      for (let m = 0; m < n; m++) {
-        const cx = 90 + hash2(seed, 280 + m) * (OCEAN.w - 180);
-        const cy = y1 - 8;
+      let x = 90 + hash2(seed, 7) * 70;
+      let m = 0;
+      while (x < OCEAN.w - 70) {
+        const cy = y1 - 4;
+        ctx.fillStyle = pair[1];
+        ctx.beginPath();
+        ctx.ellipse(x, cy + 8, 56, 9, 0, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = pair[0];
         ctx.beginPath();
-        ctx.moveTo(cx - 48, cy + 10);
-        for (let p = 0; p <= 5; p++) {
-          const a = Math.PI + (p / 5) * Math.PI;
-          const r = 22 + (p % 2 ? 18 : 8) + hash2(seed, 290 + m + p) * 8;
-          ctx.lineTo(cx + Math.cos(a) * r * 1.4, cy + Math.sin(a) * r * 0.7);
+        ctx.moveTo(x - 58, cy + 10);
+        for (let p = 0; p <= 6; p++) {
+          const a = Math.PI + (p / 6) * Math.PI;
+          const r = (p % 2 ? 36 : 16) + hash2(seed, 290 + m + p) * 10;
+          ctx.lineTo(x + Math.cos(a) * r * 1.55, cy + Math.sin(a) * r * 0.85);
         }
         ctx.closePath();
         ctx.fill();
-        sites.push({ x: cx, y: cy - 6, hw: 40, hh: 24, footY: y1 });
+        ctx.fillStyle = "rgba(255, 236, 190, 0.22)";
+        ctx.beginPath();
+        ctx.ellipse(x, cy - 10, 18, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+        sites.push({ x, y: cy - 8, hw: 48, hh: 28, footY: y1 });
+        x += 150 + hash2(seed, 296 + m) * 90;
+        m++;
       }
     } else if (lang === "horse") {
-      const extra = 3 + ((hash2(seed, 8) * 2) | 0);
-      for (let m = 0; m < extra; m++) {
-        const cx = 100 + hash2(seed, 300 + m) * (OCEAN.w - 200);
-        const foot = y1 - 2;
-        const hw = 18 + hash2(seed, 310 + m) * 16;
-        const hh = 28 + hash2(seed, 320 + m) * 24;
-        sites.push(paintDuneLobe(cx, foot, hw, hh, seed + 500 + m * 17, pair, (id.stamp + 2 + m) % 8));
+      let x = 60 + hash2(seed, 8) * 50;
+      let m = 0;
+      while (x < OCEAN.w - 40) {
+        const n = 3 + ((hash2(seed, 300 + m) * 3) | 0);
+        for (let g = 0; g < n; g++) {
+          const gx = x + g * (16 + hash2(seed, 305 + m + g) * 10);
+          const foot = y1 - 1;
+          const hw = 10 + hash2(seed, 310 + m + g) * 8;
+          const hh = 36 + hash2(seed, 320 + m + g) * 28;
+          sites.push(paintDuneLobe(gx, foot, hw, hh, seed + 500 + m * 17 + g, pair, (id.stamp + 2 + g) % 8));
+        }
+        x += 130 + n * 18 + hash2(seed, 330 + m) * 90;
+        m++;
       }
     } else {
       const extra = 1 + ((hash2(seed, 5) * 2) | 0);
@@ -7553,43 +7580,55 @@
     sitShadow(cx, footY + 8, 18, 8, 0.56);
     ctx.save();
     ctx.translate(cx, footY);
-    const post = ctx.createLinearGradient(-6, -118, 6, 10);
-    post.addColorStop(0, "#d4a060");
-    post.addColorStop(0.35, "#9a6a38");
-    post.addColorStop(1, "#4a2814");
+    // Stained pole — darker than the honey dock so the hang has a
+    // readable centerline. Symmetric, integer X.
+    const post = ctx.createLinearGradient(-7, -124, 7, 10);
+    post.addColorStop(0, "#8a5a28");
+    post.addColorStop(0.4, "#5a3214");
+    post.addColorStop(1, "#2a1408");
     ctx.fillStyle = post;
     ctx.beginPath();
-    ctx.moveTo(-6, -118);
-    ctx.lineTo(6, -118);
-    ctx.lineTo(6, 6);
-    ctx.lineTo(-6, 6);
+    ctx.moveTo(-7, -124);
+    ctx.lineTo(7, -124);
+    ctx.lineTo(7, 6);
+    ctx.lineTo(-7, 6);
     ctx.closePath();
     ctx.fill();
-    ctx.fillStyle = "rgba(255, 226, 170, 0.28)";
-    ctx.fillRect(-6, -118, 3, 124);
-    ctx.fillStyle = "rgba(22, 10, 6, 0.28)";
-    ctx.fillRect(3, -118, 3, 124);
-    ctx.fillStyle = "#5a3018";
+    ctx.fillStyle = "rgba(255, 214, 150, 0.16)";
+    ctx.fillRect(-7, -124, 3, 130);
+    ctx.fillStyle = "rgba(10, 4, 2, 0.35)";
+    ctx.fillRect(4, -124, 3, 130);
+    ctx.strokeStyle = "rgba(30, 14, 6, 0.7)";
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(-7, -124, 14, 130);
+    ctx.fillStyle = "#3a2010";
+    for (const by of [-108, -52, -8]) {
+      ctx.fillRect(-8, by, 16, 5);
+      ctx.fillStyle = "#c8a060";
+      ctx.fillRect(-8, by, 16, 1.2);
+      ctx.fillStyle = "#3a2010";
+    }
+    ctx.fillStyle = "#3a2010";
     ctx.beginPath();
-    ctx.moveTo(-8, 6);
-    ctx.lineTo(8, 6);
-    ctx.lineTo(5, 10);
-    ctx.lineTo(-5, 10);
+    ctx.moveTo(-9, 6);
+    ctx.lineTo(9, 6);
+    ctx.lineTo(5, 11);
+    ctx.lineTo(-5, 11);
     ctx.closePath();
     ctx.fill();
     // Iron hook on the post centerline — the hang origin.
-    ctx.strokeStyle = "#3a2010";
-    ctx.lineWidth = 3.2;
+    ctx.strokeStyle = "#1a1008";
+    ctx.lineWidth = 3.6;
     ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.moveTo(0, -112);
-    ctx.lineTo(0, -98);
-    ctx.arc(0, -90, 8, -Math.PI * 0.5, Math.PI * 0.72, false);
+    ctx.moveTo(0, -118);
+    ctx.lineTo(0, -100);
+    ctx.arc(0, -92, 8, -Math.PI * 0.5, Math.PI * 0.72, false);
     ctx.stroke();
-    ctx.fillStyle = "#2a1810";
-    ctx.beginPath(); ctx.arc(0, -112, 2.6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#1a1008";
+    ctx.beginPath(); ctx.arc(0, -118, 3.1, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = "#c8a060";
-    ctx.beginPath(); ctx.arc(-0.6, -112.6, 0.8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(-0.6, -118.6, 0.9, 0, Math.PI * 2); ctx.fill();
     const bw = 80, bh = 50;
     const boardTop = -78;
     ctx.strokeStyle = "#4a2814";
@@ -7625,8 +7664,8 @@
     roundRect(-bw / 2 + 6, boardTop + 6, bw - 12, bh - 12, 5); ctx.fill();
     ctx.fillStyle = "#ead7b4";
     roundRect(-bw / 2 + 8, boardTop + 8, bw - 16, bh - 16, 4); ctx.fill();
-    ctx.fillStyle = "rgba(255, 236, 190, 0.18)";
-    ctx.fillRect(-bw / 2 + 12, boardTop + 10, 24, bh - 20);
+    ctx.fillStyle = "rgba(255, 236, 190, 0.14)";
+    ctx.fillRect(-bw / 2 + 10, boardTop + 10, bw - 20, 8);
     ctx.fillStyle = "#5a3614";
     ctx.beginPath(); ctx.arc(-22, boardTop + 18, 2.2, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(22, boardTop + 18, 2.2, 0, Math.PI * 2); ctx.fill();
@@ -8342,7 +8381,7 @@
     drawBench(1108, 942);
     drawLifeRing(512, 918);
     {
-      const diveA = worldBoxAlpha(diveSign.x - 48, diveSign.y - 128, 96, 144);
+      const diveA = worldBoxAlpha(diveSign.x - 48, diveSign.y - 136, 96, 152);
       if (diveA > 0.04) {
         ctx.save();
         ctx.globalAlpha = diveA;
@@ -10057,7 +10096,7 @@
   }
   function chipAlpha(box, ribbon) {
     const shack = baitShackScreenBox();
-    if (shack && boxesOverlap(box, shack, 14)) return 0.05;
+    if (shack && boxesOverlap(box, shack, 18)) return 0;
     if (!ribbon) return 1;
     if (boxesOverlap(box, ribbon, 10)) return 0.12;
     if (state.camPunch > 0 && box.y < 70) return 0.55;
@@ -10823,8 +10862,8 @@
 
   function baitShackScreenBox() {
     if (state.scene !== "shop") return null;
-    const p = worldToScreen(1356, 538);
-    return { x: p.x, y: p.y, w: 120 * cam.z, h: 108 * cam.z };
+    const p = worldToScreen(1288, 360);
+    return { x: p.x, y: p.y, w: 400 * cam.z, h: 300 * cam.z };
   }
   function tankScreenBox(i) {
     const t = TANK_POS[i];
@@ -10852,8 +10891,8 @@
     const shack = baitShackScreenBox();
     if (shack) {
       const col = { x: xCol, y: startY, w: cw, h: colH };
-      if (boxesOverlap(col, shack, 18)) {
-        xCol = Math.max(420, Math.min(xCol, Math.round(shack.x - cw - 16)));
+      if (boxesOverlap(col, shack, 22)) {
+        xCol = Math.max(400, Math.min(xCol, Math.round(shack.x - cw - 20)));
       }
     }
     return { x: xCol, y: startY, w: cw, h: colH, cw, ch, muteB, pauseB };
@@ -10881,8 +10920,10 @@
       const hover = mouse.x >= x && mouse.x <= x + cw && mouse.y >= y && mouse.y <= y + ch + 2;
       const affordable = !state.unlocked[i] && i === next && state.money >= SPECIES[i].unlock;
       const need = !state.unlocked[i] ? Math.max(0, SPECIES[i].unlock - (state.money | 0)) : 0;
+      const fade = chipAlpha(chip, ribbon);
+      if (fade <= 0.02) continue;
       ctx.save();
-      ctx.globalAlpha = chipAlpha(chip, ribbon);
+      ctx.globalAlpha = fade;
       if (hover) {
         ctx.translate(x + cw / 2, y + (ch + 2) / 2);
         ctx.scale(1.07, 1.07);
