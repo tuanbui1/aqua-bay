@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props/plates.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -283,7 +283,7 @@
     return true;
   }
   function blitHarborPart(sx, sy, sw, sh, dx, dy, dw, dh) {
-    const c = ATLAS.harbor;
+    const c = ATLAS.harbortown || ATLAS.harbor;
     if (!c || !ART.ready) return false;
     ctx.drawImage(
       ART.img,
@@ -1933,6 +1933,7 @@
     if (state.scene === "ocean" && wy < player.y - 16) {
       return { x: wx, y: Math.max(120, Math.min(wy, player.y) - 140) };
     }
+    if (state.scene === "shop") return snapToShopWalk(wx, wy);
     return { x: wx, y: wy };
   }
   function hitUI(x, y) {
@@ -3159,7 +3160,8 @@
       } else {
         player.goto = null;
         const w = screenToWorld(mouse.x, mouse.y);
-        const dx = w.x - player.x, dy = w.y - player.y, d = Math.hypot(dx, dy);
+        const dest = state.scene === "shop" ? snapToShopWalk(w.x, w.y) : w;
+        const dx = dest.x - player.x, dy = dest.y - player.y, d = Math.hypot(dx, dy);
         if (d > 8) { ax = dx / d; ay = dy / d; }
       }
     } else if (player.goto && state.mode === "play") {
@@ -3205,9 +3207,15 @@
     const wantFlip = Math.cos(player.facing) < -0.1 ? -1 : 1;
     if (player.faceS == null || !isFinite(player.faceS)) player.faceS = wantFlip;
     player.faceS = lerp(player.faceS, wantFlip, 1 - Math.pow(0.00055, dt));
-    const wantPitch = ocean ? clamp(player.vy / 210, -0.36, 0.36) : 0;
+    const wantPitch = ocean ? clamp(player.vy / 160, -0.55, 0.55) : 0;
     player.pitch = lerp(player.pitch || 0, wantPitch, 1 - Math.pow(0.0018, dt));
-    if (moving) player.walkPhase += dt * (ocean ? 9.2 : 11.2) * clamp(sp / 90, 0.5, 1.7);
+    if (ocean) {
+      // Flutter-kick even while scooping / hovering — a frozen swim frame
+      // reads as a standing sticker.
+      player.walkPhase += dt * (moving ? 11.6 : 7.2) * (moving ? clamp(sp / 90, 0.7, 1.8) : 1);
+    } else if (moving) {
+      player.walkPhase += dt * 11.2 * clamp(sp / 90, 0.5, 1.7);
+    }
     player.bob += dt * (ocean ? 7 : 9) * (moving ? 1 : 0.22);
     if (ocean) {
       player.x = clamp(player.x, 60, OCEAN.w - 60);
@@ -3239,15 +3247,51 @@
       }
     }
   }
+  // C57 — walkable wood only. The painted harbor (sky / hills / roofs) is a
+  // backdrop. Old plaza box (y=118–890, full shop width) let the walker
+  // stand in the skyline; dock min y=860 let them step off the boards
+  // onto the painting.
+  function shopWalkRects() {
+    const rects = [
+      { x: 90, y: 312, w: 1580, h: 128 },
+      { x: 136, y: 380, w: 208, h: 286 },
+      { x: 1256, y: 380, w: 228, h: 286 },
+      { x: 284, y: 636, w: 196, h: 148 },
+      { x: 764, y: 348, w: 248, h: 562 },
+      { x: 500, y: 878, w: 820, h: 204 },
+      { x: 1148, y: 1004, w: 188, h: 84 },
+    ];
+    if (galleryOpen()) {
+      rects.push({ x: 1668, y: 312, w: 560, h: 128 });
+      rects.push({ x: 1748, y: 360, w: 236, h: 540 });
+    }
+    return rects;
+  }
+  function snapToShopWalk(x, y) {
+    const rects = shopWalkRects();
+    for (let i = 0; i < rects.length; i++) {
+      const rc = rects[i];
+      if (x >= rc.x && x <= rc.x + rc.w && y >= rc.y && y <= rc.y + rc.h) {
+        return { x: x, y: y };
+      }
+    }
+    let bestD = 1e15, nx = x, ny = y;
+    for (let i = 0; i < rects.length; i++) {
+      const rc = rects[i];
+      const cx = clamp(x, rc.x, rc.x + rc.w);
+      const cy = clamp(y, rc.y, rc.y + rc.h);
+      const d = (cx - x) * (cx - x) + (cy - y) * (cy - y);
+      if (d < bestD) { bestD = d; nx = cx; ny = cy; }
+    }
+    return { x: nx, y: ny };
+  }
   function constrainShop() {
     const r = player.radius;
-    if (player.y < 890) {
-      player.x = clamp(player.x, 110 + r, shopWalkMax() - r);
-      player.y = clamp(player.y, 118 + r, 890);
-    } else {
-      player.x = clamp(player.x, 500 + r, 1320 - r);
-      player.y = clamp(player.y, 860, 1080);
-    }
+    const snapped = snapToShopWalk(player.x, player.y);
+    player.x = snapped.x;
+    player.y = snapped.y;
+    player.x = clamp(player.x, 90 + r, shopWalkMax() + 48);
+    player.y = clamp(player.y, 308 + r, 1090);
     for (let i = 0; i < SPECIES.length; i++) {
       if (!tankLive(i)) continue;
       const t = TANK_POS[i];
@@ -4901,25 +4945,35 @@
   function drawHarborTown(x, y, w, h, teal) {
     return drawTownSkyline(x, y + h, w, h, teal);
   }
-  // Shop / dock backdrop. Town sits on the bay waterline (y≈886) so the dock
-  // camera still gets sky, hills, and unique roofs — never a thin house strip
-  // and never a tiled plank wall.
+  // C57 — town is a distant shore BEHIND the pier, not a 560px mural
+  // stretched across the bay (C51/C55 blit sat on y≈886 and filled the
+  // dock view with sky / roofs the walker could stand in). Sky + hills
+  // + waterfront sit above the waterline; the bay below is water.
   function drawShopHarbor(teal) {
     ensurePaint();
-    const waterY = 886;
     const x = -420;
     const w = shopW() + 840;
+    const townH = 216;
+    const townTop = 648;
     if (ATLAS.sky && ART.ready) {
-      blitTile("sky", x, -220, w, 360);
+      blitTile("sky", x, -280, w, townTop + 160);
     } else {
-      const sky = ctx.createLinearGradient(x, -220, x, waterY);
+      const sky = ctx.createLinearGradient(x, -280, x, townTop + 40);
       sky.addColorStop(0, "#c8eefc");
       sky.addColorStop(0.45, "#8ed0f0");
       sky.addColorStop(1, "#7ec8c0");
       ctx.fillStyle = sky;
-      ctx.fillRect(x, -220, w, waterY + 220);
+      ctx.fillRect(x, -280, w, townTop + 320);
     }
-    drawTownSkyline(x, waterY, w, 560, teal);
+    // Crop the C55 skyline to hills + roofs (skip the empty upper sky so
+    // the waterfront sits on the horizon instead of tiling the bay).
+    if (!blitHarborPart(0, 0.36, 1, 0.64, x, townTop, w, townH)) {
+      drawTownSkyline(x, townTop + townH, w, townH, teal);
+    }
+    if (teal) {
+      ctx.fillStyle = "rgba(18, 132, 124, 0.08)";
+      ctx.fillRect(x, townTop, w, townH);
+    }
     return true;
   }
   function stampPlankTile(c, teal, name) {
@@ -6585,45 +6639,104 @@
     }
     ctx.restore();
   }
+  function paintSwimFlipper(side, kick, skin) {
+    const dino = skin === "dino";
+    const col = dino ? "#4aaa4a" : "#2ec8c4";
+    const edge = dino ? "#1e4a24" : "#146a6e";
+    const tip = dino ? "#8fd86a" : "#f0b429";
+    ctx.save();
+    ctx.translate(dino ? -20 : -32, side * (dino ? 7.2 : 8.6));
+    ctx.rotate(side * (0.38 + kick * 0.92));
+    ctx.beginPath();
+    ctx.moveTo(2, 0);
+    ctx.lineTo(dino ? -12 : -20, side * (dino ? 5.2 : 8.4));
+    ctx.quadraticCurveTo(dino ? -16 : -28, side * 0.8, dino ? -11 : -18, side * -1.6);
+    ctx.lineTo(1, side * -0.7);
+    ctx.closePath();
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.strokeStyle = edge;
+    ctx.lineWidth = 1.25;
+    ctx.stroke();
+    ctx.fillStyle = tip;
+    ctx.beginPath();
+    ctx.moveTo(dino ? -8 : -14, side * (dino ? 2.2 : 3.4));
+    ctx.lineTo(dino ? -12 : -20, side * (dino ? 5.0 : 8.0));
+    ctx.lineTo(dino ? -10 : -16, side * 0.4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.35)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-2, side * 0.6);
+    ctx.lineTo(dino ? -10 : -16, side * (dino ? 3.2 : 5.2));
+    ctx.stroke();
+    ctx.restore();
+  }
+  function drawSwimPaddle(skin, phase, kickWave, stroke, arms) {
+    paintSwimFlipper(1, kickWave, skin);
+    paintSwimFlipper(-1, -kickWave, skin);
+    if (skin === "dino" && arms) {
+      ctx.save();
+      ctx.translate(-6 + kickWave * 3.2, 1);
+      ctx.rotate(-0.18 + kickWave * 0.42);
+      ctx.fillStyle = "#3d9a4a";
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(-16, kickWave * 6, -28, kickWave * 3);
+      ctx.quadraticCurveTo(-16, 8 + kickWave * 2, 2, 5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = "#f0b429";
+      ctx.beginPath();
+      ctx.moveTo(-10, 1);
+      ctx.lineTo(-18, kickWave * 4);
+      ctx.lineTo(-8, 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.translate(2, stroke * 1.8);
+      ctx.strokeStyle = "rgba(255, 140, 60, 0.85)";
+      ctx.lineWidth = 3.2;
+      ctx.beginPath();
+      ctx.arc(4, 0, 9.5, 0.4 + kickWave * 0.15, Math.PI * 1.7 + kickWave * 0.15);
+      ctx.stroke();
+      ctx.restore();
+    } else if (arms) {
+      const arm = 0.55 + stroke * 0.7;
+      drawLimbChain(8, -5.4, -1.15 + arm, 8.2, -0.4, 6.6, 2.3, "#f0c2a0");
+      drawLimbChain(6, 5.8, 1.2 - arm * 0.85, 7.4, 0.35, 6.0, 2.2, "#f0c2a0");
+    }
+  }
   function drawDiver(x, y, ang, t, skinId) {
     const skin = normalizeSkin(skinId != null ? skinId : state.skin);
     shadow(x, y + 6, 12, 5);
     const phase = player.walkPhase != null ? player.walkPhase : t;
     const kickWave = Math.sin(phase);
-    const pitch = (player.pitch || 0) + kickWave * 0.055;
-    const sway = Math.sin(t * 8) * 0.035;
+    const stroke = Math.sin(phase + 1.15);
+    const pitch = (player.pitch || 0) + kickWave * 0.08;
+    const sway = Math.sin(t * 8) * 0.04;
+    const tilt = ang + pitch + sway;
     const fi = gaitIndex(phase, 6);
-    if (blitGait(skin, "swim", fi, x, y, {
-      rot: ang + pitch + sway,
-      scale: 0.5,
-      scaleX: 1 + Math.abs(kickWave) * 0.03,
-      scaleY: 1 - Math.abs(kickWave) * 0.034,
+    const drew = blitGait(skin, "swim", fi, x, y, {
+      rot: tilt,
+      scale: 0.58,
+      scaleX: 1 + Math.abs(kickWave) * 0.05,
+      scaleY: 1 - Math.abs(kickWave) * 0.055,
       water: true,
-    })) return;
-    ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
-    const kick = Math.sin(t * 11) * 0.48;
-    const stroke = Math.sin(t * 7.5) * 0.22;
-    const fin = skin === "dino" ? "#3d9a4a" : "#f0b429";
-    const finEdge = skin === "dino" ? "#1e4a24" : "#8a6a10";
-    function kickFin(side) {
-      ctx.save();
-      ctx.rotate(side * (0.28 + kick));
-      ctx.fillStyle = fin;
-      ctx.beginPath();
-      ctx.moveTo(-12, side * 2.4);
-      ctx.lineTo(-30, side * 12);
-      ctx.quadraticCurveTo(-33, side * 2, -28, side * 0.6);
-      ctx.lineTo(-13, side * 1.0);
-      ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = finEdge; ctx.lineWidth = 1.05; ctx.stroke();
-      ctx.fillStyle = "rgba(255,255,255,0.22)";
-      ctx.beginPath(); ctx.ellipse(-21, side * 5, 5.4, 1.5, 0.2 * side, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(tilt);
+    drawSwimPaddle(skin, phase, kickWave, stroke, !drew);
+    if (drew) {
       ctx.restore();
+      return;
     }
+    const kick = kickWave * 0.48;
     drawLimbChain(-2, 4, Math.PI * 0.92 + kick * 0.35, 8, kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
     drawLimbChain(2, 4, -Math.PI * 0.92 - kick * 0.35, 8, -kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
-    kickFin(1);
-    kickFin(-1);
     if (skin === "dino") {
       ctx.fillStyle = "#cfd8e3";
       roundRect(-13, -8, 9, 16, 3); ctx.fill();
@@ -7216,7 +7329,9 @@
     ctx.fillStyle = "#0a3040";
     ctx.fillRect(-480, -240, shopW() + 960, SHOP.h + 480);
     drawShopHarbor(!!state.unlocked[1]);
-    drawBayWater(-8, 888, shopW() + 16, SHOP.h - 880, state.time, !!state.unlocked[1]);
+    // Bay water starts under the distant shore so the mid-shop sides are
+    // ocean (foam / depth), not town tiles floating on the surface.
+    drawBayWater(-8, 772, shopW() + 16, SHOP.h - 764, state.time, !!state.unlocked[1]);
     drawWetWaterline(-8, 886, shopW() + 16, state.time);
     for (const t of dockTeasers) {
       if (onDryWood(t.x, t.y) || t.y < 1080) continue;
@@ -7240,11 +7355,16 @@
     const teal = !!state.unlocked[1];
     drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal });
     const midA = midWoodAlpha();
+    // Aisle pier stays visible from the dock — hiding it made the walk to
+    // the plaza look like crossing the painted sky.
+    ctx.save();
+    ctx.globalAlpha = Math.max(0.82, midA);
+    drawPierBoards(800, 360, 176, 530, { plank: 24, wetY: 890, teal: teal });
+    drawWalkRail(800, 360, 176, 530);
+    ctx.restore();
     if (midA > 0.04) {
       ctx.save();
       ctx.globalAlpha = midA;
-      drawPierBoards(800, 360, 176, 530, { plank: 24, wetY: 890, teal: teal });
-      drawWalkRail(800, 360, 176, 530);
       drawPierBoards(156, 380, 172, 240, { plank: 20, teal: teal });
       drawPierBoards(1272, 380, 188, 246, { plank: 20, teal: teal });
       drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal });
@@ -9735,7 +9855,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 56", W / 2, 178);
+    ctx.fillText("Aqua Bay · loop 57", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -9776,7 +9896,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 56", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 57", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -9793,7 +9913,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 56", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 57", W / 2, 632);
     }
   }
 
