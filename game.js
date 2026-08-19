@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -273,11 +273,30 @@
     g.drawImage(ART.img, c.x, c.y, c.w, c.h, 0, 0, c.w, c.h);
     const img = g.getImageData(0, 0, c.w, c.h);
     const d = img.data, w = c.w, h = c.h;
+    // Packed leftover plates are pale mint / cyan slabs painted *behind*
+    // the person. They sit inset in the cell (transparent padding), so an
+    // edge-flood of the canvas never starts. Seed from the opaque bbox.
     function plateAt(i) {
       const r = d[i], gv = d[i + 1], b = d[i + 2], a = d[i + 3];
-      if (a < 28) return false;
+      if (a < 18) return false;
+      // Keep warm paint: skin, orange dress, straw hat, wood, hair.
+      if (r > gv + 14 && r > b + 8) return false;
+      if (r > 198 && gv > 150 && b < 150) return false;
       const mx = gv > b ? gv : b, mn = gv < b ? gv : b;
-      return r < 108 && mx > 88 && mn > 68 && (gv + b) > r * 2.1 && (mx - mn) < 78 && r < mn - 12;
+      const cyan = (gv + b) > r * 1.42;
+      const dull = (mx - mn) < 92;
+      return cyan && dull && mx > 68 && r < 172 && r < mn + 22;
+    }
+    let x0 = w, y0 = h, x1 = 0, y1 = 0;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        if (d[(y * w + x) * 4 + 3] >= 18) {
+          if (x < x0) x0 = x;
+          if (x > x1) x1 = x;
+          if (y < y0) y0 = y;
+          if (y > y1) y1 = y;
+        }
+      }
     }
     const seen = new Uint8Array(w * h);
     const stack = [];
@@ -287,8 +306,19 @@
       seen[p] = 1;
       stack.push(p);
     }
-    for (let x = 0; x < w; x++) { push(x); push((h - 1) * w + x); push((h - 2) * w + x); }
-    for (let y = 0; y < h; y++) { push(y * w); push(y * w + 1); push(y * w + w - 1); push(y * w + w - 2); }
+    if (x1 >= x0) {
+      const ring = 10;
+      for (let t = 0; t < ring; t++) {
+        for (let x = x0; x <= x1; x++) {
+          push((y0 + t) * w + x);
+          push((y1 - t) * w + x);
+        }
+        for (let y = y0; y <= y1; y++) {
+          push(y * w + (x0 + t));
+          push(y * w + (x1 - t));
+        }
+      }
+    }
     while (stack.length) {
       const p = stack.pop();
       d[p * 4 + 3] = 0;
@@ -297,6 +327,25 @@
       if (x < w - 1) push(p + 1);
       if (p >= w) push(p - w);
       if (p < w * (h - 1)) push(p + w);
+      if (x > 0 && p >= w) push(p - w - 1);
+      if (x < w - 1 && p >= w) push(p - w + 1);
+      if (x > 0 && p < w * (h - 1)) push(p + w - 1);
+      if (x < w - 1 && p < w * (h - 1)) push(p + w + 1);
+    }
+    // Peel a few leftover slab columns on the hard packed rect.
+    if (x1 >= x0) {
+      for (let y = y0; y <= y1; y++) {
+        for (let x = x0; x <= x0 + 5 && x <= x1; x++) {
+          const i = (y * w + x) * 4;
+          if (plateAt(i)) d[i + 3] = 0;
+          else if (d[i + 3] >= 18) break;
+        }
+        for (let x = x1; x >= x1 - 5 && x >= x0; x--) {
+          const i = (y * w + x) * 4;
+          if (plateAt(i)) d[i + 3] = 0;
+          else if (d[i + 3] >= 18) break;
+        }
+      }
     }
     g.putImageData(img, 0, 0);
     plateCan[name] = off;
@@ -332,7 +381,7 @@
     const sx0 = plate ? 0 : c.x, sy0 = plate ? 0 : c.y;
     const sw0 = plate ? plate.width : c.w, sh0 = plate ? plate.height : c.h;
     if (!opt.flat && !opt.water && !opt.noShadow) {
-      sitShadow(x, y + 5, 16 * sc, 4.4 * sc, 0.34);
+      sitShadow(x + SUN.dx * 0.08, y + 6, Math.max(12, 18 * sc), Math.max(4.2, 5.6 * sc), 0.44);
     }
     const incoming = opt.filter || (ctx.filter && ctx.filter !== "none" ? ctx.filter : "");
     const litLand = !opt.flat && !opt.water;
@@ -409,10 +458,9 @@
     if (opt.name === "Jun" || opt.visor) return "jun";
     if (opt.vip || opt.crown) return "vip";
     if (opt.hat === "#c4483a" && opt.shirt === "#1b4d6b") return "cashier";
-    let h = 0;
-    const s = String(opt.name || "") + String(opt.shirt || "") + String(opt.hairCut || 0);
-    for (let i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) | 0;
-    return "g" + ((h >>> 0) % 6);
+    // g0–g5 atlas cells still pack a teal slab that collides with teal
+    // shirts. Paint generics so no raw plate sits behind anyone.
+    return null;
   }
 
   // ===== STATE =====
@@ -1883,7 +1931,7 @@
   }
   function drawHangingSign(x, y) {
     const sway = Math.sin(state.time * 1.4) * 0.08;
-    sitShadow(x + 2, y + 14, 16, 5.5, 0.4);
+    sitShadow(x + 3, y + 16, 18, 6.2, 0.44);
     const post = ctx.createLinearGradient(x - 5, y - 40, x + 6, y + 12);
     post.addColorStop(0, "#a87440");
     post.addColorStop(0.35, "#8a5a30");
@@ -6439,9 +6487,12 @@
     const bob = Math.max(0, Math.sin(opt.bob || 0) * bounce) - hop;
     const walk = Math.sin((opt.bob || 0) * 1.6);
     const squash = 1 + walk * 0.07 + (hop ? 0.08 : 0);
+    const kid = !!opt.kid;
+    sitShadow(x + 2, y + 5, kid ? 10 : 15.5, kid ? 4.2 : 5.8, 0.46);
     const spr = blit(custSpriteName(opt), x, y + bob + 1.8, {
       flip: (opt.vx || 0) < -8,
-      scale: (opt.kid ? 0.5 : 0.58) * (1 + walk * 0.03),
+      scale: (kid ? 0.5 : 0.58) * (1 + walk * 0.03),
+      noShadow: true,
     });
     ctx.save();
     ctx.translate(x, y + bob);
@@ -6646,8 +6697,8 @@
     ctx.lineCap = "butt";
     ctx.fillStyle = "#e85d4c";
     ctx.beginPath(); ctx.arc(tipX - 3.2, tipY - 1.6, 2.05, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "rgba(255,255,255,0.28)";
-    ctx.beginPath(); ctx.arc(tipX - 3.8, tipY - 2.2, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(255,236,210,0.12)";
+    ctx.beginPath(); ctx.arc(tipX - 3.8, tipY - 2.2, 0.55, 0, Math.PI * 2); ctx.fill();
   }
   function gaitIndex(phase, n) {
     let u = phase / (Math.PI * 2);
@@ -6722,9 +6773,9 @@
       drawLimbChain(-11, 1, 0.28 + swing, 7.2, 0.35, 6.4, 2.35, "#3d9a4a", "#2a6a34");
       drawLimbChain(11, 1, -0.28 - swing, 7.2, -0.35, 6.4, 2.35, "#3d9a4a", "#2a6a34");
       const dinoBody = ctx.createLinearGradient(-4, -10, 8, 12);
-      dinoBody.addColorStop(0, "#62c86e");
-      dinoBody.addColorStop(0.5, "#46b35a");
-      dinoBody.addColorStop(1, "#2f7a3a");
+      dinoBody.addColorStop(0, "#54b45e");
+      dinoBody.addColorStop(0.55, "#3d9a4a");
+      dinoBody.addColorStop(1, "#2a6a34");
       ctx.fillStyle = dinoBody;
       ctx.beginPath();
       ctx.moveTo(-11, -8);
@@ -6735,9 +6786,9 @@
       ctx.fillStyle = "#2f7a3a";
       ctx.beginPath(); ctx.ellipse(-4, -1, 2.2, 1.6, 0, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(5, 3, 2.5, 1.7, 0.4, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#cfd8e3";
+      ctx.fillStyle = "#b8c4ce";
       roundRect(-17, -9, 8, 16, 3); ctx.fill();
-      ctx.fillStyle = "#8aa0b5"; ctx.fillRect(-15.2, -9, 3.4, 16);
+      ctx.fillStyle = "#7a8c9c"; ctx.fillRect(-15.2, -9, 3.4, 16);
       ctx.fillStyle = "#46b35a";
       ctx.save(); ctx.translate(-10, 6); ctx.rotate(-0.55 + walk * 0.18);
       ctx.beginPath();
@@ -6934,12 +6985,12 @@
     drawLimbChain(-2, 4, Math.PI * 0.92 + kick * 0.35, 8, kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
     drawLimbChain(2, 4, -Math.PI * 0.92 - kick * 0.35, 8, -kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
     if (skin === "dino") {
-      ctx.fillStyle = "#cfd8e3";
+      ctx.fillStyle = "#b8c4ce";
       roundRect(-13, -8, 9, 16, 3); ctx.fill();
-      ctx.fillStyle = "#8aa0b5"; ctx.fillRect(-11, -8, 3.6, 16);
+      ctx.fillStyle = "#7a8c9c"; ctx.fillRect(-11, -8, 3.6, 16);
       const db = ctx.createLinearGradient(-4, -10, 10, 10);
-      db.addColorStop(0, "#62c86e");
-      db.addColorStop(1, "#2f7a3a");
+      db.addColorStop(0, "#54b45e");
+      db.addColorStop(1, "#2a6a34");
       ctx.fillStyle = db;
       ctx.beginPath();
       ctx.ellipse(2, 0, 12, 9.2, 0, 0, Math.PI * 2); ctx.fill();
@@ -7026,7 +7077,8 @@
     drawCrate(x + 10, y - 22, 38, 26);
   }
   function drawDiveSign(cx, footY) {
-    if (blit("divepad", cx, footY, { scale: 0.68, flat: true })) return;
+    sitShadow(cx + 3, footY + 8, 48, 9, 0.4);
+    if (blit("divepad", cx, footY, { scale: 0.68, noShadow: true })) return;
     ctx.save();
     ctx.translate(cx, footY);
     ctx.fillStyle = "rgba(16, 8, 4, 0.28)";
@@ -7066,7 +7118,7 @@
     ctx.restore();
   }
   function drawLifeRing(x, y) {
-    sitShadow(x + 4, y + 20, 24, 7, 0.42);
+    sitShadow(x + 5, y + 22, 26, 8, 0.46);
     // Lean on the boards and take the shared sun — not a face-on sticker.
     if (blit("lifering", x + 1, y + 10, { scale: 0.82, rot: -0.16, noShadow: true })) return;
     ctx.save();
@@ -7823,7 +7875,7 @@
   }
   function drawWelcome() {
     const b = WELCOME;
-    sitShadow(b.x + b.w / 2 + 2, b.y + b.h + 6, b.w * 0.48, 9, 0.4);
+    sitShadow(b.x + b.w / 2 + 3, b.y + b.h + 7, b.w * 0.5, 10, 0.44);
     const leg = ctx.createLinearGradient(b.x, b.y, b.x + 16, b.y + b.h + 8);
     leg.addColorStop(0, "#a87440");
     leg.addColorStop(1, "#5a3018");
@@ -10021,9 +10073,10 @@
         plate.addColorStop(0.46, "#3d8b9a");
         plate.addColorStop(1, "#d4a070");
       } else {
-        plate.addColorStop(0, "#6eb8d8");
-        plate.addColorStop(0.4, "#2a7d8a");
-        plate.addColorStop(1, "#8a6a38");
+        plate.addColorStop(0, "#f0c878");
+        plate.addColorStop(0.28, "#7eb8d0");
+        plate.addColorStop(0.62, "#3d6f7a");
+        plate.addColorStop(1, "#c4894a");
       }
       ctx.fillStyle = plate;
       ctx.fillRect(x + 6, cy + 8, cardW - 12, cardH * 0.64);
@@ -10031,7 +10084,7 @@
         const crops = {
           skip: [0.00, 0.06, 0.46, 0.70],
           reef: [0.28, 0.00, 0.50, 0.68],
-          dino: [0.52, 0.16, 0.46, 0.78],
+          dino: [0.56, 0.00, 0.44, 0.56],
         };
         const [sx, sy, sw, sh] = crops[id];
         ctx.globalAlpha = 0.9;
@@ -10049,9 +10102,19 @@
         ctx.fillRect(x + 6, cy + 8 + cardH * 0.46, cardW - 12, cardH * 0.20);
         drawPierBoards(x + 4, cy + 8 + cardH * 0.50, cardW - 8, cardH * 0.16, { plank: 14, wetY: cy + 8 + cardH * 0.58 });
       } else {
-        ctx.fillStyle = "rgba(20, 90, 110, 0.32)";
-        ctx.fillRect(x + 6, cy + 8 + cardH * 0.46, cardW - 12, cardH * 0.20);
-        drawPierBoards(x + 10, cy + 8 + cardH * 0.52, cardW - 20, cardH * 0.12, { plank: 10 });
+        // Dusk harbor pier — painted boards + a piling, not a teal slab.
+        drawPierBoards(x + 4, cy + 8 + cardH * 0.46, cardW - 8, cardH * 0.20, {
+          plank: 11, seg: 28, wetY: cy + 8 + cardH * 0.58,
+        });
+        ctx.save();
+        ctx.translate(x + cardW - 22, cy + 8 + cardH * 0.62);
+        ctx.fillStyle = "#5a3614";
+        ctx.fillRect(-4, -22, 7, 26);
+        ctx.fillStyle = "rgba(255, 210, 140, 0.18)";
+        ctx.fillRect(-4, -22, 2.2, 26);
+        ctx.fillStyle = "#8a5a30";
+        ctx.beginPath(); ctx.arc(-0.4, -22, 4.2, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
       }
       ctx.restore();
       if (selected) {
@@ -10142,7 +10205,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 60", W / 2, 178);
+    ctx.fillText("Aqua Bay · loop 61", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -10183,7 +10246,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 60", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 61", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -10200,7 +10263,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 60", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 61", W / 2, 632);
     }
   }
 
@@ -10280,9 +10343,12 @@
         ctx.lineWidth = 3.4;
         roundRect(x - 2, y - 2, cw + 4, ch + 6, 13); ctx.stroke();
       }
-      if (state.unlocked[i]) drawFishBody(SPECIES[i], x + cw / 2, y + ch * 0.42, 0, 0.92, state.time + i);
-      else {
-        drawFishSilhouette(SPECIES[i], x + cw / 2, y + ch * 0.32, 0.86);
+      ctx.save();
+      roundRect(x + 6, y + 4, cw - 12, ch * 0.58, 8); ctx.clip();
+      if (state.unlocked[i]) drawFishBody(SPECIES[i], x + cw / 2, y + ch * 0.40, 0, 0.82, state.time + i);
+      else drawFishSilhouette(SPECIES[i], x + cw / 2, y + ch * 0.30, 0.78);
+      ctx.restore();
+      if (!state.unlocked[i]) {
         ctx.fillStyle = affordable ? "#ffe27a" : hover && need > 0 ? "#ffb08a" : "#ffe27a";
         ctx.font = hover && need > 0 ? "800 11px Nunito, sans-serif" : "800 13px Nunito, sans-serif";
         ctx.textAlign = "center";
@@ -10844,16 +10910,27 @@
       : kind === 2
         ? { cap0: "#fff4c8", cap1: "#f0c04a", cap2: "#c47820", arm: "rgba(240, 200, 90, 0.5)", tent: "rgba(220, 170, 60, 0.48)", rim: "#6a3a10" }
         : { cap0: "#e8fff8", cap1: "#7ad0e8", cap2: "#2a7d8a", arm: "rgba(120, 210, 220, 0.5)", tent: "rgba(90, 190, 210, 0.48)", rim: "#144048" };
-    ctx.strokeStyle = tints.tent;
-    ctx.lineWidth = 1.15;
     ctx.lineCap = "round";
     for (let i = 0; i < 7; i++) {
       const ox = -12 + i * 4;
-      ctx.beginPath();
-      ctx.moveTo(ox * 0.45, 6);
-      for (let k = 1; k <= 6; k++) {
-        ctx.lineTo(ox * 0.45 + Math.sin(state.time * 2.2 + s.ph + i + k * 0.7) * 3.4, 6 + k * 6.2);
+      const pts = [];
+      for (let k = 0; k <= 6; k++) {
+        pts.push([
+          ox * 0.45 + Math.sin(state.time * 2.2 + s.ph + i + k * 0.7) * 3.4,
+          6 + k * 6.2,
+        ]);
       }
+      ctx.strokeStyle = "rgba(8, 24, 32, 0.28)";
+      ctx.lineWidth = 2.15;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0] + 1.1, pts[0][1]);
+      for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0] + 1.1, pts[k][1]);
+      ctx.stroke();
+      ctx.strokeStyle = tints.tent;
+      ctx.lineWidth = 1.25;
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]);
       ctx.stroke();
     }
     ctx.strokeStyle = tints.arm;
@@ -10881,9 +10958,13 @@
     ctx.quadraticCurveTo(9, 8, 0, 7);
     ctx.quadraticCurveTo(-9, 8, -16 * pulse, 0);
     ctx.fill();
-    ctx.fillStyle = "rgba(8, 16, 22, 0.18)";
+    ctx.fillStyle = "rgba(8, 16, 22, 0.22)";
     ctx.beginPath();
-    ctx.ellipse(3, 2, 10 * pulse, 5.5 * pulse, 0.15, 0, Math.PI * 2);
+    ctx.ellipse(4, 2.4, 9.2 * pulse, 5.8 * pulse, 0.18, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(8, 20, 28, 0.16)";
+    ctx.beginPath();
+    ctx.ellipse(8, 0, 5.4 * pulse, 8.2 * pulse, 0.08, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = tints.rim;
     ctx.lineWidth = 1.35;
