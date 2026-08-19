@@ -6509,9 +6509,10 @@
     const blitSc = 0.42 * short;
     const squashX = moving ? 1 + Math.abs(contact) * 0.018 : 1;
     const squashY = moving ? 1 - Math.abs(contact) * 0.022 : 1;
-    // Painted soles sit ~4px below ay; lift so the origin is the wood.
-    const plant = y - 3.8 * blitSc + bob;
-    shadow(x, y + 2, moving ? 12 : 10.5, moving ? 4.4 : 3.8);
+    // Sink soles 2px into the plank seam so they read as standing on wood,
+    // not hovering on the grain. Shadow sits on the same baseline.
+    const plant = y + 2.4 + bob;
+    shadow(x, y + 3, moving ? 13 : 11, moving ? 4.8 : 4.0);
     const fi = moving ? gaitIndex(walkPhase, 6) : 0;
     if (moving) {
       if (blitGait(skin, "walk", fi, x, plant, {
@@ -6744,12 +6745,11 @@
     ctx.translate(x, y);
     ctx.scale(flip, 1);
     ctx.rotate(tilt);
-    // Painted swim frames already kick; extra fins only on the vector fallback.
-    drawSwimPaddle(skin, phase, kickWave, stroke, !drew);
     if (drew) {
       ctx.restore();
       return;
     }
+    drawSwimPaddle(skin, phase, kickWave, stroke, true);
     const kick = kickWave * 0.48;
     drawLimbChain(-2, 4, Math.PI * 0.92 + kick * 0.35, 8, kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
     drawLimbChain(2, 4, -Math.PI * 0.92 - kick * 0.35, 8, -kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
@@ -7570,7 +7570,7 @@
     drawMopBucket(748, 944);
     drawHangingSign(1020, 924);
     drawBench(1108, 942);
-    drawLifeRing(548, 934);
+    drawLifeRing(512, 918);
     drawAnchor(1196, 952);
     drawVending(1336, 548);
     drawBaitShack(1408, 548);
