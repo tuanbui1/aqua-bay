@@ -347,6 +347,9 @@ def main():
             im = plank_from_paint(painted[i], 240, 40, i)
         else:
             im = paint_plank(5 + i * 13, 240, 40)
+        # One dock family — keep grain, pull outlier boards toward honey pine.
+        warm = Image.new("RGBA", im.size, (196, 132, 68, 48 + (i % 3) * 8))
+        im = Image.alpha_composite(im, warm)
         add(name, im, im.width / 2, im.height / 2)
 
     water_path = SRC / "bay-water-surface.png"

@@ -5374,12 +5374,12 @@
     const cell = ATLAS.water;
     if (ART.ready && cell) {
       ctx.save();
-      ctx.globalAlpha = 0.38;
-      for (let n = 0; n < 4; n++) {
-        const jx = x - 60 + hash2(n, 1) * (w * 0.4) + Math.sin(t * 0.18 + n) * 22;
-        const jy = y - 16 + hash2(n, 4) * (h * 0.28);
-        const jw = 320 + hash2(n, 6) * 180;
-        const jh = 160 + hash2(n, 8) * 80;
+      ctx.globalAlpha = 0.16;
+      for (let n = 0; n < 3; n++) {
+        const jx = x - 40 + hash2(n, 1) * (w * 0.28) + Math.sin(t * 0.18 + n) * 18;
+        const jy = y - 10 + hash2(n, 4) * (h * 0.18);
+        const jw = w * (0.55 + hash2(n, 6) * 0.2);
+        const jh = h * (0.55 + hash2(n, 8) * 0.15);
         ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, jx, jy, jw, jh);
       }
       ctx.restore();
@@ -5523,6 +5523,8 @@
       ctx.fillRect(jx, y, 1.4, h);
     }
     ctx.restore();
+    ctx.fillStyle = "rgba(168, 108, 52, 0.16)";
+    ctx.fillRect(x, y, w, h);
     if (wetY != null) {
       const wet = ctx.createLinearGradient(x, wetY - 72, x, wetY + 18);
       wet.addColorStop(0, "rgba(18,70,90,0)");
@@ -7971,17 +7973,6 @@
       g.addColorStop(1, "#041820");
     }
     ctx.fillStyle = g; ctx.fillRect(0, 0, OCEAN.w, OCEAN.h);
-    if (ATLAS.water && ART.ready) {
-      ctx.save();
-      ctx.globalAlpha = night ? 0.16 : 0.28;
-      const cell = ATLAS.water;
-      for (let n = 0; n < 6; n++) {
-        const jx = hash2(n, 2) * OCEAN.w - 80;
-        const jy = 80 + hash2(n, 5) * 720;
-        ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, jx, jy, 420 + hash2(n, 8) * 160, 220);
-      }
-      ctx.restore();
-    }
     ctx.save();
     for (let n = 0; n < 70; n++) {
       const px = hash2(n, 1) * OCEAN.w;
@@ -9638,7 +9629,7 @@
     ctx.fillRect(0, H * 0.55, W, H * 0.45);
     ctx.restore();
     drawFoamBand(-10, H - 78, W + 20, state.time);
-    drawPierBoards(-8, H - 64, W + 16, 72, { plank: 18, seg: 96, wetY: H - 52 });
+    drawPierBoards(-8, H - 64, W + 16, 72, { plank: 30, wetY: H - 52 });
     const titlePosts = [[78, 0.78, 21], [268, 1.36, 22], [1012, 0.88, 23], [1218, 1.28, 24]];
     for (const [px, sc, id] of titlePosts) drawPierPost(px + 7, H - 52, sc, id);
     ctx.save(); ctx.globalCompositeOperation = "lighter";
