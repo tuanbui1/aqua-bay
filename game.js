@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -2480,6 +2480,46 @@
   }
   function worldToScreen(x, y) { return { x: (x - cam.x) * cam.z + W / 2, y: (y - cam.y) * cam.z + H / 2 }; }
   function screenToWorld(x, y) { return { x: (x - W / 2) / cam.z + cam.x, y: (y - H / 2) / cam.z + cam.y }; }
+  // Right-rail species chips stay HUD-pinned in this gutter. World sprites
+  // fade before they enter it so a crate or fish never slices through a chip.
+  // Cards never slide left over pier furniture. C66 still hides the chips
+  // when the column covers the bait shack — then the gutter is not occupied.
+  function hudGutterLeft() {
+    const strip = speciesStripLayout();
+    return strip.x - 14;
+  }
+  function hudGutterOccupied() {
+    if (state.mode === "title") return false;
+    const strip = speciesStripLayout();
+    const shack = baitShackScreenBox();
+    if (shack && boxesOverlap({ x: strip.x, y: strip.y, w: strip.w, h: Math.max(strip.h, 40) }, shack, 18)) {
+      return false;
+    }
+    return true;
+  }
+  function worldSpriteAlpha(wx, wy, rad) {
+    const s = worldToScreen(wx, wy);
+    const r = (rad == null ? 40 : rad) * Math.max(0.6, cam.z || 1);
+    const fade = 72;
+    const rightEdge = hudGutterOccupied() ? hudGutterLeft() : W;
+    // Fade from the sprite's near edge so a wide fish / crate is gone
+    // before any pixel crosses the gutter. Using the far edge left a
+    // half-cut clownfish under Sea Turtle $1400.
+    const aL = clamp((s.x - r + fade) / fade, 0, 1);
+    const aR = clamp((rightEdge - (s.x + r)) / fade, 0, 1);
+    const aT = clamp((s.y - r + fade) / fade, 0, 1);
+    const aB = clamp((H - (s.y + r)) / fade, 0, 1);
+    return clamp(Math.min(aL, aR, aT, aB), 0, 1);
+  }
+  function paintWorldSprite(wx, wy, rad, draw) {
+    const a = worldSpriteAlpha(wx, wy, rad);
+    if (a <= 0.04) return false;
+    ctx.save();
+    ctx.globalAlpha *= a;
+    draw();
+    ctx.restore();
+    return true;
+  }
   function worldHudFade(wx, wy) {
     const s = worldToScreen(wx, wy);
     const floor = state.scene === "shop" ? topHudFloor() : 88;
@@ -2491,7 +2531,8 @@
   function screenBoxAlpha(x, y, w, h, pad) {
     const p = pad == null ? 6 : pad;
     const topSafe = state.scene === "shop" ? topHudFloor() : 0;
-    const inset = Math.min(x, y - topSafe, W - (x + w), H - (y + h));
+    const rightSafe = hudGutterOccupied() ? hudGutterLeft() : W;
+    const inset = Math.min(x, y - topSafe, rightSafe - (x + w), H - (y + h));
     if (inset >= p) return 1;
     if (inset <= 0) return 0;
     return inset / p;
@@ -6552,10 +6593,15 @@
   }
   function drawDeckPosts(x, y, w, h, n) {
     const count = Math.max(2, n || 3);
+    // Plant on the painted waterline — y+h+6 sat a few posts above the
+    // foam when the aisle taper scrolled in, so one piling floated.
+    const foot = 890;
     for (let i = 0; i < count; i++) {
       const px = x + 16 + (w - 32) * (i / Math.max(1, count - 1));
       const id = 40 + i + ((x + y) | 0) % 17;
-      drawPierPost(px, y + h + 6, 0.62 + hash2(id, 3) * 0.28, id);
+      paintWorldSprite(px, foot, 40, function () {
+        drawPierPost(px, foot, 0.62 + hash2(id, 3) * 0.28, id);
+      });
     }
   }
   function shopViewBand() {
@@ -8398,11 +8444,13 @@
     drawWetWaterline(-8, 886, shopW() + 16, state.time, dryDecks);
     for (const t of dockTeasers) {
       if (onDryWood(t.x, t.y) || t.y < 1080) continue;
+      const ta = worldSpriteAlpha(t.x, t.y, 26);
+      if (ta <= 0.04) continue;
       ctx.save();
       if (state.unlocked[1]) {
-        ctx.globalAlpha = 0.78;
+        ctx.globalAlpha = 0.78 * ta;
       } else {
-        ctx.globalAlpha = 0.38;
+        ctx.globalAlpha = 0.38 * ta;
         ctx.filter = "brightness(0.22) saturate(0.35)";
       }
       drawFishBody(SPECIES[t.s], t.x, t.y, 0.08, 1.22, state.time + t.ph);
@@ -8417,7 +8465,9 @@
     // C58 — dock pilings sort with the walker so feet do not draw through
     // the front posts. Far-side posts still paint as waterline backdrop.
     for (const [px, py, sc, id] of dockPosts) {
-      if (py < 1008) drawPierPost(px, py, sc, id);
+      if (py < 1008) {
+        paintWorldSprite(px, py, 36, function () { drawPierPost(px, py, sc, id); });
+      }
     }
     const teal = !!state.unlocked[1];
     drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal, alignY: 80 });
@@ -8607,16 +8657,18 @@
       }
       ctx.globalAlpha = 1;
     }
-    drawPot(140, 400, "#4cba6a"); drawPot(1600, 400, "#3aa35a");
-    drawPot(168, 780, "#3aa35a", 1.7); drawPot(1588, 780, "#2e8b4a", 1.75);
-    drawCrateStack(360, 760);
-    drawCrateStack(1288, 748);
-    drawCrate(1004, 948, 40, 26);
-    drawCrate(1014, 928, 34, 22);
-    drawMopBucket(748, 944);
-    drawHangingSign(1020, 924);
-    drawBench(1108, 942);
-    drawLifeRing(512, 918);
+    paintWorldSprite(140, 400, 28, function () { drawPot(140, 400, "#4cba6a"); });
+    paintWorldSprite(1600, 400, 28, function () { drawPot(1600, 400, "#3aa35a"); });
+    paintWorldSprite(168, 780, 36, function () { drawPot(168, 780, "#3aa35a", 1.7); });
+    paintWorldSprite(1588, 780, 36, function () { drawPot(1588, 780, "#2e8b4a", 1.75); });
+    paintWorldSprite(381, 748, 52, function () { drawCrateStack(360, 760); });
+    paintWorldSprite(1309, 736, 52, function () { drawCrateStack(1288, 748); });
+    paintWorldSprite(1024, 961, 36, function () { drawCrate(1004, 948, 40, 26); });
+    paintWorldSprite(1031, 939, 32, function () { drawCrate(1014, 928, 34, 22); });
+    paintWorldSprite(748, 944, 28, function () { drawMopBucket(748, 944); });
+    paintWorldSprite(1020, 924, 36, function () { drawHangingSign(1020, 924); });
+    paintWorldSprite(1148, 942, 48, function () { drawBench(1108, 942); });
+    paintWorldSprite(512, 918, 28, function () { drawLifeRing(512, 918); });
     {
       const diveA = worldBoxAlpha(diveSign.x - 48, diveSign.y - 136, 96, 152);
       if (diveA > 0.04) {
@@ -8626,7 +8678,7 @@
         ctx.restore();
       }
     }
-    drawAnchor(1196, 952);
+    paintWorldSprite(1196, 952, 32, function () { drawAnchor(1196, 952); });
     drawVending(1336, 548);
     drawBaitShack(1408, 548);
     drawSkiff(pierLife.skiff);
@@ -8648,8 +8700,13 @@
       ctx.clip();
       for (const sw of state.shopSwimmers) {
         if (!inAisleWater(sw.x, sw.y) || onDryWood(sw.x, sw.y)) continue;
+        const sa = worldSpriteAlpha(sw.x, sw.y, 28);
+        if (sa <= 0.04) continue;
+        ctx.save();
+        ctx.globalAlpha *= sa;
         const ang = (sw.vx >= 0 ? 1 : -1) * Math.PI / 2;
         drawFishBody(SPECIES[sw.s], sw.x, sw.y, ang + Math.sin(state.time * 2 + sw.ph) * 0.12, 1.15, state.time + sw.ph);
+        ctx.restore();
       }
       ctx.restore();
     }
@@ -8661,7 +8718,12 @@
     for (let i = 0; i < dockPosts.length; i++) {
       const px = dockPosts[i][0], py = dockPosts[i][1], sc = dockPosts[i][2], id = dockPosts[i][3];
       if (py < 1008) continue;
-      actors.push({ y: py, draw: function () { drawPierPost(px, py, sc, id); } });
+      actors.push({
+        y: py,
+        draw: function () {
+          paintWorldSprite(px, py, 36, function () { drawPierPost(px, py, sc, id); });
+        },
+      });
     }
     actors.sort(function (a, b) { return a.y - b.y; });
     for (let i = 0; i < actors.length; i++) actors[i].draw();
@@ -9366,6 +9428,10 @@
     drawOceanScenery();
     const list = oceanFish.filter((f) => !f.caught).sort((a, b) => a.y - b.y);
     for (const f of list) {
+      const fa = worldSpriteAlpha(f.x, f.y, Math.max(40, SPECIES[f.s].size * 2.8));
+      if (fa <= 0.04) continue;
+      ctx.save();
+      ctx.globalAlpha *= fa;
       if (night) {
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
@@ -9398,6 +9464,7 @@
         ctx.font = "800 14px Fredoka, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText("Blue Tang?", f.x, f.y - 26 + Math.sin(state.time * 5) * 3);
+        ctx.restore();
         continue;
       }
       let dang = f.ang;
@@ -9483,6 +9550,7 @@
           ctx.restore();
         }
       }
+      ctx.restore();
     }
     if (state.catchClimax && state.catchClimax.fish) {
       const f = state.catchClimax.fish;
@@ -9509,7 +9577,12 @@
     drawDiver(player.x, player.y, player.facing, player.bob);
     for (const f of list) {
       if (f === player.target || !fishInCone(f)) continue;
+      const fa = worldSpriteAlpha(f.x, f.y, 22);
+      if (fa <= 0.04) continue;
+      ctx.save();
+      ctx.globalAlpha *= fa;
       drawWorldPlate(f.x, f.y - 24 + Math.sin(state.time * 8) * 2, "!", "bang");
+      ctx.restore();
     }
     if (player.catchProg > 0 && (player.target || player.scoopLock || catchHolding())) {
       const f = player.target || player.scoopLock;
@@ -11039,7 +11112,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 68", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 69", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -11080,7 +11153,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 68", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 69", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -11097,7 +11170,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 68", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 69", W / 2, 632);
     }
   }
 
@@ -11127,15 +11200,10 @@
     const ch = compactHud() ? thumbCanvas(50, 56, 72) : 64;
     const { muteB, pauseB } = topCtrlBoxes();
     const colH = railSpeciesIds().length * (ch + 6);
-    let xCol = muteB.x - 12 - cw;
+    // Stay in the HUD gutter under mute/pause. Sliding left to dodge the
+    // bait shack (C66) painted Sea Turtle $1400 over a crate.
+    const xCol = muteB.x - 12 - cw;
     const startY = muteB.y + muteB.h + 12;
-    const shack = baitShackScreenBox();
-    if (shack) {
-      const col = { x: xCol, y: startY, w: cw, h: colH };
-      if (boxesOverlap(col, shack, 22)) {
-        xCol = Math.max(400, Math.min(xCol, Math.round(shack.x - cw - 20)));
-      }
-    }
     return { x: xCol, y: startY, w: cw, h: colH, cw, ch, muteB, pauseB };
   }
   function railSpeciesIds() {
@@ -11515,17 +11583,27 @@
     ctx.save();
     ctx.globalAlpha = 0.72 * a;
     for (const f of state.nearMiss) {
+      const fa = worldSpriteAlpha(f.x, f.y, 18);
+      if (fa <= 0.04) continue;
+      ctx.save();
+      ctx.globalAlpha *= fa;
       drawFishBody(SPECIES[0], f.x, f.y, 0.05, 0.95, state.time + f.ph);
+      ctx.restore();
     }
     ctx.restore();
   }
   function drawOceanScenery() {
     for (const s of oceanScenery) {
+      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : 32);
+      if (sa <= 0.04) continue;
+      ctx.save();
+      ctx.globalAlpha *= sa;
       if (s.kind === "ray") drawSceneryRay(s);
       else if (s.kind === "jelly") drawSceneryJelly(s);
       else if (s.kind === "kelp") drawKelpPatch(s);
       else if (s.kind === "rock") drawRockProp(s.x, s.y, s.seed || 1, s.sc || 1);
       else drawSceneryMinnow(s);
+      ctx.restore();
     }
   }
   function drawKelpPatch(s) {
