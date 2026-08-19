@@ -102,12 +102,15 @@
   const KIOSK    = { x: 1280, y: 480, w: 170, h: 130 };
   const WELCOME  = { x: 300, y: 668, w: 156, h: 86 };
   const DIVE_ZONE = { x: 520, y: 980, w: 720, h: 160 };
-  // East dressing sits on painted wood, fully in the playfield at the
-  // dock camera. Hut / POP live on the east shop deck; crates sit on
-  // the dock. Whole-sprite fade hides them before the reserved well.
-  const BAIT_HUT = { x: 1328, y: 548 };
-  const POP_VEND = { x: 1286, y: 548 };
-  const EAST_CRATES = { x: 1088, y: 936 };
+  // East dressing sits on the same painted dock as the west walk — not
+  // a second room at plaza Y. C72 parked hut / POP on the east shop
+  // deck (y≈548); walking east then opened the navy gap. Whole-sprite
+  // fade hides them before the reserved well.
+  const BAIT_HUT = { x: 1124, y: 918 };
+  const POP_VEND = { x: 996, y: 918 };
+  const EAST_CRATES = { x: 1056, y: 936 };
+  const DOCK_CAM_FLOOR = 1000;
+  const PLAZA_CAM_CEILING = 520;
   const AISLE = { x: 802, y: 318, w: 156, h: 560 };
   const EXPEDITION_COST = 35;
   const EXPEDITION_SECS = 45;
@@ -225,7 +228,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -920,7 +923,7 @@
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.route = null; player.blockT = 0; player.walkPhase = 0; player.lean = 0; player.faceS = 1; player.pitch = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
-    cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28;
+    cam.x = 880; cam.y = 1000; cam.z = 1; cam.rail = 28;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
     stockHops.length = 0; bagGhosts.length = 0; pathGlints.length = 0; pathCoins.length = 0;
@@ -2329,7 +2332,7 @@
     if (state.scene !== "shop" && state.scene !== "ocean") state.scene = "shop";
     if (state.scene === "shop") {
       player.x = 880; player.y = 920;
-      cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28; cam.shopBand = null;
+      cam.x = 880; cam.y = 1000; cam.z = 1; cam.rail = 28; cam.shopBand = null;
       state.camTillHold = 0;
       clearWalk();
       if (state.tutorial === 0) state.didMove = false;
@@ -2544,13 +2547,13 @@
   }
   // Furniture near the reserved well fades as a whole sprite before the
   // hard clip, so the hut / POP / crates never read as sawed in half.
-  // Fade starts while the entire AABB is still left of the well — a
-  // 28px window was too late and left a half-sprite under the razor.
+  // Alpha hits 0 when the sprite's right edge reaches the well — C72's
+  // 80px / undersized rad still left POP under the razor at x≈798.
   function railPropAlpha(wx, wy, rad) {
     const s = worldToScreen(wx, wy);
-    const r = (rad == null ? 72 : rad) * Math.max(0.6, cam.z || 1);
-    const fade = 80;
-    const rightEdge = viewWidth() - 8;
+    const r = (rad == null ? 88 : rad) * Math.max(0.6, cam.z || 1);
+    const fade = 120;
+    const rightEdge = viewWidth() - 12;
     return clamp((rightEdge - (s.x + r)) / fade, 0, 1);
   }
   function paintRailProp(wx, wy, rad, draw) {
@@ -3649,6 +3652,8 @@
   // onto the painting. C71 — the east dock finger (x past 1260 / y past
   // 1010) was open water past the last plank. C72 — walk rect matches
   // the painted boards exactly so snap cannot lift feet off the grain.
+  // C73 — east walk stays on this dock. The plaza east deck is north,
+  // up the aisle — not a sideways yank into the navy gap.
   function shopDockWalk() {
     // Painted dock: drawPierBoards(500, 890, 760, 130). Last plank x=1260.
     return { x: 500, y: 890, w: 760, h: 130 };
@@ -3681,13 +3686,16 @@
     // east shop deck (y≈380–666) is closer in X than it looks, and a
     // naive nearest-rect yank lifted her ~150px onto sky / empty wood.
     const onDock = player && player.y > 820;
+    const keyed = keys && (keys.has("a") || keys.has("d") || keys.has("arrowleft") ||
+      keys.has("arrowright") || keys.has("w") || keys.has("s") ||
+      keys.has("arrowup") || keys.has("arrowdown"));
     let bestD = 1e15, nx = x, ny = y;
     for (let i = 0; i < rects.length; i++) {
       const rc = rects[i];
       const cx = clamp(x, rc.x, rc.x + rc.w);
       const cy = clamp(y, rc.y, rc.y + rc.h);
       let d = (cx - x) * (cx - x) + (cy - y) * (cy - y);
-      if (onDock && cy < 820) d += 220 * 220;
+      if (onDock && cy < 820) d += (keyed ? 520 : 360) * (keyed ? 520 : 360);
       if (d < bestD) { bestD = d; nx = cx; ny = cy; }
     }
     return { x: nx, y: ny };
@@ -6662,30 +6670,45 @@
     }
   }
   function shopViewBand() {
-    if (cam && cam.shopBand) return cam.shopBand;
-    if (player && player.y > 860) return "dock";
-    if (player && player.y < 680) return "plaza";
+    if (player && player.y > 820) return "dock";
+    if (player && player.y < 700) return "plaza";
+    if (cam && cam.y >= DOCK_CAM_FLOOR - 20) return "dock";
+    if (cam && cam.y <= PLAZA_CAM_CEILING + 20) return "plaza";
     return "mid";
   }
-  // Shop floor / kiosk / hut belong to the plaza. The dock camera must
-  // not peek them as a strip over the sky — C71's viewTop check ran
-  // BEFORE the band test, so a DIVE-button padB of cam.y≈730 still
-  // painted shop tiles into the dock view.
+  // Shop floor / kiosk / tanks belong to the plaza. The dock camera must
+  // not peek them as a strip over the sky. C72 hid them by player band
+  // only and pinned cam.y at 848 — that still framed the east shop deck
+  // (y≈380–626) plus a sky void, then walking east yanked onto it.
+  function plazaCameraReady() {
+    return !!(cam && cam.y <= PLAZA_CAM_CEILING + 36);
+  }
+  function dockCameraReady() {
+    return !!(cam && cam.y >= DOCK_CAM_FLOOR - 24);
+  }
   function plazaPropAlpha() {
-    const band = shopViewBand();
-    if (band === "dock") return 0;
-    if (band === "plaza") return 1;
-    const py = player && player.y != null ? player.y : 760;
-    // Hold east furniture until the walker is actually on the plaza
-    // so a mid-aisle camera cannot park a half-POP on the rail.
-    return clamp((720 - py) / 90, 0, 1);
+    if (player && player.y > 840) return 0;
+    if (dockCameraReady() || (cam && cam.y >= 860)) return 0;
+    if (!plazaCameraReady()) return 0;
+    if (player && player.y < 680) return 1;
+    const py = player && player.y != null ? player.y : 400;
+    return clamp((720 - py) / 80, 0, 1);
   }
   function midWoodAlpha() {
-    const band = shopViewBand();
-    if (band === "dock") return 0;
+    if (dockCameraReady() || (cam && cam.y >= 880)) return 0;
+    if (player && player.y > 860) return 0;
     const plaza = plazaPropAlpha();
-    if (band === "mid") return Math.max(0.2, plaza * 0.7);
+    const band = shopViewBand();
+    if (band === "mid") return Math.max(0.18, plaza * 0.7);
     return plaza;
+  }
+  function aisleBoardAlpha() {
+    // Dock camera still sees the ramp lip (y≈610–890). Keep that wood.
+    // Hide the upper aisle so it cannot read as a teal / sky column
+    // through the tank wall.
+    if (dockCameraReady() || (cam && cam.y >= 900)) return 0.72;
+    if (plazaCameraReady()) return Math.max(0.82, midWoodAlpha());
+    return 0.35;
   }
   function drawWalkRail(x, y, w, h, taper) {
     const topW = taper ? w * 0.56 : w;
@@ -8539,26 +8562,31 @@
     const teal = !!state.unlocked[1];
     const plazaA = plazaPropAlpha();
     const midA = midWoodAlpha();
+    const aisleA = aisleBoardAlpha();
     // Main plaza deck stays opaque — fading it punched sky through the
-    // aisle. It sits off-screen at the dock camera (cam.y ≥ 848).
+    // aisle. It sits off-screen at the dock camera (cam.y ≥ 1000).
     // Stop the deck before the reserved well so the rail is not a saw.
     const deckEnd = playfieldWorldRight() - 56;
     const plazaW = Math.max(0, Math.min(1580, deckEnd - 90));
-    if (plazaW > 24) {
+    if (plazaW > 24 && (plazaA > 0.04 || dockCameraReady())) {
       drawPierBoards(90, 80, plazaW, 300, { plank: 26, teal: teal, alignY: 80 });
     }
-    ctx.save();
-    ctx.globalAlpha = Math.max(0.82, midA);
-    drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
-    drawWalkRail(800, 360, 176, 530, true);
-    ctx.restore();
+    if (aisleA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = aisleA;
+      drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
+      drawWalkRail(800, 360, 176, 530, true);
+      ctx.restore();
+    }
     if (plazaA > 0.04) {
       ctx.save();
       ctx.globalAlpha = plazaA;
       const westW = Math.max(0, Math.min(172, deckEnd - 156));
       if (westW > 20) drawPierBoards(156, 380, westW, 240, { plank: 20, teal: teal, alignY: 80 });
-      const eastW = Math.max(0, Math.min(188, deckEnd - 1272));
-      if (eastW > 20) drawPierBoards(1272, 380, eastW, 246, { plank: 20, teal: teal, alignY: 80 });
+      // Full east deck when the plaza camera is up — shrinking to
+      // deckEnd made eastW=0 at cam.x≈880, so feet and POP sat on sky.
+      const eastPaint = Math.max(0, Math.min(188, playfieldWorldRight() - 8 - 1272));
+      if (eastPaint > 20) drawPierBoards(1272, 380, eastPaint, 246, { plank: 20, teal: teal, alignY: 80 });
       drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal, alignY: 80 });
       drawPierShade();
       const sunPatch = ctx.createRadialGradient(1240, 220, 20, 1100, 420, 520);
@@ -8605,7 +8633,7 @@
     // aisle water — painted channel, wet wood lip, no hard teal slab.
     // Hidden on the dock camera so it does not become a leftover teal column
     // over the harbor town.
-    const ax = AISLE.x, ay = AISLE.y, aw = AISLE.w, ah = AISLE.h;
+    const ax = AISLE.x, ay = Math.max(AISLE.y, 340), aw = AISLE.w, ah = AISLE.h - (Math.max(AISLE.y, 340) - AISLE.y);
     if (midA > 0.04) {
     ctx.save();
     ctx.globalAlpha = midA;
@@ -8755,7 +8783,7 @@
       paintWorldSprite(381, 748, 52, function () { drawCrateStack(360, 760); });
       ctx.restore();
     }
-    paintRailProp(EAST_CRATES.x + 21, EAST_CRATES.y - 12, 64, function () {
+    paintRailProp(EAST_CRATES.x + 21, EAST_CRATES.y - 12, 72, function () {
       drawCrateStack(EAST_CRATES.x, EAST_CRATES.y);
     });
     paintWorldSprite(1024, 961, 36, function () { drawCrate(1004, 948, 40, 26); });
@@ -8774,13 +8802,8 @@
       }
     }
     paintWorldSprite(1196, 952, 32, function () { drawAnchor(1196, 952); });
-    if (plazaA > 0.04) {
-      ctx.save();
-      ctx.globalAlpha = plazaA;
-      paintRailProp(POP_VEND.x, POP_VEND.y + 38, 56, function () { drawVending(POP_VEND.x, POP_VEND.y); });
-      paintRailProp(BAIT_HUT.x, BAIT_HUT.y + 36, 78, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
-      ctx.restore();
-    }
+    paintRailProp(POP_VEND.x, POP_VEND.y + 38, 64, function () { drawVending(POP_VEND.x, POP_VEND.y); });
+    paintRailProp(BAIT_HUT.x, BAIT_HUT.y + 36, 96, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
     drawSkiff(pierLife.skiff);
     drawGull(pierLife.gull);
     drawGull(pierLife.gull2);
@@ -10565,9 +10588,13 @@
       toast: !!live,
     });
   }
-  function chipAlpha(box, ribbon) {
-    const shack = baitShackScreenBox();
-    if (shack && boxesOverlap(box, shack, 18)) return 0;
+  function chipAlpha(box, ribbon, opts) {
+    // Rail cards live in the reserved well. Do not hide them when the
+    // shack walks by — that dropped the stack from 5 to 2 in C72.
+    if (!(opts && opts.rail)) {
+      const shack = baitShackScreenBox();
+      if (shack && boxesOverlap(box, shack, 18)) return 0;
+    }
     if (!ribbon) return 1;
     if (boxesOverlap(box, ribbon, 10)) return 0.12;
     if (state.camPunch > 0 && box.y < 70) return 0.55;
@@ -11269,7 +11296,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 72", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 73", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -11310,7 +11337,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 72", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 73", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -11327,7 +11354,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 72", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 73", W / 2, 632);
     }
   }
 
@@ -11387,7 +11414,7 @@
       const hover = mouse.x >= x && mouse.x <= x + cw && mouse.y >= y && mouse.y <= y + ch + 2;
       const affordable = !state.unlocked[i] && i === next && state.money >= SPECIES[i].unlock;
       const need = !state.unlocked[i] ? Math.max(0, SPECIES[i].unlock - (state.money | 0)) : 0;
-      const fade = chipAlpha(chip, ribbon);
+      const fade = chipAlpha(chip, ribbon, { rail: true });
       if (fade <= 0.02) continue;
       ctx.save();
       ctx.globalAlpha = fade;
@@ -11572,7 +11599,7 @@
         maybeBookTease();
         maybeTangRumor();
         cam.x = player.x;
-        cam.y = player.y;
+        cam.y = Math.max(player.y, DOCK_CAM_FLOOR);
         cam.z = 1.02;
         state.camPunch = 0;
         state.camSettle = 0.4;
@@ -11677,7 +11704,9 @@
     if ((state.camSettle || 0) > 0) state.camSettle = Math.max(0, state.camSettle - dt);
     if ((state.camEase || 0) > 0) state.camEase = Math.max(0, state.camEase - dt);
     const easing = (state.camEase || 0) > 0 || (state.camSettle || 0) > 0 || tillFrame;
-    const followPow = easing ? 0.00065 : 0.0014;
+    const keyed = keys.has("w") || keys.has("a") || keys.has("s") || keys.has("d") ||
+      keys.has("arrowup") || keys.has("arrowdown") || keys.has("arrowleft") || keys.has("arrowright");
+    const followPow = keyed && state.scene === "shop" ? 0.00008 : (easing ? 0.00065 : 0.0014);
     const follow = 1 - Math.pow(followPow, dt);
     let nx = lerp(cam.x, tx, follow);
     let ny = lerp(cam.y, ty, follow);
@@ -11698,8 +11727,12 @@
     if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
     const step = Math.hypot(nx - cam.x, ny - cam.y);
     const pace = state.scene === "ocean" ? swimSpeed() : walkSpeed();
-    const cap = Math.max(pace, easing ? pace : pace + 40) * Math.min(dt, 0.05);
-    if (step > cap && step > 0.001) {
+    const cap = Math.max(pace, keyed && state.scene === "shop" ? pace + 120 : (easing ? pace : pace + 40)) * Math.min(dt, 0.05);
+    const bandJump = state.scene === "shop" && (
+      (player.y > 820 && cam.y < DOCK_CAM_FLOOR - 30) ||
+      (player.y < 700 && cam.y > PLAZA_CAM_CEILING + 30)
+    );
+    if (!bandJump && step > cap && step > 0.001) {
       nx = cam.x + (nx - cam.x) * (cap / step);
       ny = cam.y + (ny - cam.y) * (cap / step);
     }
@@ -11710,10 +11743,27 @@
     if (psy < padT) ny = player.y - (padT - H / 2) / cam.z;
     if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
     // Dock DIVE padB used to pin cam.y at player.y-210 ≈ 730. That
-    // stacked plaza boards / kiosk / sky tiles over the dock (the east
-    // walk "dark band"). Keep the dock camera on the horizon + boards.
-    if (state.scene === "shop" && (cam.shopBand === "dock" || player.y > 860)) {
-      ny = Math.max(ny, 848);
+    // stacked plaza boards / kiosk / sky tiles over the dock. C72's
+    // floor of 848 still framed the east shop deck + a sky void
+    // (playtest navy band). Two legal cameras: dock boards, or plaza
+    // tanks — never the gap that stacks both.
+    if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0 && !tillFrame) {
+      const onDock = player.y > 820 || cam.shopBand === "dock";
+      const onPlaza = player.y < 700;
+      if (onDock || (!onPlaza && player.y >= 760)) {
+        if (ny < DOCK_CAM_FLOOR) ny = lerp(ny, DOCK_CAM_FLOOR, 0.55);
+        ny = Math.max(ny, DOCK_CAM_FLOOR);
+      } else {
+        if (ny > PLAZA_CAM_CEILING) ny = lerp(ny, PLAZA_CAM_CEILING, 0.55);
+        ny = Math.min(ny, PLAZA_CAM_CEILING);
+      }
+    }
+    // East plaza walk: keep the east boards in the playfield so feet
+    // and POP do not sit on sky while cam.x is still at the dock.
+    if (state.scene === "shop" && player.y < 700 && player.x > 1220 && !tillFrame) {
+      const needRight = 1272 + 188 + 24;
+      const haveRight = nx + (viewWidth() - 16 - vcx) / Math.max(0.001, cam.z);
+      if (haveRight < needRight) nx += needRight - haveRight;
     }
     cam.x = Math.round(clamp(nx, minX, maxX));
     cam.y = Math.round(clamp(ny, minY, maxY));
