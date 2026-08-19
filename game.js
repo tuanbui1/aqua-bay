@@ -108,7 +108,13 @@
   // fade hides them before the reserved well.
   const BAIT_HUT = { x: 1124, y: 918 };
   const POP_VEND = { x: 996, y: 918 };
+  // Between POP (right 1018) and the hut body (left 1084) so "OPEN" is
+  // not buried under the kiosk. Same dock y as the shops.
+  const OPEN_SIGN = { x: 1052, y: 924 };
   const EAST_CRATES = { x: 1056, y: 936 };
+  // Aisle boards stop here on the dock camera so the ramp does not
+  // hard-cut into the sky. Plaza camera still paints the full aisle.
+  const NORTH_WALK_CAP_Y = 702;
   const DOCK_CAM_FLOOR = 1000;
   const PLAZA_CAM_CEILING = 520;
   const AISLE = { x: 802, y: 318, w: 156, h: 560 };
@@ -228,7 +234,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -5442,23 +5448,59 @@
   // C57/C58 — town is a distant shore BEHIND the pier, not a 560px mural
   // stretched across the bay. C58 crops tighter on the waterline so the
   // roofs do not read as a walkable terrace. The bay below is water.
+  function paintDockHarborSky(x, top, w, bot) {
+    // Dusk harbor fill. Height is bot-top — C71/C73 used townTop+8 as the
+    // fillRect HEIGHT so the wash ended at y=442 and the dock camera
+    // (world y≈540–714) read as a flat navy slab.
+    const h = Math.max(8, bot - top);
+    const sky = ctx.createLinearGradient(x, top, x, bot);
+    sky.addColorStop(0, "#2a3a68");
+    sky.addColorStop(0.22, "#3d4a86");
+    sky.addColorStop(0.46, "#6a6a9c");
+    sky.addColorStop(0.68, "#c88878");
+    sky.addColorStop(0.86, "#e8b888");
+    sky.addColorStop(1, "#d8c4a4");
+    ctx.fillStyle = sky;
+    ctx.fillRect(x, top, w, h);
+    const sx = x + w * 0.76, sy = bot - h * 0.20, sr = 20;
+    const halo = ctx.createRadialGradient(sx, sy, 4, sx, sy, 110);
+    halo.addColorStop(0, "rgba(255, 226, 160, 0.88)");
+    halo.addColorStop(0.28, "rgba(255, 168, 96, 0.30)");
+    halo.addColorStop(1, "rgba(255, 140, 80, 0)");
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(sx, sy, 110, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffe2a8";
+    ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
+    const clouds = [
+      [0.10, 0.16, 0.12, 0.042], [0.28, 0.09, 0.09, 0.030],
+      [0.48, 0.20, 0.15, 0.038], [0.66, 0.11, 0.10, 0.028],
+      [0.86, 0.18, 0.11, 0.034],
+    ];
+    for (let i = 0; i < clouds.length; i++) {
+      const [fx, fy, rw, rh] = clouds[i];
+      const cx = x + w * fx, cy = top + h * fy;
+      const puff = ctx.createRadialGradient(cx, cy, 3, cx, cy + 5, w * rw);
+      puff.addColorStop(0, "rgba(255, 236, 220, 0.74)");
+      puff.addColorStop(0.48, "rgba(232, 196, 188, 0.34)");
+      puff.addColorStop(1, "rgba(180, 140, 160, 0)");
+      ctx.fillStyle = puff;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, w * rw, h * rh, -0.06 + i * 0.03, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(cx + w * rw * 0.34, cy + 4, w * rw * 0.52, h * rh * 0.76, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
   function drawShopHarbor(teal) {
     ensurePaint();
     const x = -420;
     const w = shopW() + 840;
     const townH = 152;
     const townTop = 714;
-    // Gradient fills the high sky and meets the town. Stretching the
-    // 176px sky atlas across the bay painted cloud / water strips into
-    // the dock view; C71 also left a 120px dark gap (tile ended at
-    // y=594, town at 714).
-    const sky = ctx.createLinearGradient(x, -280, x, townTop);
-    sky.addColorStop(0, "#c8eefc");
-    sky.addColorStop(0.42, "#8ed0f0");
-    sky.addColorStop(0.78, "#7ec8c8");
-    sky.addColorStop(1, "#6eb8b4");
-    ctx.fillStyle = sky;
-    ctx.fillRect(x, -280, w, townTop + 8);
+    // Paint sky from well above the dock camera down to the town so the
+    // leftover navy band cannot show. Do not invent a room or move cam.y.
+    paintDockHarborSky(x, -400, w, townTop + 6);
     // Crop the C55 skyline to hills + roofs (skip the empty upper sky so
     // the waterfront sits on the horizon instead of tiling the bay).
     if (!blitHarborPart(0, 0.46, 1, 0.54, x, townTop, w, townH)) {
@@ -6740,6 +6782,48 @@
       ctx.lineTo(e.r + 3, yy + 8);
       ctx.stroke();
     }
+    ctx.restore();
+  }
+  function drawNorthPierCap(x, endY, w) {
+    // Finished north end of the aisle ramp — last planks + rail so the
+    // walkway vanishes into the harbor instead of a hard sky cut.
+    const aisleY = 360, aisleH = 530, topW = w * 0.56;
+    const u = clamp((endY - aisleY) / aisleH, 0, 1);
+    const rw = topW + (w - topW) * u;
+    const rx = x + (w - rw) / 2;
+    ctx.save();
+    const haze = ctx.createLinearGradient(rx, endY - 22, rx, endY + 18);
+    haze.addColorStop(0, "rgba(216, 196, 164, 0.22)");
+    haze.addColorStop(1, "rgba(216, 196, 164, 0)");
+    ctx.fillStyle = haze;
+    ctx.fillRect(rx - 10, endY - 22, rw + 20, 40);
+    ctx.fillStyle = "#6b3a18";
+    ctx.fillRect(rx - 6, endY - 8, rw + 12, 12);
+    ctx.fillStyle = "#c89a62";
+    ctx.fillRect(rx - 4, endY - 5, rw + 8, 6);
+    ctx.fillStyle = "rgba(255, 226, 170, 0.16)";
+    ctx.fillRect(rx - 4, endY - 5, rw + 8, 2);
+    const posts = [rx + 10, rx + rw * 0.5, rx + rw - 10];
+    for (let i = 0; i < posts.length; i++) {
+      const px = posts[i];
+      ctx.fillStyle = "#4a2a14";
+      ctx.fillRect(px - 3.2, endY - 30, 6.4, 32);
+      ctx.fillStyle = "rgba(255, 214, 150, 0.20)";
+      ctx.fillRect(px - 3.2, endY - 30, 2.2, 32);
+    }
+    ctx.fillStyle = "#5a3418";
+    ctx.fillRect(rx + 6, endY - 32, rw - 12, 5);
+    ctx.fillStyle = "#c49248";
+    ctx.fillRect(rx + 6, endY - 30, rw - 12, 3);
+    ctx.strokeStyle = "rgba(90, 48, 20, 0.55)";
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(rx + 8, endY - 28);
+    ctx.lineTo(rx - 4, endY + 40);
+    ctx.moveTo(rx + rw - 8, endY - 28);
+    ctx.lineTo(rx + rw + 4, endY + 40);
+    ctx.stroke();
     ctx.restore();
   }
   function drawPierShade() {
@@ -8574,8 +8658,20 @@
     if (aisleA > 0.04) {
       ctx.save();
       ctx.globalAlpha = aisleA;
-      drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
-      drawWalkRail(800, 360, 176, 530, true);
+      const dockLooking = (player && player.y > 820) || (cam && cam.y >= 860);
+      if (dockLooking) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(760, NORTH_WALK_CAP_Y, 256, 560);
+        ctx.clip();
+        drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
+        drawWalkRail(800, 360, 176, 530, true);
+        ctx.restore();
+        drawNorthPierCap(800, NORTH_WALK_CAP_Y, 176);
+      } else {
+        drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
+        drawWalkRail(800, 360, 176, 530, true);
+      }
       ctx.restore();
     }
     if (plazaA > 0.04) {
@@ -8789,7 +8885,6 @@
     paintWorldSprite(1024, 961, 36, function () { drawCrate(1004, 948, 40, 26); });
     paintWorldSprite(1031, 939, 32, function () { drawCrate(1014, 928, 34, 22); });
     paintWorldSprite(748, 944, 28, function () { drawMopBucket(748, 944); });
-    paintWorldSprite(1020, 924, 36, function () { drawHangingSign(1020, 924); });
     paintWorldSprite(1148, 942, 48, function () { drawBench(1108, 942); });
     paintWorldSprite(512, 918, 28, function () { drawLifeRing(512, 918); });
     {
@@ -8803,6 +8898,7 @@
     }
     paintWorldSprite(1196, 952, 32, function () { drawAnchor(1196, 952); });
     paintRailProp(POP_VEND.x, POP_VEND.y + 38, 64, function () { drawVending(POP_VEND.x, POP_VEND.y); });
+    paintWorldSprite(OPEN_SIGN.x, OPEN_SIGN.y, 36, function () { drawHangingSign(OPEN_SIGN.x, OPEN_SIGN.y); });
     paintRailProp(BAIT_HUT.x, BAIT_HUT.y + 36, 96, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
     drawSkiff(pierLife.skiff);
     drawGull(pierLife.gull);
@@ -11296,7 +11392,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 73", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 74", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -11337,7 +11433,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 73", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 74", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -11354,7 +11450,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 73", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 74", W / 2, 632);
     }
   }
 
