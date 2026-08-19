@@ -2342,6 +2342,14 @@
     }
     if (state.bookOpen != null) return false;
     if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) { beginExpedition(); return true; }
+    // C67 — Space / E in the till glow always pockets. A leftover cash
+    // pendingAct used to stall tillDwell, so the first sale never cleared
+    // and dive stayed illegal.
+    if (state.scene === "shop" && fromKey && cashNeedsCollect()) {
+      if (inTillGlow()) { collectCash(); return true; }
+      intentWalk("cash", registerWalkPoint());
+      return true;
+    }
     if (state.scene === "shop" && (inDiveZone() || (clickOnDiveChip() && nearDivePad()))) {
       if (state.surfaceLock > 0) return fromKey;
       // Cash waiting: a walk-click toward the cashier must not dive.
@@ -3743,14 +3751,19 @@
     } else {
       tryStockOnArrival();
     }
-    const pendingCash = player.pendingAct && player.pendingAct.kind === "cash";
-    if (tillWaiting() && inTillGlow() && !pendingCash && !cashierHandlingIt()) {
-      player.tillDwell = (player.tillDwell || 0) + (dt || 0);
-      if (player.tillDwell >= 0.3) {
+    if (tillWaiting() && inTillGlow() && !cashierHandlingIt()) {
+      if (player.pendingAct && player.pendingAct.kind === "cash") {
+        player.pendingAct = null;
         player.tillDwell = 0;
         collectCash();
+      } else {
+        player.tillDwell = (player.tillDwell || 0) + (dt || 0);
+        if (player.tillDwell >= 0.3) {
+          player.tillDwell = 0;
+          collectCash();
+        }
       }
-    } else if (!pendingCash) {
+    } else {
       player.tillDwell = 0;
     }
   }
@@ -5541,7 +5554,7 @@
     const id = seed == null ? ((Math.abs(x) * 17 + Math.abs(footY) * 3) | 0) : seed;
     const t = state.time || 0;
     const kind = (id + ((hash2(id, 0) * 7) | 0)) % 7;
-    const lean = (hash2(id, 1) - 0.5) * (0.08 + kind * 0.03);
+    const lean = (hash2(id, 1) - 0.5) * (0.14 + kind * 0.05);
     const hMul = 0.72 + hash2(id, 2) * 0.55 + (kind === 1 ? -0.18 : kind === 4 ? 0.22 : 0);
     const footW = (9 + hash2(id, 4) * 10 + (kind === 5 ? 4 : 0)) * s;
     const footH = (2.2 + hash2(id, 5) * 3.6) * s;
