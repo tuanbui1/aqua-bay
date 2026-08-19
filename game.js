@@ -5777,20 +5777,27 @@
       while (sx < rowX + rowW + 8) {
         const pw = 220 + Math.round(hash2(row * 19 + n * 13, 1) * 170) + ((row + n * 5) % 5) * 14;
         const overlap = 14;
-        const pc = sheets && sheets.length
-          ? sheets[((row * 5 + n * 3) % sheets.length)]
-          : tile;
+        // One honey-pine family so rows are not a stack of unmatched
+        // atlas colors (pale / teak / amber bands). Unique boards via
+        // flip, length, wear, and a rare sibling tile.
+        const pick = hash2(row * 17 + n * 9, 4);
+        const pc = tile || (sheets && sheets[0]);
+        const src = (sheets && sheets.length)
+          ? (pick > 0.78 && sheets[1] ? sheets[1]
+            : pick < 0.14 && sheets[4] ? sheets[4]
+            : pc)
+          : pc;
         ctx.save();
-        if (pc) {
+        if (src) {
           const pad = 2;
-          const sw = Math.max(8, pc.width - pad * 2);
-          const sh = Math.max(8, pc.height - pad * 2);
+          const sw = Math.max(8, src.width - pad * 2);
+          const sh = Math.max(8, src.height - pad * 2);
           if (hash2(row, n + 11) > 0.5) {
             ctx.translate(Math.round(sx + pw + overlap), yy);
             ctx.scale(-1, 1);
-            ctx.drawImage(pc, pad, pad, sw, sh, 0, 0, pw + overlap, ph);
+            ctx.drawImage(src, pad, pad, sw, sh, 0, 0, pw + overlap, ph);
           } else {
-            ctx.drawImage(pc, pad, pad, sw, sh, Math.round(sx), yy, pw + overlap, ph);
+            ctx.drawImage(src, pad, pad, sw, sh, Math.round(sx), yy, pw + overlap, ph);
           }
         }
         ctx.restore();
@@ -5846,30 +5853,42 @@
       ctx.closePath();
       ctx.clip();
     }
-    ctx.fillStyle = "rgba(168, 108, 52, 0.12)";
+    ctx.fillStyle = "rgba(168, 108, 52, 0.16)";
     ctx.fillRect(x, y, w, h);
     ctx.restore();
     if (wetY != null) {
-      const wet = ctx.createLinearGradient(x, wetY - 72, x, wetY + 18);
-      wet.addColorStop(0, "rgba(18,70,90,0)");
-      wet.addColorStop(0.38, "rgba(16,70,88,0.22)");
-      wet.addColorStop(0.72, "rgba(10,48,64,0.5)");
-      wet.addColorStop(1, "rgba(6,24,34,0.68)");
-      ctx.fillStyle = wet;
-      ctx.fillRect(x, wetY - 72, w, 90);
+      // Clip to this deck. Title boardwalk is 72px — an unclipped 90px
+      // wash painted sky/water bands across the boards and the bay.
       ctx.save();
-      ctx.globalCompositeOperation = "lighter";
-      const t = state.time || 0;
-      const sheen = ctx.createLinearGradient(x + ((t * 46) % (w + 160)) - 80, wetY - 18, x + ((t * 46) % (w + 160)) + 90, wetY + 8);
-      sheen.addColorStop(0, "rgba(200,240,255,0)");
-      sheen.addColorStop(0.45, "rgba(220,250,255,0.16)");
-      sheen.addColorStop(1, "rgba(180,230,240,0)");
-      ctx.fillStyle = sheen;
-      ctx.fillRect(x, wetY - 16, w, 22);
-      ctx.fillStyle = "rgba(180,230,240,0.1)";
-      ctx.fillRect(x, wetY - 6, w, 8);
+      ctx.beginPath();
+      ctx.rect(x, y, w, h);
+      ctx.clip();
+      const wetTop = Math.max(y, wetY - 36);
+      const wetBot = Math.min(y + h, wetY + 16);
+      const wetH = wetBot - wetTop;
+      if (wetH > 2) {
+        const wet = ctx.createLinearGradient(x, wetTop, x, wetBot);
+        wet.addColorStop(0, "rgba(18,70,90,0)");
+        wet.addColorStop(0.38, "rgba(16,70,88,0.18)");
+        wet.addColorStop(0.72, "rgba(10,48,64,0.42)");
+        wet.addColorStop(1, "rgba(6,24,34,0.58)");
+        ctx.fillStyle = wet;
+        ctx.fillRect(x, wetTop, w, wetH);
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        const t = state.time || 0;
+        const sheen = ctx.createLinearGradient(x + ((t * 46) % (w + 160)) - 80, wetY - 18, x + ((t * 46) % (w + 160)) + 90, wetY + 8);
+        sheen.addColorStop(0, "rgba(200,240,255,0)");
+        sheen.addColorStop(0.45, "rgba(220,250,255,0.14)");
+        sheen.addColorStop(1, "rgba(180,230,240,0)");
+        ctx.fillStyle = sheen;
+        ctx.fillRect(x, Math.max(y, wetY - 16), w, 22);
+        ctx.fillStyle = "rgba(180,230,240,0.08)";
+        ctx.fillRect(x, Math.max(y, wetY - 6), w, 8);
+        ctx.restore();
+        drawWetWaterline(x, Math.min(wetY, y + h - 6) - 8, w, state.time || 0);
+      }
       ctx.restore();
-      drawWetWaterline(x, wetY - 8, w, state.time || 0);
     }
   }
   function drawDeckPosts(x, y, w, h, n) {
@@ -10212,7 +10231,7 @@
     ctx.fillRect(0, H * 0.55, W, H * 0.45);
     ctx.restore();
     drawFoamBand(-10, H - 78, W + 20, state.time);
-    drawPierBoards(-8, H - 64, W + 16, 72, { plank: 30, wetY: H - 52 });
+    drawPierBoards(-8, H - 64, W + 16, 72, { plank: 30, wetY: H - 12 });
     const titlePosts = [[78, 0.78, 21], [268, 1.36, 22], [1012, 0.88, 23], [1218, 1.28, 24]];
     for (const [px, sc, id] of titlePosts) drawPierPost(px + 7, H - 52, sc, id);
     ctx.save(); ctx.globalCompositeOperation = "lighter";
