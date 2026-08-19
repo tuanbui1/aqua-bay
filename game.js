@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -227,6 +227,81 @@
     img.onload = function () { ART.img = img; ART.ready = true; };
     img.src = "art/bay.png";
   })();
+  // Afternoon sun from the upper-left. Dock props, NPCs, and the dinghy
+  // share one contact shade so they sit on the boards instead of floating.
+  const SUN = { dx: -7, dy: 3 };
+  const CUST_PLATE = {
+    maya: 1, nico: 1, jun: 1, cashier: 1, vip: 1, kid: 1,
+    g0: 1, g1: 1, g2: 1, g3: 1, g4: 1, g5: 1,
+  };
+  const plateCan = {};
+  function sitShadow(x, y, rx, ry, a) {
+    ctx.save();
+    const ox = SUN.dx * 0.45, oy = SUN.dy * 0.85;
+    const g = ctx.createRadialGradient(x + ox * 0.15, y + oy * 0.1, 0.4, x + ox, y + oy + 1, rx * 1.18);
+    const alpha = a == null ? 0.38 : a;
+    g.addColorStop(0, "rgba(16, 8, 4," + alpha + ")");
+    g.addColorStop(0.5, "rgba(16, 8, 4," + (alpha * 0.36) + ")");
+    g.addColorStop(1, "rgba(16, 8, 4, 0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(x + ox * 0.28, y + oy * 0.35, rx, Math.max(2.2, ry * 0.62), -0.2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+  function sunWashBox(x, y, w, h, rad) {
+    ctx.save();
+    if (rad) { roundRect(x, y, w, h, rad); ctx.clip(); }
+    const sun = sunAmt(x + w * 0.5, y + h * 0.5);
+    const lg = ctx.createLinearGradient(x, y, x + w * 0.42, y + h);
+    lg.addColorStop(0, "rgba(255,228,170," + (0.11 + sun * 0.10) + ")");
+    lg.addColorStop(0.46, "rgba(255,255,255,0)");
+    lg.addColorStop(1, "rgba(22,26,46," + (0.10 + (1 - sun) * 0.08) + ")");
+    ctx.fillStyle = lg;
+    ctx.fillRect(x, y, w, h);
+    ctx.restore();
+  }
+  function plateSrc(name) {
+    if (!CUST_PLATE[name] || !ART.ready) return null;
+    if (plateCan[name]) return plateCan[name];
+    const c = ATLAS[name];
+    if (!c) return null;
+    const off = document.createElement("canvas");
+    off.width = c.w;
+    off.height = c.h;
+    const g = off.getContext("2d");
+    g.drawImage(ART.img, c.x, c.y, c.w, c.h, 0, 0, c.w, c.h);
+    const img = g.getImageData(0, 0, c.w, c.h);
+    const d = img.data, w = c.w, h = c.h;
+    function plateAt(i) {
+      const r = d[i], gv = d[i + 1], b = d[i + 2], a = d[i + 3];
+      if (a < 28) return false;
+      const mx = gv > b ? gv : b, mn = gv < b ? gv : b;
+      return r < 108 && mx > 88 && mn > 68 && (gv + b) > r * 2.1 && (mx - mn) < 78 && r < mn - 12;
+    }
+    const seen = new Uint8Array(w * h);
+    const stack = [];
+    function push(p) {
+      if (p < 0 || p >= w * h || seen[p]) return;
+      if (!plateAt(p * 4)) return;
+      seen[p] = 1;
+      stack.push(p);
+    }
+    for (let x = 0; x < w; x++) { push(x); push((h - 1) * w + x); push((h - 2) * w + x); }
+    for (let y = 0; y < h; y++) { push(y * w); push(y * w + 1); push(y * w + w - 1); push(y * w + w - 2); }
+    while (stack.length) {
+      const p = stack.pop();
+      d[p * 4 + 3] = 0;
+      const x = p % w;
+      if (x > 0) push(p - 1);
+      if (x < w - 1) push(p + 1);
+      if (p >= w) push(p - w);
+      if (p < w * (h - 1)) push(p + w);
+    }
+    g.putImageData(img, 0, 0);
+    plateCan[name] = off;
+    return off;
+  }
   // Scratch pad so lighting / CSS filters never composite onto the live
   // canvas. source-atop fillRect on the dest (old path) painted a pale
   // rectangle over already-drawn water — the fish "bounding box" halo.
@@ -252,17 +327,12 @@
     if (!c || !ART.ready) return false;
     opt = opt || {};
     const sc = opt.scale == null ? 1 : opt.scale;
-    if (!opt.flat && !opt.water) {
-      ctx.save();
-      const g = ctx.createRadialGradient(x - 3, y + 3, 0.4, x - 2, y + 5, 18 * sc);
-      g.addColorStop(0, "rgba(16, 8, 4, 0.34)");
-      g.addColorStop(0.55, "rgba(16, 8, 4, 0.12)");
-      g.addColorStop(1, "rgba(16, 8, 4, 0)");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.ellipse(x - 2, y + 5, 16 * sc, 4.2 * sc, -0.2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+    const plate = plateSrc(name);
+    const src = plate || ART.img;
+    const sx0 = plate ? 0 : c.x, sy0 = plate ? 0 : c.y;
+    const sw0 = plate ? plate.width : c.w, sh0 = plate ? plate.height : c.h;
+    if (!opt.flat && !opt.water && !opt.noShadow) {
+      sitShadow(x, y + 5, 16 * sc, 4.4 * sc, 0.34);
     }
     const incoming = opt.filter || (ctx.filter && ctx.filter !== "none" ? ctx.filter : "");
     const litLand = !opt.flat && !opt.water;
@@ -275,7 +345,7 @@
     // Water fish: painted edges only. No source-atop wash on the dest.
     if (!incoming && !litLand) {
       ctx.filter = "none";
-      ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, -c.ax * sc, -c.ay * sc, c.w * sc, c.h * sc);
+      ctx.drawImage(src, sx0, sy0, sw0, sh0, -c.ax * sc, -c.ay * sc, c.w * sc, c.h * sc);
       ctx.restore();
       return true;
     }
@@ -284,13 +354,13 @@
     const pad = 2;
     const g = blitScratch(dw + pad * 2, dh + pad * 2);
     if (incoming) g.filter = incoming;
-    g.drawImage(ART.img, c.x, c.y, c.w, c.h, pad, pad, dw, dh);
+    g.drawImage(src, sx0, sy0, sw0, sh0, pad, pad, dw, dh);
     g.filter = "none";
     if (incoming) {
       // hue-rotate / saturate / brightness leave a dest-rect veil on
       // transparent pixels. Punch back to the sprite's own alpha.
       g.globalCompositeOperation = "destination-in";
-      g.drawImage(ART.img, c.x, c.y, c.w, c.h, pad, pad, dw, dh);
+      g.drawImage(src, sx0, sy0, sw0, sh0, pad, pad, dw, dh);
       g.globalCompositeOperation = "source-over";
     }
     if (litLand) {
@@ -1754,8 +1824,8 @@
     const bob = Math.sin(state.time * 1.15 + s.ph) * 3.2;
     ctx.save();
     ctx.translate(s.x, s.y + bob);
-    ctx.fillStyle = "rgba(8, 28, 40, 0.32)";
-    ctx.beginPath(); ctx.ellipse(4, 14, 36, 7, 0.04, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(8, 28, 40, 0.4)";
+    ctx.beginPath(); ctx.ellipse(SUN.dx * 0.35, 16, 40, 8.5, 0.05, 0, Math.PI * 2); ctx.fill();
     const hull = ctx.createLinearGradient(-10, -8, 8, 14);
     hull.addColorStop(0, "#c45c42");
     hull.addColorStop(0.45, "#8a3824");
@@ -1813,20 +1883,38 @@
   }
   function drawHangingSign(x, y) {
     const sway = Math.sin(state.time * 1.4) * 0.08;
-    ctx.fillStyle = "#6b4423";
-    ctx.fillRect(x - 4, y - 40, 8, 52);
-    ctx.fillStyle = "#8a5a30";
-    ctx.fillRect(x - 4, y - 40, 3, 52);
+    sitShadow(x + 2, y + 14, 16, 5.5, 0.4);
+    const post = ctx.createLinearGradient(x - 5, y - 40, x + 6, y + 12);
+    post.addColorStop(0, "#a87440");
+    post.addColorStop(0.35, "#8a5a30");
+    post.addColorStop(1, "#4a2a14");
+    ctx.fillStyle = post;
+    ctx.fillRect(x - 4, y - 40, 8, 54);
+    ctx.fillStyle = "rgba(255, 220, 160, 0.22)";
+    ctx.fillRect(x - 4, y - 40, 2.4, 54);
+    ctx.fillStyle = "rgba(20, 10, 6, 0.22)";
+    ctx.fillRect(x + 2.6, y - 40, 1.6, 54);
     ctx.strokeStyle = "#4a2a14"; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(x - 16, y - 36); ctx.lineTo(x - 12, y - 8); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x + 16, y - 36); ctx.lineTo(x + 12, y - 8); ctx.stroke();
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(sway);
-    ctx.fillStyle = "#6b3a18";
+    ctx.fillStyle = "rgba(16, 8, 4, 0.22)";
+    roundRect(-24 + SUN.dx * 0.35, 18, 50, 7, 3); ctx.fill();
+    ctx.fillStyle = "#4a2410";
+    roundRect(-26, -6, 56, 28, 4); ctx.fill();
+    const board = ctx.createLinearGradient(-28, -8, 18, 22);
+    board.addColorStop(0, "#8a4a22");
+    board.addColorStop(0.45, "#6b3a18");
+    board.addColorStop(1, "#3a1c0c");
+    ctx.fillStyle = board;
     roundRect(-28, -8, 56, 28, 4); ctx.fill();
+    sunWashBox(-28, -8, 56, 28, 4);
     ctx.strokeStyle = "#e8c04a"; ctx.lineWidth = 2;
     roundRect(-25, -5, 50, 22, 3); ctx.stroke();
+    ctx.fillStyle = "rgba(255, 236, 180, 0.16)";
+    ctx.fillRect(-22, -4, 18, 20);
     ctx.fillStyle = "#fff6e8";
     ctx.font = "800 11px Fredoka, sans-serif";
     ctx.textAlign = "center";
@@ -4488,20 +4576,10 @@
     ctx.closePath();
   }
   function shadow(x, y, rx, ry) {
-    ctx.save();
-    const g = ctx.createRadialGradient(x - 2, y + 2, 0.2, x - 1, y + 3, rx * 1.15);
-    g.addColorStop(0, "rgba(16, 8, 4, 0.36)");
-    g.addColorStop(0.5, "rgba(16, 8, 4, 0.12)");
-    g.addColorStop(1, "rgba(16, 8, 4, 0)");
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.ellipse(x - 1, y + 3, rx * 0.92, ry * 0.62, -0.16, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
+    sitShadow(x, y, rx, ry, 0.36);
   }
   function groundBlob(x, y, rx, ry) {
-    ctx.fillStyle = "rgba(10, 6, 4, 0.36)";
-    ctx.beginPath(); ctx.ellipse(x - 4, y, rx * 1.08, ry, -0.18, 0, Math.PI * 2); ctx.fill();
+    sitShadow(x, y, rx * 1.08, ry * 1.15, 0.36);
   }
   // C43 — painted harbor art. Cached tiles only; no downloaded photos.
   // C51 — a second, taller pier canvas so the dock camera sees roofs, not the
@@ -6357,12 +6435,11 @@
   }
   function drawPerson(x, y, opt) {
     const hop = opt.buyHop > 0 ? Math.sin((1 - opt.buyHop / 0.55) * Math.PI) * 7 : 0;
-    const bounce = opt.idle === "bounce" ? 3.5 : 2.2;
-    const bob = Math.sin(opt.bob || 0) * bounce - hop;
+    const bounce = opt.idle === "bounce" ? 1.15 : 0.45;
+    const bob = Math.max(0, Math.sin(opt.bob || 0) * bounce) - hop;
     const walk = Math.sin((opt.bob || 0) * 1.6);
     const squash = 1 + walk * 0.07 + (hop ? 0.08 : 0);
-    shadow(x, y + 4, opt.kid ? 8 : 10.5, opt.kid ? 3.6 : 4.6);
-    const spr = blit(custSpriteName(opt), x, y + bob, {
+    const spr = blit(custSpriteName(opt), x, y + bob + 1.8, {
       flip: (opt.vx || 0) < -8,
       scale: (opt.kid ? 0.5 : 0.58) * (1 + walk * 0.03),
     });
@@ -6616,12 +6693,13 @@
     const plant = y + 2.4 + bob;
     shadow(x, y + 3, moving ? 13 : 11, moving ? 4.8 : 4.0);
     const fi = moving ? gaitIndex(walkPhase, 6) : 0;
-    if (moving) {
+    const skipAtlas = !!p.paintOnly;
+    if (!skipAtlas && moving) {
       if (blitGait(skin, "walk", fi, x, plant, {
         scaleX: faceS * squashX, scaleY: squashY + turnThin * 0.08,
         rot: lean * 0.16, scale: blitSc, flat: true,
       })) return;
-    } else if (
+    } else if (!skipAtlas && (
       blit(skin + "_card", x, plant, {
         scaleX: faceS, scaleY: 1 + turnThin * 0.06,
         rot: lean * 0.1, scale: blitSc, flat: true,
@@ -6630,7 +6708,7 @@
         scaleX: faceS, scaleY: 1 + turnThin * 0.06,
         rot: lean * 0.1, scale: blitSc, flat: true,
       })
-    ) return;
+    )) return;
     ctx.save();
     ctx.translate(x, plant);
     ctx.scale(flip * short, short);
@@ -6988,11 +7066,17 @@
     ctx.restore();
   }
   function drawLifeRing(x, y) {
-    groundBlob(x + 4, y + 22, 22, 7);
-    if (blit("lifering", x, y + 8, { scale: 0.82, flat: true })) return;
+    sitShadow(x + 4, y + 20, 24, 7, 0.42);
+    // Lean on the boards and take the shared sun — not a face-on sticker.
+    if (blit("lifering", x + 1, y + 10, { scale: 0.82, rot: -0.16, noShadow: true })) return;
     ctx.save();
     ctx.translate(x, y);
-    ctx.strokeStyle = "#e85d4c"; ctx.lineWidth = 8;
+    ctx.rotate(-0.16);
+    const ring = ctx.createLinearGradient(-18, -16, 14, 14);
+    ring.addColorStop(0, "#f07860");
+    ring.addColorStop(0.45, "#e85d4c");
+    ring.addColorStop(1, "#8a2c22");
+    ctx.strokeStyle = ring; ctx.lineWidth = 8;
     ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.stroke();
     ctx.strokeStyle = "#fff6e8"; ctx.lineWidth = 8;
     ctx.setLineDash([8, 8]); ctx.lineDashOffset = 4;
@@ -7001,11 +7085,13 @@
     ctx.strokeStyle = "#c4483a"; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI * 2); ctx.stroke();
     ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = "rgba(255, 228, 170, 0.35)"; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.arc(-3, -6, 15, -2.4, -0.6); ctx.stroke();
     ctx.restore();
   }
   function drawAnchor(x, y) {
     groundBlob(x, y + 18, 20, 6);
-    if (blit("anchor", x, y + 6, { scale: 0.72, flat: true })) return;
+    if (blit("anchor", x, y + 6, { scale: 0.72, noShadow: true })) return;
     ctx.save();
     ctx.translate(x, y);
     ctx.strokeStyle = "#6a4a32"; ctx.lineWidth = 4.2; ctx.lineCap = "round";
@@ -7271,9 +7357,13 @@
     }
     ctx.save();
     ctx.translate(BOAT.x, BOAT.y + bob);
-    ctx.fillStyle = "rgba(8, 36, 52, 0.3)";
-    ctx.beginPath(); ctx.ellipse(2, 20, 50, 9, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#c4483a";
+    ctx.fillStyle = "rgba(8, 28, 40, 0.38)";
+    ctx.beginPath(); ctx.ellipse(SUN.dx * 0.4, 22, 56, 11, 0.04, 0, Math.PI * 2); ctx.fill();
+    const hull = ctx.createLinearGradient(-18, -12, 16, 18);
+    hull.addColorStop(0, "#e07058");
+    hull.addColorStop(0.42, "#c4483a");
+    hull.addColorStop(1, "#6a1c14");
+    ctx.fillStyle = hull;
     ctx.beginPath();
     ctx.moveTo(-48, 3);
     ctx.quadraticCurveTo(-42, 17, -10, 19);
@@ -7283,6 +7373,12 @@
     ctx.quadraticCurveTo(6, -13, -30, -7);
     ctx.quadraticCurveTo(-52, -2, -48, 3);
     ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "rgba(255, 210, 160, 0.22)";
+    ctx.beginPath();
+    ctx.moveTo(-22, -4);
+    ctx.quadraticCurveTo(4, -10, 26, -3);
+    ctx.quadraticCurveTo(6, 1, -22, -4);
+    ctx.fill();
     ctx.strokeStyle = "#6a2418"; ctx.lineWidth = 1.6; ctx.stroke();
     ctx.strokeStyle = "#fff6e8"; ctx.lineWidth = 2.1;
     ctx.beginPath(); ctx.moveTo(-38, 2); ctx.quadraticCurveTo(6, 6, 40, 3); ctx.stroke();
@@ -7681,29 +7777,7 @@
     drawGull(pierLife.gull2);
     if (state.decor && state.decor[2]) drawFountain();
     drawBoat();
-    // side welcome counter (inward so the starting camera keeps it on-canvas)
-    ctx.fillStyle = "#c45c4a";
-    roundRect(WELCOME.x, WELCOME.y, WELCOME.w, WELCOME.h, 12); ctx.fill();
-    if (ART.ready && ATLAS.plank) {
-      ctx.save();
-      roundRect(WELCOME.x, WELCOME.y, WELCOME.w, WELCOME.h, 12); ctx.clip();
-      ctx.globalAlpha = 0.72;
-      ctx.drawImage(ART.img, ATLAS.plank.x, ATLAS.plank.y, ATLAS.plank.w, ATLAS.plank.h,
-        WELCOME.x - 4, WELCOME.y - 4, WELCOME.w + 8, WELCOME.h + 8);
-      ctx.restore();
-    }
-    const welcomeA = worldLabelAlpha(WELCOME.x + 8, WELCOME.y + 8, WELCOME.w - 16, WELCOME.h - 16);
-    if (welcomeA > 0.04) {
-      ctx.save();
-      ctx.globalAlpha = welcomeA;
-      ctx.fillStyle = "#ead7b4";
-      roundRect(WELCOME.x + 10, WELCOME.y + 10, WELCOME.w - 20, WELCOME.h - 20, 8); ctx.fill();
-      ctx.fillStyle = "#2a7d8a";
-      ctx.font = "700 12px Fredoka, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText("Welcome to", WELCOME.x + WELCOME.w / 2, WELCOME.y + 38);
-      ctx.fillText("the pier", WELCOME.x + WELCOME.w / 2, WELCOME.y + 54);
-      ctx.restore();
-    }
+    drawWelcome();
     drawRegister(); drawKiosk();
     if (galleryOpen()) drawEastGallery();
     for (let i = 0; i < SPECIES.length; i++) {
@@ -7746,6 +7820,51 @@
     actors.sort(function (a, b) { return a.y - b.y; });
     for (let i = 0; i < actors.length; i++) actors[i].draw();
     drawShopBanner();
+  }
+  function drawWelcome() {
+    const b = WELCOME;
+    sitShadow(b.x + b.w / 2 + 2, b.y + b.h + 6, b.w * 0.48, 9, 0.4);
+    const leg = ctx.createLinearGradient(b.x, b.y, b.x + 16, b.y + b.h + 8);
+    leg.addColorStop(0, "#a87440");
+    leg.addColorStop(1, "#5a3018");
+    ctx.fillStyle = leg;
+    ctx.fillRect(b.x + 10, b.y + b.h - 8, 10, 14);
+    ctx.fillRect(b.x + b.w - 20, b.y + b.h - 8, 10, 14);
+    ctx.fillStyle = "rgba(255, 220, 160, 0.18)";
+    ctx.fillRect(b.x + 10, b.y + b.h - 8, 3, 14);
+    ctx.fillRect(b.x + b.w - 20, b.y + b.h - 8, 3, 14);
+    const body = ctx.createLinearGradient(b.x, b.y, b.x + b.w * 0.4, b.y + b.h);
+    body.addColorStop(0, "#d48858");
+    body.addColorStop(0.4, "#b86a3a");
+    body.addColorStop(1, "#6b3416");
+    ctx.fillStyle = body;
+    roundRect(b.x, b.y, b.w, b.h, 12); ctx.fill();
+    if (ART.ready && ATLAS.plank) {
+      ctx.save();
+      roundRect(b.x, b.y, b.w, b.h, 12); ctx.clip();
+      ctx.globalAlpha = 0.62;
+      ctx.drawImage(ART.img, ATLAS.plank.x, ATLAS.plank.y, ATLAS.plank.w, ATLAS.plank.h,
+        b.x - 4, b.y - 4, b.w + 8, b.h + 8);
+      ctx.restore();
+    }
+    sunWashBox(b.x, b.y, b.w, b.h, 12);
+    ctx.fillStyle = "rgba(255, 226, 170, 0.16)";
+    ctx.fillRect(b.x + 8, b.y + 4, b.w - 16, 8);
+    const welcomeA = worldLabelAlpha(b.x + 8, b.y + 8, b.w - 16, b.h - 16);
+    if (welcomeA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = welcomeA;
+      ctx.fillStyle = "rgba(40, 22, 10, 0.18)";
+      roundRect(b.x + 12, b.y + 14, b.w - 20, b.h - 22, 8); ctx.fill();
+      ctx.fillStyle = "#ead7b4";
+      roundRect(b.x + 10, b.y + 12, b.w - 20, b.h - 24, 8); ctx.fill();
+      sunWashBox(b.x + 10, b.y + 12, b.w - 20, b.h - 24, 8);
+      ctx.fillStyle = "#2a7d8a";
+      ctx.font = "700 12px Fredoka, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText("Welcome to", b.x + b.w / 2, b.y + 38);
+      ctx.fillText("the pier", b.x + b.w / 2, b.y + 54);
+      ctx.restore();
+    }
   }
   function drawRegister() {
     const r = REGISTER;
@@ -9893,18 +10012,47 @@
       ctx.save();
       roundRect(x + 6, cy + 8, cardW - 12, cardH * 0.64, 8); ctx.clip();
       const plate = ctx.createLinearGradient(x, cy + 8, x, cy + cardH * 0.64);
-      plate.addColorStop(0, "#8fd4f0");
-      plate.addColorStop(0.45, "#5eb4d4");
-      plate.addColorStop(1, "#c8a060");
+      if (id === "skip") {
+        plate.addColorStop(0, "#9ad4ee");
+        plate.addColorStop(0.48, "#5aa8c8");
+        plate.addColorStop(1, "#c89a58");
+      } else if (id === "reef") {
+        plate.addColorStop(0, "#7ec8e0");
+        plate.addColorStop(0.46, "#3d8b9a");
+        plate.addColorStop(1, "#d4a070");
+      } else {
+        plate.addColorStop(0, "#6eb8d8");
+        plate.addColorStop(0.4, "#2a7d8a");
+        plate.addColorStop(1, "#8a6a38");
+      }
       ctx.fillStyle = plate;
       ctx.fillRect(x + 6, cy + 8, cardW - 12, cardH * 0.64);
-      if (ATLAS.sky && ART.ready) {
+      if (ART.ready && ATLAS.harbortown) {
+        const crops = {
+          skip: [0.00, 0.06, 0.46, 0.70],
+          reef: [0.28, 0.00, 0.50, 0.68],
+          dino: [0.52, 0.16, 0.46, 0.78],
+        };
+        const [sx, sy, sw, sh] = crops[id];
+        ctx.globalAlpha = 0.9;
+        blitHarborPart(sx, sy, sw, sh, x + 6, cy + 8, cardW - 12, cardH * 0.50);
+        ctx.globalAlpha = 1;
+      } else if (ATLAS.sky && ART.ready) {
         ctx.globalAlpha = 0.62;
         blitTile("sky", x + 6, cy + 8, cardW - 12, cardH * 0.36);
         ctx.globalAlpha = 1;
       }
-      ctx.fillStyle = "rgba(140, 86, 40, 0.55)";
-      ctx.fillRect(x + 6, cy + 8 + cardH * 0.52, cardW - 12, cardH * 0.14);
+      if (id === "skip") {
+        drawPierBoards(x + 4, cy + 8 + cardH * 0.48, cardW - 8, cardH * 0.18, { plank: 12, seg: 40 });
+      } else if (id === "reef") {
+        ctx.fillStyle = "rgba(42, 125, 138, 0.22)";
+        ctx.fillRect(x + 6, cy + 8 + cardH * 0.46, cardW - 12, cardH * 0.20);
+        drawPierBoards(x + 4, cy + 8 + cardH * 0.50, cardW - 8, cardH * 0.16, { plank: 14, wetY: cy + 8 + cardH * 0.58 });
+      } else {
+        ctx.fillStyle = "rgba(20, 90, 110, 0.32)";
+        ctx.fillRect(x + 6, cy + 8 + cardH * 0.46, cardW - 12, cardH * 0.20);
+        drawPierBoards(x + 10, cy + 8 + cardH * 0.52, cardW - 20, cardH * 0.12, { plank: 10 });
+      }
       ctx.restore();
       if (selected) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.55 + 0.3 * Math.sin(state.time * 5)) + ")";
@@ -9914,7 +10062,7 @@
       drawPlayer(x + cardW / 2, cy + cardH * 0.62, {
         skin: id, vx: 0, vy: 0, facing: 0.08,
         walkPhase: 0, lean: 0.05, bob: Math.sin(state.time * 1.5 + i) * 0.6,
-        faceS: 1, drawScale: 1.65,
+        faceS: 1, drawScale: 1.65, paintOnly: id === "dino",
       });
       ctx.fillStyle = "#fff6e8";
       ctx.font = "800 16px Fredoka, sans-serif";
@@ -9994,7 +10142,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 59", W / 2, 178);
+    ctx.fillText("Aqua Bay · loop 60", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -10035,7 +10183,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 59", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 60", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -10052,7 +10200,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 59", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 60", W / 2, 632);
     }
   }
 
@@ -10486,19 +10634,29 @@
       ctx.beginPath(); ctx.ellipse(0, 10, 72, 34, 0, 0, Math.PI * 2); ctx.fill();
       ctx.globalCompositeOperation = "source-over";
     }
-    const bedA = 0.22 + hash2(seed, 31) * 0.22;
+    const bedA = 0.28 + hash2(seed, 31) * 0.22;
     ctx.fillStyle = hash2(seed, 33) > 0.5
-      ? "rgba(12, 42, 38," + bedA + ")"
-      : "rgba(28, 56, 36," + (bedA + 0.04) + ")";
+      ? "rgba(18, 36, 22," + (bedA + 0.08) + ")"
+      : "rgba(36, 48, 28," + (bedA + 0.1) + ")";
     ctx.beginPath();
     ctx.ellipse(
-      (hash2(seed, 35) - 0.5) * 8, 22 + hash2(seed, 37) * 3,
-      16 + blades * (1.2 + hash2(seed, 39) * 1.4),
-      4.5 + blades * (0.22 + hash2(seed, 41) * 0.28),
-      (hash2(seed, 43) - 0.5) * 0.5,
+      (hash2(seed, 35) - 0.5) * 6, 24 + hash2(seed, 37) * 2,
+      20 + blades * (1.5 + hash2(seed, 39) * 1.6),
+      7 + blades * (0.32 + hash2(seed, 41) * 0.3),
+      (hash2(seed, 43) - 0.5) * 0.35,
       0, Math.PI * 2
     );
     ctx.fill();
+    ctx.fillStyle = "rgba(8, 16, 14, 0.28)";
+    ctx.beginPath();
+    ctx.ellipse(2, 26, 14 + blades, 3.4, -0.12, 0, Math.PI * 2);
+    ctx.fill();
+    for (let p = 0; p < 3; p++) {
+      ctx.fillStyle = p % 2 ? "rgba(70, 64, 42, 0.55)" : "rgba(48, 56, 40, 0.5)";
+      ctx.beginPath();
+      ctx.ellipse(-10 + p * 9 + hash2(seed, 50 + p) * 4, 23 + hash2(seed, 54 + p) * 2, 3.2, 1.8, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
     for (let i = 0; i < blades; i++) {
       const sway = Math.sin(state.time * (1.3 + hash2(seed, i) * 0.6) + s.ph + i * 0.7) * (8 + i * 2 + hash2(seed, i + 4) * 8);
       const hh = 28 + hash2(seed, i + 8) * 36 + (i % 3) * 10;
@@ -10526,12 +10684,12 @@
     const bang = theme === "bang";
     ctx.save();
     ctx.translate(x, y);
-    ctx.font = bang ? "800 15px Fredoka, sans-serif" : (shiny ? "800 12px Fredoka, sans-serif" : "800 11px Fredoka, sans-serif");
+    ctx.font = bang ? "800 11px Fredoka, sans-serif" : (shiny ? "800 12px Fredoka, sans-serif" : "800 11px Fredoka, sans-serif");
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const tw = ctx.measureText(text).width;
-    const w = bang ? 22 : Math.max(40, tw + 18);
-    const h = bang ? 22 : 18;
+    const w = bang ? 16 : Math.max(40, tw + 18);
+    const h = bang ? 16 : 18;
     ctx.fillStyle = "rgba(10, 8, 4, 0.3)";
     ctx.beginPath(); ctx.ellipse(1, h * 0.4, w * 0.46, 3.6, 0, 0, Math.PI * 2); ctx.fill();
     const g = ctx.createLinearGradient(0, -h / 2, 2, h / 2);
@@ -10540,9 +10698,9 @@
       g.addColorStop(0.42, "#f0b429");
       g.addColorStop(1, "#b86a14");
     } else if (bang) {
-      g.addColorStop(0, "#fff6d0");
-      g.addColorStop(0.5, "#ffe27a");
-      g.addColorStop(1, "#e09028");
+      g.addColorStop(0, "#fff6e8");
+      g.addColorStop(0.55, "#e8d090");
+      g.addColorStop(1, "#8a6a38");
     } else {
       g.addColorStop(0, "#b8f4d8");
       g.addColorStop(0.48, "#2a9d8f");
@@ -10550,13 +10708,10 @@
     }
     ctx.fillStyle = g;
     if (bang) {
-      ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "rgba(90, 48, 12, 0.5)";
-      ctx.lineWidth = 1.7;
+      ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(60, 40, 16, 0.4)";
+      ctx.lineWidth = 1.2;
       ctx.stroke();
-      ctx.strokeStyle = "rgba(255, 246, 210, 0.55)";
-      ctx.lineWidth = 1.1;
-      ctx.beginPath(); ctx.arc(0, 0, 8.2, 0, Math.PI * 2); ctx.stroke();
     } else {
       roundRect(-w / 2, -h / 2, w, h, 7); ctx.fill();
       ctx.strokeStyle = shiny ? "rgba(90, 48, 10, 0.48)" : "rgba(8, 36, 32, 0.48)";
@@ -10715,22 +10870,27 @@
       );
       ctx.stroke();
     }
-    const bell = ctx.createRadialGradient(-3, -4, 2, 0, 2, 18 * pulse);
+    const bell = ctx.createRadialGradient(-5, -6, 1.5, 2, 6, 19 * pulse);
     bell.addColorStop(0, tints.cap0);
-    bell.addColorStop(0.42, tints.cap1);
-    bell.addColorStop(1, tints.cap2);
+    bell.addColorStop(0.28, tints.cap1);
+    bell.addColorStop(0.72, tints.cap2);
+    bell.addColorStop(1, tints.rim);
     ctx.fillStyle = bell;
     ctx.beginPath();
     ctx.ellipse(0, 0, 16 * pulse, 11 * pulse, 0, Math.PI, 0);
     ctx.quadraticCurveTo(9, 8, 0, 7);
     ctx.quadraticCurveTo(-9, 8, -16 * pulse, 0);
     ctx.fill();
+    ctx.fillStyle = "rgba(8, 16, 22, 0.18)";
+    ctx.beginPath();
+    ctx.ellipse(3, 2, 10 * pulse, 5.5 * pulse, 0.15, 0, Math.PI * 2);
+    ctx.fill();
     ctx.strokeStyle = tints.rim;
     ctx.lineWidth = 1.35;
     ctx.stroke();
-    ctx.fillStyle = "rgba(255, 255, 240, 0.32)";
+    ctx.fillStyle = "rgba(255, 255, 240, 0.38)";
     ctx.beginPath();
-    ctx.ellipse(-4, -4, 7 * pulse, 3.4 * pulse, -0.35, 0, Math.PI * 2);
+    ctx.ellipse(-5, -5, 6.2 * pulse, 2.8 * pulse, -0.4, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = "rgba(255, 255, 255, 0.28)";
     ctx.lineWidth = 1;
