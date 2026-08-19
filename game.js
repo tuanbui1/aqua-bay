@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -533,6 +533,7 @@
     playClock: 0,
     tillSlip: null,
     escapeBar: null, escapeGate: 0,
+    tangHintLife: 0, tangHintDone: false,
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, route: null, blockT: 0, walkPhase: 0, lean: 0, faceS: 1, pitch: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0 };
   const cam = { x: 880, y: 920, z: 1, rail: 28 };
@@ -961,6 +962,12 @@
     const s = Math.max(0.28, displayScale());
     return clamp(Math.round(cssPx / s), minC, maxC);
   }
+  // Resize / visualViewport events must not mutate the live transform or
+  // backing store mid-draw. That reset the world blit to screen space and
+  // stacked a leftover pier / HUD strip across the top while the camera
+  // eased (C47) to the till.
+  let frameDrawing = false;
+  let pendingBacking = null;
   function layoutStage() {
     const wrap = document.getElementById("wrap");
     if (!wrap) return;
@@ -985,14 +992,45 @@
     const dpr = Math.min(2.5, window.devicePixelRatio || 1);
     const bw = Math.max(1, Math.round(cssW * dpr));
     const bh = Math.max(1, Math.round(cssH * dpr));
+    pendingBacking = { bw: bw, bh: bh, dpr: bw / W };
+    if (!frameDrawing) applyCanvasBacking();
+  }
+  function applyCanvasBacking() {
+    if (!pendingBacking) return;
+    const bw = pendingBacking.bw, bh = pendingBacking.bh;
     if (canvas.width !== bw || canvas.height !== bh) {
       canvas.width = bw;
       canvas.height = bh;
     }
-    canvasDpr = bw / W;
-    beginCanvas();
+    canvasDpr = pendingBacking.dpr;
+    pendingBacking = null;
+  }
+  function unwindCanvas() {
+    // Extra restore is a no-op. Pop a leaked save so a leftover evenodd
+    // water clip cannot punch holes in the next full-canvas clear.
+    for (let i = 0; i < 24; i++) ctx.restore();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+    try { ctx.filter = "none"; } catch (err) { /* old canvas */ }
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "rgba(0,0,0,0)";
+    ctx.beginPath();
   }
   function beginCanvas() {
+    unwindCanvas();
+    // Identity clear covers the backing store. fillRect(0,0,W,H) after a
+    // DPR setTransform can miss a device-pixel strip (rounding), which
+    // stacked previous-frame wood / water / HUD while cam.y eased.
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(canvasDpr, 0, 0, canvasDpr, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = "high";
+  }
+  function beginHudSpace() {
+    // HUD stays screen-pinned (C47). Reset so a leaked world translate
+    // cannot double-blit the upgrade tray or price cards at cam offsets.
+    unwindCanvas();
     ctx.setTransform(canvasDpr, 0, 0, canvasDpr, 0, 0);
     ctx.imageSmoothingEnabled = true;
     if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = "high";
@@ -3699,6 +3737,8 @@
     if (state.unlocked[1] || state.tangRumor) return;
     if (!state.didFirstStock) return;
     state.tangRumor = true;
+    state.tangHintDone = false;
+    state.tangHintLife = 4.2;
     toast("Maya wants a Blue Tang — something blue flashed in the deep", "#9ef0ff", 4.2);
     let maya = null;
     for (const c of customers) {
@@ -3851,9 +3891,23 @@
       seedPathCoins([[player.x, player.y], [520, 380], [dest.x, dest.y]], 3);
     }
   }
+  function dismissSaleHints() {
+    state.tillSlip = null;
+    for (let i = state.toasts.length - 1; i >= 0; i--) {
+      if (/collect|→\s*till|till\s*·|receipt/i.test(state.toasts[i].msg || "")) {
+        state.toasts.splice(i, 1);
+      }
+    }
+    for (let i = pops.length - 1; i >= 0; i--) {
+      if (/collect|→\s*till/i.test(pops[i].text || "")) pops.splice(i, 1);
+    }
+    for (let i = hudPops.length - 1; i >= 0; i--) {
+      if (/collect|→\s*till/i.test(hudPops[i].text || "")) hudPops.splice(i, 1);
+    }
+  }
   function collectCash(fromStaff) {
     const got = state.registerCash;
-    if (got <= 0) return;
+    if (got <= 0) { dismissSaleHints(); return; }
     const prev = state.money;
     state.money += got; state.registerCash = 0; state.coins.length = 0;
     state.moneyRollFrom = state.displayMoney;
@@ -3883,7 +3937,7 @@
     persist();
     advanceMission();
     checkSessionGoals();
-    state.tillSlip = null;
+    dismissSaleHints();
     holdTillView(1.9);
     if (!fromStaff && !state.missionDone && !bagHasStockable()) {
       walkToDock();
@@ -4381,6 +4435,10 @@
     if (state.toasts.length && !state.unlockBanner) {
       state.toasts[0].life -= dt;
       if (state.toasts[0].life <= 0) state.toasts.shift();
+    }
+    if ((state.tangHintLife || 0) > 0) {
+      state.tangHintLife = Math.max(0, state.tangHintLife - dt);
+      if (state.tangHintLife <= 0) state.tangHintDone = true;
     }
     for (let i = hudPops.length - 1; i >= 0; i--) {
       hudPops[i].life -= dt;
@@ -8752,6 +8810,7 @@
     }
   }
   function drawTillSlip() {
+    if (state.registerCash <= 0) { state.tillSlip = null; return; }
     const slip = state.tillSlip;
     if (!slip || !slip.items || !slip.items.length) return;
     const lines = [];
@@ -9655,12 +9714,14 @@
   }
   function drawWorld() {
     ctx.fillStyle = "#07141c";
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(-4, -4, W + 8, H + 8);
     ctx.save();
     ctx.translate(W / 2, H / 2);
     ctx.scale(cam.z, cam.z);
     // Integer world blit — a fractional cam.y sheared every pier row
-    // into an offset horizontal band under tanks / NPCs.
+    // into an offset horizontal band under tanks / NPCs. C62 snap stays;
+    // the frame clear above is identity (beginCanvas) so a leftover
+    // previous-frame strip cannot stack while this translate eases.
     ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
     if (state.scene === "shop") drawShop(); else drawOcean();
     for (const h of stockHops) {
@@ -9844,7 +9905,7 @@
         if (shiny && (state.shinyCallout > 0 || !state.caughtRare) && n === 0) {
           return { text: "Catch the SHINY — then 5 Clownfish", target: { x: shiny.x, y: shiny.y } };
         }
-        if (state.didFirstStock && !state.unlocked[1]) {
+        if (state.didFirstStock && !state.unlocked[1] && (state.tangHintLife || 0) > 0 && !state.tangHintDone) {
           const tease = firstTeaseFish();
           if (tease) return { text: "A blue flash in the deep — Maya asked for Tang", target: { x: tease.x, y: tease.y } };
           return { text: "Catch more — Maya wants a Blue Tang", target: nearestOceanFish() };
@@ -9887,7 +9948,8 @@
       if (shiny && (state.shinyCallout > 0 || !state.caughtRare)) {
         return { text: "Point the glowing cone at the SHINY clownfish", target: { x: shiny.x, y: shiny.y } };
       }
-      if (!state.unlocked[1] && (state.divesThisSession >= 2 || state.didFirstStock)) {
+      if (!state.unlocked[1] && (state.divesThisSession >= 2 || state.didFirstStock) &&
+          (state.tangHintLife || 0) > 0 && !state.tangHintDone) {
         const tease = firstTeaseFish();
         if (tease) return { text: "A blue flash in the deep — rumor of Blue Tang", target: { x: tease.x, y: tease.y } };
       }
@@ -10977,7 +11039,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 67", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 68", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -11018,7 +11080,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 67", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 68", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -11035,7 +11097,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 67", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 68", W / 2, 632);
     }
   }
 
@@ -11221,6 +11283,9 @@
         state.diveLock = 1.6;
         state.bagBonus = 1;
         state.divesThisSession = (state.divesThisSession | 0) + 1;
+        if (!state.unlocked[1] && state.didFirstStock && !state.tangHintDone) {
+          state.tangHintLife = Math.max(state.tangHintLife || 0, 4.2);
+        }
         state.splash = { x: player.x, y: player.y + 8, life: 0.45, max: 0.45 };
         bubbles.length = 0;
         const splashN = (state.divesThisSession | 0) >= 2 ? 26 : 18;
@@ -11801,6 +11866,8 @@
     state.time += dt;
     uiHits = [];
     tickMusic(dt);
+    frameDrawing = true;
+    applyCanvasBacking();
     beginCanvas();
     if (state.mode === "title") {
       updateTitleFX(dt);
@@ -11838,11 +11905,13 @@
         ctx.fillStyle = "rgba(8, 40, 52," + state.fade + ")";
         ctx.fillRect(0, 0, W, H);
       }
+      beginHudSpace();
       drawHUD();
       if (state.mode === "pause" || state.mode === "help") drawPause();
       drawCollectionBook();
       registerSurfaceHits();
     }
+    frameDrawing = false;
     requestAnimationFrame(frame);
   }
   layoutStage();
