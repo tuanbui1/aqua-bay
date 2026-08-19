@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -2099,6 +2099,10 @@
     }
     if (state.mode === "play") {
       const touch = e.pointerType === "touch";
+      if (!inWorldPlayfield(p.x)) {
+        mouse.ui = true;
+        return;
+      }
       if (state.scene === "shop") {
         const w = screenToWorld(p.x, p.y);
         if (tryClickShop(w.x, w.y)) { mouse.acted = true; return; }
@@ -2122,6 +2126,8 @@
       const touch = e && e.pointerType === "touch";
       if (mouse.scoopPress || player.scoopLock) {
         // Scoop tap / hold — do not turn the release into a swim dash.
+      } else if (!inWorldPlayfield(mouse.pressX)) {
+        // Reserved HUD rail — not a walk target.
       } else if (!(state.scene === "ocean" && bagIsFull() && !touch)) {
         const w = screenToWorld(mouse.pressX, mouse.pressY);
         player.scoopTap = false;
@@ -2478,33 +2484,37 @@
     for (let i = 0; i < 4; i++) pushOceanFish(nxt, px + rand(-88, 88), py + rand(-64, 64));
     for (let i = 0; i < 3; i++) pushOceanFish(0, px + rand(-110, 110), py + rand(-72, 72));
   }
-  function worldToScreen(x, y) { return { x: (x - cam.x) * cam.z + W / 2, y: (y - cam.y) * cam.z + H / 2 }; }
-  function screenToWorld(x, y) { return { x: (x - W / 2) / cam.z + cam.x, y: (y - H / 2) / cam.z + cam.y }; }
-  // Right-rail species chips stay HUD-pinned in this gutter. World sprites
-  // fade before they enter it so a crate or fish never slices through a chip.
-  // Cards never slide left over pier furniture. C66 still hides the chips
-  // when the column covers the bait shack — then the gutter is not occupied.
-  function hudGutterLeft() {
+  function worldToScreen(x, y) { return { x: (x - cam.x) * cam.z + viewCenterX(), y: (y - cam.y) * cam.z + H / 2 }; }
+  function screenToWorld(x, y) { return { x: (x - viewCenterX()) / cam.z + cam.x, y: (y - H / 2) / cam.z + cam.y }; }
+  // Reserved HUD rail. Cards stay HUD-pinned. The world pass is clipped
+  // to this width and the camera treats it as the view, so pier / water /
+  // fish / diver cannot paint under the chips or in the strip past them.
+  // C66 may still hide chips over the bait shack — the column never slides.
+  function railGutterLeft() {
     const strip = speciesStripLayout();
-    return strip.x - 14;
+    return Math.max(720, strip.x - 14);
+  }
+  function viewWidth() {
+    if (state.mode === "title") return W;
+    return railGutterLeft();
+  }
+  function viewCenterX() {
+    return viewWidth() * 0.5;
+  }
+  function inWorldPlayfield(sx) {
+    return sx < viewWidth();
+  }
+  function hudGutterLeft() {
+    return railGutterLeft();
   }
   function hudGutterOccupied() {
-    if (state.mode === "title") return false;
-    const strip = speciesStripLayout();
-    const shack = baitShackScreenBox();
-    if (shack && boxesOverlap({ x: strip.x, y: strip.y, w: strip.w, h: Math.max(strip.h, 40) }, shack, 18)) {
-      return false;
-    }
-    return true;
+    return state.mode !== "title";
   }
   function worldSpriteAlpha(wx, wy, rad) {
     const s = worldToScreen(wx, wy);
     const r = (rad == null ? 40 : rad) * Math.max(0.6, cam.z || 1);
     const fade = 72;
-    const rightEdge = hudGutterOccupied() ? hudGutterLeft() : W;
-    // Fade from the sprite's near edge so a wide fish / crate is gone
-    // before any pixel crosses the gutter. Using the far edge left a
-    // half-cut clownfish under Sea Turtle $1400.
+    const rightEdge = viewWidth();
     const aL = clamp((s.x - r + fade) / fade, 0, 1);
     const aR = clamp((rightEdge - (s.x + r)) / fade, 0, 1);
     const aT = clamp((s.y - r + fade) / fade, 0, 1);
@@ -2531,7 +2541,7 @@
   function screenBoxAlpha(x, y, w, h, pad) {
     const p = pad == null ? 6 : pad;
     const topSafe = state.scene === "shop" ? topHudFloor() : 0;
-    const rightSafe = hudGutterOccupied() ? hudGutterLeft() : W;
+    const rightSafe = viewWidth();
     const inset = Math.min(x, y - topSafe, rightSafe - (x + w), H - (y + h));
     if (inset >= p) return 1;
     if (inset <= 0) return 0;
@@ -2828,7 +2838,7 @@
   function onScreenWorldPos(wx, wy, pad) {
     const p = pad == null ? 70 : pad;
     const s = worldToScreen(wx, wy);
-    return s.x > p && s.x < W - p && s.y > p && s.y < H - p;
+    return s.x > p && s.x < viewWidth() - p && s.y > p && s.y < H - p;
   }
   function shinyLeashPoint() {
     const ahead = 132;
@@ -3477,10 +3487,12 @@
         // Hold is scoop. Never dash or buoyancy-steer from the same drag.
       } else {
         clearWalk();
-        const w = screenToWorld(mouse.x, mouse.y);
-        const dest = state.scene === "shop" ? snapToShopWalk(w.x, w.y) : w;
-        const dx = dest.x - player.x, dy = dest.y - player.y, d = Math.hypot(dx, dy);
-        if (d > 8) { ax = dx / d; ay = dy / d; }
+        if (inWorldPlayfield(mouse.x)) {
+          const w = screenToWorld(mouse.x, mouse.y);
+          const dest = state.scene === "shop" ? snapToShopWalk(w.x, w.y) : w;
+          const dx = dest.x - player.x, dy = dest.y - player.y, d = Math.hypot(dx, dy);
+          if (d > 8) { ax = dx / d; ay = dy / d; }
+        }
       }
     } else if (player.goto && state.mode === "play") {
       const dx = player.goto.x - player.x, dy = player.goto.y - player.y, d = Math.hypot(dx, dy);
@@ -9785,11 +9797,39 @@
     ctx.restore();
     ctx.restore();
   }
+  function shadeWorldUnderTopHud() {
+    const floor = Math.min(topHudFloor() + 8, 128);
+    if (floor < 20) return;
+    const g = ctx.createLinearGradient(0, 0, 0, floor);
+    g.addColorStop(0, "rgba(7, 20, 28, 0.58)");
+    g.addColorStop(0.62, "rgba(7, 20, 28, 0.22)");
+    g.addColorStop(1, "rgba(7, 20, 28, 0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, viewWidth(), floor);
+  }
+  function drawPlayfieldStile() {
+    const x = viewWidth();
+    if (x >= W - 2) return;
+    const blend = ctx.createLinearGradient(x - 14, 0, x + 1, 0);
+    blend.addColorStop(0, "rgba(7, 20, 28, 0)");
+    blend.addColorStop(0.55, "rgba(7, 20, 28, 0.28)");
+    blend.addColorStop(1, "rgba(7, 20, 28, 0.88)");
+    ctx.fillStyle = blend;
+    ctx.fillRect(x - 14, 0, 16, H);
+    ctx.fillStyle = "rgba(168, 114, 62, 0.38)";
+    ctx.fillRect(x, 0, 2, H);
+    ctx.fillStyle = "rgba(40, 24, 12, 0.22)";
+    ctx.fillRect(x + 2, 0, 1, H);
+  }
   function drawWorld() {
     ctx.fillStyle = "#07141c";
     ctx.fillRect(-4, -4, W + 8, H + 8);
     ctx.save();
-    ctx.translate(W / 2, H / 2);
+    const playW = viewWidth();
+    ctx.beginPath();
+    ctx.rect(0, 0, playW, H);
+    ctx.clip();
+    ctx.translate(viewCenterX(), H / 2);
     ctx.scale(cam.z, cam.z);
     // Integer world blit — a fractional cam.y sheared every pier row
     // into an offset horizontal band under tanks / NPCs. C62 snap stays;
@@ -9901,6 +9941,8 @@
       ctx.restore();
     }
     ctx.restore();
+    shadeWorldUnderTopHud();
+    drawPlayfieldStile();
   }
 
   // ===== HUD =====
@@ -11112,7 +11154,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 69", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 70", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -11153,7 +11195,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 69", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 70", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -11170,14 +11212,15 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 69", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 70", W / 2, 632);
     }
   }
 
   function baitShackScreenBox() {
     if (state.scene !== "shop") return null;
-    const p = worldToScreen(1288, 360);
-    return { x: p.x, y: p.y, w: 400 * cam.z, h: 300 * cam.z };
+    const p = worldToScreen(1356, 540);
+    const z = Math.max(0.001, cam.z);
+    return { x: p.x, y: p.y, w: 112 * z, h: 100 * z };
   }
   function tankScreenBox(i) {
     const t = TANK_POS[i];
@@ -11200,8 +11243,8 @@
     const ch = compactHud() ? thumbCanvas(50, 56, 72) : 64;
     const { muteB, pauseB } = topCtrlBoxes();
     const colH = railSpeciesIds().length * (ch + 6);
-    // Stay in the HUD gutter under mute/pause. Sliding left to dodge the
-    // bait shack (C66) painted Sea Turtle $1400 over a crate.
+    // Stay in the reserved HUD rail under mute/pause. Never slide left
+    // onto furniture. C66 hides a chip when it would cover the shack.
     const xCol = muteB.x - 12 - cw;
     const startY = muteB.y + muteB.h + 12;
     return { x: xCol, y: startY, w: cw, h: colH, cw, ch, muteB, pauseB };
@@ -11429,7 +11472,9 @@
     const look = state.scene === "ocean" ? 80 : (player.goto ? 72 : 40);
     const ww = state.scene === "shop" ? shopW() : OCEAN.w;
     const hh = state.scene === "shop" ? SHOP.h : OCEAN.h;
-    const hw = (W / 2) / cam.z, hhv = (H / 2) / cam.z;
+    const vw = viewWidth();
+    const vcx = viewCenterX();
+    const hw = vcx / cam.z, hhv = (H / 2) / cam.z;
     const minX = hw, maxX = Math.max(hw, ww - hw);
     const minY = hhv, maxY = Math.max(hhv, hh - hhv);
     let lx = Math.cos(player.facing) * look + player.vx * 0.10;
@@ -11483,8 +11528,8 @@
         const plaza = clamp((640 - player.y) / 280, 0, 1);
         const shelfL = TANK_POS[0].x;
         const shelfR = TANK_POS[4].x + TANK_W;
-        const minCam = shelfR - (W / 2) / z + 8 / z;
-        const maxCam = shelfL + (W / 2) / z - 8 / z;
+        const minCam = shelfR - vcx / z + 8 / z;
+        const maxCam = shelfL + vcx / z - 8 / z;
         const pull = Math.max(plaza * 0.18, 0.08);
         if (glowI >= CORE_SPECIES && TANK_POS[glowI]) {
           tx = lerp(tx, TANK_POS[glowI].x + TANK_W / 2, pull);
@@ -11517,16 +11562,16 @@
     const rightRail = 70;
     const wantRail = shopBarsReady() ? 112 : (state.tutorial === 0 && !state.didMove ? 100 : 28);
     cam.rail = cam.rail == null ? wantRail : lerp(cam.rail, wantRail, 1 - Math.pow(0.05, Math.min(dt, 0.05)));
-    const padL = 88, padR = rightRail + 48;
+    const padL = 88, padR = Math.max(rightRail + 48, 88);
     const padT = Math.max(topHudFloor() + 12, 64);
     const act = actionBtnSize();
     const actionUp = (state.scene === "shop" && diveActionLegal()) ||
       (state.scene === "ocean" && (surfaceActionLegal() || bagIsFull()));
     const padB = Math.max(cam.rail + 36, actionUp ? act.h + act.pad + 22 : 0);
-    let psx = (player.x - nx) * cam.z + W / 2;
+    let psx = (player.x - nx) * cam.z + vcx;
     let psy = (player.y - ny) * cam.z + H / 2;
-    if (psx < padL) nx = player.x - (padL - W / 2) / cam.z;
-    if (psx > W - padR) nx = player.x - (W - padR - W / 2) / cam.z;
+    if (psx < padL) nx = player.x - (padL - vcx) / cam.z;
+    if (psx > vw - padR) nx = player.x - (vw - padR - vcx) / cam.z;
     if (psy < padT) ny = player.y - (padT - H / 2) / cam.z;
     if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
     const step = Math.hypot(nx - cam.x, ny - cam.y);
@@ -11536,10 +11581,10 @@
       nx = cam.x + (nx - cam.x) * (cap / step);
       ny = cam.y + (ny - cam.y) * (cap / step);
     }
-    psx = (player.x - nx) * cam.z + W / 2;
+    psx = (player.x - nx) * cam.z + vcx;
     psy = (player.y - ny) * cam.z + H / 2;
-    if (psx < padL) nx = player.x - (padL - W / 2) / cam.z;
-    if (psx > W - padR) nx = player.x - (W - padR - W / 2) / cam.z;
+    if (psx < padL) nx = player.x - (padL - vcx) / cam.z;
+    if (psx > vw - padR) nx = player.x - (vw - padR - vcx) / cam.z;
     if (psy < padT) ny = player.y - (padT - H / 2) / cam.z;
     if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
     cam.x = Math.round(clamp(nx, minX, maxX));
@@ -11551,6 +11596,45 @@
       cam.y = Math.round(clamp(cam.y + kick * 2.0, minY, maxY));
       cam.x = Math.round(clamp(cam.x + Math.sin(u * Math.PI * 2) * 0.9, minX, maxX));
       state.camNudge = Math.max(0, state.camNudge - dt);
+    }
+    keepPlayerInPlayfield();
+    keepSwimmersOffRail();
+  }
+  function keepPlayerInPlayfield() {
+    if (state.mode === "title") return;
+    const z = Math.max(0.001, cam.z);
+    const limit = viewWidth() - 40;
+    const sx = (player.x - cam.x) * z + viewCenterX();
+    if (sx > limit) {
+      player.x = cam.x + (limit - viewCenterX()) / z;
+      if (player.vx > 0) player.vx *= 0.2;
+    }
+  }
+  function keepSwimmerOffRail(ent, rad) {
+    const z = Math.max(0.001, cam.z);
+    const r = (rad == null ? 28 : rad) * Math.max(0.6, z);
+    const sx = (ent.x - cam.x) * z + viewCenterX();
+    const limit = viewWidth() - r;
+    if (sx <= limit) return;
+    if (sx > viewWidth() + r + 10) return;
+    ent.x = cam.x + (limit - viewCenterX()) / z;
+    if (ent.vx > 0) ent.vx = -Math.abs(ent.vx);
+  }
+  function keepSwimmersOffRail() {
+    if (state.mode === "title") return;
+    if (state.scene === "ocean") {
+      for (const f of oceanFish) {
+        if (f.caught) continue;
+        keepSwimmerOffRail(f, Math.max(28, (SPECIES[f.s] && SPECIES[f.s].size) || 20));
+      }
+      for (const s of oceanScenery) {
+        if (s.kind === "kelp" || s.kind === "rock") continue;
+        keepSwimmerOffRail(s, s.kind === "ray" ? 40 : 20);
+      }
+      for (const b of bubbles) keepSwimmerOffRail(b, (b.r || 3) + 4);
+    } else {
+      for (const t of dockTeasers) keepSwimmerOffRail(t, 22);
+      for (const sw of state.shopSwimmers) keepSwimmerOffRail(sw, 22);
     }
   }
   function seedNearMissSchool() {
