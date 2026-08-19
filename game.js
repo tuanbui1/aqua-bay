@@ -2510,6 +2510,12 @@
   function inWorldPlayfield(sx) {
     return sx < viewWidth();
   }
+  // World X of the last painted pixel left of the reserved well.
+  // Decks stop here so planks / hut / POP are not sawed by the clip.
+  function playfieldWorldRight() {
+    const z = Math.max(0.001, cam.z || 1);
+    return cam.x + (viewWidth() - 16 - viewCenterX()) / z;
+  }
   function hudGutterLeft() {
     return railGutterLeft();
   }
@@ -8535,9 +8541,12 @@
     const midA = midWoodAlpha();
     // Main plaza deck stays opaque — fading it punched sky through the
     // aisle. It sits off-screen at the dock camera (cam.y ≥ 848).
-    // East/west shop floors still follow plazaA so they cannot tile into
-    // the dock view as a strip. Aisle pier stays visible from the dock.
-    drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal, alignY: 80 });
+    // Stop the deck before the reserved well so the rail is not a saw.
+    const deckEnd = playfieldWorldRight() - 56;
+    const plazaW = Math.max(0, Math.min(1580, deckEnd - 90));
+    if (plazaW > 24) {
+      drawPierBoards(90, 80, plazaW, 300, { plank: 26, teal: teal, alignY: 80 });
+    }
     ctx.save();
     ctx.globalAlpha = Math.max(0.82, midA);
     drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
@@ -8546,8 +8555,10 @@
     if (plazaA > 0.04) {
       ctx.save();
       ctx.globalAlpha = plazaA;
-      drawPierBoards(156, 380, 172, 240, { plank: 20, teal: teal, alignY: 80 });
-      drawPierBoards(1272, 380, 188, 246, { plank: 20, teal: teal, alignY: 80 });
+      const westW = Math.max(0, Math.min(172, deckEnd - 156));
+      if (westW > 20) drawPierBoards(156, 380, westW, 240, { plank: 20, teal: teal, alignY: 80 });
+      const eastW = Math.max(0, Math.min(188, deckEnd - 1272));
+      if (eastW > 20) drawPierBoards(1272, 380, eastW, 246, { plank: 20, teal: teal, alignY: 80 });
       drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal, alignY: 80 });
       drawPierShade();
       const sunPatch = ctx.createRadialGradient(1240, 220, 20, 1100, 420, 520);
@@ -8688,7 +8699,10 @@
       if (state.decor && state.decor[0]) drawStringLights();
       ctx.restore();
     }
-    drawPierBoards(500, 890, 760, 130, { plank: 28, wetY: 1010 });
+    {
+      const dockW = Math.max(0, Math.min(760, deckEnd - 500));
+      if (dockW > 24) drawPierBoards(500, 890, dockW, 130, { plank: 28, wetY: 1010 });
+    }
     // Soft jump glow in the water — never a dashed debug rectangle.
     const glow = ctx.createRadialGradient(880, 1040, 20, 880, 1048, 280);
     glow.addColorStop(0, "rgba(160, 250, 255, 0.22)");
