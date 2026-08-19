@@ -2499,13 +2499,16 @@
   }
   function worldSpriteAlpha(wx, wy, rad) {
     const s = worldToScreen(wx, wy);
-    const r = (rad == null ? 28 : rad) * Math.max(0.6, cam.z || 1);
-    const fade = 48;
+    const r = (rad == null ? 40 : rad) * Math.max(0.6, cam.z || 1);
+    const fade = 72;
     const rightEdge = hudGutterOccupied() ? hudGutterLeft() : W;
-    const aL = clamp((s.x + r) / fade, 0, 1);
-    const aR = clamp((rightEdge - (s.x - r)) / fade, 0, 1);
-    const aT = clamp((s.y + r) / fade, 0, 1);
-    const aB = clamp((H - (s.y - r)) / fade, 0, 1);
+    // Fade from the sprite's near edge so a wide fish / crate is gone
+    // before any pixel crosses the gutter. Using the far edge left a
+    // half-cut clownfish under Sea Turtle $1400.
+    const aL = clamp((s.x - r + fade) / fade, 0, 1);
+    const aR = clamp((rightEdge - (s.x + r)) / fade, 0, 1);
+    const aT = clamp((s.y - r + fade) / fade, 0, 1);
+    const aB = clamp((H - (s.y + r)) / fade, 0, 1);
     return clamp(Math.min(aL, aR, aT, aB), 0, 1);
   }
   function paintWorldSprite(wx, wy, rad, draw) {
@@ -8658,14 +8661,14 @@
     paintWorldSprite(1600, 400, 28, function () { drawPot(1600, 400, "#3aa35a"); });
     paintWorldSprite(168, 780, 36, function () { drawPot(168, 780, "#3aa35a", 1.7); });
     paintWorldSprite(1588, 780, 36, function () { drawPot(1588, 780, "#2e8b4a", 1.75); });
-    paintWorldSprite(360, 760, 40, function () { drawCrateStack(360, 760); });
-    paintWorldSprite(1288, 748, 40, function () { drawCrateStack(1288, 748); });
-    paintWorldSprite(1004, 948, 28, function () { drawCrate(1004, 948, 40, 26); });
-    paintWorldSprite(1014, 928, 26, function () { drawCrate(1014, 928, 34, 22); });
-    drawMopBucket(748, 944);
-    drawHangingSign(1020, 924);
-    drawBench(1108, 942);
-    drawLifeRing(512, 918);
+    paintWorldSprite(381, 748, 52, function () { drawCrateStack(360, 760); });
+    paintWorldSprite(1309, 736, 52, function () { drawCrateStack(1288, 748); });
+    paintWorldSprite(1024, 961, 36, function () { drawCrate(1004, 948, 40, 26); });
+    paintWorldSprite(1031, 939, 32, function () { drawCrate(1014, 928, 34, 22); });
+    paintWorldSprite(748, 944, 28, function () { drawMopBucket(748, 944); });
+    paintWorldSprite(1020, 924, 36, function () { drawHangingSign(1020, 924); });
+    paintWorldSprite(1148, 942, 48, function () { drawBench(1108, 942); });
+    paintWorldSprite(512, 918, 28, function () { drawLifeRing(512, 918); });
     {
       const diveA = worldBoxAlpha(diveSign.x - 48, diveSign.y - 136, 96, 152);
       if (diveA > 0.04) {
@@ -8675,7 +8678,7 @@
         ctx.restore();
       }
     }
-    drawAnchor(1196, 952);
+    paintWorldSprite(1196, 952, 32, function () { drawAnchor(1196, 952); });
     drawVending(1336, 548);
     drawBaitShack(1408, 548);
     drawSkiff(pierLife.skiff);
@@ -8697,8 +8700,13 @@
       ctx.clip();
       for (const sw of state.shopSwimmers) {
         if (!inAisleWater(sw.x, sw.y) || onDryWood(sw.x, sw.y)) continue;
+        const sa = worldSpriteAlpha(sw.x, sw.y, 28);
+        if (sa <= 0.04) continue;
+        ctx.save();
+        ctx.globalAlpha *= sa;
         const ang = (sw.vx >= 0 ? 1 : -1) * Math.PI / 2;
         drawFishBody(SPECIES[sw.s], sw.x, sw.y, ang + Math.sin(state.time * 2 + sw.ph) * 0.12, 1.15, state.time + sw.ph);
+        ctx.restore();
       }
       ctx.restore();
     }
@@ -9420,7 +9428,7 @@
     drawOceanScenery();
     const list = oceanFish.filter((f) => !f.caught).sort((a, b) => a.y - b.y);
     for (const f of list) {
-      const fa = worldSpriteAlpha(f.x, f.y, SPECIES[f.s].size * 1.8);
+      const fa = worldSpriteAlpha(f.x, f.y, Math.max(40, SPECIES[f.s].size * 2.8));
       if (fa <= 0.04) continue;
       ctx.save();
       ctx.globalAlpha *= fa;
