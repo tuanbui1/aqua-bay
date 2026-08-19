@@ -9914,27 +9914,6 @@
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, viewWidth(), floor);
   }
-  function fadeWorldToRail() {
-    const x = viewWidth();
-    if (x >= W - 2) return;
-    // Soften the reserved-well edge in screen space so boards / water
-    // that still reach the clip do not read as a hard vertical saw.
-    // Cards stay HUD-pinned (drawn after this). World stays clipped.
-    const fade = 52;
-    ctx.save();
-    ctx.globalCompositeOperation = "destination-in";
-    const g = ctx.createLinearGradient(x - fade, 0, x, 0);
-    g.addColorStop(0, "rgba(0, 0, 0, 1)");
-    g.addColorStop(0.55, "rgba(0, 0, 0, 0.82)");
-    g.addColorStop(1, "rgba(0, 0, 0, 0)");
-    ctx.fillStyle = "#000";
-    ctx.fillRect(-8, -8, Math.max(0, x - fade) + 8, H + 16);
-    ctx.fillStyle = g;
-    ctx.fillRect(x - fade, 0, fade, H);
-    ctx.fillStyle = "#000";
-    ctx.fillRect(x, -8, W - x + 16, H + 16);
-    ctx.restore();
-  }
   function drawPlayfieldStile() {
     const x = viewWidth();
     if (x >= W - 2) return;
@@ -10072,7 +10051,6 @@
       ctx.restore();
     }
     ctx.restore();
-    fadeWorldToRail();
     shadeWorldUnderTopHud();
     drawPlayfieldStile();
   }
