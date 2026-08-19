@@ -5632,31 +5632,73 @@
         ctx.fillRect(0, y0, OCEAN.w, y1 - y0);
       }
     }
-    // Every depth band: unique overlapping dune lobes. Gaps so stacked
-    // zones are not 3–4 identical rulers. No 16px sawtooth, no leaf row.
+    // One continuous unique ridge. Height dips into bays — never a
+    // vertical flush-cap (those read as tile seams). Smoothstep cells
+    // so it is not a 16px sawtooth. Same idea as C64 shallows, every band.
     const sites = [];
-    let x = -56 + hash2(seed, 3) * 70;
-    let n = 0;
-    while (x < OCEAN.w + 90) {
-      const hw = 52 + hash2(seed, 50 + n) * 88;
-      const hh = 20 + hash2(seed, 60 + n) * 36;
-      const foot = y1 + 6 + (hash2(seed, 70 + n) - 0.42) * 18;
-      const cx = x + hw;
-      if (hash2(seed, 80 + n) > 0.16) {
-        const id = (bedId + n * 3 + ((hash2(seed, 88 + n) * 8) | 0)) % 8;
-        sites.push(paintDuneLobe(cx, foot, hw, hh, seed + n * 17, pair, id));
-      }
-      x += hw * (1.12 + hash2(seed, 90 + n) * 0.78);
-      n++;
+    const step = 6;
+    const cellA = 170 + hash2(seed, 2) * 90;
+    const cellB = 280 + hash2(seed, 6) * 120;
+    const pts = [];
+    function smoothHash(x, w, salt) {
+      const cell = (x / w) | 0;
+      const t = (x / w) - cell;
+      const s = t * t * (3 - 2 * t);
+      return hash2(seed + salt, cell) * (1 - s) + hash2(seed + salt, cell + 1) * s;
     }
-    // Extra unique floor mounds (unique y lift) — not a second texture-row
-    // and not mid-water leaf slabs.
-    const midN = 3 + ((hash2(seed, 5) * 4) | 0);
-    for (let m = 0; m < midN; m++) {
-      const cx = 70 + hash2(seed, 200 + m) * (OCEAN.w - 140);
-      const foot = y1 - 18 - hash2(seed, 210 + m) * 70;
-      const hw = 38 + hash2(seed, 220 + m) * 72;
-      const hh = 14 + hash2(seed, 230 + m) * 24;
+    for (let x = -24; x <= OCEAN.w + 24; x += step) {
+      const slow = smoothHash(x, cellA, 0);
+      const broad = smoothHash(x, cellB, 11);
+      const wave = Math.sin(x * 0.0048 + seed * 0.37) * 5 + Math.sin(x * 0.011 + y1 * 0.005) * 2.5;
+      const bayCell = (x / (160 + hash2(seed, 4) * 70)) | 0;
+      const bay = hash2(seed, 900 + bayCell) > 0.8 ? (0.18 + hash2(seed, 910 + bayCell) * 0.22) : 1;
+      const rise = (8 + slow * 22 + broad * 24 + wave) * bay;
+      pts.push([x, y1 + 4 - rise]);
+    }
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], y1 + 20);
+    ctx.lineTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i];
+      ctx.quadraticCurveTo(a[0], a[1], (a[0] + b[0]) * 0.5, (a[1] + b[1]) * 0.5);
+    }
+    const last = pts[pts.length - 1];
+    ctx.lineTo(last[0], last[1]);
+    ctx.lineTo(last[0], y1 + 20);
+    ctx.closePath();
+    const sandG = ctx.createLinearGradient(0, y1 - 56, 180, y1 + 10);
+    sandG.addColorStop(0, pair[0]);
+    sandG.addColorStop(0.55, pair[0]);
+    sandG.addColorStop(1, pair[1]);
+    ctx.fillStyle = sandG;
+    ctx.fill();
+    ctx.save();
+    ctx.clip();
+    let k = 0;
+    for (let p = 8; p < pts.length - 8; p += 7 + ((hash2(seed, 140 + p) * 5) | 0)) {
+      const pt = pts[p];
+      if (y1 - pt[1] < 16) continue;
+      const id = (bedId + k * 3 + ((hash2(seed, 150 + k) * 8) | 0)) % 8;
+      ctx.globalAlpha = 0.28 + hash2(seed, 160 + k) * 0.28;
+      blitBedStamp(id, pt[0], (pt[1] + y1) * 0.5, 56 + hash2(seed, 170 + k) * 70, 18 + hash2(seed, 180 + k) * 20,
+        (hash2(seed, 190 + k) - 0.5) * 0.28, hash2(seed, 195 + k) > 0.5, seed + k * 13);
+      ctx.globalAlpha = 1;
+      k++;
+    }
+    ctx.restore();
+    for (let p = 6; p < pts.length - 6; p += 5) {
+      const left = pts[p - 2][1], mid = pts[p][1], right = pts[p + 2][1];
+      if (mid < left - 2 && mid < right - 2 && y1 - mid > 18) {
+        sites.push({ x: pts[p][0], y: mid + 8, hw: 28, hh: y1 - mid, footY: y1 });
+      }
+    }
+    // A few isolated unique mounds — never a second aligned row.
+    const extra = 2 + ((hash2(seed, 5) * 2) | 0);
+    for (let m = 0; m < extra; m++) {
+      const cx = 90 + hash2(seed, 200 + m) * (OCEAN.w - 180);
+      const foot = y1 - 8 - hash2(seed, 210 + m) * 36;
+      const hw = 44 + hash2(seed, 220 + m) * 50;
+      const hh = 16 + hash2(seed, 230 + m) * 22;
       const id = (bedId + 5 + m * 2) % 8;
       sites.push(paintDuneLobe(cx, foot, hw, hh, seed + 400 + m * 23, pair, id));
     }
@@ -7368,6 +7410,14 @@
     // does not slide the board off the pole.
     ctx.save();
     ctx.translate(0, -58);
+    ctx.strokeStyle = "#5a3018";
+    ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(0, -36);
+    ctx.lineTo(0, -28);
+    ctx.stroke();
+    ctx.fillStyle = "#3a2010";
+    ctx.beginPath(); ctx.arc(0, -28, 2.4, 0, Math.PI * 2); ctx.fill();
     const board = ctx.createLinearGradient(-40, -26, 30, 24);
     board.addColorStop(0, "#d8a868");
     board.addColorStop(0.4, "#b07a3a");
