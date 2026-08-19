@@ -102,11 +102,12 @@
   const KIOSK    = { x: 1280, y: 480, w: 170, h: 130 };
   const WELCOME  = { x: 300, y: 668, w: 156, h: 86 };
   const DIVE_ZONE = { x: 520, y: 980, w: 720, h: 160 };
-  // East dressing sits on painted wood, fully left of the reserved well.
-  // Hut / POP / crates used to straddle the C70 clip and read as sawed.
-  const BAIT_HUT = { x: 1362, y: 548 };
-  const POP_VEND = { x: 1290, y: 548 };
-  const EAST_CRATES = { x: 1188, y: 936 };
+  // East dressing sits on painted wood, fully in the playfield at the
+  // dock camera. Hut / POP live on the east shop deck; crates sit on
+  // the dock. Whole-sprite fade hides them before the reserved well.
+  const BAIT_HUT = { x: 1328, y: 548 };
+  const POP_VEND = { x: 1286, y: 548 };
+  const EAST_CRATES = { x: 1088, y: 936 };
   const AISLE = { x: 802, y: 318, w: 156, h: 560 };
   const EXPEDITION_COST = 35;
   const EXPEDITION_SECS = 45;
@@ -224,7 +225,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -2509,6 +2510,12 @@
   function inWorldPlayfield(sx) {
     return sx < viewWidth();
   }
+  // World X of the last painted pixel left of the reserved well.
+  // Decks stop here so planks / hut / POP are not sawed by the clip.
+  function playfieldWorldRight() {
+    const z = Math.max(0.001, cam.z || 1);
+    return cam.x + (viewWidth() - 16 - viewCenterX()) / z;
+  }
   function hudGutterLeft() {
     return railGutterLeft();
   }
@@ -2537,11 +2544,13 @@
   }
   // Furniture near the reserved well fades as a whole sprite before the
   // hard clip, so the hut / POP / crates never read as sawed in half.
+  // Fade starts while the entire AABB is still left of the well — a
+  // 28px window was too late and left a half-sprite under the razor.
   function railPropAlpha(wx, wy, rad) {
     const s = worldToScreen(wx, wy);
-    const r = (rad == null ? 48 : rad) * Math.max(0.6, cam.z || 1);
-    const fade = 28;
-    const rightEdge = viewWidth() - 3;
+    const r = (rad == null ? 72 : rad) * Math.max(0.6, cam.z || 1);
+    const fade = 80;
+    const rightEdge = viewWidth() - 8;
     return clamp((rightEdge - (s.x + r)) / fade, 0, 1);
   }
   function paintRailProp(wx, wy, rad, draw) {
@@ -3638,10 +3647,11 @@
   // backdrop. Old plaza box (y=118–890, full shop width) let the walker
   // stand in the skyline; dock min y=860 let them step off the boards
   // onto the painting. C71 — the east dock finger (x past 1260 / y past
-  // 1010) was open water past the last plank. Same family: wood only.
+  // 1010) was open water past the last plank. C72 — walk rect matches
+  // the painted boards exactly so snap cannot lift feet off the grain.
   function shopDockWalk() {
     // Painted dock: drawPierBoards(500, 890, 760, 130). Last plank x=1260.
-    return { x: 500, y: 878, w: 760, h: 132 };
+    return { x: 500, y: 890, w: 760, h: 130 };
   }
   function shopWalkRects() {
     const dock = shopDockWalk();
@@ -3667,12 +3677,17 @@
         return { x: x, y: y };
       }
     }
+    // Prefer the band the walker is already on. At the east dock lip the
+    // east shop deck (y≈380–666) is closer in X than it looks, and a
+    // naive nearest-rect yank lifted her ~150px onto sky / empty wood.
+    const onDock = player && player.y > 820;
     let bestD = 1e15, nx = x, ny = y;
     for (let i = 0; i < rects.length; i++) {
       const rc = rects[i];
       const cx = clamp(x, rc.x, rc.x + rc.w);
       const cy = clamp(y, rc.y, rc.y + rc.h);
-      const d = (cx - x) * (cx - x) + (cy - y) * (cy - y);
+      let d = (cx - x) * (cx - x) + (cy - y) * (cy - y);
+      if (onDock && cy < 820) d += 220 * 220;
       if (d < bestD) { bestD = d; nx = cx; ny = cy; }
     }
     return { x: nx, y: ny };
@@ -5425,16 +5440,17 @@
     const w = shopW() + 840;
     const townH = 152;
     const townTop = 714;
-    if (ATLAS.sky && ART.ready) {
-      blitTile("sky", x, -280, w, townTop + 160);
-    } else {
-      const sky = ctx.createLinearGradient(x, -280, x, townTop + 40);
-      sky.addColorStop(0, "#c8eefc");
-      sky.addColorStop(0.45, "#8ed0f0");
-      sky.addColorStop(1, "#7ec8c0");
-      ctx.fillStyle = sky;
-      ctx.fillRect(x, -280, w, townTop + 320);
-    }
+    // Gradient fills the high sky and meets the town. Stretching the
+    // 176px sky atlas across the bay painted cloud / water strips into
+    // the dock view; C71 also left a 120px dark gap (tile ended at
+    // y=594, town at 714).
+    const sky = ctx.createLinearGradient(x, -280, x, townTop);
+    sky.addColorStop(0, "#c8eefc");
+    sky.addColorStop(0.42, "#8ed0f0");
+    sky.addColorStop(0.78, "#7ec8c8");
+    sky.addColorStop(1, "#6eb8b4");
+    ctx.fillStyle = sky;
+    ctx.fillRect(x, -280, w, townTop + 8);
     // Crop the C55 skyline to hills + roofs (skip the empty upper sky so
     // the waterfront sits on the horizon instead of tiling the bay).
     if (!blitHarborPart(0, 0.46, 1, 0.54, x, townTop, w, townH)) {
@@ -6651,15 +6667,25 @@
     if (player && player.y < 680) return "plaza";
     return "mid";
   }
-  function midWoodAlpha() {
-    const z = Math.max(0.5, (cam && cam.z) || 1);
-    const viewTop = (cam && cam.y || 900) - (H / 2) / z;
-    if (viewTop > 420) return 0;
-    if (viewTop > 220) return 0.4;
+  // Shop floor / kiosk / hut belong to the plaza. The dock camera must
+  // not peek them as a strip over the sky — C71's viewTop check ran
+  // BEFORE the band test, so a DIVE-button padB of cam.y≈730 still
+  // painted shop tiles into the dock view.
+  function plazaPropAlpha() {
     const band = shopViewBand();
     if (band === "dock") return 0;
-    if (band === "mid") return 0.55;
-    return 1;
+    if (band === "plaza") return 1;
+    const py = player && player.y != null ? player.y : 760;
+    // Hold east furniture until the walker is actually on the plaza
+    // so a mid-aisle camera cannot park a half-POP on the rail.
+    return clamp((720 - py) / 90, 0, 1);
+  }
+  function midWoodAlpha() {
+    const band = shopViewBand();
+    if (band === "dock") return 0;
+    const plaza = plazaPropAlpha();
+    if (band === "mid") return Math.max(0.2, plaza * 0.7);
+    return plaza;
   }
   function drawWalkRail(x, y, w, h, taper) {
     const topW = taper ? w * 0.56 : w;
@@ -8511,29 +8537,37 @@
       }
     }
     const teal = !!state.unlocked[1];
-    drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal, alignY: 80 });
+    const plazaA = plazaPropAlpha();
     const midA = midWoodAlpha();
-    // Aisle pier stays visible from the dock — hiding it made the walk to
-    // the plaza look like crossing the painted sky.
+    // Main plaza deck stays opaque — fading it punched sky through the
+    // aisle. It sits off-screen at the dock camera (cam.y ≥ 848).
+    // Stop the deck before the reserved well so the rail is not a saw.
+    const deckEnd = playfieldWorldRight() - 56;
+    const plazaW = Math.max(0, Math.min(1580, deckEnd - 90));
+    if (plazaW > 24) {
+      drawPierBoards(90, 80, plazaW, 300, { plank: 26, teal: teal, alignY: 80 });
+    }
     ctx.save();
     ctx.globalAlpha = Math.max(0.82, midA);
     drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
     drawWalkRail(800, 360, 176, 530, true);
     ctx.restore();
-    if (midA > 0.04) {
+    if (plazaA > 0.04) {
       ctx.save();
-      ctx.globalAlpha = midA;
-      drawPierBoards(156, 380, 172, 240, { plank: 20, teal: teal, alignY: 80 });
-      drawPierBoards(1272, 380, 188, 246, { plank: 20, teal: teal, alignY: 80 });
+      ctx.globalAlpha = plazaA;
+      const westW = Math.max(0, Math.min(172, deckEnd - 156));
+      if (westW > 20) drawPierBoards(156, 380, westW, 240, { plank: 20, teal: teal, alignY: 80 });
+      const eastW = Math.max(0, Math.min(188, deckEnd - 1272));
+      if (eastW > 20) drawPierBoards(1272, 380, eastW, 246, { plank: 20, teal: teal, alignY: 80 });
       drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal, alignY: 80 });
+      drawPierShade();
+      const sunPatch = ctx.createRadialGradient(1240, 220, 20, 1100, 420, 520);
+      sunPatch.addColorStop(0, "rgba(255, 220, 130, 0.16)");
+      sunPatch.addColorStop(1, "rgba(255, 200, 100, 0)");
+      ctx.fillStyle = sunPatch;
+      ctx.fillRect(90, 80, 1580, 300);
       ctx.restore();
     }
-    drawPierShade();
-    const sunPatch = ctx.createRadialGradient(1240, 220, 20, 1100, 420, 520);
-    sunPatch.addColorStop(0, "rgba(255, 220, 130, 0.16)");
-    sunPatch.addColorStop(1, "rgba(255, 200, 100, 0)");
-    ctx.fillStyle = sunPatch;
-    ctx.fillRect(90, 80, 1580, 300);
     if (midA > 0.04) {
       ctx.save();
       ctx.globalAlpha = midA;
@@ -8558,11 +8592,16 @@
     ctx.moveTo(760, 880);
     for (let x = 760; x < 1000; x += 24) ctx.lineTo(x, 872 + Math.sin(x * 0.05) * 2);
     ctx.stroke();
-    for (let i = 0; i < 22; i++) {
-      ctx.fillStyle = i % 2 ? "#e85d4c" : "#fff6e8";
-      ctx.fillRect(90 + i * 72, 54, 72, 28);
+    if (plazaA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = plazaA;
+      for (let i = 0; i < 22; i++) {
+        ctx.fillStyle = i % 2 ? "#e85d4c" : "#fff6e8";
+        ctx.fillRect(90 + i * 72, 54, 72, 28);
+      }
+      ctx.fillStyle = "#c4483a"; ctx.fillRect(80, 50, 1600, 8);
+      ctx.restore();
     }
-    ctx.fillStyle = "#c4483a"; ctx.fillRect(80, 50, 1600, 8);
     // aisle water — painted channel, wet wood lip, no hard teal slab.
     // Hidden on the dock camera so it does not become a leftover teal column
     // over the harbor town.
@@ -8626,36 +8665,44 @@
     ctx.stroke();
     ctx.restore();
     }
-    // warm sun key + lamp glows along the back wall
-    drawSunDisc(1588, 28, 22);
-    const key = ctx.createRadialGradient(1520, 40, 20, 1100, 420, 920);
-    key.addColorStop(0, "rgba(255, 214, 120, 0.2)");
-    key.addColorStop(0.45, "rgba(255, 190, 90, 0.06)");
-    key.addColorStop(1, "rgba(255, 180, 80, 0)");
-    ctx.fillStyle = key;
-    ctx.fillRect(80, 50, 1600, 360);
-    for (const lx of [400, 880, 1360]) {
-      const lg = ctx.createRadialGradient(lx, 96, 6, lx, 110, 110);
-      lg.addColorStop(0, "rgba(255, 200, 110, 0.38)");
-      lg.addColorStop(0.45, "rgba(255, 180, 80, 0.12)");
-      lg.addColorStop(1, "rgba(255, 170, 70, 0)");
-      ctx.fillStyle = lg;
-      ctx.beginPath(); ctx.arc(lx, 108, 110, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#2a241c";
-      roundRect(lx - 6, 58, 12, 16, 2); ctx.fill();
-      ctx.fillStyle = "#f4d078";
-      ctx.beginPath(); ctx.arc(lx, 90, 7.5, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#1a1610"; ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.strokeStyle = "rgba(40, 24, 10, 0.55)";
-      ctx.beginPath(); ctx.moveTo(lx - 6, 90); ctx.lineTo(lx + 6, 90); ctx.stroke();
+    // warm sun key + lamp glows along the back wall — plaza only
+    if (plazaA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = plazaA;
+      drawSunDisc(1588, 28, 22);
+      const key = ctx.createRadialGradient(1520, 40, 20, 1100, 420, 920);
+      key.addColorStop(0, "rgba(255, 214, 120, 0.2)");
+      key.addColorStop(0.45, "rgba(255, 190, 90, 0.06)");
+      key.addColorStop(1, "rgba(255, 180, 80, 0)");
+      ctx.fillStyle = key;
+      ctx.fillRect(80, 50, 1600, 360);
+      for (const lx of [400, 880, 1360]) {
+        const lg = ctx.createRadialGradient(lx, 96, 6, lx, 110, 110);
+        lg.addColorStop(0, "rgba(255, 200, 110, 0.38)");
+        lg.addColorStop(0.45, "rgba(255, 180, 80, 0.12)");
+        lg.addColorStop(1, "rgba(255, 170, 70, 0)");
+        ctx.fillStyle = lg;
+        ctx.beginPath(); ctx.arc(lx, 108, 110, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#2a241c";
+        roundRect(lx - 6, 58, 12, 16, 2); ctx.fill();
+        ctx.fillStyle = "#f4d078";
+        ctx.beginPath(); ctx.arc(lx, 90, 7.5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#1a1610"; ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.strokeStyle = "rgba(40, 24, 10, 0.55)";
+        ctx.beginPath(); ctx.moveTo(lx - 6, 90); ctx.lineTo(lx + 6, 90); ctx.stroke();
+      }
+      if (state.unlocked[1]) drawFramedPrint(220, 76, 1);
+      if (state.unlocked[2]) drawCoralSouvenir(508, 92);
+      if (state.unlocked[3]) drawFramedPrint(1124, 76, 3);
+      if (state.unlocked[4]) drawCoralSouvenir(1508, 92);
+      if (state.decor && state.decor[0]) drawStringLights();
+      ctx.restore();
     }
-    if (state.unlocked[1]) drawFramedPrint(220, 76, 1);
-    if (state.unlocked[2]) drawCoralSouvenir(508, 92);
-    if (state.unlocked[3]) drawFramedPrint(1124, 76, 3);
-    if (state.unlocked[4]) drawCoralSouvenir(1508, 92);
-    if (state.decor && state.decor[0]) drawStringLights();
-    drawPierBoards(500, 890, 760, 130, { plank: 28, wetY: 1010 });
+    {
+      const dockW = Math.max(0, Math.min(760, deckEnd - 500));
+      if (dockW > 24) drawPierBoards(500, 890, dockW, 130, { plank: 28, wetY: 1010 });
+    }
     // Soft jump glow in the water — never a dashed debug rectangle.
     const glow = ctx.createRadialGradient(880, 1040, 20, 880, 1048, 280);
     glow.addColorStop(0, "rgba(160, 250, 255, 0.22)");
@@ -8698,12 +8745,17 @@
       }
       ctx.globalAlpha = 1;
     }
-    paintWorldSprite(140, 400, 28, function () { drawPot(140, 400, "#4cba6a"); });
-    paintWorldSprite(1600, 400, 28, function () { drawPot(1600, 400, "#3aa35a"); });
-    paintWorldSprite(168, 780, 36, function () { drawPot(168, 780, "#3aa35a", 1.7); });
-    paintWorldSprite(1588, 780, 36, function () { drawPot(1588, 780, "#2e8b4a", 1.75); });
-    paintWorldSprite(381, 748, 52, function () { drawCrateStack(360, 760); });
-    paintRailProp(EAST_CRATES.x + 21, EAST_CRATES.y - 12, 52, function () {
+    if (plazaA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = plazaA;
+      paintWorldSprite(140, 400, 28, function () { drawPot(140, 400, "#4cba6a"); });
+      paintWorldSprite(1600, 400, 28, function () { drawPot(1600, 400, "#3aa35a"); });
+      paintWorldSprite(168, 780, 36, function () { drawPot(168, 780, "#3aa35a", 1.7); });
+      paintWorldSprite(1588, 780, 36, function () { drawPot(1588, 780, "#2e8b4a", 1.75); });
+      paintWorldSprite(381, 748, 52, function () { drawCrateStack(360, 760); });
+      ctx.restore();
+    }
+    paintRailProp(EAST_CRATES.x + 21, EAST_CRATES.y - 12, 64, function () {
       drawCrateStack(EAST_CRATES.x, EAST_CRATES.y);
     });
     paintWorldSprite(1024, 961, 36, function () { drawCrate(1004, 948, 40, 26); });
@@ -8722,18 +8774,28 @@
       }
     }
     paintWorldSprite(1196, 952, 32, function () { drawAnchor(1196, 952); });
-    paintRailProp(POP_VEND.x, POP_VEND.y + 38, 42, function () { drawVending(POP_VEND.x, POP_VEND.y); });
-    paintRailProp(BAIT_HUT.x, BAIT_HUT.y + 36, 62, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
+    if (plazaA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = plazaA;
+      paintRailProp(POP_VEND.x, POP_VEND.y + 38, 56, function () { drawVending(POP_VEND.x, POP_VEND.y); });
+      paintRailProp(BAIT_HUT.x, BAIT_HUT.y + 36, 78, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
+      ctx.restore();
+    }
     drawSkiff(pierLife.skiff);
     drawGull(pierLife.gull);
     drawGull(pierLife.gull2);
-    if (state.decor && state.decor[2]) drawFountain();
     drawBoat();
-    drawWelcome();
-    drawRegister(); drawKiosk();
-    if (galleryOpen()) drawEastGallery();
-    for (let i = 0; i < SPECIES.length; i++) {
-      if (tankLive(i)) drawTank(i);
+    if (plazaA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = plazaA;
+      if (state.decor && state.decor[2]) drawFountain();
+      drawWelcome();
+      drawRegister(); drawKiosk();
+      if (galleryOpen()) drawEastGallery();
+      for (let i = 0; i < SPECIES.length; i++) {
+        if (tankLive(i)) drawTank(i);
+      }
+      ctx.restore();
     }
     if (midA > 0.04 && !state.unlockBanner && (state.aisleSchoolWait || 0) <= 0 &&
         !(state.fadeDir && state.pendingScene === "ocean")) {
@@ -8755,7 +8817,21 @@
     }
     const actors = [];
     for (const c of customers) {
-      actors.push({ y: c.y, draw: function () { drawPerson(c.x, c.y, c); } });
+      actors.push({
+        y: c.y,
+        draw: function () {
+          if (c.y < 860) {
+            const a = plazaPropAlpha();
+            if (a <= 0.04) return;
+            ctx.save();
+            ctx.globalAlpha *= a;
+            drawPerson(c.x, c.y, c);
+            ctx.restore();
+          } else {
+            drawPerson(c.x, c.y, c);
+          }
+        },
+      });
     }
     actors.push({ y: player.y, draw: function () { drawPlayer(player.x, player.y); } });
     for (let i = 0; i < dockPosts.length; i++) {
@@ -8770,7 +8846,12 @@
     }
     actors.sort(function (a, b) { return a.y - b.y; });
     for (let i = 0; i < actors.length; i++) actors[i].draw();
-    drawShopBanner();
+    if (plazaA > 0.04) {
+      ctx.save();
+      ctx.globalAlpha = plazaA;
+      drawShopBanner();
+      ctx.restore();
+    }
   }
   function drawWelcome() {
     const b = WELCOME;
@@ -9841,19 +9922,19 @@
   function drawPlayfieldStile() {
     const x = viewWidth();
     if (x >= W - 2) return;
-    // 4px recess into the well — not a razor cut, not a fake wood fence.
-    const fade = 4;
+    // Soft recess into the well — not a 4px razor, not a fake wood fence.
+    const fade = 28;
     const play = ctx.createLinearGradient(x - fade, 0, x, 0);
     play.addColorStop(0, "rgba(7, 20, 28, 0)");
-    play.addColorStop(0.4, "rgba(7, 20, 28, 0.18)");
-    play.addColorStop(1, "rgba(7, 20, 28, 0.62)");
+    play.addColorStop(0.45, "rgba(7, 20, 28, 0.16)");
+    play.addColorStop(1, "rgba(7, 20, 28, 0.55)");
     ctx.fillStyle = play;
     ctx.fillRect(x - fade, 0, fade, H);
-    const well = ctx.createLinearGradient(x, 0, x + 3, 0);
-    well.addColorStop(0, "rgba(0, 4, 8, 0.42)");
+    const well = ctx.createLinearGradient(x, 0, x + 6, 0);
+    well.addColorStop(0, "rgba(0, 4, 8, 0.38)");
     well.addColorStop(1, "rgba(0, 4, 8, 0)");
     ctx.fillStyle = well;
-    ctx.fillRect(x, 0, 3, H);
+    ctx.fillRect(x, 0, 6, H);
   }
   function drawWorld() {
     ctx.fillStyle = "#07141c";
@@ -11188,7 +11269,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 71", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 72", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -11229,7 +11310,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 71", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 72", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -11246,7 +11327,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 71", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 72", W / 2, 632);
     }
   }
 
@@ -11628,6 +11709,12 @@
     if (psx > vw - padR) nx = player.x - (vw - padR - vcx) / cam.z;
     if (psy < padT) ny = player.y - (padT - H / 2) / cam.z;
     if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
+    // Dock DIVE padB used to pin cam.y at player.y-210 ≈ 730. That
+    // stacked plaza boards / kiosk / sky tiles over the dock (the east
+    // walk "dark band"). Keep the dock camera on the horizon + boards.
+    if (state.scene === "shop" && (cam.shopBand === "dock" || player.y > 860)) {
+      ny = Math.max(ny, 848);
+    }
     cam.x = Math.round(clamp(nx, minX, maxX));
     cam.y = Math.round(clamp(ny, minY, maxY));
     if (state.camNudge > 0) {
@@ -11644,7 +11731,7 @@
   function keepPlayerInPlayfield() {
     if (state.mode === "title") return;
     const z = Math.max(0.001, cam.z);
-    const limit = viewWidth() - 40;
+    const limit = viewWidth() - 64;
     const sx = (player.x - cam.x) * z + viewCenterX();
     if (sx > limit) {
       player.x = cam.x + (limit - viewCenterX()) / z;
