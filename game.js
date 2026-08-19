@@ -219,8 +219,8 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 painted walk/swim, unique boards, dive pad, harbor town.
-  const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"sky":{"x":1164,"y":1066,"w":360,"h":91,"ax":180.0,"ay":91},"tankglass":{"x":2,"y":1208,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":144,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":366,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":588,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":810,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":1032,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":1254,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":2,"y":1320,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":224,"y":1320,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":446,"y":1320,"w":44,"h":110,"ax":22,"ay":104},"harbor":{"x":492,"y":1320,"w":480,"h":320,"ax":240.0,"ay":198.4},"harbortown":{"x":974,"y":1320,"w":540,"h":360,"ax":270.0,"ay":208.79999999999998},"plank":{"x":2,"y":1682,"w":220,"h":48,"ax":110.0,"ay":24.0},"plank1":{"x":224,"y":1682,"w":220,"h":48,"ax":110.0,"ay":24.0},"plank2":{"x":446,"y":1682,"w":220,"h":48,"ax":110.0,"ay":24.0},"plank3":{"x":668,"y":1682,"w":220,"h":48,"ax":110.0,"ay":24.0},"plank4":{"x":890,"y":1682,"w":220,"h":48,"ax":110.0,"ay":24.0},"plank5":{"x":1112,"y":1682,"w":220,"h":48,"ax":110.0,"ay":24.0},"plank6":{"x":1334,"y":1682,"w":220,"h":48,"ax":110.0,"ay":24.0},"plank7":{"x":2,"y":1732,"w":220,"h":48,"ax":110.0,"ay":24.0},"water":{"x":224,"y":1732,"w":360,"h":173,"ax":180.0,"ay":65.74},"waterline":{"x":586,"y":1732,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":948,"y":1732,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":1310,"y":1732,"w":200,"h":92,"ax":100,"ay":78},"lifering":{"x":2,"y":1907,"w":132,"h":150,"ax":66,"ay":142},"anchor":{"x":136,"y":1907,"w":110,"h":140,"ax":55,"ay":132}};
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline, single boards, portraits.
+  const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
     const img = new Image();
@@ -1073,7 +1073,7 @@
     return w.x > DIVE_ZONE.x + 24 && w.x < DIVE_ZONE.x + DIVE_ZONE.w - 24 &&
            w.y > DIVE_ZONE.y && w.y < DIVE_ZONE.y + DIVE_ZONE.h;
   }
-  function diveChipBox() { return { x: 820, y: 910, w: 120, h: 36 }; }
+  function diveChipBox() { return { x: 796, y: 880, w: 172, h: 82 }; }
   function clickOnDiveChip() {
     const w = screenToWorld(mouse.pressX, mouse.pressY);
     const b = diveChipBox();
@@ -4404,7 +4404,7 @@
   // C43 — painted harbor art. Cached tiles only; no downloaded photos.
   // C51 — a second, taller pier canvas so the dock camera sees roofs, not the
   // water-half of the title painting.
-  const paint = { ready: false, wood: null, woodTeal: null, clouds: null, harbor: null, pier: null };
+  const paint = { ready: false, wood: null, woodTeal: null, clouds: null, harbor: null, pier: null, planks: null };
   function hash2(x, y) {
     const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123;
     return n - Math.floor(n);
@@ -4476,6 +4476,174 @@
       g.beginPath(); g.ellipse(cx, cy, rad * 1.6, rad * 0.7, 0, 0, Math.PI * 2); g.fill();
     }
   }
+  function paintUniqueTown(g, w, h, base, sc) {
+    const s = sc || 1;
+    function gable(bx, by, bw, rise, col) {
+      g.fillStyle = col;
+      g.beginPath();
+      g.moveTo(bx - 5 * s, by + 4);
+      g.lineTo(bx + bw * 0.5, by - rise);
+      g.lineTo(bx + bw + 5 * s, by + 4);
+      g.closePath();
+      g.fill();
+    }
+    function win(x, y, ww, hh, lit) {
+      g.fillStyle = lit ? "#ffe27a" : "#6a90a0";
+      g.fillRect(x, y, ww, hh);
+      g.strokeStyle = "rgba(60, 32, 16, 0.35)";
+      g.lineWidth = 1;
+      g.strokeRect(x, y, ww, hh);
+    }
+    const specs = [
+      { kind: "tower", fx: 0.035, fw: 0.075, fh: 0.24, wall: "#efe4c8", roof: "#c45c4a" },
+      { kind: "cafe", fx: 0.118, fw: 0.10, fh: 0.145, wall: "#d45a48", roof: "#8b3a2a" },
+      { kind: "cottage", fx: 0.228, fw: 0.082, fh: 0.11, wall: "#e8c04a", roof: "#8a5a28" },
+      { kind: "villa", fx: 0.318, fw: 0.112, fh: 0.175, wall: "#f4efe6", roof: "#c45c4a" },
+      { kind: "boat", fx: 0.440, fw: 0.118, fh: 0.10, wall: "#8a6a48", roof: "#5a3a22" },
+      { kind: "inn", fx: 0.568, fw: 0.102, fh: 0.155, wall: "#e0b070", roof: "#a04830" },
+      { kind: "church", fx: 0.678, fw: 0.078, fh: 0.22, wall: "#eee6d4", roof: "#6a6a70" },
+      { kind: "pink", fx: 0.768, fw: 0.082, fh: 0.13, wall: "#e8b0b8", roof: "#c45c4a" },
+      { kind: "stall", fx: 0.858, fw: 0.10, fh: 0.12, wall: "#3d7aad", roof: "#2a5a7a" },
+    ];
+    for (let i = 0; i < specs.length; i++) {
+      const b = specs[i];
+      const bx = w * b.fx, bw = w * b.fw, bh = h * b.fh * s, by = base - bh;
+      g.fillStyle = "rgba(20, 28, 24, 0.18)";
+      g.fillRect(bx + 3, base, bw, h * 0.01);
+      g.fillStyle = b.wall;
+      g.fillRect(bx, by, bw, bh + 2);
+      g.fillStyle = "rgba(255, 236, 200, 0.16)";
+      g.fillRect(bx, by, bw * 0.32, bh);
+      g.fillStyle = "rgba(40, 24, 12, 0.10)";
+      g.fillRect(bx + bw * 0.62, by, bw * 0.38, bh);
+      if (b.kind === "tower") {
+        g.fillStyle = b.roof;
+        g.fillRect(bx - 2, by - h * 0.018, bw + 4, h * 0.02);
+        g.beginPath();
+        g.moveTo(bx - 3, by - h * 0.016);
+        g.quadraticCurveTo(bx + bw * 0.5, by - h * 0.055, bx + bw + 3, by - h * 0.016);
+        g.fill();
+        g.fillStyle = "#fff6e8";
+        g.beginPath(); g.arc(bx + bw * 0.5, by + bh * 0.22, Math.max(5, bw * 0.18), 0, Math.PI * 2); g.fill();
+        g.strokeStyle = "#8a5a28"; g.lineWidth = 1.4;
+        g.beginPath(); g.arc(bx + bw * 0.5, by + bh * 0.22, Math.max(5, bw * 0.18), 0, Math.PI * 2); g.stroke();
+        win(bx + bw * 0.22, by + bh * 0.48, bw * 0.2, bh * 0.14, true);
+        win(bx + bw * 0.58, by + bh * 0.48, bw * 0.2, bh * 0.14, true);
+        win(bx + bw * 0.36, by + bh * 0.72, bw * 0.28, bh * 0.18, false);
+      } else if (b.kind === "cafe") {
+        gable(bx, by, bw, h * 0.028, b.roof);
+        g.fillStyle = "#ffe27a";
+        g.beginPath();
+        g.moveTo(bx + 2, by + bh * 0.42);
+        g.lineTo(bx + bw - 2, by + bh * 0.42);
+        g.lineTo(bx + bw - 6, by + bh * 0.28);
+        g.lineTo(bx + 6, by + bh * 0.28);
+        g.closePath(); g.fill();
+        g.fillStyle = "#fff6e8";
+        g.fillRect(bx + 4, by + bh * 0.28, bw - 8, 3);
+        win(bx + bw * 0.14, by + bh * 0.52, bw * 0.22, bh * 0.2, true);
+        win(bx + bw * 0.62, by + bh * 0.52, bw * 0.22, bh * 0.2, true);
+        g.fillStyle = "#5a3018";
+        g.fillRect(bx + bw * 0.38, by + bh * 0.62, bw * 0.22, bh * 0.38);
+      } else if (b.kind === "cottage") {
+        gable(bx, by, bw, h * 0.032, b.roof);
+        g.fillStyle = "#8a4a22";
+        g.fillRect(bx + bw * 0.72, by - h * 0.04, 5, h * 0.045);
+        win(bx + bw * 0.18, by + bh * 0.38, bw * 0.22, bh * 0.22, true);
+        win(bx + bw * 0.58, by + bh * 0.38, bw * 0.22, bh * 0.22, true);
+        g.fillStyle = "#6b3416";
+        g.fillRect(bx + bw * 0.38, by + bh * 0.58, bw * 0.24, bh * 0.42);
+        g.fillStyle = "#3d8b4a";
+        g.fillRect(bx + 3, by + bh * 0.78, bw * 0.2, bh * 0.12);
+      } else if (b.kind === "villa") {
+        gable(bx, by, bw, h * 0.026, b.roof);
+        win(bx + bw * 0.12, by + bh * 0.22, bw * 0.18, bh * 0.16, true);
+        win(bx + bw * 0.42, by + bh * 0.22, bw * 0.18, bh * 0.16, false);
+        win(bx + bw * 0.70, by + bh * 0.22, bw * 0.18, bh * 0.16, true);
+        g.fillStyle = "rgba(40, 28, 18, 0.35)";
+        g.fillRect(bx + bw * 0.1, by + bh * 0.42, bw * 0.8, 4);
+        g.strokeStyle = "#2a1a12"; g.lineWidth = 1.2;
+        for (let k = 0; k < 5; k++) {
+          g.beginPath();
+          g.moveTo(bx + bw * (0.16 + k * 0.16), by + bh * 0.42);
+          g.lineTo(bx + bw * (0.16 + k * 0.16), by + bh * 0.52);
+          g.stroke();
+        }
+        win(bx + bw * 0.14, by + bh * 0.58, bw * 0.2, bh * 0.16, true);
+        win(bx + bw * 0.64, by + bh * 0.58, bw * 0.2, bh * 0.16, true);
+        g.fillStyle = "#5a3018";
+        g.fillRect(bx + bw * 0.4, by + bh * 0.62, bw * 0.2, bh * 0.38);
+      } else if (b.kind === "boat") {
+        g.fillStyle = b.roof;
+        g.fillRect(bx - 2, by, bw + 4, 8);
+        g.fillStyle = "#3a2415";
+        g.fillRect(bx + bw * 0.12, by + 14, bw * 0.22, bh * 0.55);
+        g.fillRect(bx + bw * 0.40, by + 14, bw * 0.22, bh * 0.55);
+        g.fillRect(bx + bw * 0.68, by + 14, bw * 0.22, bh * 0.55);
+        g.fillStyle = "#1b4d6b";
+        g.beginPath();
+        g.ellipse(bx + bw * 0.5, base + 2, bw * 0.28, 5, 0, 0, Math.PI * 2);
+        g.fill();
+      } else if (b.kind === "inn") {
+        gable(bx, by, bw, h * 0.024, b.roof);
+        win(bx + bw * 0.14, by + bh * 0.28, bw * 0.2, bh * 0.16, true);
+        win(bx + bw * 0.42, by + bh * 0.28, bw * 0.16, bh * 0.16, true);
+        win(bx + bw * 0.66, by + bh * 0.28, bw * 0.2, bh * 0.16, false);
+        win(bx + bw * 0.14, by + bh * 0.56, bw * 0.2, bh * 0.16, true);
+        win(bx + bw * 0.66, by + bh * 0.56, bw * 0.2, bh * 0.16, true);
+        g.fillStyle = "#6b3416";
+        g.fillRect(bx + bw * 0.38, by + bh * 0.58, bw * 0.24, bh * 0.42);
+        g.fillStyle = "#c4483a";
+        g.fillRect(bx + bw * 0.3, by + bh * 0.12, bw * 0.4, 7);
+        g.fillStyle = "#fff6e8";
+        g.font = "bold " + Math.max(7, (bw * 0.12) | 0) + "px sans-serif";
+        g.textAlign = "center";
+        g.fillText("OPEN", bx + bw * 0.5, by + bh * 0.12 + 6);
+      } else if (b.kind === "church") {
+        g.fillStyle = b.roof;
+        g.beginPath();
+        g.moveTo(bx + bw * 0.5, by - h * 0.05);
+        g.lineTo(bx - 2, by + 6);
+        g.lineTo(bx + bw + 2, by + 6);
+        g.closePath(); g.fill();
+        g.fillStyle = "#fff6e8";
+        g.fillRect(bx + bw * 0.46, by - h * 0.062, 3, h * 0.02);
+        win(bx + bw * 0.32, by + bh * 0.28, bw * 0.36, bh * 0.22, true);
+        g.fillStyle = "#5a3018";
+        g.fillRect(bx + bw * 0.36, by + bh * 0.62, bw * 0.28, bh * 0.38);
+      } else if (b.kind === "pink") {
+        gable(bx, by, bw, h * 0.03, b.roof);
+        g.fillStyle = "#ffe27a";
+        g.beginPath(); g.arc(bx + bw * 0.5, by + bh * 0.38, bw * 0.16, 0, Math.PI * 2); g.fill();
+        g.fillStyle = "#6b3416";
+        g.fillRect(bx + bw * 0.36, by + bh * 0.62, bw * 0.28, bh * 0.38);
+      } else {
+        g.fillStyle = b.roof;
+        g.beginPath();
+        g.moveTo(bx - 4, by + 8);
+        g.lineTo(bx + bw * 0.5, by - 4);
+        g.lineTo(bx + bw + 4, by + 8);
+        g.closePath(); g.fill();
+        g.fillStyle = "#2a4a58";
+        g.fillRect(bx + 4, by + bh * 0.38, bw - 8, bh * 0.28);
+        g.fillStyle = "#f08a2a";
+        g.fillRect(bx + 8, by + bh * 0.44, 6, 4);
+        g.fillStyle = "#3d8bfd";
+        g.fillRect(bx + 16, by + bh * 0.44, 6, 4);
+      }
+    }
+    const trees = [[0.02, 0.92], [0.21, 0.90], [0.41, 0.93], [0.54, 0.91], [0.75, 0.90], [0.97, 0.92]];
+    for (let i = 0; i < trees.length; i++) {
+      const [fx, fy] = trees[i];
+      const tx = w * fx, ty = base * fy + base * (1 - fy) * 0.15;
+      g.fillStyle = "#5a3618";
+      g.fillRect(tx, ty, 3.4 * s, h * 0.03 * s);
+      g.fillStyle = i % 2 ? "#2e7a3c" : "#3d8b4a";
+      g.beginPath();
+      g.ellipse(tx + 1.6, ty - 6 * s, w * 0.016 + i, h * 0.022 * s + (i % 3), 0, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
   function paintHarborScene(c) {
     const g = c.getContext("2d");
     const w = c.width, h = c.height;
@@ -4532,72 +4700,7 @@
     hill([0, 0.40, 0.12, 0.33, 0.24, 0.38, 0.4, 0.30, 0.55, 0.36, 0.7, 0.28, 0.84, 0.35, 1, 0.32], "#7aab88");
     hill([0, 0.45, 0.1, 0.40, 0.22, 0.44, 0.38, 0.38, 0.54, 0.43, 0.7, 0.37, 0.86, 0.42, 1, 0.39], "#4e7e62");
     hill([0, 0.50, 0.16, 0.46, 0.34, 0.49, 0.52, 0.45, 0.72, 0.48, 0.9, 0.46, 1, 0.48], "#3d6a52");
-    const townBase = h * 0.505;
-    const buildings = [
-      [0.06, 0.055, 0.07, "#d8c4a0", "#8a6a48"],
-      [0.11, 0.042, 0.09, "#c8b090", "#6a4a30"],
-      [0.155, 0.05, 0.06, "#e0d0b0", "#8a5a38"],
-      [0.22, 0.07, 0.08, "#c45c4a", "#8b3a2a"],
-      [0.29, 0.048, 0.055, "#e8c04a", "#a88820"],
-      [0.34, 0.038, 0.07, "#d4c2a0", "#7a5a38"],
-      [0.42, 0.06, 0.075, "#c8b090", "#6a4830"],
-      [0.49, 0.044, 0.1, "#d8c8a8", "#8a6a40"],
-      [0.56, 0.052, 0.08, "#c45c4a", "#8b3a2a"],
-      [0.64, 0.04, 0.065, "#d0be9a", "#7a5838"],
-      [0.70, 0.058, 0.085, "#e8d4b0", "#8a6a48"],
-      [0.78, 0.046, 0.07, "#c8b090", "#6a4a30"],
-      [0.85, 0.05, 0.06, "#d8c4a0", "#8a6a48"],
-    ];
-    for (let i = 0; i < buildings.length; i++) {
-      const [fx, fw, fh, wall, roof] = buildings[i];
-      const bx = w * fx, bw = w * fw, bh = h * fh, by = townBase - bh;
-      g.fillStyle = "rgba(20, 28, 24, 0.18)";
-      g.fillRect(bx + 3, townBase, bw, h * 0.012);
-      g.fillStyle = wall;
-      g.fillRect(bx, by, bw, bh + 2);
-      g.fillStyle = "rgba(255, 236, 200, 0.16)";
-      g.fillRect(bx, by, bw * 0.35, bh);
-      g.fillStyle = roof;
-      g.beginPath();
-      g.moveTo(bx - 3, by + 5);
-      g.lineTo(bx + bw * 0.5, by - h * 0.022 - (i % 3) * 2);
-      g.lineTo(bx + bw + 3, by + 5);
-      g.closePath();
-      g.fill();
-      if (i === 3 || i === 8) {
-        g.fillStyle = "#fff6e8";
-        g.fillRect(bx + bw * 0.42, by - h * 0.04, 3, h * 0.04);
-        g.fillStyle = "#e85d4c";
-        g.beginPath();
-        g.moveTo(bx + bw * 0.42 + 1.5, by - h * 0.055);
-        g.lineTo(bx + bw * 0.42 + 10, by - h * 0.03);
-        g.lineTo(bx + bw * 0.42 + 1.5, by - h * 0.028);
-        g.fill();
-      }
-      const lit = (i * 3) % 5 !== 1;
-      g.fillStyle = lit ? "#ffe27a" : "#6a90a0";
-      const cols = 2 + (i % 2), rows = 2 + (i % 3 === 0 ? 1 : 0);
-      for (let r = 0; r < rows; r++) {
-        for (let c0 = 0; c0 < cols; c0++) {
-          const ww = Math.max(2.4, bw * 0.13), hh = Math.max(2.6, bh * 0.13);
-          g.fillRect(bx + bw * 0.16 + c0 * (bw * 0.34), by + bh * 0.3 + r * (bh * 0.26), ww, hh);
-        }
-      }
-    }
-    const trees = [[0.04, 0.475], [0.195, 0.468], [0.4, 0.482], [0.61, 0.47], [0.75, 0.478], [0.93, 0.472]];
-    for (let i = 0; i < trees.length; i++) {
-      const [fx, fy] = trees[i];
-      g.fillStyle = "#5a3618";
-      g.fillRect(w * fx, h * fy, 3.2, h * 0.028);
-      g.fillStyle = i % 2 ? "#3d8b4a" : "#2e7a3c";
-      g.beginPath();
-      g.ellipse(w * fx + 1.6, h * fy - 4, w * 0.016 + i * 0.8, h * 0.02 + (i % 3), 0, 0, Math.PI * 2);
-      g.fill();
-      g.fillStyle = "rgba(180, 230, 140, 0.22)";
-      g.beginPath();
-      g.ellipse(w * fx, h * fy - 6, w * 0.01, h * 0.012, 0, 0, Math.PI * 2);
-      g.fill();
-    }
+    paintUniqueTown(g, w, h, h * 0.52, 1);
     const wf = g.createLinearGradient(0, h * 0.5, 0, h);
     wf.addColorStop(0, "#8ed4d0");
     wf.addColorStop(0.12, "#4ab4c0");
@@ -4715,92 +4818,7 @@
     hill([0, 0.38, 0.14, 0.30, 0.28, 0.36, 0.46, 0.28, 0.62, 0.34, 0.78, 0.26, 0.9, 0.33, 1, 0.29], "#7aab88", 0.78);
     hill([0, 0.46, 0.12, 0.40, 0.26, 0.45, 0.42, 0.38, 0.58, 0.44, 0.74, 0.37, 0.88, 0.43, 1, 0.40], "#4e7e62", 0.82);
     hill([0, 0.56, 0.18, 0.50, 0.36, 0.54, 0.54, 0.49, 0.72, 0.53, 0.9, 0.50, 1, 0.52], "#3d6a52", 0.88);
-    function house(fx, fw, fh, wall, roof, base, flag) {
-      const bx = w * fx, bw = w * fw, bh = h * fh, by = h * base - bh;
-      g.fillStyle = "rgba(20, 28, 24, 0.2)";
-      g.fillRect(bx + 4, h * base, bw, h * 0.01);
-      g.fillStyle = wall;
-      g.fillRect(bx, by, bw, bh + 2);
-      g.fillStyle = "rgba(255, 236, 200, 0.18)";
-      g.fillRect(bx, by, bw * 0.34, bh);
-      g.fillStyle = "rgba(40, 24, 12, 0.12)";
-      g.fillRect(bx + bw * 0.62, by, bw * 0.38, bh);
-      g.fillStyle = roof;
-      g.beginPath();
-      g.moveTo(bx - 5, by + 6);
-      g.lineTo(bx + bw * 0.5, by - h * 0.028 - hash2(fx * 40, 2) * 8);
-      g.lineTo(bx + bw + 5, by + 6);
-      g.closePath();
-      g.fill();
-      if (flag) {
-        g.fillStyle = "#fff6e8";
-        g.fillRect(bx + bw * 0.44, by - h * 0.045, 3.2, h * 0.045);
-        g.fillStyle = "#e85d4c";
-        g.beginPath();
-        g.moveTo(bx + bw * 0.44 + 1.6, by - h * 0.06);
-        g.lineTo(bx + bw * 0.44 + 14, by - h * 0.032);
-        g.lineTo(bx + bw * 0.44 + 1.6, by - h * 0.03);
-        g.fill();
-      }
-      const cols = 2 + ((fw * 30) | 0) % 2, rows = 2 + ((fh * 20) | 0) % 2;
-      for (let r = 0; r < rows; r++) {
-        for (let c0 = 0; c0 < cols; c0++) {
-          const lit = ((r * 3 + c0 + (fx * 17) | 0) % 5) !== 1;
-          g.fillStyle = lit ? "#ffe27a" : "#6a90a0";
-          const ww = Math.max(3, bw * 0.12), hh = Math.max(3.2, bh * 0.12);
-          g.fillRect(bx + bw * 0.16 + c0 * (bw * 0.32), by + bh * 0.28 + r * (bh * 0.28), ww, hh);
-        }
-      }
-    }
-    const far = [
-      [0.04, 0.05, 0.07, "#d8c4a0", "#8a6a48"],
-      [0.10, 0.04, 0.09, "#c8b090", "#6a4a30"],
-      [0.16, 0.048, 0.06, "#e0d0b0", "#8a5a38"],
-      [0.23, 0.06, 0.08, "#c45c4a", "#8b3a2a"],
-      [0.31, 0.044, 0.055, "#e8c04a", "#a88820"],
-      [0.38, 0.05, 0.07, "#d4c2a0", "#7a5a38"],
-      [0.46, 0.055, 0.075, "#c8b090", "#6a4830"],
-      [0.54, 0.042, 0.09, "#d8c8a8", "#8a6a40"],
-      [0.62, 0.05, 0.07, "#c45c4a", "#8b3a2a"],
-      [0.70, 0.038, 0.06, "#d0be9a", "#7a5838"],
-      [0.78, 0.055, 0.08, "#e8d4b0", "#8a6a48"],
-      [0.86, 0.046, 0.065, "#c8b090", "#6a4a30"],
-      [0.93, 0.05, 0.055, "#d8c4a0", "#8a6a48"],
-    ];
-    for (let i = 0; i < far.length; i++) {
-      const [fx, fw, fh, wall, roof] = far[i];
-      house(fx, fw, fh, wall, roof, 0.70, i === 3 || i === 8);
-    }
-    const near = [
-      [0.02, 0.09, 0.14, "#e2c8a0", "#8a5a32"],
-      [0.12, 0.07, 0.11, "#c45c4a", "#8b3a2a"],
-      [0.21, 0.085, 0.16, "#d8c090", "#6a4024"],
-      [0.32, 0.06, 0.10, "#e8c04a", "#a88820"],
-      [0.40, 0.08, 0.13, "#c8b090", "#6a4830"],
-      [0.51, 0.07, 0.12, "#d0a878", "#7a4a28"],
-      [0.60, 0.09, 0.15, "#c45c4a", "#8b3a2a"],
-      [0.72, 0.075, 0.11, "#e8d4b0", "#8a6a48"],
-      [0.82, 0.08, 0.14, "#c8b090", "#6a4a30"],
-      [0.91, 0.07, 0.12, "#d8c4a0", "#8a6a48"],
-    ];
-    for (let i = 0; i < near.length; i++) {
-      const [fx, fw, fh, wall, roof] = near[i];
-      house(fx, fw, fh, wall, roof, 0.90, i === 1 || i === 6);
-    }
-    const trees = [
-      [0.015, 0.68], [0.185, 0.67], [0.355, 0.685], [0.495, 0.672],
-      [0.655, 0.678], [0.805, 0.67], [0.96, 0.682],
-      [0.07, 0.86], [0.29, 0.855], [0.48, 0.868], [0.68, 0.852], [0.88, 0.86],
-    ];
-    for (let i = 0; i < trees.length; i++) {
-      const [fx, fy] = trees[i];
-      g.fillStyle = "#5a3618";
-      g.fillRect(w * fx, h * fy, 3.4, h * 0.024);
-      g.fillStyle = i % 2 ? "#3d8b4a" : "#2e7a3c";
-      g.beginPath();
-      g.ellipse(w * fx + 1.7, h * fy - 5, w * 0.018 + i * 0.5, h * 0.016 + (i % 3), 0, 0, Math.PI * 2);
-      g.fill();
-    }
+    paintUniqueTown(g, w, h, h * 0.88, 1.15);
     const wf = g.createLinearGradient(0, h * 0.88, 0, h);
     wf.addColorStop(0, "#8ed4d0");
     wf.addColorStop(0.35, "#4ab4c0");
@@ -4846,52 +4864,56 @@
       g.fill();
     }
   }
-  function drawHarborTown(x, y, w, h, teal) {
-    if (blitTile("harbortown", x, y, w, h) || blitHorizon(x, y, w, h)) {
-      if (teal) {
-        ctx.fillStyle = "rgba(18, 132, 124, 0.10)";
-        ctx.fillRect(x, y, w, h);
-      }
-      return true;
-    }
+  function drawTownSkyline(x, waterY, w, townH, teal) {
     ensurePaint();
-    if (paint.harbor) ctx.drawImage(paint.harbor, x, y, w, h);
-    else {
-      ctx.fillStyle = "#5eb8e6";
-      ctx.fillRect(x, y, w, h);
+    const top = waterY - townH;
+    if (ATLAS.sky && ART.ready) {
+      blitTile("sky", x, top - 80, w, Math.min(220, townH * 0.42));
     }
-    if (teal) {
-      ctx.fillStyle = "rgba(18, 132, 124, 0.12)";
-      ctx.fillRect(x, y, w, h);
-    }
-    return true;
-  }
-  // Shop / dock backdrop. Town sits on the bay waterline (y≈886) so the dock
-  // camera — which cannot see the plaza-height title framing — still gets sky,
-  // hills, and roofs. Never a tiled plank wall.
-  function drawShopHarbor(teal) {
-    ensurePaint();
-    const waterY = 886;
-    const topY = -200;
-    const x = -420;
-    const w = shopW() + 840;
-    const h = waterY - topY;
     if (ATLAS.harbortown && ART.ready) {
-      blitTile("harbortown", x, topY, w, h);
+      blitTile("harbortown", x, top, w, townH);
     } else if (ATLAS.harbor && ART.ready) {
-      blitHorizon(x, topY, w, h);
-    } else if (paint.pier) ctx.drawImage(paint.pier, x, topY, w, h);
-    else if (paint.harbor) {
-      const sw = paint.harbor.width, sh = paint.harbor.height;
-      ctx.drawImage(paint.harbor, 0, 0, sw, sh * 0.545, x, topY, w, h);
+      blitTile("harbor", x, top, w, townH);
+    } else if (paint.pier && townH > 480) {
+      ctx.drawImage(paint.pier, x, top, w, townH);
+    } else if (paint.harbor) {
+      ctx.drawImage(paint.harbor, x, top, w, townH);
     } else {
-      ctx.fillStyle = "#5eb8e6";
-      ctx.fillRect(x, topY, w, h);
+      const sky = ctx.createLinearGradient(x, top, x, waterY);
+      sky.addColorStop(0, "#b8e8fa");
+      sky.addColorStop(0.55, "#7ec8ee");
+      sky.addColorStop(1, "#7ec8c0");
+      ctx.fillStyle = sky;
+      ctx.fillRect(x, top, w, townH);
     }
     if (teal) {
       ctx.fillStyle = "rgba(18, 132, 124, 0.10)";
-      ctx.fillRect(x, topY, w, h);
+      ctx.fillRect(x, top, w, townH);
     }
+    return true;
+  }
+  function drawHarborTown(x, y, w, h, teal) {
+    return drawTownSkyline(x, y + h, w, h, teal);
+  }
+  // Shop / dock backdrop. Town sits on the bay waterline (y≈886) so the dock
+  // camera still gets sky, hills, and unique roofs — never a thin house strip
+  // and never a tiled plank wall.
+  function drawShopHarbor(teal) {
+    ensurePaint();
+    const waterY = 886;
+    const x = -420;
+    const w = shopW() + 840;
+    if (ATLAS.sky && ART.ready) {
+      blitTile("sky", x, -220, w, 360);
+    } else {
+      const sky = ctx.createLinearGradient(x, -220, x, waterY);
+      sky.addColorStop(0, "#c8eefc");
+      sky.addColorStop(0.45, "#8ed0f0");
+      sky.addColorStop(1, "#7ec8c0");
+      ctx.fillStyle = sky;
+      ctx.fillRect(x, -220, w, waterY + 220);
+    }
+    drawTownSkyline(x, waterY, w, 560, teal);
     return true;
   }
   function stampPlankTile(c, teal, name) {
@@ -4922,11 +4944,24 @@
   }
   function ensurePaint() {
     if (!paint.wood) {
-      paint.wood = makeOff(196, 54);
-      paint.woodTeal = makeOff(196, 54);
+      paint.wood = makeOff(240, 40);
+      paint.woodTeal = makeOff(240, 40);
       paint.clouds = makeOff(520, 80);
       paint.harbor = makeOff(1024, 576);
       paint.pier = makeOff(1024, 900);
+      paint.planks = [];
+      for (let i = 0; i < 8; i++) {
+        const c = makeOff(240, 40);
+        paintWoodTile(c, false);
+        const g = c.getContext("2d");
+        g.fillStyle = i % 2 ? "rgba(40, 18, 8, 0.10)" : "rgba(255, 220, 150, 0.08)";
+        g.fillRect(0, 0, 240, 40);
+        if (i % 3 === 0) {
+          g.fillStyle = "rgba(20, 80, 72, 0.10)";
+          g.fillRect(40, 8, 80, 24);
+        }
+        paint.planks.push(c);
+      }
       paintCloudTile(paint.clouds);
       paintHarborScene(paint.harbor);
       paintPierBackdrop(paint.pier);
@@ -4934,6 +4969,11 @@
     if (ART.ready && ATLAS.plank && !paint.sprited) {
       stampPlankTile(paint.wood, false, "plank");
       stampPlankTile(paint.woodTeal, true, "plank1");
+      const names = ["plank", "plank1", "plank2", "plank3", "plank4", "plank5", "plank6", "plank7"];
+      for (let i = 0; i < names.length; i++) {
+        if (!paint.planks[i]) paint.planks[i] = makeOff(240, 40);
+        stampPlankTile(paint.planks[i], false, names[i]);
+      }
       paint.sprited = true;
       paint.ready = true;
       return;
@@ -5291,17 +5331,17 @@
     ctx.clip();
     const g = ctx.createLinearGradient(x, y, x, y + h);
     if (teal) {
-      g.addColorStop(0, "#7aeee4");
-      g.addColorStop(0.22, "#2ec4bc");
-      g.addColorStop(0.48, "#148e96");
-      g.addColorStop(0.74, "#0a5a62");
-      g.addColorStop(1, "#021820");
+      g.addColorStop(0, "#8af0e6");
+      g.addColorStop(0.18, "#4ad4c8");
+      g.addColorStop(0.42, "#1aa8a4");
+      g.addColorStop(0.68, "#0c6a70");
+      g.addColorStop(1, "#042028");
     } else {
-      g.addColorStop(0, "#a8eef8");
-      g.addColorStop(0.2, "#4ab8d0");
-      g.addColorStop(0.46, "#1a7a96");
-      g.addColorStop(0.72, "#0a5068");
-      g.addColorStop(1, "#031820");
+      g.addColorStop(0, "#b8f2fa");
+      g.addColorStop(0.16, "#6ec8dc");
+      g.addColorStop(0.4, "#2a90a8");
+      g.addColorStop(0.7, "#0c5870");
+      g.addColorStop(1, "#041c28");
     }
     ctx.fillStyle = g;
     ctx.fillRect(x - 12, y - 12, w + 24, h + 24);
@@ -5334,12 +5374,12 @@
     const cell = ATLAS.water;
     if (ART.ready && cell) {
       ctx.save();
-      ctx.globalAlpha = 0.22;
-      for (let n = 0; n < 5; n++) {
-        const jx = x - 80 + hash2(n, 1) * (w * 0.55) + Math.sin(t * 0.22 + n) * 28;
-        const jy = y - 20 + hash2(n, 4) * (h * 0.42);
-        const jw = 260 + hash2(n, 6) * 220;
-        const jh = 140 + hash2(n, 8) * 120;
+      ctx.globalAlpha = 0.38;
+      for (let n = 0; n < 4; n++) {
+        const jx = x - 60 + hash2(n, 1) * (w * 0.4) + Math.sin(t * 0.18 + n) * 22;
+        const jy = y - 16 + hash2(n, 4) * (h * 0.28);
+        const jw = 320 + hash2(n, 6) * 180;
+        const jh = 160 + hash2(n, 8) * 80;
         ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, jx, jy, jw, jh);
       }
       ctx.restore();
@@ -5417,7 +5457,7 @@
   }
   function drawPierBoards(x, y, w, h, opts) {
     ensurePaint();
-    const plank = (opts && opts.plank) || 26;
+    const plank = (opts && opts.plank) || 30;
     const wetY = opts && opts.wetY;
     const teal = !!(opts && opts.teal);
     const tile = teal ? paint.woodTeal : paint.wood;
@@ -5435,6 +5475,9 @@
         const cell = plankCell(row * 11 + n * 7 + ((yy * 3) | 0));
         if (ART.ready && cell) {
           ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, sx, yy, pw, ph);
+        } else if (paint.planks && paint.planks.length) {
+          const pc = paint.planks[((row * 3 + n) % paint.planks.length)];
+          ctx.drawImage(pc, sx, yy, pw, ph);
         } else if (tile) {
           ctx.drawImage(tile, sx, yy, pw, ph);
         }
@@ -6397,7 +6440,8 @@
     const flip = faceS < 0 ? -1 : 1;
     const turnThin = 1 - Math.abs(faceS);
     const lean = leanAmt * (faceS >= 0 ? 1 : -1);
-    const short = skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1;
+    const drawSc = p.drawScale == null ? 1 : p.drawScale;
+    const short = drawSc * (skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1);
     const squashX = moving ? 1 + Math.abs(contact) * 0.03 : 1;
     const squashY = moving ? 1 - Math.abs(contact) * 0.048 : 1;
     const strideX = moving ? passing * 2.6 * (faceS >= 0 ? 1 : -1) : 0;
@@ -6408,10 +6452,16 @@
         scaleX: faceS * squashX, scaleY: squashY + turnThin * 0.14,
         rot: lean * 0.34 + passing * 0.035, scale: 0.42 * short,
       })) return;
-    } else if (blit(skin + "_stand", x + strideX, y + bob, {
-      scaleX: faceS, scaleY: 1 + turnThin * 0.1,
-      rot: lean * 0.2, scale: 0.42 * short,
-    })) return;
+    } else if (
+      blit(skin + "_card", x + strideX, y + bob, {
+        scaleX: faceS, scaleY: 1 + turnThin * 0.1,
+        rot: lean * 0.2, scale: 0.42 * short,
+      }) ||
+      blit(skin + "_stand", x + strideX, y + bob, {
+        scaleX: faceS, scaleY: 1 + turnThin * 0.1,
+        rot: lean * 0.2, scale: 0.42 * short,
+      })
+    ) return;
     ctx.save();
     ctx.translate(x, y + bob);
     ctx.scale(flip * short, short);
@@ -6658,9 +6708,49 @@
     drawCrate(x, y, 42, 28);
     drawCrate(x + 10, y - 22, 38, 26);
   }
+  function drawDiveSign(cx, footY) {
+    if (blit("divepad", cx, footY, { scale: 0.9, flat: true })) return;
+    ctx.save();
+    ctx.translate(cx, footY);
+    ctx.fillStyle = "rgba(16, 8, 4, 0.28)";
+    ctx.beginPath(); ctx.ellipse(0, 6, 54, 8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#6a4220";
+    roundRect(-62, -68, 124, 72, 10); ctx.fill();
+    ctx.fillStyle = "#c4894a";
+    roundRect(-54, -60, 108, 56, 7); ctx.fill();
+    ctx.strokeStyle = "rgba(80, 40, 16, 0.28)";
+    ctx.lineWidth = 1.1;
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.moveTo(-50, -50 + i * 10);
+      ctx.lineTo(50, -48 + i * 10);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = "#d4a060";
+    ctx.lineWidth = 5.5;
+    roundRect(-62, -68, 124, 72, 10); ctx.stroke();
+    ctx.fillStyle = "#5a3614";
+    ctx.beginPath(); ctx.arc(-48, -14, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(48, -14, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff6e8";
+    ctx.font = "800 22px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("DIVE", 0, -30);
+    ctx.beginPath();
+    ctx.moveTo(0, -16);
+    ctx.lineTo(-16, 2);
+    ctx.lineTo(-6, 2);
+    ctx.lineTo(-6, 16);
+    ctx.lineTo(6, 16);
+    ctx.lineTo(6, 2);
+    ctx.lineTo(16, 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
   function drawLifeRing(x, y) {
     groundBlob(x + 4, y + 22, 22, 7);
-    if (blit("lifering", x, y + 8, { scale: 0.62 })) return;
+    if (blit("lifering", x, y + 8, { scale: 0.82 })) return;
     ctx.save();
     ctx.translate(x, y);
     ctx.strokeStyle = "#e85d4c"; ctx.lineWidth = 8;
@@ -6676,7 +6766,7 @@
   }
   function drawAnchor(x, y) {
     groundBlob(x, y + 18, 20, 6);
-    if (blit("anchor", x, y + 6, { scale: 0.58 })) return;
+    if (blit("anchor", x, y + 6, { scale: 0.72 })) return;
     ctx.save();
     ctx.translate(x, y);
     ctx.strokeStyle = "#6a4a32"; ctx.lineWidth = 4.2; ctx.lineCap = "round";
@@ -7279,7 +7369,7 @@
     if (state.unlocked[3]) drawFramedPrint(1124, 76, 3);
     if (state.unlocked[4]) drawCoralSouvenir(1508, 92);
     if (state.decor && state.decor[0]) drawStringLights();
-    drawPierBoards(500, 890, 760, 130, { plank: 22, wetY: 1010 });
+    drawPierBoards(500, 890, 760, 130, { plank: 28, wetY: 1010 });
     // Soft jump glow in the water — never a dashed debug rectangle.
     const glow = ctx.createRadialGradient(880, 1040, 20, 880, 1048, 280);
     glow.addColorStop(0, "rgba(160, 250, 255, 0.22)");
@@ -7294,13 +7384,7 @@
     if (diveA > 0.04) {
       ctx.save();
       ctx.globalAlpha = diveA;
-      if (!blit("divepad", chip.x + chip.w / 2, chip.y + 28, { scale: 0.72, flat: true })) {
-        ctx.fillStyle = "#1b4d6b";
-        roundRect(chip.x, chip.y, chip.w, chip.h, 8); ctx.fill();
-        ctx.fillStyle = "#9ef0ff";
-        ctx.font = "800 18px Fredoka, sans-serif"; ctx.textAlign = "center";
-        ctx.fillText("DIVE", chip.x + chip.w / 2, chip.y + 24);
-      }
+      drawDiveSign(chip.x + chip.w / 2, chip.y + chip.h - 8);
       ctx.restore();
     }
     if (state.mode === "play") btn("dive-chip", ...screenBtnFromWorld(chip.x, chip.y, chip.w, chip.h));
@@ -7880,13 +7964,24 @@
       g.addColorStop(0.62, "#061828");
       g.addColorStop(1, "#020810");
     } else {
-      g.addColorStop(0, "#b8eef6");
-      g.addColorStop(0.18, "#46b8d0");
-      g.addColorStop(0.4, "#147898");
-      g.addColorStop(0.64, "#0a4c64");
-      g.addColorStop(1, "#021018");
+      g.addColorStop(0, "#c4f2fa");
+      g.addColorStop(0.16, "#62c4d8");
+      g.addColorStop(0.38, "#2a8eaa");
+      g.addColorStop(0.66, "#0c5870");
+      g.addColorStop(1, "#041820");
     }
     ctx.fillStyle = g; ctx.fillRect(0, 0, OCEAN.w, OCEAN.h);
+    if (ATLAS.water && ART.ready) {
+      ctx.save();
+      ctx.globalAlpha = night ? 0.16 : 0.28;
+      const cell = ATLAS.water;
+      for (let n = 0; n < 6; n++) {
+        const jx = hash2(n, 2) * OCEAN.w - 80;
+        const jy = 80 + hash2(n, 5) * 720;
+        ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, jx, jy, 420 + hash2(n, 8) * 160, 220);
+      }
+      ctx.restore();
+    }
     ctx.save();
     for (let n = 0; n < 70; n++) {
       const px = hash2(n, 1) * OCEAN.w;
@@ -9493,19 +9588,30 @@
       const selected = chosen === id;
       card(x, cy, cardW, cardH, selected ? "rgba(28, 58, 52, 0.94)" : "rgba(12, 28, 36, 0.78)");
       ctx.save();
-      roundRect(x + 6, cy + 8, cardW - 12, cardH * 0.58, 8); ctx.clip();
-      drawBayWater(x + 6, cy + 8, cardW - 12, cardH * 0.42, state.time + i, false);
-      drawPierBoards(x + 6, cy + 8 + cardH * 0.36, cardW - 12, cardH * 0.28, { plank: 10, wetY: cy + 8 + cardH * 0.4 });
+      roundRect(x + 6, cy + 8, cardW - 12, cardH * 0.64, 8); ctx.clip();
+      const plate = ctx.createLinearGradient(x, cy + 8, x, cy + cardH * 0.64);
+      plate.addColorStop(0, "#8fd4f0");
+      plate.addColorStop(0.45, "#5eb4d4");
+      plate.addColorStop(1, "#c8a060");
+      ctx.fillStyle = plate;
+      ctx.fillRect(x + 6, cy + 8, cardW - 12, cardH * 0.64);
+      if (ATLAS.sky && ART.ready) {
+        ctx.globalAlpha = 0.62;
+        blitTile("sky", x + 6, cy + 8, cardW - 12, cardH * 0.36);
+        ctx.globalAlpha = 1;
+      }
+      ctx.fillStyle = "rgba(140, 86, 40, 0.55)";
+      ctx.fillRect(x + 6, cy + 8 + cardH * 0.52, cardW - 12, cardH * 0.14);
       ctx.restore();
       if (selected) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.55 + 0.3 * Math.sin(state.time * 5)) + ")";
         ctx.lineWidth = 3;
         roundRect(x, cy, cardW, cardH, 12); ctx.stroke();
       }
-      drawPlayer(x + cardW / 2, cy + cardH * 0.46, {
-        skin: id, vx: 48, vy: 0, facing: 0.08,
-        walkPhase: state.time * 7.2 + i * 0.85, lean: 0.1, bob: state.time * 1.6 + i,
-        faceS: 1,
+      drawPlayer(x + cardW / 2, cy + cardH * 0.58, {
+        skin: id, vx: 0, vy: 0, facing: 0.08,
+        walkPhase: 0, lean: 0.05, bob: Math.sin(state.time * 1.5 + i) * 0.6,
+        faceS: 1, drawScale: 1.65,
       });
       ctx.fillStyle = "#fff6e8";
       ctx.font = "800 16px Fredoka, sans-serif";
@@ -9520,8 +9626,10 @@
   }
   function drawTitle() {
     ensurePaint();
-    drawHarborTown(0, 0, W, H * 0.78, false);
-    drawBayWater(-20, H * 0.42, W + 40, H * 0.66, state.time, false);
+    const waterY = H * 0.50;
+    if (ATLAS.sky && ART.ready) blitTile("sky", 0, -20, W, 200);
+    drawTownSkyline(0, waterY, W, waterY + 8, false);
+    drawBayWater(-20, waterY - 10, W + 40, H - waterY + 28, state.time, false);
     ctx.save();
     const wash = ctx.createLinearGradient(0, H * 0.55, 0, H);
     wash.addColorStop(0, "rgba(8, 40, 56, 0)");
@@ -9581,7 +9689,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 54", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 55", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -9621,7 +9729,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 54", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 55", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -9638,7 +9746,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 54", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 55", W / 2, 632);
     }
   }
 
@@ -10079,7 +10187,11 @@
       const ox = -18 + i * (36 / Math.max(1, blades - 1));
       ctx.beginPath();
       ctx.moveTo(ox, 20);
-      ctx.quadraticCurveTo(ox + sway * 0.4, 4 - hash2(seed, i + 16) * 8, ox + sway, 20 - hh);
+      if (hash2(seed, i + 40) > 0.45) {
+        ctx.bezierCurveTo(ox + sway * 0.25, 8, ox - sway * 0.3, -6, ox + sway, 20 - hh);
+      } else {
+        ctx.quadraticCurveTo(ox + sway * 0.4, 4 - hash2(seed, i + 16) * 8, ox + sway, 20 - hh);
+      }
       ctx.stroke();
       ctx.fillStyle = "rgba(90, 230, 160," + (0.4 + hash2(seed, i + 20) * 0.3) + ")";
       ctx.beginPath();
