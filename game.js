@@ -9810,13 +9810,16 @@
   function drawPlayfieldStile() {
     const x = viewWidth();
     if (x >= W - 2) return;
-    const g = ctx.createLinearGradient(x - 4, 0, x + 8, 0);
-    g.addColorStop(0, "rgba(48, 28, 14, 0)");
-    g.addColorStop(0.4, "rgba(168, 114, 62, 0.55)");
-    g.addColorStop(0.72, "rgba(86, 50, 24, 0.82)");
-    g.addColorStop(1, "rgba(18, 22, 20, 0.35)");
-    ctx.fillStyle = g;
-    ctx.fillRect(x - 4, 0, 14, H);
+    const blend = ctx.createLinearGradient(x - 14, 0, x + 1, 0);
+    blend.addColorStop(0, "rgba(7, 20, 28, 0)");
+    blend.addColorStop(0.55, "rgba(7, 20, 28, 0.28)");
+    blend.addColorStop(1, "rgba(7, 20, 28, 0.88)");
+    ctx.fillStyle = blend;
+    ctx.fillRect(x - 14, 0, 16, H);
+    ctx.fillStyle = "rgba(168, 114, 62, 0.38)";
+    ctx.fillRect(x, 0, 2, H);
+    ctx.fillStyle = "rgba(40, 24, 12, 0.22)";
+    ctx.fillRect(x + 2, 0, 1, H);
   }
   function drawWorld() {
     ctx.fillStyle = "#07141c";
