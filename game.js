@@ -5519,21 +5519,37 @@
   }
   function blitBedStamp(id, x, y, w, h, rot, flip, seed) {
     const c = ATLAS["bed" + ((id % 8) + 8) % 8];
-    if (!c || !ART.ready) return false;
-    // Unique source window so neighboring stamps are not the same crop.
-    const padL = 4 + hash2(seed, 2) * 36;
-    const padT = 2 + hash2(seed, 3) * 16;
-    const padR = 4 + hash2(seed, 4) * 28;
-    const padB = 2 + hash2(seed, 5) * 10;
-    const sx = c.x + padL;
-    const sy = c.y + padT;
-    const sw = Math.max(48, c.w - padL - padR);
-    const sh = Math.max(28, c.h - padT - padB);
+    // Clip to an irregular dune — never the atlas mound silhouette
+    // (that cell is the repeating sticker).
     ctx.save();
     ctx.translate(x, y);
     if (rot) ctx.rotate(rot);
     if (flip) ctx.scale(-1, 1);
-    ctx.drawImage(ART.img, sx, sy, sw, sh, -w * 0.5, -h * 0.78, w, h);
+    ctx.beginPath();
+    const verts = 6 + ((seed * 3) % 4);
+    for (let k = 0; k < verts; k++) {
+      const a = (k / verts) * Math.PI * 2 - 0.55;
+      const rad = 0.58 + hash2(seed, 8 + k) * 0.52;
+      const px = Math.cos(a) * w * 0.5 * rad;
+      const py = Math.sin(a) * h * 0.4 * rad;
+      if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.clip();
+    if (c && ART.ready) {
+      const padL = 6 + hash2(seed, 2) * 48;
+      const padT = 4 + hash2(seed, 3) * 22;
+      const padR = 6 + hash2(seed, 4) * 40;
+      const padB = 4 + hash2(seed, 5) * 14;
+      const sx = c.x + padL;
+      const sy = c.y + padT;
+      const sw = Math.max(36, c.w - padL - padR);
+      const sh = Math.max(22, c.h - padT - padB);
+      ctx.drawImage(ART.img, sx, sy, sw, sh, -w * 0.5, -h * 0.5, w, h);
+    } else {
+      ctx.fillStyle = "#d8b878";
+      ctx.fill();
+    }
     ctx.restore();
     return true;
   }
@@ -5552,27 +5568,40 @@
       : (s * 19 + ((y1 / 13) | 0));
     ctx.save();
     // Unique dune silhouette — hash-lerped height, not one sine + dark lip.
-    const top = y1 - 78;
-    ctx.beginPath();
-    ctx.moveTo(-8, y1 + 12);
-    ctx.lineTo(-8, top + 28);
-    const stepX = 16;
-    for (let x = 0; x <= OCEAN.w + 8; x += stepX) {
-      const i = (x / stepX) | 0;
-      const a = hash2(seed, i), b = hash2(seed, i + 1);
-      const u = (x / stepX) - i;
-      const bump = (a * (1 - u) + b * u) * 34;
-      const wave = Math.sin(x * 0.0064 + seed * 0.4) * 9 + Math.sin(x * 0.019 + y1 * 0.007) * 5;
-      ctx.lineTo(x, top + 16 + bump + wave);
+    // Skip a full-width ruler on gold / forever bands so stacked zones
+    // do not read as 3–4 identical lime strips.
+    const sandH = 40 + hash2(seed, 0) * 58;
+    const top = y1 - sandH;
+    const fullBar = !z.forever && s !== 2 && s !== 6;
+    if (fullBar) {
+      const stepX = 16;
+      const pts = [];
+      function flushDune() {
+        if (pts.length < 3) { pts.length = 0; return; }
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], y1 + 12);
+        for (let p = 0; p < pts.length; p++) ctx.lineTo(pts[p][0], pts[p][1]);
+        ctx.lineTo(pts[pts.length - 1][0], y1 + 12);
+        ctx.closePath();
+        const sandG = ctx.createLinearGradient(pts[0][0], top, pts[0][0] + 220, y1);
+        sandG.addColorStop(0, pair[0]);
+        sandG.addColorStop(0.5, pair[0]);
+        sandG.addColorStop(1, pair[1]);
+        ctx.fillStyle = sandG;
+        ctx.fill();
+        pts.length = 0;
+      }
+      for (let x = 0; x <= OCEAN.w + 8; x += stepX) {
+        const i = (x / stepX) | 0;
+        if (hash2(seed, 900 + i) > 0.87) { flushDune(); continue; }
+        const a = hash2(seed, i), b = hash2(seed, i + 1);
+        const u = (x / stepX) - i;
+        const bump = (a * (1 - u) + b * u) * 46;
+        const wave = Math.sin(x * 0.0058 + seed * 0.4) * 11 + Math.sin(x * 0.017 + y1 * 0.007) * 6;
+        pts.push([x, top + 10 + bump + wave]);
+      }
+      flushDune();
     }
-    ctx.lineTo(OCEAN.w + 8, y1 + 12);
-    ctx.closePath();
-    const sandG = ctx.createLinearGradient(0, top, OCEAN.w * 0.35, y1);
-    sandG.addColorStop(0, pair[0]);
-    sandG.addColorStop(0.48, pair[0]);
-    sandG.addColorStop(1, pair[1]);
-    ctx.fillStyle = sandG;
-    ctx.fill();
     const nPatch = 8 + ((seed * 3) % 5);
     for (let n = 0; n < nPatch; n++) {
       const px = hash2(seed, 20 + n) * OCEAN.w;
@@ -5595,22 +5624,33 @@
     let x = -70 + hash2(seed, 7) * 50;
     let n = 0;
     while (x < OCEAN.w + 90) {
-      const gap = 52 + hash2(seed, 110 + n) * 96;
-      const id = (bedId + ((hash2(seed, 130 + n) * 8) | 0) + n * 2) % 8;
-      const sc = 0.52 + hash2(seed, 150 + n) * 0.92;
-      const rot = (hash2(seed, 170 + n) - 0.5) * 0.62;
-      const bw = (118 + hash2(seed, 190 + n) * 118) * sc;
-      const bh = (40 + hash2(seed, 210 + n) * 48) * sc;
-      const jx = x + (hash2(seed, 230 + n) - 0.5) * 28;
-      const jy = y1 - 10 - hash2(seed, 250 + n) * 38;
-      ctx.globalAlpha = 0.62 + hash2(seed, 270 + n) * 0.3;
-      if (!blitBedStamp(id, jx, jy, bw, bh, rot, hash2(seed, 290 + n) > 0.5, seed + n * 11)) {
-        ctx.fillStyle = pair[0];
+      const gap = 70 + hash2(seed, 110 + n) * 130;
+      const id = (bedId + ((hash2(seed, 130 + n) * 8) | 0) + n * 3) % 8;
+      const sc = 0.7 + hash2(seed, 150 + n) * 1.15;
+      const rot = (hash2(seed, 170 + n) - 0.5) * 1.05;
+      const bw = (90 + hash2(seed, 190 + n) * 160) * sc;
+      const bh = (28 + hash2(seed, 210 + n) * 44) * sc;
+      const jx = x + (hash2(seed, 230 + n) - 0.5) * 40;
+      const jy = y1 - 4 - hash2(seed, 250 + n) * 58;
+      ctx.globalAlpha = 0.55 + hash2(seed, 270 + n) * 0.35;
+      blitBedStamp(id, jx, jy, bw, bh, rot, hash2(seed, 290 + n) > 0.5, seed + n * 11);
+      ctx.globalAlpha = 1;
+      // Unique pebbles / shells — not the same stamp at the next gap.
+      const bits = 2 + ((hash2(seed, 300 + n) * 3) | 0);
+      for (let b = 0; b < bits; b++) {
+        const bx = jx + (hash2(seed, 310 + n + b) - 0.5) * bw;
+        const by = jy + 4 + hash2(seed, 320 + n + b) * 10;
+        const br = 2.2 + hash2(seed, 330 + n + b) * 5.5;
+        ctx.fillStyle = hash2(seed, 340 + n + b) > 0.55
+          ? "rgba(232, 196, 130, 0.7)"
+          : hash2(seed, 350 + n + b) > 0.35
+            ? "rgba(168, 120, 72, 0.65)"
+            : "rgba(90, 110, 78, 0.55)";
         ctx.beginPath();
-        ctx.ellipse(jx, jy, bw * 0.46, bh * 0.34, rot, 0, Math.PI * 2);
+        ctx.ellipse(bx, by, br, br * (0.45 + hash2(seed, 360 + n + b) * 0.4),
+          (hash2(seed, 370 + n + b) - 0.5) * 1.2, 0, Math.PI * 2);
         ctx.fill();
       }
-      ctx.globalAlpha = 1;
       x += gap;
       n++;
     }
@@ -7324,67 +7364,80 @@
     drawCrate(x + 10, y - 22, 38, 26);
   }
   function drawDiveSign(cx, footY) {
-    // Planted post + hanging board. The atlas divepad is a floating
-    // sticker with a painted-on rope; do not blit it as the whole sign.
-    sitShadow(cx + 5, footY + 7, 20, 7.2, 0.48);
+    // Yard-sign post planted on the boards. Never blit the atlas
+    // divepad sticker (flat board, painted-on rope, no post).
+    sitShadow(cx + 6, footY + 8, 34, 11, 0.56);
     ctx.save();
     ctx.translate(cx, footY);
-    const post = ctx.createLinearGradient(-6, -92, 8, 8);
-    post.addColorStop(0, "#c89a62");
-    post.addColorStop(0.38, "#9a6a38");
-    post.addColorStop(1, "#5a3018");
+    const post = ctx.createLinearGradient(-8, -108, 10, 10);
+    post.addColorStop(0, "#d4a060");
+    post.addColorStop(0.35, "#9a6a38");
+    post.addColorStop(1, "#4a2814");
     ctx.fillStyle = post;
-    ctx.fillRect(-5, -90, 10, 94);
-    ctx.fillStyle = "rgba(255, 220, 160, 0.24)";
-    ctx.fillRect(-5, -90, 3.2, 94);
-    ctx.fillStyle = "rgba(22, 10, 6, 0.24)";
-    ctx.fillRect(3.2, -90, 1.8, 94);
-    ctx.fillStyle = "#8a5a30";
-    ctx.fillRect(-26, -86, 52, 7);
-    ctx.fillStyle = "rgba(255, 226, 170, 0.18)";
-    ctx.fillRect(-26, -86, 52, 2.4);
-    ctx.strokeStyle = "#c4a060";
-    ctx.lineWidth = 2.3;
-    ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(-20, -80); ctx.lineTo(-34, -56); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(20, -80); ctx.lineTo(34, -56); ctx.stroke();
-    const sway = Math.sin(state.time * 1.15) * 0.045;
+    ctx.beginPath();
+    ctx.moveTo(-7, -102);
+    ctx.lineTo(7, -102);
+    ctx.lineTo(8, 6);
+    ctx.lineTo(-8, 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "rgba(255, 226, 170, 0.28)";
+    ctx.fillRect(-7, -102, 4, 108);
+    ctx.fillStyle = "rgba(22, 10, 6, 0.28)";
+    ctx.fillRect(3.5, -102, 3, 108);
+    ctx.fillStyle = "#5a3018";
+    ctx.beginPath();
+    ctx.moveTo(-9, 6);
+    ctx.lineTo(9, 6);
+    ctx.lineTo(5, 10);
+    ctx.lineTo(-5, 10);
+    ctx.closePath();
+    ctx.fill();
+    // Board nailed to the post — hangs slightly left, off the walk lane.
     ctx.save();
-    ctx.translate(-18, -40);
-    ctx.rotate(sway);
-    const board = ctx.createLinearGradient(-42, -28, 28, 26);
-    board.addColorStop(0, "#d4a060");
+    ctx.translate(-6, -58);
+    const board = ctx.createLinearGradient(-40, -26, 30, 24);
+    board.addColorStop(0, "#d8a868");
     board.addColorStop(0.4, "#b07a3a");
     board.addColorStop(1, "#6a4220");
     ctx.fillStyle = board;
-    roundRect(-42, -30, 84, 52, 8); ctx.fill();
+    roundRect(-40, -28, 80, 50, 6); ctx.fill();
     if (ART.ready && ATLAS.plank) {
       ctx.save();
-      roundRect(-42, -30, 84, 52, 8); ctx.clip();
-      ctx.globalAlpha = 0.55;
+      roundRect(-40, -28, 80, 50, 6); ctx.clip();
+      ctx.globalAlpha = 0.58;
       ctx.drawImage(ART.img, ATLAS.plank.x, ATLAS.plank.y, ATLAS.plank.w, ATLAS.plank.h,
-        -44, -32, 88, 56);
+        -42, -30, 84, 54);
       ctx.restore();
     }
-    sunWashBox(-42, -30, 84, 52, 8);
-    ctx.fillStyle = "rgba(40, 22, 10, 0.2)";
-    roundRect(-36, -24, 72, 40, 6); ctx.fill();
+    sunWashBox(-40, -28, 80, 50, 6);
+    ctx.strokeStyle = "rgba(80, 42, 16, 0.55)";
+    ctx.lineWidth = 2;
+    roundRect(-40, -28, 80, 50, 6); ctx.stroke();
+    ctx.fillStyle = "rgba(40, 22, 10, 0.22)";
+    roundRect(-34, -22, 68, 38, 5); ctx.fill();
     ctx.fillStyle = "#ead7b4";
-    roundRect(-34, -22, 68, 36, 5); ctx.fill();
-    ctx.fillStyle = "rgba(255, 236, 190, 0.16)";
-    ctx.fillRect(-30, -20, 28, 32);
+    roundRect(-32, -20, 64, 34, 4); ctx.fill();
+    ctx.fillStyle = "rgba(255, 236, 190, 0.18)";
+    ctx.fillRect(-28, -18, 24, 30);
     ctx.fillStyle = "#5a3614";
-    ctx.font = "800 16px Fredoka, sans-serif";
+    ctx.beginPath(); ctx.arc(-22, -8, 2.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(22, -8, 2.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#c8a060";
+    ctx.beginPath(); ctx.arc(-22.4, -8.4, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(21.6, -8.4, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#5a3614";
+    ctx.font = "800 17px Fredoka, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("DIVE", 0, -4);
+    ctx.fillText("DIVE", 0, -2);
     ctx.beginPath();
-    ctx.moveTo(0, 2);
-    ctx.lineTo(-11, 14);
+    ctx.moveTo(0, 4);
+    ctx.lineTo(-10, 14);
     ctx.lineTo(-4, 14);
-    ctx.lineTo(-4, 22);
-    ctx.lineTo(4, 22);
+    ctx.lineTo(-4, 20);
+    ctx.lineTo(4, 20);
     ctx.lineTo(4, 14);
-    ctx.lineTo(11, 14);
+    ctx.lineTo(10, 14);
     ctx.closePath();
     ctx.fill();
     ctx.restore();
@@ -8054,7 +8107,7 @@
     ctx.fill();
     const chip = diveChipBox();
     // Planted DIVE post on the left lip — board hangs off the walk lane.
-    const diveSign = { x: 508, y: 1014 };
+    const diveSign = { x: 598, y: 1014 };
     if (state.mode === "play") btn("dive-chip", ...screenBtnFromWorld(chip.x, chip.y, chip.w, chip.h));
     const pathPts = [
       [880, 1008], [880, 860], [880, 680], [880, 500], [880, 360],
@@ -8095,6 +8148,15 @@
     drawHangingSign(1020, 924);
     drawBench(1108, 942);
     drawLifeRing(512, 918);
+    {
+      const diveA = worldBoxAlpha(diveSign.x - 56, diveSign.y - 112, 100, 128);
+      if (diveA > 0.04) {
+        ctx.save();
+        ctx.globalAlpha = diveA;
+        drawDiveSign(diveSign.x, diveSign.y);
+        ctx.restore();
+      }
+    }
     drawAnchor(1196, 952);
     drawVending(1336, 548);
     drawBaitShack(1408, 548);
@@ -8127,19 +8189,6 @@
       actors.push({ y: c.y, draw: function () { drawPerson(c.x, c.y, c); } });
     }
     actors.push({ y: player.y, draw: function () { drawPlayer(player.x, player.y); } });
-    actors.push({
-      // Sort behind a walker on the pad so the sprite is not a sticker
-      // through the hanging board. Foot still plants at diveSign.y.
-      y: 988,
-      draw: function () {
-        const diveA = worldBoxAlpha(diveSign.x - 56, diveSign.y - 100, 100, 116);
-        if (diveA <= 0.04) return;
-        ctx.save();
-        ctx.globalAlpha = diveA;
-        drawDiveSign(diveSign.x, diveSign.y);
-        ctx.restore();
-      },
-    });
     for (let i = 0; i < dockPosts.length; i++) {
       const px = dockPosts[i][0], py = dockPosts[i][1], sc = dockPosts[i][2], id = dockPosts[i][3];
       if (py < 1008) continue;
@@ -9694,10 +9743,10 @@
       ctx.restore();
     }
     sunWashBox(x, y, w, h, 10);
-    ctx.fillStyle = ink || "rgba(28, 36, 28, 0.92)";
-    roundRect(x + 4, y + 4, w - 8, h - 8, 7); ctx.fill();
-    ctx.fillStyle = "rgba(255, 236, 190, 0.08)";
-    ctx.fillRect(x + 7, y + 6, w - 14, 5);
+    ctx.fillStyle = ink || "rgba(52, 64, 48, 0.9)";
+    roundRect(x + 7, y + 6, w - 14, h - 12, 6); ctx.fill();
+    ctx.fillStyle = "rgba(255, 236, 190, 0.12)";
+    ctx.fillRect(x + 10, y + 8, w - 20, 6);
     ctx.strokeStyle = "rgba(90, 48, 16, 0.5)";
     ctx.lineWidth = 1.5;
     roundRect(x, y, w, h, 10); ctx.stroke();
@@ -10655,10 +10704,10 @@
         ctx.translate(-(x + cw / 2), -(y + (ch + 2) / 2));
       }
       const ink = state.unlocked[i]
-        ? (hover ? "rgba(28, 52, 48, 0.94)" : "rgba(20, 36, 34, 0.9)")
+        ? (hover ? "rgba(48, 72, 62, 0.92)" : "rgba(40, 58, 50, 0.88)")
         : affordable
-          ? "rgba(40, 48, 24, 0.94)"
-          : (hover ? "rgba(36, 30, 22, 0.92)" : "rgba(26, 24, 20, 0.88)");
+          ? "rgba(62, 68, 36, 0.92)"
+          : (hover ? "rgba(56, 48, 36, 0.9)" : "rgba(46, 42, 34, 0.86)");
       pierChip(x, y, cw, ch + 2, ink);
       if (state.bookOpen === i || hover) {
         ctx.strokeStyle = "rgba(255,226,122," + (hover ? 0.72 : 0.55 + 0.25 * Math.sin(state.time * 6)) + ")";
