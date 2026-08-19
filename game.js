@@ -219,8 +219,8 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 49 pier boards / foam + loop 51 dock harbor.
-  const ATLAS = {"skip_stand":{"x":2,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":132,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":262,"y":2,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":440,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":570,"y":2,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":700,"y":2,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":878,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1008,"y":2,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1138,"y":2,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":1316,"y":2,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":2,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":116,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":230,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":344,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":458,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":572,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":686,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":800,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":914,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1028,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1142,"y":180,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1256,"y":180,"w":112,"h":72,"ax":62,"ay":36},"harbor":{"x":2,"y":254,"w":480,"h":320,"ax":240.0,"ay":230.39999999999998},"maya":{"x":484,"y":254,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":582,"y":254,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":680,"y":254,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":778,"y":254,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":876,"y":254,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":974,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":1072,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":1170,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":1268,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":1366,"y":254,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":2,"y":576,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":100,"y":576,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":198,"y":576,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":240,"y":576,"w":40,"h":20,"ax":20,"ay":12},"sky":{"x":282,"y":576,"w":360,"h":91,"ax":180.0,"ay":91},"tankglass":{"x":644,"y":576,"w":140,"h":110,"ax":70,"ay":55},"plank":{"x":786,"y":576,"w":196,"h":54,"ax":98,"ay":27},"plank1":{"x":984,"y":576,"w":196,"h":54,"ax":98,"ay":27},"plank2":{"x":1182,"y":576,"w":196,"h":54,"ax":98,"ay":27},"water":{"x":2,"y":718,"w":320,"h":176,"ax":160,"ay":70},"waterline":{"x":324,"y":718,"w":360,"h":60,"ax":180,"ay":40},"post":{"x":686,"y":718,"w":44,"h":110,"ax":22,"ay":104},"bed0":{"x":732,"y":718,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":954,"y":718,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":1176,"y":718,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":2,"y":896,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":224,"y":896,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":446,"y":896,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":668,"y":896,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":890,"y":896,"w":220,"h":92,"ax":110,"ay":68}};
+  // Loop 48 characters/fish + loop 49 pier boards / foam + loop 51 dock harbor + loop 52 walk/swim.
+  const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk1":{"x":132,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk2":{"x":262,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk3":{"x":392,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk4":{"x":522,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_walk5":{"x":652,"y":2,"w":128,"h":176,"ax":64,"ay":168},"skip_swim0":{"x":782,"y":2,"w":176,"h":96,"ax":96,"ay":48},"skip_swim1":{"x":960,"y":2,"w":176,"h":96,"ax":96,"ay":48},"skip_swim2":{"x":1138,"y":2,"w":176,"h":96,"ax":96,"ay":48},"skip_swim3":{"x":2,"y":180,"w":176,"h":96,"ax":96,"ay":48},"skip_swim4":{"x":180,"y":180,"w":176,"h":96,"ax":96,"ay":48},"skip_swim5":{"x":358,"y":180,"w":176,"h":96,"ax":96,"ay":48},"reef_walk0":{"x":536,"y":180,"w":128,"h":176,"ax":64,"ay":168},"reef_walk1":{"x":666,"y":180,"w":128,"h":176,"ax":64,"ay":168},"reef_walk2":{"x":796,"y":180,"w":128,"h":176,"ax":64,"ay":168},"reef_walk3":{"x":926,"y":180,"w":128,"h":176,"ax":64,"ay":168},"reef_walk4":{"x":1056,"y":180,"w":128,"h":176,"ax":64,"ay":168},"reef_walk5":{"x":1186,"y":180,"w":128,"h":176,"ax":64,"ay":168},"reef_swim0":{"x":2,"y":358,"w":176,"h":96,"ax":96,"ay":48},"reef_swim1":{"x":180,"y":358,"w":176,"h":96,"ax":96,"ay":48},"reef_swim2":{"x":358,"y":358,"w":176,"h":96,"ax":96,"ay":48},"reef_swim3":{"x":536,"y":358,"w":176,"h":96,"ax":96,"ay":48},"reef_swim4":{"x":714,"y":358,"w":176,"h":96,"ax":96,"ay":48},"reef_swim5":{"x":892,"y":358,"w":176,"h":96,"ax":96,"ay":48},"dino_walk0":{"x":1070,"y":358,"w":128,"h":176,"ax":64,"ay":168},"dino_walk1":{"x":1200,"y":358,"w":128,"h":176,"ax":64,"ay":168},"dino_walk2":{"x":1330,"y":358,"w":128,"h":176,"ax":64,"ay":168},"dino_walk3":{"x":2,"y":536,"w":128,"h":176,"ax":64,"ay":168},"dino_walk4":{"x":132,"y":536,"w":128,"h":176,"ax":64,"ay":168},"dino_walk5":{"x":262,"y":536,"w":128,"h":176,"ax":64,"ay":168},"dino_swim0":{"x":392,"y":536,"w":176,"h":96,"ax":96,"ay":48},"dino_swim1":{"x":570,"y":536,"w":176,"h":96,"ax":96,"ay":48},"dino_swim2":{"x":748,"y":536,"w":176,"h":96,"ax":96,"ay":48},"dino_swim3":{"x":926,"y":536,"w":176,"h":96,"ax":96,"ay":48},"dino_swim4":{"x":1104,"y":536,"w":176,"h":96,"ax":96,"ay":48},"dino_swim5":{"x":1282,"y":536,"w":176,"h":96,"ax":96,"ay":48},"skip_stand":{"x":2,"y":714,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":132,"y":714,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":262,"y":714,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":440,"y":714,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":570,"y":714,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":700,"y":714,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":878,"y":714,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1008,"y":714,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1138,"y":714,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":1316,"y":714,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":2,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":116,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":230,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":344,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":458,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":572,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":686,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":800,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":914,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1028,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1142,"y":892,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1256,"y":892,"w":112,"h":72,"ax":62,"ay":36},"harbor":{"x":2,"y":966,"w":480,"h":320,"ax":240.0,"ay":230.39999999999998},"maya":{"x":484,"y":966,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":582,"y":966,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":680,"y":966,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":778,"y":966,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":876,"y":966,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":974,"y":966,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":1072,"y":966,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":1170,"y":966,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":1268,"y":966,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":1366,"y":966,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":2,"y":1288,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":100,"y":1288,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":198,"y":1288,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":240,"y":1288,"w":40,"h":20,"ax":20,"ay":12},"sky":{"x":282,"y":1288,"w":360,"h":91,"ax":180.0,"ay":91},"tankglass":{"x":644,"y":1288,"w":140,"h":110,"ax":70,"ay":55},"plank":{"x":786,"y":1288,"w":196,"h":54,"ax":98,"ay":27},"plank1":{"x":984,"y":1288,"w":196,"h":54,"ax":98,"ay":27},"plank2":{"x":1182,"y":1288,"w":196,"h":54,"ax":98,"ay":27},"water":{"x":2,"y":1430,"w":320,"h":176,"ax":160,"ay":70},"waterline":{"x":324,"y":1430,"w":360,"h":60,"ax":180,"ay":40},"post":{"x":686,"y":1430,"w":44,"h":110,"ax":22,"ay":104},"bed0":{"x":732,"y":1430,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":954,"y":1430,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":1176,"y":1430,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":2,"y":1608,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":224,"y":1608,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":446,"y":1608,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":668,"y":1608,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":890,"y":1608,"w":220,"h":92,"ax":110,"ay":68}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
     const img = new Image();
@@ -246,7 +246,9 @@
     }
     ctx.save();
     ctx.translate(x, y);
-    if (opt.flip) ctx.scale(-1, 1);
+    const sx = (opt.scaleX == null ? 1 : opt.scaleX) * (opt.flip ? -1 : 1);
+    const sy = opt.scaleY == null ? 1 : opt.scaleY;
+    if (sx !== 1 || sy !== 1) ctx.scale(sx, sy);
     if (opt.rot) ctx.rotate(opt.rot);
     ctx.drawImage(ART.img, c.x, c.y, c.w, c.h, -c.ax * sc, -c.ay * sc, c.w * sc, c.h * sc);
     if (!opt.flat) {
@@ -348,7 +350,7 @@
     tillSlip: null,
     escapeBar: null, escapeGate: 0,
   };
-  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0 };
+  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, walkPhase: 0, lean: 0, faceS: 1, pitch: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0 };
   const cam = { x: 880, y: 920, z: 1, rail: 28 };
   const oceanFish = [];
   const tankFish = SPECIES.map(() => []);
@@ -726,7 +728,7 @@
       camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, camTillHold: 0, almostSfxAt: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     state.hasSave = false;
-    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
+    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.walkPhase = 0; player.lean = 0; player.faceS = 1; player.pitch = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0;
     cam.x = 880; cam.y = 920; cam.z = 1; cam.rail = 28;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
@@ -3191,10 +3193,15 @@
     } else if (sp > faceMin) {
       player.facing = Math.atan2(player.vy, player.vx);
     }
-    const moving = sp > 28;
-    const wantLean = moving ? Math.cos(player.facing) * clamp(sp / max, 0, 1) * 0.22 : 0;
+    const moving = sp > 18;
+    const wantLean = moving ? Math.cos(player.facing) * clamp(sp / max, 0, 1) * (ocean ? 0.16 : 0.26) : 0;
     player.lean = lerp(player.lean || 0, wantLean, 1 - Math.pow(0.0004, dt));
-    if (moving) player.walkPhase += dt * (ocean ? 10 : 12) * clamp(sp / 80, 0.55, 1.65);
+    const wantFlip = Math.cos(player.facing) < -0.1 ? -1 : 1;
+    if (player.faceS == null || !isFinite(player.faceS)) player.faceS = wantFlip;
+    player.faceS = lerp(player.faceS, wantFlip, 1 - Math.pow(0.00055, dt));
+    const wantPitch = ocean ? clamp(player.vy / 210, -0.36, 0.36) : 0;
+    player.pitch = lerp(player.pitch || 0, wantPitch, 1 - Math.pow(0.0018, dt));
+    if (moving) player.walkPhase += dt * (ocean ? 9.2 : 11.2) * clamp(sp / 90, 0.5, 1.7);
     player.bob += dt * (ocean ? 7 : 9) * (moving ? 1 : 0.22);
     if (ocean) {
       player.x = clamp(player.x, 60, OCEAN.w - 60);
@@ -6339,6 +6346,17 @@
     ctx.fillStyle = "rgba(255,255,255,0.28)";
     ctx.beginPath(); ctx.arc(tipX - 3.8, tipY - 2.2, 0.7, 0, Math.PI * 2); ctx.fill();
   }
+  function gaitIndex(phase, n) {
+    let u = phase / (Math.PI * 2);
+    u -= Math.floor(u);
+    if (u < 0) u += 1;
+    return (u * n) | 0;
+  }
+  function blitGait(skin, kind, idx, x, y, opt) {
+    if (blit(skin + "_" + kind + idx, x, y, opt)) return true;
+    if (kind === "walk") return blit(skin + (idx % 2 ? "_walk" : "_stand"), x, y, opt);
+    return blit(skin + "_dive", x, y, opt);
+  }
   function drawPlayer(x, y, pose) {
     const p = pose || player;
     const skin = normalizeSkin(p.skin != null ? p.skin : state.skin);
@@ -6349,17 +6367,31 @@
     const leanAmt = p.lean != null ? p.lean : 0;
     const bobT = p.bob != null ? p.bob : 0;
     const sp = Math.hypot(vx, vy);
-    const moving = sp > 28;
+    const moving = sp > 18;
     const phase = moving ? walkPhase : bobT * 0.7;
-    const bob = Math.sin(phase) * (moving ? 3.4 : 1.4);
-    const walk = Math.sin(phase * 1.15);
-    const swing = Math.sin(phase) * (moving ? 0.55 : 0.18);
-    const flip = Math.cos(facing) < -0.12 ? -1 : 1;
-    const lean = leanAmt * flip;
+    const passing = Math.sin(phase);
+    const contact = Math.cos(phase);
+    const bob = moving ? (2.5 - Math.abs(passing) * 4.0) : Math.sin(phase) * 1.3;
+    const walk = passing;
+    const swing = passing * (moving ? 0.55 : 0.18);
+    const faceS = p.faceS != null ? p.faceS : (Math.cos(facing) < -0.1 ? -1 : 1);
+    const turnThin = 1 - Math.abs(faceS);
+    const lean = leanAmt * (faceS >= 0 ? 1 : -1);
     const short = skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1;
-    shadow(x, y + 5, moving ? 13 : 11, moving ? 5.4 : 4.6);
-    const frame = moving && Math.sin(phase) > 0 ? "walk" : "stand";
-    if (blit(skin + "_" + frame, x, y + bob, { flip: flip < 0, rot: lean * 0.28, scale: 0.42 * short })) return;
+    const squashX = moving ? 1 + Math.abs(contact) * 0.03 : 1;
+    const squashY = moving ? 1 - Math.abs(contact) * 0.048 : 1;
+    const strideX = moving ? passing * 2.6 * (faceS >= 0 ? 1 : -1) : 0;
+    shadow(x + strideX, y + 5, moving ? 13 : 11, moving ? 5.4 : 4.6);
+    const fi = moving ? gaitIndex(walkPhase, 6) : 0;
+    if (moving) {
+      if (blitGait(skin, "walk", fi, x + strideX, y + bob, {
+        scaleX: faceS * squashX, scaleY: squashY + turnThin * 0.14,
+        rot: lean * 0.34 + passing * 0.035, scale: 0.42 * short,
+      })) return;
+    } else if (blit(skin + "_stand", x + strideX, y + bob, {
+      scaleX: faceS, scaleY: 1 + turnThin * 0.1,
+      rot: lean * 0.2, scale: 0.42 * short,
+    })) return;
     ctx.save();
     ctx.translate(x, y + bob);
     ctx.scale(flip * short, short);
@@ -6478,8 +6510,18 @@
   function drawDiver(x, y, ang, t, skinId) {
     const skin = normalizeSkin(skinId != null ? skinId : state.skin);
     shadow(x, y + 6, 12, 5);
-    const sway = Math.sin(t * 11) * 0.06;
-    if (blit(skin + "_dive", x, y, { rot: ang + sway, scale: 0.5 })) return;
+    const phase = player.walkPhase != null ? player.walkPhase : t;
+    const kickWave = Math.sin(phase);
+    const pitch = (player.pitch || 0) + kickWave * 0.055;
+    const sway = Math.sin(t * 8) * 0.035;
+    const fi = gaitIndex(phase, 6);
+    if (blitGait(skin, "swim", fi, x, y, {
+      rot: ang + pitch + sway,
+      scale: 0.5,
+      scaleX: 1 + Math.abs(kickWave) * 0.03,
+      scaleY: 1 - Math.abs(kickWave) * 0.034,
+      water: true,
+    })) return;
     ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
     const kick = Math.sin(t * 11) * 0.48;
     const stroke = Math.sin(t * 7.5) * 0.22;
@@ -9421,8 +9463,9 @@
         roundRect(x, cy, cardW, cardH, 12); ctx.stroke();
       }
       drawPlayer(x + cardW / 2, cy + cardH * 0.46, {
-        skin: id, vx: 0, vy: 0, facing: 0.12,
-        walkPhase: state.time * 2.2 + i, lean: 0, bob: state.time * 1.6 + i,
+        skin: id, vx: 48, vy: 0, facing: 0.08,
+        walkPhase: state.time * 7.2 + i * 0.85, lean: 0.1, bob: state.time * 1.6 + i,
+        faceS: 1,
       });
       ctx.fillStyle = "#fff6e8";
       ctx.font = "800 16px Fredoka, sans-serif";
@@ -9498,7 +9541,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 168);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 51", W / 2, 194);
+    ctx.fillText("Aqua Bay · loop 52", W / 2, 194);
     drawSkinPicker(W / 2, 236, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
     if (state.hasSave) {
@@ -9538,7 +9581,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 51", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 52", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -9555,7 +9598,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 51", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 52", W / 2, 632);
     }
   }
 
