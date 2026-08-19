@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -1073,7 +1073,7 @@
     return w.x > DIVE_ZONE.x + 24 && w.x < DIVE_ZONE.x + DIVE_ZONE.w - 24 &&
            w.y > DIVE_ZONE.y && w.y < DIVE_ZONE.y + DIVE_ZONE.h;
   }
-  function diveChipBox() { return { x: 796, y: 880, w: 172, h: 82 }; }
+  function diveChipBox() { return { x: 796, y: 988, w: 172, h: 72 }; }
   function clickOnDiveChip() {
     const w = screenToWorld(mouse.pressX, mouse.pressY);
     const b = diveChipBox();
@@ -3300,6 +3300,7 @@
     pushOut(REGISTER.x - 6, REGISTER.y - 6, REGISTER.w + 12, REGISTER.h + 12);
     pushOut(KIOSK.x - 6, KIOSK.y - 6, KIOSK.w + 12, KIOSK.h + 12);
     pushOut(WELCOME.x, WELCOME.y, WELCOME.w, WELCOME.h);
+    pushOut(518, 968, 76, 52);
   }
   function pushOut(x, y, w, h) {
     const r = player.radius;
@@ -4945,16 +4946,15 @@
   function drawHarborTown(x, y, w, h, teal) {
     return drawTownSkyline(x, y + h, w, h, teal);
   }
-  // C57 — town is a distant shore BEHIND the pier, not a 560px mural
-  // stretched across the bay (C51/C55 blit sat on y≈886 and filled the
-  // dock view with sky / roofs the walker could stand in). Sky + hills
-  // + waterfront sit above the waterline; the bay below is water.
+  // C57/C58 — town is a distant shore BEHIND the pier, not a 560px mural
+  // stretched across the bay. C58 crops tighter on the waterline so the
+  // roofs do not read as a walkable terrace. The bay below is water.
   function drawShopHarbor(teal) {
     ensurePaint();
     const x = -420;
     const w = shopW() + 840;
-    const townH = 216;
-    const townTop = 648;
+    const townH = 152;
+    const townTop = 714;
     if (ATLAS.sky && ART.ready) {
       blitTile("sky", x, -280, w, townTop + 160);
     } else {
@@ -4967,7 +4967,7 @@
     }
     // Crop the C55 skyline to hills + roofs (skip the empty upper sky so
     // the waterfront sits on the horizon instead of tiling the bay).
-    if (!blitHarborPart(0, 0.36, 1, 0.64, x, townTop, w, townH)) {
+    if (!blitHarborPart(0, 0.46, 1, 0.54, x, townTop, w, townH)) {
       drawTownSkyline(x, townTop + townH, w, townH, teal);
     }
     if (teal) {
@@ -6495,7 +6495,9 @@
     const phase = moving ? walkPhase : bobT * 0.7;
     const passing = Math.sin(phase);
     const contact = Math.cos(phase);
-    const bob = moving ? (2.5 - Math.abs(passing) * 4.0) : Math.sin(phase) * 1.3;
+    // C58 — plant soles on the boards. Old bob (−1.5…+2.5) plus strideX
+    // fought the floor and the flip origin; painted walk frames already stride.
+    const bob = moving ? Math.max(0, 0.9 - Math.abs(passing) * 1.05) : Math.sin(phase) * 0.28;
     const walk = passing;
     const swing = passing * (moving ? 0.55 : 0.18);
     const faceS = p.faceS != null ? p.faceS : (Math.cos(facing) < -0.1 ? -1 : 1);
@@ -6504,28 +6506,31 @@
     const lean = leanAmt * (faceS >= 0 ? 1 : -1);
     const drawSc = p.drawScale == null ? 1 : p.drawScale;
     const short = drawSc * (skin === "reef" ? 0.98 : skin === "dino" ? 1.02 : 1.1);
-    const squashX = moving ? 1 + Math.abs(contact) * 0.03 : 1;
-    const squashY = moving ? 1 - Math.abs(contact) * 0.048 : 1;
-    const strideX = moving ? passing * 2.6 * (faceS >= 0 ? 1 : -1) : 0;
-    shadow(x + strideX, y + 5, moving ? 13 : 11, moving ? 5.4 : 4.6);
+    const blitSc = 0.42 * short;
+    const squashX = moving ? 1 + Math.abs(contact) * 0.018 : 1;
+    const squashY = moving ? 1 - Math.abs(contact) * 0.022 : 1;
+    // Sink soles 2px into the plank seam so they read as standing on wood,
+    // not hovering on the grain. Shadow sits on the same baseline.
+    const plant = y + 2.4 + bob;
+    shadow(x, y + 3, moving ? 13 : 11, moving ? 4.8 : 4.0);
     const fi = moving ? gaitIndex(walkPhase, 6) : 0;
     if (moving) {
-      if (blitGait(skin, "walk", fi, x + strideX, y + bob, {
-        scaleX: faceS * squashX, scaleY: squashY + turnThin * 0.14,
-        rot: lean * 0.34 + passing * 0.035, scale: 0.42 * short,
+      if (blitGait(skin, "walk", fi, x, plant, {
+        scaleX: faceS * squashX, scaleY: squashY + turnThin * 0.08,
+        rot: lean * 0.16, scale: blitSc, flat: true,
       })) return;
     } else if (
-      blit(skin + "_card", x + strideX, y + bob, {
-        scaleX: faceS, scaleY: 1 + turnThin * 0.1,
-        rot: lean * 0.2, scale: 0.42 * short,
+      blit(skin + "_card", x, plant, {
+        scaleX: faceS, scaleY: 1 + turnThin * 0.06,
+        rot: lean * 0.1, scale: blitSc, flat: true,
       }) ||
-      blit(skin + "_stand", x + strideX, y + bob, {
-        scaleX: faceS, scaleY: 1 + turnThin * 0.1,
-        rot: lean * 0.2, scale: 0.42 * short,
+      blit(skin + "_stand", x, plant, {
+        scaleX: faceS, scaleY: 1 + turnThin * 0.06,
+        rot: lean * 0.1, scale: blitSc, flat: true,
       })
     ) return;
     ctx.save();
-    ctx.translate(x, y + bob);
+    ctx.translate(x, plant);
     ctx.scale(flip * short, short);
     ctx.rotate(lean * 0.55 + (moving ? walk * 0.04 : 0));
     if (skin === "dino") {
@@ -6711,29 +6716,40 @@
   }
   function drawDiver(x, y, ang, t, skinId) {
     const skin = normalizeSkin(skinId != null ? skinId : state.skin);
-    shadow(x, y + 6, 12, 5);
+    ctx.save();
+    ctx.fillStyle = "rgba(4, 22, 40, 0.28)";
+    ctx.beginPath();
+    ctx.ellipse(x, y + 11, 20, 7.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
     const phase = player.walkPhase != null ? player.walkPhase : t;
     const kickWave = Math.sin(phase);
     const stroke = Math.sin(phase + 1.15);
-    const pitch = (player.pitch || 0) + kickWave * 0.08;
-    const sway = Math.sin(t * 8) * 0.04;
-    const tilt = ang + pitch + sway;
+    // C58 — atlas swim frames are already horizontal. Rotating by full
+    // facing (dock walk is ≈π/2 down) stood the diver upright in the bay.
+    const faceS = player.faceS != null ? player.faceS : (Math.cos(ang) < -0.1 ? -1 : 1);
+    const flip = faceS < 0 ? -1 : 1;
+    const headingPitch = Math.sin(ang) * 0.38;
+    const pitch = clamp((player.pitch || 0) * 0.7 + headingPitch + kickWave * 0.05, -0.48, 0.48);
+    const sway = Math.sin(t * 8) * 0.03;
+    const tilt = pitch + sway;
     const fi = gaitIndex(phase, 6);
     const drew = blitGait(skin, "swim", fi, x, y, {
-      rot: tilt,
+      rot: tilt * flip,
       scale: 0.58,
-      scaleX: 1 + Math.abs(kickWave) * 0.05,
-      scaleY: 1 - Math.abs(kickWave) * 0.055,
+      scaleX: faceS * (1 + Math.abs(kickWave) * 0.04),
+      scaleY: 1 - Math.abs(kickWave) * 0.045,
       water: true,
     });
     ctx.save();
     ctx.translate(x, y);
+    ctx.scale(flip, 1);
     ctx.rotate(tilt);
-    drawSwimPaddle(skin, phase, kickWave, stroke, !drew);
     if (drew) {
       ctx.restore();
       return;
     }
+    drawSwimPaddle(skin, phase, kickWave, stroke, true);
     const kick = kickWave * 0.48;
     drawLimbChain(-2, 4, Math.PI * 0.92 + kick * 0.35, 8, kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
     drawLimbChain(2, 4, -Math.PI * 0.92 - kick * 0.35, 8, -kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
@@ -6830,7 +6846,7 @@
     drawCrate(x + 10, y - 22, 38, 26);
   }
   function drawDiveSign(cx, footY) {
-    if (blit("divepad", cx, footY, { scale: 0.9, flat: true })) return;
+    if (blit("divepad", cx, footY, { scale: 0.68, flat: true })) return;
     ctx.save();
     ctx.translate(cx, footY);
     ctx.fillStyle = "rgba(16, 8, 4, 0.28)";
@@ -6899,6 +6915,7 @@
     ctx.restore();
   }
   function drawBaitShack(x, y) {
+    drawPierBoards(x - 52, y + 62, 112, 28, { plank: 14 });
     groundBlob(x + 4, y + 78, 56, 13);
     ctx.fillStyle = "#8a4a22";
     roundRect(x - 40, y + 18, 88, 58, 4); ctx.fill();
@@ -7346,12 +7363,16 @@
       ctx.filter = "none";
       ctx.restore();
     }
-    const posts = [
+    const dockPosts = [
       [148, 1086, 0.82, 0], [392, 1062, 1.46, 1], [574, 1080, 0.94, 2],
       [718, 1056, 1.40, 3], [886, 1074, 1.08, 4], [1062, 1090, 1.52, 5],
       [1218, 1060, 0.86, 6], [1394, 1078, 1.26, 7], [shopW() - 48, 1068, 1.16, 8],
     ];
-    for (const [px, py, sc, id] of posts) drawPierPost(px, py, sc, id);
+    // C58 — dock pilings sort with the walker so feet do not draw through
+    // the front posts. Far-side posts still paint as waterline backdrop.
+    for (const [px, py, sc, id] of dockPosts) {
+      if (py < 1008) drawPierPost(px, py, sc, id);
+    }
     const teal = !!state.unlocked[1];
     drawPierBoards(90, 80, 1580, 300, { plank: 26, teal: teal });
     const midA = midWoodAlpha();
@@ -7508,15 +7529,8 @@
     ctx.ellipse(880, 1048, 290, 62, 0, 0, Math.PI * 2);
     ctx.fill();
     const chip = diveChipBox();
-    // Wood DIVE sign sits on the boards left of the pad — not on the walk-to glow.
-    const diveSign = { x: 628, y: 976 };
-    const diveA = worldBoxAlpha(diveSign.x - 70, diveSign.y - 88, 140, 104);
-    if (diveA > 0.04) {
-      ctx.save();
-      ctx.globalAlpha = diveA;
-      drawDiveSign(diveSign.x, diveSign.y);
-      ctx.restore();
-    }
+    // Wood DIVE sign on the left boards, beside the pad — not in the walk lane.
+    const diveSign = { x: 556, y: 1008 };
     if (state.mode === "play") btn("dive-chip", ...screenBtnFromWorld(chip.x, chip.y, chip.w, chip.h));
     const pathPts = [
       [880, 1008], [880, 860], [880, 680], [880, 500], [880, 360],
@@ -7554,12 +7568,12 @@
     drawCrate(1004, 948, 40, 26);
     drawCrate(1014, 928, 34, 22);
     drawMopBucket(748, 944);
-    drawHangingSign(1020, 888);
-    drawBench(1096, 928);
-    drawLifeRing(548, 888);
-    drawAnchor(1188, 928);
-    drawVending(1396, 688);
-    drawBaitShack(1488, 812);
+    drawHangingSign(1020, 924);
+    drawBench(1108, 942);
+    drawLifeRing(512, 918);
+    drawAnchor(1196, 952);
+    drawVending(1336, 548);
+    drawBaitShack(1408, 548);
     drawSkiff(pierLife.skiff);
     drawGull(pierLife.gull);
     drawGull(pierLife.gull2);
@@ -7568,6 +7582,14 @@
     // side welcome counter (inward so the starting camera keeps it on-canvas)
     ctx.fillStyle = "#c45c4a";
     roundRect(WELCOME.x, WELCOME.y, WELCOME.w, WELCOME.h, 12); ctx.fill();
+    if (ART.ready && ATLAS.plank) {
+      ctx.save();
+      roundRect(WELCOME.x, WELCOME.y, WELCOME.w, WELCOME.h, 12); ctx.clip();
+      ctx.globalAlpha = 0.72;
+      ctx.drawImage(ART.img, ATLAS.plank.x, ATLAS.plank.y, ATLAS.plank.w, ATLAS.plank.h,
+        WELCOME.x - 4, WELCOME.y - 4, WELCOME.w + 8, WELCOME.h + 8);
+      ctx.restore();
+    }
     const welcomeA = worldLabelAlpha(WELCOME.x + 8, WELCOME.y + 8, WELCOME.w - 16, WELCOME.h - 16);
     if (welcomeA > 0.04) {
       ctx.save();
@@ -7598,16 +7620,29 @@
       }
       ctx.restore();
     }
-    const sorted = customers.slice().sort((a, b) => a.y - b.y);
-    let pDrawn = false;
-    for (const c of sorted) {
-      if (!pDrawn && player.y < c.y) {
-        drawPlayer(player.x, player.y);
-        pDrawn = true;
-      }
-      drawPerson(c.x, c.y, c);
+    const actors = [];
+    for (const c of customers) {
+      actors.push({ y: c.y, draw: function () { drawPerson(c.x, c.y, c); } });
     }
-    if (!pDrawn) drawPlayer(player.x, player.y);
+    actors.push({ y: player.y, draw: function () { drawPlayer(player.x, player.y); } });
+    actors.push({
+      y: diveSign.y,
+      draw: function () {
+        const diveA = worldBoxAlpha(diveSign.x - 70, diveSign.y - 88, 140, 104);
+        if (diveA <= 0.04) return;
+        ctx.save();
+        ctx.globalAlpha = diveA;
+        drawDiveSign(diveSign.x, diveSign.y);
+        ctx.restore();
+      },
+    });
+    for (let i = 0; i < dockPosts.length; i++) {
+      const px = dockPosts[i][0], py = dockPosts[i][1], sc = dockPosts[i][2], id = dockPosts[i][3];
+      if (py < 1008) continue;
+      actors.push({ y: py, draw: function () { drawPierPost(px, py, sc, id); } });
+    }
+    actors.sort(function (a, b) { return a.y - b.y; });
+    for (let i = 0; i < actors.length; i++) actors[i].draw();
     drawShopBanner();
   }
   function drawRegister() {
@@ -9772,7 +9807,7 @@
         ctx.lineWidth = 3;
         roundRect(x, cy, cardW, cardH, 12); ctx.stroke();
       }
-      drawPlayer(x + cardW / 2, cy + cardH * 0.58, {
+      drawPlayer(x + cardW / 2, cy + cardH * 0.62, {
         skin: id, vx: 0, vy: 0, facing: 0.08,
         walkPhase: 0, lean: 0.05, bob: Math.sin(state.time * 1.5 + i) * 0.6,
         faceS: 1, drawScale: 1.65,
@@ -9855,7 +9890,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 57", W / 2, 178);
+    ctx.fillText("Aqua Bay · loop 58", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -9896,7 +9931,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 57", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 58", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -9913,13 +9948,13 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 57", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 58", W / 2, 632);
     }
   }
 
   function baitShackScreenBox() {
     if (state.scene !== "shop") return null;
-    const p = worldToScreen(1428, 786);
+    const p = worldToScreen(1368, 520);
     return { x: p.x, y: p.y, w: 156 * cam.z, h: 136 * cam.z };
   }
   function tankScreenBox(i) {
@@ -10251,7 +10286,10 @@
     cam.rail = cam.rail == null ? wantRail : lerp(cam.rail, wantRail, 1 - Math.pow(0.05, Math.min(dt, 0.05)));
     const padL = 88, padR = rightRail + 48;
     const padT = Math.max(topHudFloor() + 12, 64);
-    const padB = cam.rail + 36;
+    const act = actionBtnSize();
+    const actionUp = (state.scene === "shop" && diveActionLegal()) ||
+      (state.scene === "ocean" && (surfaceActionLegal() || bagIsFull()));
+    const padB = Math.max(cam.rail + 36, actionUp ? act.h + act.pad + 22 : 0);
     let psx = (player.x - nx) * cam.z + W / 2;
     let psy = (player.y - ny) * cam.z + H / 2;
     if (psx < padL) nx = player.x - (padL - W / 2) / cam.z;
