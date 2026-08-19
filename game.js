@@ -4877,9 +4877,13 @@
     const w = shopW() + 840;
     const h = waterY - topY;
     if (ATLAS.harbortown && ART.ready) {
-      blitTile("harbortown", x, topY, w, h);
+      const c = ATLAS.harbortown;
+      // Sky + town (top of the painting) sit on the waterline so the dock
+      // camera sees roofs, not the painting's water half.
+      ctx.drawImage(ART.img, c.x, c.y, c.w, c.h * 0.70, x, 160, w, waterY - 160);
     } else if (ATLAS.harbor && ART.ready) {
-      blitHorizon(x, topY, w, h);
+      const c = ATLAS.harbor;
+      ctx.drawImage(ART.img, c.x, c.y, c.w, c.h * 0.70, x, 160, w, waterY - 160);
     } else if (paint.pier) ctx.drawImage(paint.pier, x, topY, w, h);
     else if (paint.harbor) {
       const sw = paint.harbor.width, sh = paint.harbor.height;
@@ -5431,7 +5435,7 @@
       let sx = x - ((row * 73) % 91) - hash2(row, 4) * 36;
       let n = 0;
       while (sx < x + w + 14) {
-        const pw = 118 + hash2(row * 17 + n * 31, 2) * 86 + ((row + n * 3) % 4) * 10;
+        const pw = 168 + hash2(row * 17 + n * 31, 2) * 140 + ((row + n * 3) % 5) * 18;
         const cell = plankCell(row * 11 + n * 7 + ((yy * 3) | 0));
         if (ART.ready && cell) {
           ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, sx, yy, pw, ph);
@@ -6405,11 +6409,11 @@
     if (moving) {
       if (blitGait(skin, "walk", fi, x + strideX, y + bob, {
         scaleX: faceS * squashX, scaleY: squashY + turnThin * 0.14,
-        rot: lean * 0.34 + passing * 0.035, scale: 0.42 * short,
+        rot: lean * 0.34 + passing * 0.035, scale: 0.46 * short,
       })) return;
     } else if (blit(skin + "_stand", x + strideX, y + bob, {
       scaleX: faceS, scaleY: 1 + turnThin * 0.1,
-      rot: lean * 0.2, scale: 0.42 * short,
+      rot: lean * 0.2, scale: 0.46 * short,
     })) return;
     ctx.save();
     ctx.translate(x, y + bob);

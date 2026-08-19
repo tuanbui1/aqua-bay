@@ -174,6 +174,18 @@ def figure_ranges(mass, n, min_gap=10, min_w=28):
     return None
 
 
+def scrub_bg(im: Image.Image):
+    """Kill leftover sheet background so blit lighting cannot paint a rectangle."""
+    w, h = im.size
+    px = im.load()
+    for y in range(h):
+        for x in range(w):
+            r, g, b, a = px[x, y]
+            if a < 20 or (r + g + b < 48 and a < 90):
+                px[x, y] = (0, 0, 0, 0)
+    return im
+
+
 def keep_largest_blob(im: Image.Image, min_keep=80):
     """Drop neighbor slivers that leaked into a cell."""
     w, h = im.size
@@ -235,7 +247,7 @@ def cut_grid(path: Path, cols, rows, tw, th, dist=52, max_side=1600, bottom=Fals
             y0 = int(r * ch) + 8
             x1 = int((c + 1) * cw) - 8
             y1 = int((r + 1) * ch) - 8
-            cell = keep_largest_blob(autocrop(sheet.crop((x0, y0, x1, y1)), 3))
+            cell = scrub_bg(keep_largest_blob(autocrop(sheet.crop((x0, y0, x1, y1)), 3)))
             cells.append(fit_bottom(cell, tw, th) if bottom else fit_center(cell, tw, th))
     return cells
 
@@ -254,7 +266,7 @@ def cut_row(path: Path, n, tw, th, dist=52, max_side=1400, bottom=True):
             pad = max(6, int((e - s) * 0.06))
             x0 = max(0, s - pad)
             x1 = min(w, e + pad)
-            cell = keep_largest_blob(autocrop(sheet.crop((x0, y0, x1, y1)), 2))
+            cell = scrub_bg(keep_largest_blob(autocrop(sheet.crop((x0, y0, x1, y1)), 2)))
             cells.append(fit_bottom(cell, tw, th) if bottom else fit_center(cell, tw, th))
         if len(cells) == n:
             return cells
@@ -265,7 +277,7 @@ def cut_row(path: Path, n, tw, th, dist=52, max_side=1400, bottom=True):
     for i in range(n):
         x0 = max(0, int(i * cw - overlap * 0.25) + 2)
         x1 = min(w, int((i + 1) * cw + overlap * 0.25) - 2)
-        cell = keep_largest_blob(autocrop(sheet.crop((x0, y0, x1, y1)), 2))
+        cell = scrub_bg(keep_largest_blob(autocrop(sheet.crop((x0, y0, x1, y1)), 2)))
         cells.append(fit_bottom(cell, tw, th) if bottom else fit_center(cell, tw, th))
     return cells
 
@@ -333,31 +345,26 @@ def paint_plank(seed, w=220, h=48, teal=False):
     return crush(im, 72)
 
 
-def planks_from_painting(path: Path, n=8, tw=220, th=48):
+def planks_from_painting(path: Path, n=8, tw=256, th=40):
+    painted = [paint_plank(3 + i * 13, tw, th, teal=(i == 7)) for i in range(n)]
     if not path.exists():
-        return [paint_plank(3 + i * 11, tw, th) for i in range(n)]
+        return painted
     src = Image.open(path).convert("RGBA")
-    src = src.resize((max(tw * 2, 640), max(th * n, 360)), Image.Resampling.LANCZOS)
+    src = src.resize((max(tw * 3, 720), max(th * (n + 2), 420)), Image.Resampling.LANCZOS)
     w, h = src.size
     out = []
-    band = h / n
+    band = h / (n + 1)
     for i in range(n):
-        y0 = int(i * band) + 2
-        y1 = int((i + 1) * band) - 2
-        # shift crop so seams do not line up
-        x0 = (i * 37) % max(1, w - tw * 2)
-        cell = src.crop((x0, y0, min(w, x0 + tw * 2), y1))
+        y0 = int(i * band) + 3
+        y1 = int(y0 + band * 0.55)
+        x0 = (i * 53) % max(1, w - tw)
+        cell = src.crop((x0, y0, min(w, x0 + tw), max(y0 + 8, y1)))
         cell = cell.resize((tw, th), Image.Resampling.LANCZOS)
-        if i == 3:
-            cell = ImageEnhance.Color(cell).enhance(0.82)
-            cell = ImageEnhance.Brightness(cell).enhance(0.88)
-        elif i == 5:
-            cell = ImageEnhance.Color(cell).enhance(1.08)
-            cell = ImageEnhance.Brightness(cell).enhance(1.06)
-        elif i == 6:
-            cell = ImageEnhance.Color(cell).enhance(0.7)
-            cell = ImageEnhance.Brightness(cell).enhance(0.78)
-        out.append(crush(cell, 80))
+        cell = ImageEnhance.Color(cell).enhance(0.78 + (i % 3) * 0.06)
+        cell = ImageEnhance.Contrast(cell).enhance(0.88)
+        # Blend a unique painted board so the photo grain cannot tile as one strip.
+        mixed = Image.blend(cell.convert("RGBA"), painted[i], 0.42)
+        out.append(crush(mixed, 70))
     return out
 
 
@@ -506,9 +513,9 @@ def main():
             swims = [fit_center(src, sw, sh) for _ in range(6)]
         extras[skin] = (walks, swims)
         for i, im in enumerate(walks):
-            add(f"{skin}_walk{i}", im, ww / 2, wh - 8)
+            add(f"{skin}_walk{i}", scrub_bg(im), ww / 2, wh - 8)
         for i, im in enumerate(swims):
-            add(f"{skin}_swim{i}", im, sw / 2, sh / 2)
+            add(f"{skin}_swim{i}", scrub_bg(im), sw / 2, sh / 2)
 
     for name in KEEP:
         crop, c = crop_old(old, old_at, name)
@@ -547,11 +554,11 @@ def main():
     add("waterline2", paint_waterline(17), 180, 38)
 
     if (SRC / "dive-pad.png").exists():
-        add("divepad", fit_center(flood_key(Image.open(SRC / "dive-pad.png"), 36, 1, 720), 200, 92), 100, 78)
+        add("divepad", scrub_bg(fit_center(flood_key(Image.open(SRC / "dive-pad.png"), 36, 1, 720), 200, 92)), 100, 78)
     if (SRC / "life-ring.png").exists():
-        add("lifering", fit_bottom(flood_key(Image.open(SRC / "life-ring.png"), 36, 1, 720), 132, 150), 66, 142)
+        add("lifering", scrub_bg(fit_bottom(flood_key(Image.open(SRC / "life-ring.png"), 36, 1, 720), 132, 150)), 66, 142)
     if (SRC / "dock-anchor.png").exists():
-        add("anchor", fit_bottom(flood_key(Image.open(SRC / "dock-anchor.png"), 36, 1, 720), 110, 140), 55, 132)
+        add("anchor", scrub_bg(fit_bottom(flood_key(Image.open(SRC / "dock-anchor.png"), 36, 1, 720), 110, 140)), 55, 132)
 
     sheet, atlas = pack(items)
     out = ART / "bay.png"
