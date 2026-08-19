@@ -285,7 +285,8 @@
       const mx = gv > b ? gv : b, mn = gv < b ? gv : b;
       const cyan = (gv + b) > r * 1.42;
       const dull = (mx - mn) < 92;
-      return cyan && dull && mx > 68 && r < 172 && r < mn + 22;
+      // Pale packed slabs only — keep dark navy / forest shirts.
+      return cyan && dull && mx > 118 && r < 168 && r < mn + 22;
     }
     let x0 = w, y0 = h, x1 = 0, y1 = 0;
     for (let y = 0; y < h; y++) {
@@ -6488,7 +6489,7 @@
     const walk = Math.sin((opt.bob || 0) * 1.6);
     const squash = 1 + walk * 0.07 + (hop ? 0.08 : 0);
     const kid = !!opt.kid;
-    sitShadow(x + 2, y + 5, kid ? 10 : 15.5, kid ? 4.2 : 5.8, 0.46);
+    sitShadow(x + 2, y + 6, kid ? 11 : 17, kid ? 4.6 : 6.4, 0.52);
     const spr = blit(custSpriteName(opt), x, y + bob + 1.8, {
       flip: (opt.vx || 0) < -8,
       scale: (kid ? 0.5 : 0.58) * (1 + walk * 0.03),
@@ -10073,9 +10074,8 @@
         plate.addColorStop(0.46, "#3d8b9a");
         plate.addColorStop(1, "#d4a070");
       } else {
-        plate.addColorStop(0, "#f0c878");
-        plate.addColorStop(0.28, "#7eb8d0");
-        plate.addColorStop(0.62, "#3d6f7a");
+        plate.addColorStop(0, "#f4d48a");
+        plate.addColorStop(0.36, "#8ab8c4");
         plate.addColorStop(1, "#c4894a");
       }
       ctx.fillStyle = plate;
@@ -10084,11 +10084,11 @@
         const crops = {
           skip: [0.00, 0.06, 0.46, 0.70],
           reef: [0.28, 0.00, 0.50, 0.68],
-          dino: [0.56, 0.00, 0.44, 0.56],
+          dino: [0.50, 0.32, 0.48, 0.66],
         };
         const [sx, sy, sw, sh] = crops[id];
-        ctx.globalAlpha = 0.9;
-        blitHarborPart(sx, sy, sw, sh, x + 6, cy + 8, cardW - 12, cardH * 0.50);
+        ctx.globalAlpha = 0.92;
+        blitHarborPart(sx, sy, sw, sh, x + 6, cy + 8, cardW - 12, cardH * 0.52);
         ctx.globalAlpha = 1;
       } else if (ATLAS.sky && ART.ready) {
         ctx.globalAlpha = 0.62;
@@ -10102,18 +10102,25 @@
         ctx.fillRect(x + 6, cy + 8 + cardH * 0.46, cardW - 12, cardH * 0.20);
         drawPierBoards(x + 4, cy + 8 + cardH * 0.50, cardW - 8, cardH * 0.16, { plank: 14, wetY: cy + 8 + cardH * 0.58 });
       } else {
-        // Dusk harbor pier — painted boards + a piling, not a teal slab.
-        drawPierBoards(x + 4, cy + 8 + cardH * 0.46, cardW - 8, cardH * 0.20, {
-          plank: 11, seg: 28, wetY: cy + 8 + cardH * 0.58,
+        // Dusk harbor strip: town sits on a wide pier, not a teal slab.
+        drawPierBoards(x + 3, cy + 8 + cardH * 0.42, cardW - 6, cardH * 0.24, {
+          plank: 10, wetY: cy + 8 + cardH * 0.56,
         });
         ctx.save();
-        ctx.translate(x + cardW - 22, cy + 8 + cardH * 0.62);
-        ctx.fillStyle = "#5a3614";
-        ctx.fillRect(-4, -22, 7, 26);
-        ctx.fillStyle = "rgba(255, 210, 140, 0.18)";
-        ctx.fillRect(-4, -22, 2.2, 26);
+        ctx.translate(x + 18, cy + 8 + cardH * 0.60);
+        ctx.fillStyle = "#4a2a14";
+        ctx.fillRect(-3.5, -26, 7, 28);
+        ctx.fillStyle = "rgba(255, 210, 140, 0.2)";
+        ctx.fillRect(-3.5, -26, 2.2, 28);
         ctx.fillStyle = "#8a5a30";
-        ctx.beginPath(); ctx.arc(-0.4, -22, 4.2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(0, -26, 4.4, 2.2, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#c4483a";
+        ctx.beginPath();
+        ctx.moveTo(10, -4);
+        ctx.quadraticCurveTo(22, 2, 34, -2);
+        ctx.lineTo(32, 4);
+        ctx.quadraticCurveTo(22, 8, 10, 3);
+        ctx.closePath(); ctx.fill();
         ctx.restore();
       }
       ctx.restore();
