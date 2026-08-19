@@ -154,37 +154,40 @@ def swim_frame(src: Image.Image, i: int, kind: str) -> Image.Image:
     kick = math.sin(t)
     stroke = math.sin(t + math.pi * 0.5)
     und = math.sin(t * 2.0)
-    k_amp = 20.0 if kind == "dino" else 16.0
+    k_amp = 18.0 if kind == "dino" else 14.5
+
+    def forward(x, y, w, h):
+        nx = x / max(1.0, w - 1)
+        ny = y / max(1.0, h - 1)
+        feet = 1.0 - smoothstep(0.22, 0.40, nx)
+        hips = smoothstep(0.22, 0.40, nx) * (1.0 - smoothstep(0.48, 0.62, nx))
+        body = smoothstep(0.48, 0.62, nx) * (1.0 - smoothstep(0.68, 0.80, nx))
+        head = smoothstep(0.68, 0.80, nx)
+        dx = -und * 1.6 * (0.3 + nx)
+        dy = math.sin(nx * math.pi + t) * (3.2 if kind == "dino" else 2.4)
+        dy += kick * k_amp * (feet ** 1.2)
+        dx -= abs(kick) * 2.0 * feet
+        if kind == "dino":
+            dy += kick * 6.0 * feet
+            dx -= und * 3.2 * feet
+        dy += kick * (k_amp * 0.32) * hips
+        dx += stroke * 1.2 * hips
+        dx += stroke * 5.6 * body
+        dy += stroke * 2.6 * body
+        if kind == "dino":
+            dy += (1.0 - abs(kick)) * 2.8 * body
+        dy += stroke * 2.2 * head - und * 1.1 * head
+        top = 1.0 - smoothstep(0.38, 0.58, ny)
+        dy += stroke * 4.0 * head * top
+        dx -= kick * 1.2 * head * top
+        if kind == "reef":
+            dx -= stroke * 2.6 * head * top
+            dy -= kick * 2.0 * head * top
+        return dx, dy
 
     def mapper(x, y, w, h):
-        nx = x / max(1.0, w - 1)
-        sx, sy = float(x), float(y)
-        sy += math.sin(nx * math.pi + t) * (3.6 if kind == "dino" else 2.8)
-        sx += und * 1.8 * (0.3 + nx)
-        if nx < 0.34:
-            k = ((0.34 - nx) / 0.34) ** 1.3
-            sy -= kick * k_amp * k
-            sx += abs(kick) * 2.2 * k
-            if kind == "dino":
-                sy -= kick * 7.0 * k
-                sx += und * 3.6 * k
-        elif nx < 0.56:
-            sy -= kick * (k_amp * 0.36)
-            sx -= stroke * 1.4
-        elif nx < 0.74:
-            sx -= stroke * 6.4
-            sy -= stroke * 3.0
-            if kind == "dino":
-                sy -= (1.0 - abs(kick)) * 3.2
-        else:
-            sy -= stroke * 2.4 - und * 1.2
-            if y < h * 0.42:
-                sy -= stroke * 4.6
-                sx += kick * 1.4
-            if kind == "reef" and y < h * 0.50:
-                sx += stroke * 3.0
-                sy += kick * 2.2
-        return sx, sy
+        dx, dy = forward(x, y, w, h)
+        return x - dx, y - dy
 
     return heal_holes(warp(src, mapper), 1)
 
