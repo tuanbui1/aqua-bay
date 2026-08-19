@@ -219,7 +219,7 @@
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -5501,9 +5501,60 @@
     }
     ctx.restore();
   }
+  function plantInSand(x, y, rx, ry, tone) {
+    // Contact AO + raised mound so kelp / coral sit *in* the sand.
+    ctx.fillStyle = "rgba(10, 16, 12, 0.34)";
+    ctx.beginPath();
+    ctx.ellipse(x + 1.6, y + 2.4, rx * 1.08, Math.max(2.4, ry * 0.42), -0.16, 0, Math.PI * 2);
+    ctx.fill();
+    const warm = tone == null ? 0.5 : tone;
+    const g = ctx.createRadialGradient(x - rx * 0.22, y - ry * 0.55, 1.2, x, y + 1, rx * 1.05);
+    g.addColorStop(0, warm > 0.55 ? "rgba(236, 214, 150, 0.82)" : "rgba(196, 178, 112, 0.7)");
+    g.addColorStop(0.42, warm > 0.55 ? "rgba(200, 164, 88, 0.5)" : "rgba(148, 128, 72, 0.42)");
+    g.addColorStop(1, "rgba(70, 52, 28, 0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(x, y, rx, ry, 0.08 + (warm - 0.5) * 0.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  function blitBedStamp(id, x, y, w, h, rot, flip, seed) {
+    const c = ATLAS["bed" + ((id % 8) + 8) % 8];
+    // Clip to an irregular dune — never the atlas mound silhouette
+    // (that cell is the repeating sticker).
+    ctx.save();
+    ctx.translate(x, y);
+    if (rot) ctx.rotate(rot);
+    if (flip) ctx.scale(-1, 1);
+    ctx.beginPath();
+    const verts = 6 + ((seed * 3) % 4);
+    for (let k = 0; k < verts; k++) {
+      const a = (k / verts) * Math.PI * 2 - 0.55;
+      const rad = 0.58 + hash2(seed, 8 + k) * 0.52;
+      const px = Math.cos(a) * w * 0.5 * rad;
+      const py = Math.sin(a) * h * 0.4 * rad;
+      if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.clip();
+    if (c && ART.ready) {
+      const padL = 6 + hash2(seed, 2) * 48;
+      const padT = 4 + hash2(seed, 3) * 22;
+      const padR = 6 + hash2(seed, 4) * 40;
+      const padB = 4 + hash2(seed, 5) * 14;
+      const sx = c.x + padL;
+      const sy = c.y + padT;
+      const sw = Math.max(36, c.w - padL - padR);
+      const sh = Math.max(22, c.h - padT - padB);
+      ctx.drawImage(ART.img, sx, sy, sw, sh, -w * 0.5, -h * 0.5, w, h);
+    } else {
+      ctx.fillStyle = "#d8b878";
+      ctx.fill();
+    }
+    ctx.restore();
+    return true;
+  }
   function drawZoneBed(z) {
     const y0 = z.y0, y1 = z.y1, s = z.s | 0;
-    const sandY = y1 - 56;
     const cols = [
       ["#e8d090", "#c8a868"], ["#d8b878", "#6a8a60"], ["#e0c070", "#c8a040"],
       ["#d4b090", "#b07050"], ["#c8c070", "#4a8a50"], ["#b8a068", "#3a7a4a"],
@@ -5512,83 +5563,181 @@
       ["#3a4a58", "#1a2830"],
     ];
     const pair = cols[Math.min(s, cols.length - 1)];
+    const seed = z.forever
+      ? (80 + ((FOREVER_ZONE_NAMES.indexOf((z.name || "").split(" · ")[0]) + 8) % 8) * 13 + ((y1 / 19) | 0))
+      : (s * 19 + ((y1 / 13) | 0));
     ctx.save();
-    ctx.fillStyle = pair[0];
-    ctx.beginPath(); ctx.moveTo(0, sandY + 20);
-    for (let x = 0; x <= OCEAN.w; x += 28) {
-      ctx.lineTo(x, sandY + Math.sin(x * 0.012 + y1 * 0.01) * 14);
+    // Unique dune silhouette — hash-lerped height, not one sine + dark lip.
+    // Skip a full-width ruler on gold / forever bands so stacked zones
+    // do not read as 3–4 identical lime strips.
+    const sandH = 40 + hash2(seed, 0) * 58;
+    const top = y1 - sandH;
+    const fullBar = !z.forever && s !== 2 && s !== 6;
+    if (fullBar) {
+      const stepX = 16;
+      const pts = [];
+      function flushDune() {
+        if (pts.length < 3) { pts.length = 0; return; }
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], y1 + 12);
+        for (let p = 0; p < pts.length; p++) ctx.lineTo(pts[p][0], pts[p][1]);
+        ctx.lineTo(pts[pts.length - 1][0], y1 + 12);
+        ctx.closePath();
+        const sandG = ctx.createLinearGradient(pts[0][0], top, pts[0][0] + 220, y1);
+        sandG.addColorStop(0, pair[0]);
+        sandG.addColorStop(0.5, pair[0]);
+        sandG.addColorStop(1, pair[1]);
+        ctx.fillStyle = sandG;
+        ctx.fill();
+        pts.length = 0;
+      }
+      for (let x = 0; x <= OCEAN.w + 8; x += stepX) {
+        const i = (x / stepX) | 0;
+        if (hash2(seed, 900 + i) > 0.87) { flushDune(); continue; }
+        const a = hash2(seed, i), b = hash2(seed, i + 1);
+        const u = (x / stepX) - i;
+        const bump = (a * (1 - u) + b * u) * 46;
+        const wave = Math.sin(x * 0.0058 + seed * 0.4) * 11 + Math.sin(x * 0.017 + y1 * 0.007) * 6;
+        pts.push([x, top + 10 + bump + wave]);
+      }
+      flushDune();
     }
-    ctx.lineTo(OCEAN.w, y1 + 8); ctx.lineTo(0, y1 + 8); ctx.closePath(); ctx.fill();
-    const g = ctx.createLinearGradient(0, sandY, 0, y1);
-    g.addColorStop(0, "rgba(40,24,10,0)");
-    g.addColorStop(1, pair[1]);
-    ctx.fillStyle = g;
-    ctx.fillRect(0, sandY + 8, OCEAN.w, y1 - sandY);
+    const nPatch = 8 + ((seed * 3) % 5);
+    for (let n = 0; n < nPatch; n++) {
+      const px = hash2(seed, 20 + n) * OCEAN.w;
+      const py = y1 - 6 - hash2(seed, 40 + n) * 52;
+      const rx = 64 + hash2(seed, 60 + n) * 168;
+      const ry = 12 + hash2(seed, 80 + n) * 30;
+      const warm = hash2(seed, 90 + n);
+      ctx.fillStyle = warm > 0.62
+        ? "rgba(236, 214, 148, 0.3)"
+        : warm < 0.28
+          ? "rgba(86, 112, 72, 0.24)"
+          : "rgba(176, 140, 72, 0.2)";
+      ctx.beginPath();
+      ctx.ellipse(px, py, rx, ry, (warm - 0.5) * 0.7, 0, Math.PI * 2);
+      ctx.fill();
+    }
     const bedId = z.forever
       ? ((FOREVER_ZONE_NAMES.indexOf((z.name || "").split(" · ")[0]) + 8) % 8)
       : Math.min(s, 7);
-    if (ATLAS["bed" + bedId]) {
-      ctx.save();
-      const step = 118;
-      for (let x = -90, n = 0; x < OCEAN.w + 80; x += step, n++) {
-        const id = (bedId + (n * 3 + ((y1 / 17) | 0))) % 8;
-        const jx = x + Math.sin(n * 1.7 + y1 * 0.02) * 22;
-        const jy = sandY - 36 + ((n * 5) % 3) * 7 + Math.sin(n * 0.9) * 4;
-        const bw = 210 + (n % 3) * 18;
-        const bh = 86 + (n % 2) * 12;
-        ctx.globalAlpha = 0.78 + (n % 4) * 0.05;
-        blitTile("bed" + id, jx, jy, bw, bh);
+    let x = -70 + hash2(seed, 7) * 50;
+    let n = 0;
+    while (x < OCEAN.w + 90) {
+      const gap = 70 + hash2(seed, 110 + n) * 130;
+      const id = (bedId + ((hash2(seed, 130 + n) * 8) | 0) + n * 3) % 8;
+      const sc = 0.7 + hash2(seed, 150 + n) * 1.15;
+      const rot = (hash2(seed, 170 + n) - 0.5) * 1.05;
+      const bw = (90 + hash2(seed, 190 + n) * 160) * sc;
+      const bh = (28 + hash2(seed, 210 + n) * 44) * sc;
+      const jx = x + (hash2(seed, 230 + n) - 0.5) * 40;
+      const jy = y1 - 4 - hash2(seed, 250 + n) * 58;
+      ctx.globalAlpha = 0.55 + hash2(seed, 270 + n) * 0.35;
+      blitBedStamp(id, jx, jy, bw, bh, rot, hash2(seed, 290 + n) > 0.5, seed + n * 11);
+      ctx.globalAlpha = 1;
+      // Unique pebbles / shells — not the same stamp at the next gap.
+      const bits = 2 + ((hash2(seed, 300 + n) * 3) | 0);
+      for (let b = 0; b < bits; b++) {
+        const bx = jx + (hash2(seed, 310 + n + b) - 0.5) * bw;
+        const by = jy + 4 + hash2(seed, 320 + n + b) * 10;
+        const br = 2.2 + hash2(seed, 330 + n + b) * 5.5;
+        ctx.fillStyle = hash2(seed, 340 + n + b) > 0.55
+          ? "rgba(232, 196, 130, 0.7)"
+          : hash2(seed, 350 + n + b) > 0.35
+            ? "rgba(168, 120, 72, 0.65)"
+            : "rgba(90, 110, 78, 0.55)";
+        ctx.beginPath();
+        ctx.ellipse(bx, by, br, br * (0.45 + hash2(seed, 360 + n + b) * 0.4),
+          (hash2(seed, 370 + n + b) - 0.5) * 1.2, 0, Math.PI * 2);
+        ctx.fill();
       }
-      ctx.restore();
+      x += gap;
+      n++;
     }
     if (z.forever) {
       const kind = (FOREVER_ZONE_NAMES.indexOf((z.name || "").split(" · ")[0]) + 8) % 8;
       if (kind === 0) {
         ctx.fillStyle = "rgba(80,220,255,0.35)";
         for (let i = 0; i < 18; i++) {
+          const px = hash2(seed, 400 + i) * OCEAN.w;
+          const py = y1 - 12 - hash2(seed, 420 + i) * 48;
           ctx.globalAlpha = 0.2 + 0.35 * (0.5 + 0.5 * Math.sin(state.time * 2 + i));
-          ctx.beginPath(); ctx.arc((i * 137 + 40) % OCEAN.w, sandY - 20 - (i % 5) * 16, 2.2, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(px, py, 1.6 + hash2(seed, 440 + i) * 1.8, 0, Math.PI * 2); ctx.fill();
         }
         ctx.globalAlpha = 1;
       } else if (kind === 1) {
         ctx.fillStyle = "rgba(200,240,255,0.28)";
-        for (let i = 0; i < 10; i++) {
-          const px = 80 + i * 240, py = sandY - 10;
-          ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + 8, py - 36); ctx.lineTo(px + 16, py); ctx.fill();
+        let px = 40 + hash2(seed, 9) * 80;
+        let i = 0;
+        while (px < OCEAN.w - 20) {
+          const py = y1 - 6 - hash2(seed, 450 + i) * 18;
+          plantInSand(px + 8, py + 4, 14 + hash2(seed, 460 + i) * 8, 6, hash2(seed, 470 + i));
+          ctx.fillStyle = "rgba(200,240,255,0.32)";
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(px + 5 + hash2(seed, 480 + i) * 8, py - 28 - hash2(seed, 490 + i) * 16);
+          ctx.lineTo(px + 14 + hash2(seed, 500 + i) * 6, py);
+          ctx.fill();
+          px += 70 + hash2(seed, 510 + i) * 140;
+          i++;
         }
       } else if (kind === 2) {
         ctx.fillStyle = "rgba(180,90,255,0.16)";
         ctx.fillRect(0, y0, OCEAN.w, y1 - y0);
       }
     } else if (s === 0) {
-      ctx.strokeStyle = "#3d8b4a"; ctx.lineWidth = 2.2;
-      for (let i = 0; i < 16; i++) {
-        const px = 60 + i * 150;
+      let px = 28 + hash2(seed, 5) * 50;
+      let i = 0;
+      while (px < OCEAN.w - 16) {
+        const py = y1 - 8 - hash2(seed, 520 + i) * 16;
+        plantInSand(px, py + 6, 16 + hash2(seed, 530 + i) * 10, 7, hash2(seed, 540 + i));
+        ctx.strokeStyle = hash2(seed, 550 + i) > 0.5 ? "#2f8a5a" : "#3d8b4a";
+        ctx.lineWidth = 1.8 + hash2(seed, 560 + i) * 1.6;
+        const sway = Math.sin(state.time + i * 0.7) * (8 + hash2(seed, 570 + i) * 8);
         ctx.beginPath();
-        ctx.moveTo(px, sandY + 8);
-        ctx.quadraticCurveTo(px + Math.sin(state.time + i) * 10, sandY - 18, px + 6, sandY - 40);
+        ctx.moveTo(px, py + 4);
+        ctx.quadraticCurveTo(px + sway * 0.45, py - 16, px + sway * 0.15, py - 32 - hash2(seed, 580 + i) * 18);
         ctx.stroke();
+        px += 38 + hash2(seed, 590 + i) * 92;
+        i++;
       }
     } else if (s === 1) {
-      for (let i = 0; i < 12; i++) {
-        const px = 90 + i * 190, py = sandY + 4;
-        ctx.fillStyle = i % 2 ? "#e85d6a" : "#c45ec8";
-        ctx.beginPath(); ctx.ellipse(px, py - 8, 16, 7, i * 0.4, 0, Math.PI * 2); ctx.fill();
+      let px = 36 + hash2(seed, 6) * 60;
+      let i = 0;
+      while (px < OCEAN.w - 24) {
+        const py = y1 - 4 - hash2(seed, 600 + i) * 14;
+        plantInSand(px + 8, py + 4, 22 + hash2(seed, 610 + i) * 12, 8, hash2(seed, 620 + i));
+        const rot = (hash2(seed, 630 + i) - 0.5) * 0.9;
+        const sc = 0.7 + hash2(seed, 640 + i) * 0.7;
+        ctx.fillStyle = hash2(seed, 650 + i) > 0.5 ? "#e85d6a" : "#c45ec8";
+        ctx.beginPath();
+        ctx.ellipse(px, py - 8, 14 * sc, 6 * sc, rot, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = "#5a6a70";
-        ctx.beginPath(); ctx.ellipse(px + 22, py, 18, 10, 0.2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(px + 16 * sc, py + 1, 16 * sc, 8 * sc, rot * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        px += 70 + hash2(seed, 660 + i) * 130;
+        i++;
       }
     } else if (s === 2) {
       ctx.fillStyle = "rgba(232, 192, 74, 0.18)";
       ctx.fillRect(0, y0, OCEAN.w, y1 - y0);
     } else if (s >= 5) {
-      ctx.strokeStyle = s === 5 ? "#2a8a5a" : "rgba(120,200,220,0.35)";
-      ctx.lineWidth = 2.4;
-      for (let i = 0; i < 10; i++) {
-        const px = 120 + i * 220;
+      let px = 50 + hash2(seed, 8) * 70;
+      let i = 0;
+      while (px < OCEAN.w - 20) {
+        const py = y1 - 2 - hash2(seed, 670 + i) * 12;
+        plantInSand(px, py + 4, 18 + hash2(seed, 680 + i) * 10, 7, hash2(seed, 690 + i));
+        ctx.strokeStyle = s === 5 ? "#2a8a5a" : "rgba(120,200,220,0.4)";
+        ctx.lineWidth = 2 + hash2(seed, 700 + i) * 1.4;
+        const sway = Math.sin(state.time * 1.2 + i) * (10 + hash2(seed, 710 + i) * 8);
         ctx.beginPath();
-        ctx.moveTo(px, sandY);
-        ctx.quadraticCurveTo(px + Math.sin(state.time * 1.2 + i) * 12, sandY - 30, px + 4, sandY - 70);
+        ctx.moveTo(px, py);
+        ctx.quadraticCurveTo(px + sway * 0.5, py - 28, px + sway * 0.12, py - 52 - hash2(seed, 720 + i) * 24);
         ctx.stroke();
+        px += 56 + hash2(seed, 730 + i) * 150;
+        i++;
       }
     }
     ctx.restore();
@@ -7215,44 +7364,83 @@
     drawCrate(x + 10, y - 22, 38, 26);
   }
   function drawDiveSign(cx, footY) {
-    sitShadow(cx + 3, footY + 8, 48, 9, 0.4);
-    if (blit("divepad", cx, footY, { scale: 0.68, noShadow: true })) return;
+    // Yard-sign post planted on the boards. Never blit the atlas
+    // divepad sticker (flat board, painted-on rope, no post).
+    sitShadow(cx + 6, footY + 8, 34, 11, 0.56);
     ctx.save();
     ctx.translate(cx, footY);
-    ctx.fillStyle = "rgba(16, 8, 4, 0.28)";
-    ctx.beginPath(); ctx.ellipse(0, 6, 54, 8, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#6a4220";
-    roundRect(-62, -68, 124, 72, 10); ctx.fill();
-    ctx.fillStyle = "#c4894a";
-    roundRect(-54, -60, 108, 56, 7); ctx.fill();
-    ctx.strokeStyle = "rgba(80, 40, 16, 0.28)";
-    ctx.lineWidth = 1.1;
-    for (let i = 0; i < 5; i++) {
-      ctx.beginPath();
-      ctx.moveTo(-50, -50 + i * 10);
-      ctx.lineTo(50, -48 + i * 10);
-      ctx.stroke();
-    }
-    ctx.strokeStyle = "#d4a060";
-    ctx.lineWidth = 5.5;
-    roundRect(-62, -68, 124, 72, 10); ctx.stroke();
-    ctx.fillStyle = "#5a3614";
-    ctx.beginPath(); ctx.arc(-48, -14, 4, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(48, -14, 4, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#fff6e8";
-    ctx.font = "800 22px Fredoka, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("DIVE", 0, -30);
+    const post = ctx.createLinearGradient(-8, -108, 10, 10);
+    post.addColorStop(0, "#d4a060");
+    post.addColorStop(0.35, "#9a6a38");
+    post.addColorStop(1, "#4a2814");
+    ctx.fillStyle = post;
     ctx.beginPath();
-    ctx.moveTo(0, -16);
-    ctx.lineTo(-16, 2);
-    ctx.lineTo(-6, 2);
-    ctx.lineTo(-6, 16);
-    ctx.lineTo(6, 16);
-    ctx.lineTo(6, 2);
-    ctx.lineTo(16, 2);
+    ctx.moveTo(-7, -102);
+    ctx.lineTo(7, -102);
+    ctx.lineTo(8, 6);
+    ctx.lineTo(-8, 6);
     ctx.closePath();
     ctx.fill();
+    ctx.fillStyle = "rgba(255, 226, 170, 0.28)";
+    ctx.fillRect(-7, -102, 4, 108);
+    ctx.fillStyle = "rgba(22, 10, 6, 0.28)";
+    ctx.fillRect(3.5, -102, 3, 108);
+    ctx.fillStyle = "#5a3018";
+    ctx.beginPath();
+    ctx.moveTo(-9, 6);
+    ctx.lineTo(9, 6);
+    ctx.lineTo(5, 10);
+    ctx.lineTo(-5, 10);
+    ctx.closePath();
+    ctx.fill();
+    // Board nailed to the post — hangs slightly left, off the walk lane.
+    ctx.save();
+    ctx.translate(-6, -58);
+    const board = ctx.createLinearGradient(-40, -26, 30, 24);
+    board.addColorStop(0, "#d8a868");
+    board.addColorStop(0.4, "#b07a3a");
+    board.addColorStop(1, "#6a4220");
+    ctx.fillStyle = board;
+    roundRect(-40, -28, 80, 50, 6); ctx.fill();
+    if (ART.ready && ATLAS.plank) {
+      ctx.save();
+      roundRect(-40, -28, 80, 50, 6); ctx.clip();
+      ctx.globalAlpha = 0.58;
+      ctx.drawImage(ART.img, ATLAS.plank.x, ATLAS.plank.y, ATLAS.plank.w, ATLAS.plank.h,
+        -42, -30, 84, 54);
+      ctx.restore();
+    }
+    sunWashBox(-40, -28, 80, 50, 6);
+    ctx.strokeStyle = "rgba(80, 42, 16, 0.55)";
+    ctx.lineWidth = 2;
+    roundRect(-40, -28, 80, 50, 6); ctx.stroke();
+    ctx.fillStyle = "rgba(40, 22, 10, 0.22)";
+    roundRect(-34, -22, 68, 38, 5); ctx.fill();
+    ctx.fillStyle = "#ead7b4";
+    roundRect(-32, -20, 64, 34, 4); ctx.fill();
+    ctx.fillStyle = "rgba(255, 236, 190, 0.18)";
+    ctx.fillRect(-28, -18, 24, 30);
+    ctx.fillStyle = "#5a3614";
+    ctx.beginPath(); ctx.arc(-22, -8, 2.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(22, -8, 2.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#c8a060";
+    ctx.beginPath(); ctx.arc(-22.4, -8.4, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(21.6, -8.4, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#5a3614";
+    ctx.font = "800 17px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("DIVE", 0, -2);
+    ctx.beginPath();
+    ctx.moveTo(0, 4);
+    ctx.lineTo(-10, 14);
+    ctx.lineTo(-4, 14);
+    ctx.lineTo(-4, 20);
+    ctx.lineTo(4, 20);
+    ctx.lineTo(4, 14);
+    ctx.lineTo(10, 14);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
     ctx.restore();
   }
   function drawLifeRing(x, y) {
@@ -7918,8 +8106,8 @@
     ctx.ellipse(880, 1048, 290, 62, 0, 0, Math.PI * 2);
     ctx.fill();
     const chip = diveChipBox();
-    // Wood DIVE sign on the left boards, beside the pad — not in the walk lane.
-    const diveSign = { x: 556, y: 1008 };
+    // Planted DIVE post on the left lip — board hangs off the walk lane.
+    const diveSign = { x: 598, y: 1014 };
     if (state.mode === "play") btn("dive-chip", ...screenBtnFromWorld(chip.x, chip.y, chip.w, chip.h));
     const pathPts = [
       [880, 1008], [880, 860], [880, 680], [880, 500], [880, 360],
@@ -7960,6 +8148,15 @@
     drawHangingSign(1020, 924);
     drawBench(1108, 942);
     drawLifeRing(512, 918);
+    {
+      const diveA = worldBoxAlpha(diveSign.x - 56, diveSign.y - 112, 100, 128);
+      if (diveA > 0.04) {
+        ctx.save();
+        ctx.globalAlpha = diveA;
+        drawDiveSign(diveSign.x, diveSign.y);
+        ctx.restore();
+      }
+    }
     drawAnchor(1196, 952);
     drawVending(1336, 548);
     drawBaitShack(1408, 548);
@@ -7992,17 +8189,6 @@
       actors.push({ y: c.y, draw: function () { drawPerson(c.x, c.y, c); } });
     }
     actors.push({ y: player.y, draw: function () { drawPlayer(player.x, player.y); } });
-    actors.push({
-      y: diveSign.y,
-      draw: function () {
-        const diveA = worldBoxAlpha(diveSign.x - 70, diveSign.y - 88, 140, 104);
-        if (diveA <= 0.04) return;
-        ctx.save();
-        ctx.globalAlpha = diveA;
-        drawDiveSign(diveSign.x, diveSign.y);
-        ctx.restore();
-      },
-    });
     for (let i = 0; i < dockPosts.length; i++) {
       const px = dockPosts[i][0], py = dockPosts[i][1], sc = dockPosts[i][2], id = dockPosts[i][3];
       if (py < 1008) continue;
@@ -8913,26 +9099,34 @@
       } else if (kind === 1) {
         drawKelpPatch({ x, y, ph: n * 0.7, seed: 8 + n * 11, sc: 0.72 + (n % 4) * 0.14, landmark: false });
       } else if (kind === 2) {
+        plantInSand(x, y + 8, 22, 8, 0.62);
         ctx.fillStyle = "#e85d6a";
         for (let i = 0; i < 5; i++) {
           const a = (i / 5) * Math.PI * 2 + state.time * 0.2;
-          ctx.beginPath(); ctx.ellipse(x + Math.cos(a) * 6, y + Math.sin(a) * 4, 14, 5, a, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.ellipse(x + Math.cos(a) * 6, y + Math.sin(a) * 4, 14, 5, a, 0, Math.PI * 2); ctx.fill();
         }
         ctx.fillStyle = "#ffd27a"; ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
       } else {
+        plantInSand(x, y + 6, 18, 7, 0.4);
         ctx.fillStyle = "#c45ec8";
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 16, y - 40); ctx.lineTo(x + 8, y); ctx.closePath(); ctx.fill();
         ctx.fillStyle = "#7ad0e8";
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 12, y - 34); ctx.lineTo(x + 4, y); ctx.closePath(); ctx.fill();
       }
     }
-    // deeper sand bands so the descent isn't void
+    // Unique mid-depth dunes — not 3 identical full-width sand rulers.
     ctx.save();
-    for (const [yy, col, amp] of [[1240, "rgba(180,150,80,0.16)", 14], [1480, "rgba(160,130,70,0.2)", 18], [1720, "rgba(140,110,60,0.22)", 12]]) {
-      ctx.fillStyle = col;
-      ctx.beginPath(); ctx.moveTo(0, yy + 40);
-      for (let x = 0; x <= OCEAN.w; x += 28) ctx.lineTo(x, yy + Math.sin(x * 0.012 + yy) * amp);
-      ctx.lineTo(OCEAN.w, yy + 80); ctx.lineTo(0, yy + 80); ctx.closePath(); ctx.fill();
+    for (const [yy, seed] of [[1240, 11], [1480, 23], [1720, 37]]) {
+      for (let n = 0; n < 6; n++) {
+        const px = 70 + hash2(seed, n) * (OCEAN.w - 140);
+        const py = yy + (hash2(seed, n + 8) - 0.35) * 40;
+        const rx = 80 + hash2(seed, n + 16) * 170;
+        const ry = 12 + hash2(seed, n + 24) * 22;
+        ctx.fillStyle = "rgba(176,148,78," + (0.09 + hash2(seed, n + 32) * 0.12) + ")";
+        ctx.beginPath();
+        ctx.ellipse(px, py, rx, ry, (hash2(seed, n + 40) - 0.5) * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     // distant hull silhouette
     ctx.globalAlpha = 0.28;
@@ -8963,6 +9157,7 @@
         if (kind === 4) {
           drawRockProp(x, y, 90 + ((x + y) | 0), 0.9 + ((x | 0) % 5) * 0.08);
         } else if (kind === 2) {
+          plantInSand(x, y + 8, 22, 8, 0.62);
           ctx.fillStyle = "#e85d6a";
           for (let i = 0; i < 5; i++) {
             const a = (i / 5) * Math.PI * 2 + state.time * 0.2;
@@ -8970,6 +9165,7 @@
           }
           ctx.fillStyle = "#ffd27a"; ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
         } else {
+          plantInSand(x, y + 6, 18, 7, 0.4);
           ctx.fillStyle = "#c45ec8";
           ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 16, y - 40); ctx.lineTo(x + 8, y); ctx.closePath(); ctx.fill();
           ctx.fillStyle = "#3ec8b0";
@@ -9529,6 +9725,34 @@
     roundRect(x, y, w, h, 12); ctx.fill();
     ctx.strokeStyle = "rgba(255,230,180,0.18)"; ctx.lineWidth = 1.5;
     roundRect(x, y, w, h, 12); ctx.stroke();
+  }
+  function pierChip(x, y, w, h, ink) {
+    // Honey-pine frame + chalkboard inset — belongs to the pier, still HUD-pinned.
+    ensurePaint();
+    const wood = ctx.createLinearGradient(x, y, x + w * 0.42, y + h);
+    wood.addColorStop(0, "#d4a060");
+    wood.addColorStop(0.45, "#b07a3a");
+    wood.addColorStop(1, "#6a4220");
+    ctx.fillStyle = wood;
+    roundRect(x, y, w, h, 10); ctx.fill();
+    if (paint.wood) {
+      ctx.save();
+      roundRect(x, y, w, h, 10); ctx.clip();
+      ctx.globalAlpha = 0.52;
+      ctx.drawImage(paint.wood, 0, 2, paint.wood.width, paint.wood.height, x - 3, y - 1, w + 6, h + 2);
+      ctx.restore();
+    }
+    sunWashBox(x, y, w, h, 10);
+    ctx.fillStyle = ink || "rgba(52, 64, 48, 0.9)";
+    roundRect(x + 7, y + 6, w - 14, h - 12, 6); ctx.fill();
+    ctx.fillStyle = "rgba(255, 236, 190, 0.12)";
+    ctx.fillRect(x + 10, y + 8, w - 20, 6);
+    ctx.strokeStyle = "rgba(90, 48, 16, 0.5)";
+    ctx.lineWidth = 1.5;
+    roundRect(x, y, w, h, 10); ctx.stroke();
+    ctx.strokeStyle = "rgba(255, 226, 170, 0.16)";
+    ctx.lineWidth = 1;
+    roundRect(x + 1.5, y + 1.5, w - 3, h - 3, 8.5); ctx.stroke();
   }
   function drawCoin(x, y, r) {
     ctx.fillStyle = "#ffd24a";
@@ -10357,7 +10581,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 63", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 64", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -10398,7 +10622,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 63", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 64", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -10415,7 +10639,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 63", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 64", W / 2, 632);
     }
   }
 
@@ -10479,12 +10703,12 @@
         ctx.scale(1.07, 1.07);
         ctx.translate(-(x + cw / 2), -(y + (ch + 2) / 2));
       }
-      const fill = state.unlocked[i]
-        ? (hover ? "rgba(28, 62, 70, 0.94)" : "rgba(18,40,48,0.88)")
+      const ink = state.unlocked[i]
+        ? (hover ? "rgba(48, 72, 62, 0.92)" : "rgba(40, 58, 50, 0.88)")
         : affordable
-          ? "rgba(40, 52, 28, 0.94)"
-          : (hover ? "rgba(32, 28, 24, 0.9)" : "rgba(20,20,24,0.78)");
-      card(x, y, cw, ch + 2, fill);
+          ? "rgba(62, 68, 36, 0.92)"
+          : (hover ? "rgba(56, 48, 36, 0.9)" : "rgba(46, 42, 34, 0.86)");
+      pierChip(x, y, cw, ch + 2, ink);
       if (state.bookOpen === i || hover) {
         ctx.strokeStyle = "rgba(255,226,122," + (hover ? 0.72 : 0.55 + 0.25 * Math.sin(state.time * 6)) + ")";
         ctx.lineWidth = hover ? 3.2 : 2.4;
