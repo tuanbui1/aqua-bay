@@ -14,8 +14,8 @@ function assert(cond, msg) {
 
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
-assert(/Aqua Bay · loop 105/.test(src), "title/pause stamp is loop 105");
-assert(!/Aqua Bay · loop 104/.test(src), "loop 104 stamp is gone");
+assert(/Aqua Bay · loop 106/.test(src), "title/pause stamp is loop 106");
+assert(!/Aqua Bay · loop 105/.test(src), "loop 105 stamp is gone");
 assert(/C101 — live gallery bowls fill the old fat neighborhood/.test(src),
   "C101 names the gallery apron / spine walk");
 assert(/C101 — collide with the bowl, not a 28px south pad/.test(src),

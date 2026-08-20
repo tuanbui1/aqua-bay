@@ -1,11 +1,12 @@
-// C105 — hold-W after galleryOpen reaches Seahorse without the
-// east-spine scenic route. Loop 104 leftover: wasdShopPath already
-// steered to tankWalkPoint(nextLockedTank()) = Seahorse (5), but
-// shopPath hops still used the C102 east spine (x=1204–1260). From
-// the dock that taxis Dolphin y≈776, then the row-2 apron, occupying
-// Soon-Puffer (663, 568) before Seahorse (445, 568). West lane east
-// of REGISTER + shortest-walk hops. Click-to-walk Puffer stays.
-// Closed gallery still remaps to Turtle. No auto-unlock.
+// C106 — hold-W after galleryOpen reaches Seahorse through the bowls,
+// not the till taxi. Loop 105 leftover: wasdShopPath already steered
+// to tankWalkPoint(nextLockedTank()) = Seahorse (5), and shopPath
+// picked the shorter west lane (x=322–348) instead of the C102 east
+// spine. That 26px slot sits against CASHIER. Hold-W first taxied the
+// locked row-3 apron west to the till, squeezed up, then came back
+// east to the glowing $2200 bowl. A mid-cluster alley (col-0 / col-1
+// gap) is the wood N–S. Click-to-walk Puffer stays. Closed gallery
+// still remaps to Turtle. No auto-unlock.
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -50,6 +51,11 @@ assert(/nextLockedTank\(\)/.test(extractFn(src, "wasdShopPath") || ""),
   "wasdShopPath steers to nextLockedTank, not hardcoded tank 6");
 assert(!/tankWalkPoint\(6\)/.test(extractFn(src, "wasdShopPath") || ""),
   "wasdShopPath is not a Puffer magnet");
+assert(/C106 — that shorter walk was still the till slot/.test(src) ||
+  /C106 — the west portal was still the shortest/.test(src) ||
+  /C106 — shopPath now prefers the mid-cluster alley/.test(src) ||
+  /C106 — inset the col-0 right/.test(src),
+  "C106 names the till-taxi leftover / mid-cluster alley");
 assert(/C105 — columns still have no N–S alley/.test(src) ||
   /C105 — hop cost is walking distance/.test(src) ||
   /C105 — padded desk ended at x=324/.test(src),
@@ -71,8 +77,12 @@ assert(walkFn, "shopWalkRects is present");
 assert(!/const spine = \{ x: 300, y: clear, w: 42/.test(walkFn),
   "C101 west/till spine stays gone");
 assert(/westLane/.test(walkFn) && /x: 322/.test(walkFn),
-  "open-gallery west lane sits just east of the painted desk");
+  "open-gallery west lane stays just east of the painted desk");
+assert(/alley/.test(walkFn) && /x: 528/.test(walkFn),
+  "open-gallery mid-cluster alley sits in the col-0 / col-1 gap");
 assert(/x: 1204/.test(walkFn), "C102 east spine stays for east dests");
+assert(/x: 764, y: 740, w: 248, h: 180/.test(walkFn),
+  "aisle walk rect still stops short of the bowls");
 
 assert(/const SAVE_KEY = "aqua-bay-save"/.test(src), "save key stays");
 assert(/function galleryOpen\s*\(/.test(src), "galleryOpen stays");
@@ -105,6 +115,8 @@ const TANK_POS = [
 ];
 assert(TANK_POS[5].x === 340 && TANK_POS[5].y === 380, "Seahorse stays C76 {340,380}");
 assert(TANK_POS[6].x === 558 && TANK_POS[6].y === 380, "Puffer stays C76 {558,380}");
+assert(TANK_POS[1].x - (TANK_POS[0].x + TANK_W) === 8,
+  "columns still overlap / gap 8px — not an un-clustered east row");
 
 const REGISTER = { x: 168, y: 500, w: 150, h: 110 };
 const KIOSK = { x: 1280, y: 480, w: 170, h: 130 };
@@ -112,6 +124,7 @@ const WELCOME = { x: 140, y: 780, w: 156, h: 86 };
 const AISLE = { x: 802, y: 760, w: 156, h: 160 };
 const SPECIES = new Array(SPECIES_N);
 const EAST_SHOP = { x: 1256, y: 380, w: 228, h: 286 };
+const WEST_LANE = { x: 322, y: 0, w: 26, h: 800 };
 
 function padSpeciesFlags(arr) {
   const out = [];
@@ -219,6 +232,9 @@ function inRegister(x, y) {
   return x >= REGISTER.x && x <= REGISTER.x + REGISTER.w &&
     y >= REGISTER.y && y <= REGISTER.y + REGISTER.h;
 }
+function inWestLane(x) {
+  return x >= WEST_LANE.x && x <= WEST_LANE.x + WEST_LANE.w;
+}
 function occupies(x, y, pad, r) {
   return Math.hypot(x - pad.x, y - pad.y) < r;
 }
@@ -234,12 +250,15 @@ const horsePath = openApi.shopPath(dockPt.x, dockPt.y, horse.x, horse.y);
 assert(Array.isArray(horsePath) && horsePath.length >= 2,
   "shopPath dock→Seahorse is a routed walk, hops=" + (horsePath && horsePath.length));
 const horseXs = [dockPt.x].concat(horsePath.map((pt) => pt.x));
+assert(horseXs.every((x) => x >= 360),
+  "shopPath dock→Seahorse never visits the till / west lane (x<360), xs=" +
+    horseXs.map((x) => x.toFixed(0)).join(","));
 assert(horseXs.every((x) => x <= 1100),
   "shopPath dock→Seahorse stays off the C102 east spine, xs=" +
     horseXs.map((x) => x.toFixed(0)).join(","));
-assert(horseXs.every((x) => x > REGISTER.x + REGISTER.w),
-  "shopPath dock→Seahorse stays east of REGISTER, xs=" +
-    horseXs.map((x) => x.toFixed(0)).join(","));
+assert(!inWestLane(horsePath[0].x),
+  "shopPath first hop is not the west lane / till slot, hop0=" +
+    horsePath[0].x.toFixed(0) + "," + horsePath[0].y.toFixed(0));
 assert(!pathTouches(horsePath, (x, y) => occupies(x, y, puff, 40)),
   "shopPath dock→Seahorse never occupies Soon-Puffer mid-path");
 assert(!pathTouches(horsePath, (x, y) => inEastShop(x, y) || inRegister(x, y)),
@@ -278,7 +297,7 @@ function holdW(api, dest, maxT, opts) {
   const dt = 1 / 60, maxSpeed = 232, accel = 1650;
   let vx = 0, vy = 0, t = 0, stuck = 0;
   const trace = [];
-  let maxX = dockPt.x, puffMin = 1e15, hitPuff = false;
+  let maxX = dockPt.x, minX = dockPt.x, puffMin = 1e15, hitPuff = false;
   while (t < maxT) {
     let ax = 0, ay = -1;
     const around = api.wasdShopPath(ax, ay);
@@ -303,6 +322,7 @@ function holdW(api, dest, maxT, opts) {
     else stuck = 0;
     t += dt;
     if (api.player.x > maxX) maxX = api.player.x;
+    if (api.player.x < minX) minX = api.player.x;
     const dPuff = Math.hypot(api.player.x - puff.x, api.player.y - puff.y);
     if (dPuff < puffMin) puffMin = dPuff;
     const dPad = Math.hypot(api.player.x - dest.x, api.player.y - dest.y);
@@ -311,7 +331,9 @@ function holdW(api, dest, maxT, opts) {
     if (dPad < 40) break;
     if (stuck > 45) break;
   }
-  return { t: t, maxX: maxX, puffMin: puffMin, hitPuff: hitPuff, trace: trace };
+  return {
+    t: t, maxX: maxX, minX: minX, puffMin: puffMin, hitPuff: hitPuff, trace: trace,
+  };
 }
 
 const seah = holdW(openApi, horse, 10, { forbidPuff: true });
@@ -322,6 +344,8 @@ assert(seah.t < 8,
 assert(wasdD < 40,
   "WASD-north from the dock occupies the Seahorse pad, d=" + wasdD.toFixed(1) +
     " at " + openApi.player.x.toFixed(0) + "," + openApi.player.y.toFixed(0));
+assert(seah.minX >= 360,
+  "hold-W never visits the till / west lane (x<360), minX=" + seah.minX.toFixed(1));
 assert(seah.maxX <= 1100,
   "hold-W path x stays off the C102 east spine, maxX=" + seah.maxX.toFixed(1));
 assert(!seah.hitPuff && seah.puffMin > 40,
@@ -337,8 +361,9 @@ assert(openApi.player.x > 340 && openApi.player.x < 560 &&
   !inEastShop(openApi.player.x, openApi.player.y) &&
   !inRegister(openApi.player.x, openApi.player.y),
   "WASD finish is on the Seahorse apron (not till, not Puffer, not eastShop)");
-assert(!seah.trace.some((p) => inRegister(p.x, p.y) || inEastShop(p.x, p.y) || p.y < 300),
-  "hold-W did not dump into REGISTER, eastShop sky, or the north sky");
+assert(!seah.trace.some((p) => inRegister(p.x, p.y) || inEastShop(p.x, p.y) ||
+    p.y < 300 || p.x < 360 || p.x > 1100),
+  "hold-W did not dump into REGISTER, west lane, eastShop sky, or the north sky");
 assert(openApi.state.unlocked[6] !== true,
   "hold-W arrival does not unlock Puffer out of order");
 assert(openApi.state.unlocked[5] !== true,
@@ -349,6 +374,9 @@ const puffD = Math.hypot(horseApi.player.x - puff.x, horseApi.player.y - puff.y)
 assert(puffD < 40,
   "after Seahorse, hold-W occupies Puffer, d=" + puffD.toFixed(1) +
     " at " + horseApi.player.x.toFixed(0) + "," + horseApi.player.y.toFixed(0));
+assert(puffRun.minX >= 360,
+  "after Seahorse, hold-W to Puffer skips the till taxi, minX=" +
+    puffRun.minX.toFixed(1));
 assert(puffRun.maxX <= 1100,
   "after Seahorse, hold-W to Puffer does not require the east lap, maxX=" +
     puffRun.maxX.toFixed(1));
@@ -360,10 +388,13 @@ assert(!puffRun.trace.some((p) => inRegister(p.x, p.y) || inEastShop(p.x, p.y)),
 assert(horseApi.state.unlocked[6] !== true,
   "hold-W to Puffer does not auto-unlock");
 
-console.log("c105 wasd short: ok (next=" + openApi.nextLockedTank() +
+console.log("c106 wasd north: ok (next=" + openApi.nextLockedTank() +
   ", horse=" + horse.x + "," + horse.y +
+  ", hops=" + horseXs.map((x) => x.toFixed(0)).join("→") +
   ", wasd " + seah.t.toFixed(2) + "s @ " +
   openApi.player.x.toFixed(0) + "," + openApi.player.y.toFixed(0) +
+  ", minX=" + seah.minX.toFixed(0) +
   ", maxX=" + seah.maxX.toFixed(0) +
   ", puffMin=" + seah.puffMin.toFixed(0) +
-  ", puffAfter " + puffRun.t.toFixed(2) + "s maxX=" + puffRun.maxX.toFixed(0) + ")");
+  ", puffAfter " + puffRun.t.toFixed(2) + "s minX=" + puffRun.minX.toFixed(0) +
+  ")");
