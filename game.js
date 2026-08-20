@@ -274,7 +274,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy + loop 110 tap the lock + loop 111 dive for the new bowl.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy + loop 110 tap the lock + loop 111 dive for the new bowl + loop 112 dive for the right band.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -589,7 +589,7 @@
     tillSlip: null,
     escapeBar: null, escapeGate: 0,
     tangHintLife: 0, tangHintDone: false,
-    diveForTank: null, diveForAway: 0,
+    diveForTank: null, diveForAway: 0, diveForHunt: null,
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, route: null, blockT: 0, walkPhase: 0, lean: 0, faceS: 1, pitch: 0, pendingAct: null, unlockConfirm: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0, surfaceIntent: false };
   const cam = { x: 880, y: 920, z: 1, rail: 28 };
@@ -982,7 +982,7 @@
       catchVerb: null, tankFlash: null, pierChirp: 0,
       camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, camTillHold: 0, almostSfxAt: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0,
-      diveForTank: null, diveForAway: 0 });
+      diveForTank: null, diveForAway: 0, diveForHunt: null });
     ensureUnlockFlags();
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.route = null; player.blockT = 0; player.walkPhase = 0; player.lean = 0; player.faceS = 1; player.pitch = 0; player.pendingAct = null; player.unlockConfirm = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0; player.surfaceIntent = false;
@@ -1822,7 +1822,9 @@
   function diveChipLegal() {
     // Full DIVE tap target on the dock AND in the tank room. Plaza used
     // to show only a teal sliver of the world board / → DIVE chip.
-    return diveActionLegal() || (diveWalkLegal() && (dockOffScreen() || plazaCameraReady()));
+    // C112 — keep the DIVE chip while a dive-for hunt walk is live
+    // (dock camera would otherwise hide it for ↑ SHOP).
+    return diveActionLegal() || (diveWalkLegal() && (dockOffScreen() || plazaCameraReady() || diveForHuntIndex() >= 0));
   }
   function surfaceActionLegal() {
     return state.mode === "play" && canSurfaceNow();
@@ -2938,7 +2940,11 @@
     if (id === "goto-dive-for") {
       // C111 — fat DIVE FOR <SPECIES> / TAP TO DIVE board on the
       // empty unlocked bowl. Same path as the DIVE chip (C86 dash).
+      // C112 — arm the species band so that dash lands in Seahorse
+      // groves, not 6m Shallows. loop 112 dive for the right band.
       // Do not auto-dive on unlock and do not auto-buy the next lock.
+      const hunt = diveForTankIndex();
+      if (hunt >= 0) armDiveForHunt(hunt);
       if (state.mode === "play" && diveActionLegal()) beginDive();
       else if (state.mode === "play" && diveWalkLegal()) intentWalk("dive", dockWalkPoint());
       return;
@@ -3109,6 +3115,8 @@
   }
   function beginDive() {
     if (state.fadeDir || state.surfaceLock > 0) return;
+    // C111 hides the on-bowl board. C112 keeps diveForHunt through
+    // the fade so ocean entry can open that species' band.
     clearDiveForTank();
     player.catchLatch = false;
     player.scoopLock = null; player.scoopTap = false; player.holdGrace = 0;
@@ -3611,6 +3619,9 @@
     f.vx = 0; f.vy = 0;
   }
   function shinyWanted() {
+    // C112 — a DIVE FOR <species> hunt is not the first-clownfish
+    // shiny quest. New-game / normal DIVE still wants the SHINY.
+    if (diveForHuntIndex() >= 0) return false;
     return !state.caughtRare && !bagIsFull() && state.scene === "ocean" && !state.fadeDir && !state.expedition;
   }
   function ensureShiny() {
@@ -5794,10 +5805,12 @@
   function walkToShopBowls() {
     // C109 — north tap / ↑ SHOP walks to the next bowl. Not a buy.
     // Same dest hold-W uses. Do not arm unlockConfirm / pending unlock.
+    // C112 — walking back to the tanks cancels the dive-for hunt.
     const dest = nextUnlockWalkDest();
     if (!dest) return false;
     player.pendingAct = null;
     player.unlockConfirm = null;
+    clearDiveForHunt();
     setWalkDest(dest);
     return true;
   }
@@ -11983,6 +11996,79 @@
       target: dockWalkPoint(),
     };
   }
+  function diveForHuntIndex() {
+    const i = state.diveForHunt;
+    if (i == null || i < 0) return -1;
+    return i | 0;
+  }
+  function armDiveForHunt(i) {
+    // C112 — remember the species they tapped DIVE FOR so the
+    // C86 dash / beginDive opens that band, not 6m Shallows.
+    // loop 112 dive for the right band.
+    if (i == null || i < 0) return;
+    if (!speciesUnlocked(i)) return;
+    state.diveForHunt = i | 0;
+  }
+  function clearDiveForHunt() {
+    state.diveForHunt = null;
+  }
+  function diveForBandPoint(i) {
+    // Seahorse groves (and later extra bands) live at
+    // zoneBandForSpecies — not the default ocean spawn (y=380).
+    const s = i | 0;
+    const band = zoneBandForSpecies(s);
+    const lm = landmarkForSpecies(s);
+    syncOceanHeight();
+    const x = clamp(lm ? lm.x : OCEAN.w / 2, 90, OCEAN.w - 90);
+    let y = lm ? lm.y : (band ? band.y0 + 220 : 380);
+    const lo = band && band.y0 != null ? band.y0 + 24 : 280;
+    const hi = Math.max(lo + 8, OCEAN.h - 80);
+    y = clamp(y, lo, hi);
+    return { x: x, y: y, band: band, tank: s };
+  }
+  function seedDiveForHunt(i) {
+    const dest = diveForBandPoint(i);
+    const s = i | 0;
+    for (let n = 0; n < 6; n++) {
+      pushOceanFish(s, dest.x + rand(-90, 130), dest.y + rand(-50, 90));
+    }
+    seedOceanScenery();
+  }
+  function nearestHuntFish(i) {
+    let best = null, bestD = 1e9;
+    for (const f of oceanFish) {
+      if (f.caught || (f.s | 0) !== (i | 0)) continue;
+      const d = Math.hypot(f.x - player.x, f.y - player.y);
+      if (d < bestD) { bestD = d; best = f; }
+    }
+    return best;
+  }
+  function diveForHuntGoal() {
+    const i = diveForHuntIndex();
+    if (i < 0) return { text: "", target: null };
+    const name = SPECIES[i].name;
+    const art = /^[aeiou]/i.test(name) ? "an" : "a";
+    const f = nearestHuntFish(i);
+    const dest = diveForBandPoint(i);
+    return {
+      text: "Point the glowing cone at " + art + " " + name,
+      target: f ? { x: f.x, y: f.y } : { x: dest.x, y: dest.y },
+    };
+  }
+  function oceanEntrySpawn() {
+    // C112 — DIVE FOR <species> opens that species' band.
+    // A normal DIVE chip (no hunt) still drops in shallows.
+    // loop 112 dive for the right band.
+    if (state.expedition) {
+      return { x: 2200, y: 1600, vx: 0, vy: 20, hunt: false };
+    }
+    const hunt = diveForHuntIndex();
+    if (hunt >= 0) {
+      const dest = diveForBandPoint(hunt);
+      return { x: dest.x, y: dest.y, vx: 0, vy: 0, hunt: true, tank: hunt };
+    }
+    return { x: OCEAN.w / 2, y: 380, vx: 0, vy: 0, hunt: false };
+  }
   function phoneDockPlazaWalkWanted(wx, wy, sx, sy) {
     // C107 — 390 dock camera cannot see the bowls. A tap toward the
     // plaza / tanks (upper third, or north of the dock lip) walks the
@@ -12007,6 +12093,9 @@
     if (!portraitStage()) return false;
     if (state.mode !== "play" || state.scene !== "shop") return false;
     if (bagHasStockable() || cashNeedsCollect()) return false;
+    // C112 — while a dive-for hunt walk is live the verb is DIVE,
+    // not ↑ SHOP (secondary leftover: shop-north on the DIVE dock).
+    if (diveForHuntIndex() >= 0) return false;
     const dest = nextUnlockWalkDest();
     if (!dest) return false;
     const n = nextLockedTank();
@@ -12058,6 +12147,9 @@
       return { text: "The boat is ready — $35 on the right dock", target: { x: BOAT.x, y: BOAT.y } };
     }
     if (!state.missionDone) {
+      // C112 — a dive-for hunt walk keeps the species ribbon even
+      // if first-session dock copy would otherwise win.
+      if (state.scene === "shop" && diveForHuntIndex() >= 0) return diveForPadGoal();
       const step = firstSessionIndex();
       if (step === 0) return { text: thumbCopy() ? "Tap the glowing dock to walk" : "Walk to the glowing dock", target: { x: 880, y: 980 } };
       if (step === 1) return { text: thumbCopy() ? "Tap DIVE" : "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
@@ -12107,6 +12199,9 @@
         }
         return { text: "Nice catch! Grab more, or swim up to stock", target: { x: player.x, y: 140 } };
       }
+      // C112 — DIVE FOR <species> points at that fish / grove, not
+      // the first-dive SHINY clownfish. loop 112 dive for the right band.
+      if (diveForHuntIndex() >= 0) return diveForHuntGoal();
       const shiny = firstRareFish();
       if (shiny && (state.shinyCallout > 0 || !state.caughtRare)) {
         return { text: "Point the glowing cone at the SHINY clownfish", target: { x: shiny.x, y: shiny.y } };
@@ -12127,6 +12222,9 @@
     if (state.scene === "shop" && cashNeedsCollect()) {
       return { text: "Collect  $" + state.registerCash + "  ·  stand in the till glow", target: tillWorld() };
     }
+    // C112 — after tapping DIVE FOR, keep the species ribbon on the
+    // walk south / DIVE pad. Do not flip to shop-north. Secondary.
+    if (state.scene === "shop" && diveForHuntIndex() >= 0) return diveForPadGoal();
     if (inDiveZone() && state.surfaceLock <= 0) {
       return { text: thumbCopy() ? "Tap DIVE" : "Press SPACE or click to DIVE", target: { x: 880, y: 980 } };
     }
@@ -12148,6 +12246,7 @@
     // for that species while the new tank is empty. Do not bring
     // back the DIVE-dock quest or the tap-the-lock line.
     if (diveForCueLegal()) return diveForPadGoal();
+    if (diveForHuntIndex() >= 0) return diveForPadGoal();
     // C109 — shop-walk ribbon before the plaza-south / DIVE-dock
     // fallbacks. Mid-walk the camera is already on Goldfish / Angelfish
     // / Dolphin; hideDockWalkHint is false the moment they leave the pad.
@@ -13588,7 +13687,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 111", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 112", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -13651,7 +13750,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 111", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 112", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -13682,7 +13781,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 111", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 112", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
@@ -13982,7 +14081,10 @@
           player.x = 2200; player.y = 1600; player.vx = 0; player.vy = 20;
           state.expeditionTime = EXPEDITION_SECS;
         } else {
-          player.x = OCEAN.w / 2; player.y = 380; player.vx = 0; player.vy = 0;
+          // C112 — DIVE FOR <species> uses oceanEntrySpawn (grove
+          // band). A normal DIVE still lands at y=380 shallows.
+          const spawn = oceanEntrySpawn();
+          player.x = spawn.x; player.y = spawn.y; player.vx = spawn.vx; player.vy = spawn.vy;
           player.facing = 0.22;
         }
         state.diveCatches = 0;
@@ -14013,10 +14115,12 @@
         state.camSettle = 0.4;
         state.camEase = 0.4;
         if (state.expedition) { seedExpeditionPocket(); seedOceanScenery(); }
+        else if (diveForHuntIndex() >= 0) seedDiveForHunt(diveForHuntIndex());
         else seedFrontSchool();
         ensureOceanStock();
       } else if (state.pendingScene === "shop") {
         state.scene = "shop";
+        clearDiveForHunt();
         state.surfaceLock = 0.55;
         if (state.expedition) {
           player.x = 1188; player.y = 1000; player.vx = 0; player.vy = -30;
@@ -14663,6 +14767,8 @@
   function onDiveLockEnd() {
     if (state.expedition) return;
     seedNearMissSchool();
+    // C112 — a species-band hunt is not the SHINY clownfish callout.
+    if (diveForHuntIndex() >= 0) return;
     const shiny = firstRareFish();
     if (!shiny) return;
     state.shinyCallout = 3.4;
