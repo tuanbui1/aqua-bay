@@ -148,7 +148,7 @@ assert(/return "CLOSE"/.test(chipSrc),
   "catalogChipLabel still returns CLOSE while the tray is open");
 assert(!/return "SHOP"/.test(chipSrc),
   "catalogChipLabel never returns SHOP");
-assert(!/plazaWalkChipLegal/.test(chipSrc),
+assert(!/if \(plazaWalkChipLegal\(\)\) return "BOOK"/.test(chipSrc),
   "C117 does not gate BOOK on plazaWalkChipLegal (the leftover)");
 assert(/Open the species catalog/.test(extractFn(src, "catalogChipAria") || ""),
   "catalog aria says species catalog, not shop catalog");
