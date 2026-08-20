@@ -75,8 +75,8 @@ assert(/HUD_READOUT_PLATE/.test(src), "BAG / money plates stay");
 assert(/gx = clamp\(W \/ 2 - tw \/ 2, leftPad, W - 12 - tw\)/.test(src),
   "desktop ribbon stays centered");
 
-assert(/Aqua Bay · loop 94/.test(src), "title/pause stamp is loop 94");
-assert(!/Aqua Bay · loop 93/.test(src), "loop 93 stamp is gone");
+assert(/Aqua Bay · loop 95/.test(src), "title/pause stamp is loop 95");
+assert(!/Aqua Bay · loop 94/.test(src), "loop 94 stamp is gone");
 
 assert(/player\.faceS/.test(src), "loop 54 flip stays");
 assert(/C67/.test(src), "C67 second dive after cashier stays");
