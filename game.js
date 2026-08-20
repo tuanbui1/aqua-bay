@@ -262,7 +262,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE).
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -608,6 +608,7 @@
   const mouse = { x: W / 2, y: H / 2, down: false, ui: false, held: 0, acted: false, pressX: 0, pressY: 0, scoopPress: false };
   let uiHits = [];
   let upgradeArm = { id: "", t: 0 };
+  let phoneShopOpen = false;
   let menuYShift = 0;
   let custTimer = 0;
   let browseTimer = 0.35;
@@ -1068,28 +1069,30 @@
       portrait: false,
     };
     if (!portraitStage() || H <= DESKTOP_H + 20) return desk;
-    const pad = Math.round(H * 0.028);
-    const titleH = Math.round(H * 0.155);
-    const whoH = Math.round(H * 0.026);
-    const cardH = Math.round(H * 0.30);
-    const btnH = Math.max(96, Math.round(H * 0.082));
-    const newH = Math.max(88, Math.round(H * 0.072));
-    const gap = Math.round(H * 0.02);
-    const capH = Math.round(H * 0.026);
+    const pad = Math.round(H * 0.024);
+    const titleH = Math.min(210, Math.max(150, Math.round(H * 0.085)));
+    const whoH = Math.max(28, Math.round(H * 0.018));
+    const cardGap = 20;
+    const cardW = Math.min(300, Math.round((W - 80 - cardGap * 2) / 3));
+    // Natural picker cards (near desktop 168×176). Extra phone height
+    // goes to padding + fat buttons, not 2.5:1 noodle slots.
+    const cardH = Math.round(cardW * 1.12);
+    const btnH = Math.max(96, Math.round(H * 0.055));
+    const newH = Math.max(88, Math.round(H * 0.048));
+    const gap = Math.round(H * 0.016);
+    const capH = Math.max(28, Math.round(H * 0.018));
     let y = pad;
     const titleY = y;
     y += titleH + gap;
     const whoY = y + whoH;
     const pickerY = y + whoH + Math.round(H * 0.006);
-    y = pickerY + cardH + Math.round(gap * 1.35);
+    y = pickerY + cardH + Math.round(gap * 1.6);
     const continueY = y;
-    y += btnH + Math.round(H * 0.016);
+    y += btnH + Math.round(H * 0.012);
     const captionY = y + Math.round(capH * 0.55);
-    y += capH + Math.round(H * 0.018);
+    y += capH + Math.round(H * 0.014);
     const newY = y;
     const titleW = Math.min(W - 56, 1000);
-    const cardGap = 24;
-    const cardW = Math.min(330, Math.round((W - 88 - cardGap * 2) / 3));
     const btnW = Math.min(W - 140, 620);
     return {
       shift: 0,
@@ -1114,15 +1117,10 @@
   }
   function topCtrlBoxes() {
     if (portraitStage()) {
-      const rail = cssToStage(48, 100, 176);
-      const topBtn = cssToStage(40, 48, 76);
-      const xCol = W - 10 - rail;
-      const pauseB = hudBox(xCol + rail - topBtn, 10, topBtn, topBtn);
-      let muteB = hudBox(pauseB.x - 6 - topBtn, 10, topBtn, topBtn);
-      if (muteB.x < xCol - 2) {
-        muteB = hudBox(xCol + rail - topBtn, 10 + topBtn + 6, topBtn, topBtn);
-      }
-      return { topBtn, pauseB, muteB, rail, xCol };
+      const topBtn = cssToStage(36, 48, 68);
+      const pauseB = hudBox(W - 12 - topBtn, 10, topBtn, topBtn);
+      const muteB = hudBox(pauseB.x - 8 - topBtn, 10, topBtn, topBtn);
+      return { topBtn, pauseB, muteB };
     }
     const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
     const pauseB = hudBox(W - 16 - topBtn, 14, topBtn, Math.max(40, topBtn - 8));
@@ -1654,7 +1652,7 @@
   }
   function railBarsReady() {
     if (portraitStage()) {
-      return state.mode === "play" && (state.tutorial >= 5 || state.money >= 25 || state.scene === "ocean");
+      return phoneShopOpen && state.mode === "play" && (state.tutorial >= 5 || state.money >= 25 || state.scene === "ocean");
     }
     return shopBarsReady();
   }
@@ -1668,6 +1666,13 @@
     return diveActionLegal() || surfaceActionLegal();
   }
   function actionBtnSize() {
+    if (portraitStage()) {
+      return {
+        w: cssToStage(108, 150, 220),
+        h: cssToStage(40, 52, 70),
+        pad: cssToStage(14, 16, 24),
+      };
+    }
     const compact = compactHud();
     return {
       w: compact ? thumbCanvas(200, 320, 620) : 340,
@@ -1682,8 +1687,13 @@
     let x = W / 2 - w / 2;
     let y = H - sz.pad - h;
     if (portraitStage()) {
-      x = clamp(viewWidth() / 2 - w / 2, 12, viewWidth() - w - 12);
+      x = W - sz.pad - w;
       y = H - sz.pad - h;
+      if (phoneShopOpen) {
+        const panel = phoneShopPanelBox();
+        x = Math.min(x, panel.x - 10 - w);
+      }
+      x = clamp(x, 12, W - w - 12);
       return hudBox(x, y, w, h);
     }
     if (compact && state.scene === "shop" && shopBarsReady()) {
@@ -1694,12 +1704,13 @@
   function upgradeBarBox() {
     if (portraitStage()) {
       const strip = speciesStripLayout();
+      const panel = phoneShopPanelBox();
       const cw = strip.cw;
-      const minCh = cssToStage(42, 62, 96);
+      const minCh = cssToStage(38, 54, 80);
       const x = strip.x;
       const y = strip.y + strip.h + 10;
-      const room = Math.max(minCh * 4 + 24, H - y - 16);
-      const fitCh = clamp(((room - 18) / 4) | 0, minCh, Math.round(H * 0.12));
+      const room = Math.max(minCh * 4 + 16, panel.y + panel.h - y - 12);
+      const fitCh = clamp(((room - 18) / 4) | 0, minCh, Math.round(H * 0.08));
       const h = 4 * (fitCh + 6) + 8;
       return Object.assign(hudBox(x, y, cw, h), { cw, ch: fitCh, compact: false, phoneRail: true, stacked: true });
     }
@@ -1718,6 +1729,7 @@
     return { x: bar.x, y: bar.y, w: bar.w + extra, h: bar.h };
   }
   function dodgeUpgradeTray(box) {
+    if (portraitStage() && !phoneShopOpen) return box;
     if (!box || !shopBarsReady()) return box;
     const tray = upgradeTrayFootprint();
     if (!boxesOverlap(box, tray, 8)) return box;
@@ -2310,8 +2322,8 @@
     mouse.held = 0; mouse.acted = false; mouse.pressX = p.x; mouse.pressY = p.y;
     audio();
     let hit = hitUI(p.x, p.y);
-    if (hit && String(hit).startsWith("up-") && portraitStage() && p.y > H * 0.42 && p.x < railGutterLeft()) {
-      // A low-deck walk tap must never purchase. Rail taps (any height) still arm.
+    if (hit && String(hit).startsWith("up-") && portraitStage() && !phoneShopHit(p.x, p.y)) {
+      // Walk taps never purchase. Only the open SHOP tray can arm a buy.
       hit = null;
     }
     if (hit) {
@@ -2502,6 +2514,8 @@
     if (id === "back") { state.mode = "pause"; return; }
     if (id === "reset") { resetSave(); return; }
     if (id === "mute") { state.muted = !state.muted; persist(); return; }
+    if (id === "shop-toggle") { phoneShopOpen = !phoneShopOpen; return; }
+    if (id === "shop-panel") return;
     if (id === "till") { intentWalk("cash", registerWalkPoint()); return; }
     if (id === "up-speed") armOrBuy("up-speed", buySpeed);
     if (id === "up-bag") armOrBuy("up-bag", buyBag);
@@ -2596,6 +2610,7 @@
     rebuildTankFish();
     state.mode = "play";
     state.decorOpen = false;
+    phoneShopOpen = false;
     if (state.scene !== "shop" && state.scene !== "ocean") state.scene = "shop";
     if (state.scene === "shop") {
       player.x = 880; player.y = 920;
@@ -2783,14 +2798,13 @@
   // fish / diver cannot paint under the chips or in the strip past them.
   // C66 may still hide chips over the bait shack — the column never slides.
   function railGutterLeft() {
+    if (portraitStage()) {
+      // C80 — the playfield IS the phone. Shop is an overlay tray, not a
+      // reserved well that clips the dock into a skinny column.
+      return W;
+    }
     const strip = speciesStripLayout();
     const left = strip.x - 10;
-    if (portraitStage()) {
-      // Slim thumb column — playfield is the wide part of the phone,
-      // not a 270px desktop leftover.
-      const well = strip.w + 12;
-      return clamp(left, Math.round(W * 0.82), W - well);
-    }
     if (compactHud()) {
       const well = Math.max(strip.w + 18, thumbCanvas(72, 96, 200));
       return clamp(left, Math.round(W * 0.54), W - well);
@@ -11013,11 +11027,15 @@
     if (state.mode !== "play" || state.scene !== "ocean") return;
     if (bagIsFull() || nearSurface() || player.y < 300) return;
     const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
-    const w = compactHud() ? thumbCanvas(132, 160, 260) : 132;
-    const h = compactHud() ? thumbCanvas(52, 56, 88) : 36;
+    const w = portraitStage() ? cssToStage(108, 150, 220) : (compactHud() ? thumbCanvas(132, 160, 260) : 132);
+    const h = portraitStage() ? cssToStage(36, 48, 64) : (compactHud() ? thumbCanvas(52, 56, 88) : 36);
     const sz = actionBtnSize();
     const playW = viewWidth();
-    const x = clamp(playW - 16 - w, 12, playW - w - 12);
+    let x = clamp(playW - 16 - w, 12, playW - w - 12);
+    if (portraitStage() && phoneShopOpen) {
+      x = Math.min(x, phoneShopPanelBox().x - 10 - w);
+      x = clamp(x, 12, playW - w - 12);
+    }
     const b = hudBox(x, H - sz.pad - 12 - h, w, h);
     card(b.x, b.y, b.w, b.h, "rgba(40, 160, 180," + (0.78 + pulse * 0.16) + ")");
     ctx.fillStyle = "#fff6e8";
@@ -11176,8 +11194,8 @@
     if (!gt) return null;
     const { muteB } = topCtrlBoxes();
     const leftPad = portraitStage() ? 12 : 210;
-    const rightPad = portraitStage() ? (W - railGutterLeft() + 8) : (W - muteB.x + 16);
-    const maxW = Math.max(280, Math.min(portraitStage() ? railGutterLeft() - 24 : 680, W - leftPad - rightPad));
+    const rightPad = portraitStage() ? (W - muteB.x + 16) : (W - muteB.x + 16);
+    const maxW = Math.max(280, Math.min(portraitStage() ? W - 24 : 680, W - leftPad - rightPad));
     let font = ribbonFont(live);
     ctx.font = font;
     const inner = maxW - 28;
@@ -11197,7 +11215,7 @@
     for (let i = 0; i < lines.length; i++) tw = Math.max(tw, ctx.measureText(lines[i]).width + 28);
     tw = Math.min(Math.ceil(tw + 4), maxW);
     const th = lines.length > 1 ? (live && live.big ? 54 : 50) : (live && live.big ? 36 : 32);
-    const playRight = portraitStage() ? railGutterLeft() : W;
+    const playRight = W;
     const gx = clamp((portraitStage() ? playRight / 2 : W / 2) - tw / 2, leftPad, playRight - 12 - tw);
     const gy = portraitStage() ? 12 + cssToStage(44, 56, 80) + 6 : 16;
     return Object.assign(hudBox(gx, gy, tw, th), {
@@ -11286,7 +11304,7 @@
     ctx.restore();
     if (bagShown || bagGhosts.length) {
       const pipN = bagShown + bagGhosts.length;
-      const bw = Math.min(36 + pipN * 28, portraitStage() ? Math.max(80, railGutterLeft() - 24) : 340);
+      const bw = Math.min(36 + pipN * 28, portraitStage() ? Math.max(80, W - 24) : 340);
       let ib = portraitStage()
         ? hudBox(12, Math.max(moneyBox.y + moneyBox.h + 6, (ribbon ? ribbon.y + ribbon.h + 6 : 12)), bw, Math.min(52, moneyBox.h))
         : hudBox(400, 14, bw, 52);
@@ -11399,7 +11417,15 @@
         ctx.restore();
       }
     }
-    drawSpeciesStrip(ribbon);
+    if (portraitStage()) {
+      drawPhoneShopBtn();
+      if (phoneShopOpen || state.bookOpen != null) {
+        drawPhoneShopPanel();
+        drawSpeciesStrip(ribbon);
+      }
+    } else {
+      drawSpeciesStrip(ribbon);
+    }
     const { muteB, pauseB } = topCtrlBoxes();
     card(muteB.x, muteB.y, muteB.w, muteB.h);
     drawSpeaker(muteB.x + muteB.w / 2, muteB.y + muteB.h / 2, state.muted);
@@ -11431,14 +11457,14 @@
     if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) {
       const eb = actionBtnBox();
       card(eb.x, eb.y, eb.w, eb.h, "rgba(40, 160, 180, 0.88)");
-      ctx.fillStyle = "#fff"; ctx.font = (eb.h > 70 ? "800 28px" : "700 16px") + " Fredoka, sans-serif";
+      ctx.fillStyle = "#fff"; ctx.font = (portraitStage() ? "800 20px" : (eb.h > 70 ? "800 28px" : "700 16px")) + " Fredoka, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(thumbCopy() ? "EXPEDITION  $35" : "SPACE · Expedition $35", eb.x + eb.w / 2, eb.y + eb.h / 2 + 8);
+      ctx.fillText(thumbCopy() ? "BOAT $35" : "SPACE · Expedition $35", eb.x + eb.w / 2, eb.y + eb.h / 2 + 8);
     } else if (diveActionLegal()) {
       const db = actionBtnBox();
       card(db.x, db.y, db.w, db.h, "rgba(40, 160, 180, 0.92)");
       ctx.fillStyle = "#fff";
-      ctx.font = (db.h > 70 ? "800 34px" : "700 16px") + " Fredoka, sans-serif";
+      ctx.font = (portraitStage() ? "800 22px" : (db.h > 70 ? "800 34px" : "700 16px")) + " Fredoka, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(thumbCopy() ? "DIVE" : "SPACE  or  click  to  DIVE", db.x + db.w / 2, db.y + db.h / 2 + 10);
       btn("dive", db.x, db.y, db.w, db.h);
@@ -11448,7 +11474,7 @@
       const sb = actionBtnBox();
       card(sb.x, sb.y, sb.w, sb.h, "rgba(40, 160, 180, 0.92)");
       ctx.fillStyle = "#fff";
-      ctx.font = (sb.h > 70 ? "800 34px" : "700 16px") + " Fredoka, sans-serif";
+      ctx.font = (portraitStage() ? "800 20px" : (sb.h > 70 ? "800 34px" : "700 16px")) + " Fredoka, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(thumbCopy() ? "SURFACE" : "SPACE  or  click  to  SURFACE", sb.x + sb.w / 2, sb.y + sb.h / 2 + 10);
       ctx.globalAlpha = 1;
@@ -11946,7 +11972,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, ty + th * 0.74);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 79", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 80", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -11991,7 +12017,7 @@
         "Tap SURFACE or swim to the waterline — return to the dock",
         "Hold on a fish — the cone locks on  ·  tap a fish to scoop  ·  first catches are forgiving",
         "Tap a tank, till, or unlock card — act now, or walk there then act",
-        "On a phone, Speed / Bag / Catch / Cashier sit in the right rail — tap twice to buy",
+        "On a phone, tap SHOP for species and upgrades — tap twice to buy",
         "Walk into a matching tank — stock  ·  bag clears the instant it lands",
         "→ TILL chip or stand in the till glow to collect  ·  scoop coins on the path",
         "Hire a cashier — they collect while you dive",
@@ -12009,7 +12035,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 79", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 80", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -12040,7 +12066,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 79", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 80", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
@@ -12068,13 +12094,59 @@
     }
     return out;
   }
+  function phoneShopBtnBox() {
+    const { pauseB, muteB, topBtn } = topCtrlBoxes();
+    const bw = Math.max(topBtn || cssToStage(36, 48, 68), cssToStage(56, 80, 120));
+    const bh = cssToStage(36, 48, 68);
+    const x = W - 12 - bw;
+    const y = Math.max(pauseB.y + pauseB.h, muteB.y + muteB.h) + 8;
+    return hudBox(x, y, bw, bh);
+  }
+  function phoneShopPanelBox() {
+    const btn = phoneShopBtnBox();
+    const w = cssToStage(136, 200, 340);
+    const x = W - 10 - w;
+    const y = btn.y + btn.h + 8;
+    const h = Math.max(220, H - y - 16);
+    return hudBox(x, y, w, h);
+  }
+  function phoneShopHit(x, y) {
+    if (!portraitStage() || !phoneShopOpen) return false;
+    const p = phoneShopPanelBox();
+    const b = phoneShopBtnBox();
+    return (x >= p.x && x <= p.x + p.w && y >= p.y && y <= p.y + p.h) ||
+      (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+  }
+  function drawPhoneShopBtn() {
+    const b = phoneShopBtnBox();
+    pierChip(b.x, b.y, b.w, b.h, phoneShopOpen ? "rgba(28, 58, 52, 0.94)" : "rgba(20, 36, 44, 0.9)");
+    if (phoneShopOpen) {
+      ctx.strokeStyle = "rgba(255,226,122,0.7)";
+      ctx.lineWidth = 2;
+      roundRect(b.x, b.y, b.w, b.h, 12); ctx.stroke();
+    }
+    ctx.fillStyle = "#ffe27a";
+    ctx.font = "800 " + Math.max(14, Math.round(b.h * 0.38)) + "px Fredoka, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(phoneShopOpen ? "CLOSE" : "SHOP", b.x + b.w / 2, b.y + b.h / 2 + Math.round(b.h * 0.16));
+    btn("shop-toggle", b.x, b.y, b.w, b.h);
+  }
+  function drawPhoneShopPanel() {
+    const p = phoneShopPanelBox();
+    card(p.x, p.y, p.w, p.h, "rgba(10, 22, 30, 0.9)");
+    ctx.strokeStyle = "rgba(255, 226, 122, 0.22)";
+    ctx.lineWidth = 1.4;
+    roundRect(p.x, p.y, p.w, p.h, 14); ctx.stroke();
+    btn("shop-panel", p.x, p.y, p.w, p.h);
+  }
   function speciesStripLayout() {
-    const { muteB, pauseB, rail, xCol: railX } = topCtrlBoxes();
+    const { muteB, pauseB } = topCtrlBoxes();
     if (portraitStage()) {
-      const cw = rail || cssToStage(48, 100, 176);
-      const ch = cssToStage(48, 70, 110);
-      const xCol = railX != null ? railX : (W - 10 - cw);
-      const startY = Math.max(muteB.y + muteB.h, pauseB.y + pauseB.h) + 10;
+      const panel = phoneShopPanelBox();
+      const cw = Math.max(80, panel.w - 12);
+      const ch = cssToStage(44, 62, 96);
+      const xCol = panel.x + 6;
+      const startY = panel.y + 8;
       const colH = railSpeciesIds().length * (ch + 6);
       return { x: xCol, y: startY, w: cw, h: colH, cw, ch, muteB, pauseB };
     }
