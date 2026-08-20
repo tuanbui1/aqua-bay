@@ -384,7 +384,7 @@ const names = [
   "huntBagHasPrey", "huntScoopExclusive", "huntScoopAllows", "huntBangWanted",
   "surfaceAssistLegal",
   "huntStockIndex", "applyHuntStockGoal", "todayGoalLabel", "sessionGoalLabel", "sessionGoalMet",
-  "highestUnlocked", "glowingStockIndex",
+  "glowingStockIndex",
   "stockableTankTarget",
   "tutorialGrace", "coneRange", "coneHalf", "scoopEdgeGrace", "normAng",
   "faceToward", "nearestScoopFish", "fishAtWorld", "lockScoop",
@@ -526,6 +526,7 @@ function makeCtx(save, opts) {
     rand: function (a, b) { return (a + b) / 2; },
   };
   const body = names.map((n) => fns[n]).join("\n") +
+    "\nfunction highestUnlocked() { return highestUnlockedSafe(); }\n" +
     "\nthis.__api = { galleryOpen, tankWalkPoint, shopPath, wasdShopPath," +
     " constrainShop, galleryTankDest, snapToShopWalk, nextLockedTank," +
     " nextUnlockWalkDest, hideDockWalkHint, phoneDockPlazaWalkWanted," +
@@ -540,7 +541,6 @@ function makeCtx(save, opts) {
     " oceanEntrySpawn, diveForHuntGoal, nearestHuntFish," +
     " huntBagHasPrey, huntScoopExclusive, huntScoopAllows, huntBangWanted," +
     " surfaceAssistLegal, huntStockIndex, applyHuntStockGoal, todayGoalLabel, sessionGoalLabel, sessionGoalMet," +
-    " highestUnlocked," +
     " glowingStockIndex, stockableTankTarget," +
     " nearestScoopFish, fishAtWorld, lockScoop, startScoopOnFish, fishInCone," +
     " plazaWalkChipLegal, diveChipLegal, dockOffScreen," +
