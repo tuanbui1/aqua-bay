@@ -51,8 +51,8 @@ assert(!/pushOut\(BAIT_HUT/.test(src) && !/pushOut\(POP_VEND/.test(src) &&
   !/pushOut\(OPEN_SIGN/.test(src),
   "hut / POP / OPEN did not grow walk colliders");
 
-assert(/Aqua Bay · loop 92/.test(src), "title/pause stamp is loop 92");
-assert(!/Aqua Bay · loop 91/.test(src), "loop 91 stamp is gone");
+assert(/Aqua Bay · loop 93/.test(src), "title/pause stamp is loop 93");
+assert(!/Aqua Bay · loop 92/.test(src), "loop 92 stamp is gone");
 
 assert(/C91 — soda cooler/.test(src), "C91 POP cooler stays");
 assert(/C91 — hanging shop sign/.test(src), "C91 hanging OPEN stays");
