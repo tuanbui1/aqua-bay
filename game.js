@@ -274,7 +274,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy + loop 110 tap the lock + loop 111 dive for the new bowl + loop 112 dive for the right band + loop 113 hunt locks a seahorse + loop 114 hide SURFACE until the hunt bags + loop 115 dive chip arms the hunt + loop 116 today hunt copy + loop 117 catalog book not shop + loop 118 plaza today after unlock + loop 119 ocean zone plate readable + loop 120 hunt hud not over prey.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy + loop 110 tap the lock + loop 111 dive for the new bowl + loop 112 dive for the right band + loop 113 hunt locks a seahorse + loop 114 hide SURFACE until the hunt bags + loop 115 dive chip arms the hunt + loop 116 today hunt copy + loop 117 catalog book not shop + loop 118 plaza today after unlock + loop 119 ocean zone plate readable + loop 120 hunt hud not over prey + loop 121 surface ribbon clear of SURFACE.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -1261,7 +1261,10 @@
     const rb = ribbonLayout();
     // C120 — a cone ribbon parked low (off the TODAY + zone
     // stack) must not stretch this floor over the grove.
+    // C121 does not put that low ribbon back over prey —
+    // it only lifts it off the SURFACE thumb lip.
     // loop 120 hunt hud not over prey.
+    // loop 121 surface ribbon clear of SURFACE.
     if (rb && !ribbonIsLow(rb)) floor = Math.max(floor, rb.y + rb.h + 8);
     return floor;
   }
@@ -2012,9 +2015,12 @@
     // ocean zone plate sharing the ribbon-park slot.
     // C120 does not move TODAY — the leftover is the cone
     // ribbon as a third chip over the first seahorse ! marks.
+    // C121 does not move TODAY — the leftover is that low
+    // catch ribbon on the same lip as wood ↑ SURFACE.
     // loop 118 plaza today after unlock.
     // loop 119 ocean zone plate readable.
     // loop 120 hunt hud not over prey.
+    // loop 121 surface ribbon clear of SURFACE.
     if (portraitStage()) return hudSafeTop() + phoneCss(48) + 8;
     return 74;
   }
@@ -2067,8 +2073,11 @@
     // Do not share the C118 ribbon-park slot — that covered
     // 70m · Seahorse groves with the cone / catch ribbon.
     // C120 does not move this plate — only the cone ribbon.
+    // C121 does not move this plate — only the catch ribbon
+    // off the SURFACE thumb lip.
     // loop 119 ocean zone plate readable.
     // loop 120 hunt hud not over prey.
+    // loop 121 surface ribbon clear of SURFACE.
     const m = sessionChipMetrics();
     const gap = portraitStage() ? phoneCss(8) : 8;
     if (missionVisible() || sessionChipVisible()) return sessionChipTop() + m.h + gap;
@@ -2096,10 +2105,12 @@
     // C120 still keeps this slot for clearance math; the
     // painted phone-hunt ribbon moves off the grove (or
     // combines away) so it is not a third chip over prey.
+    // C121 still keeps this slot for clearance math.
     // No TODAY / no zone: 0 so callers keep their own gy.
     // loop 118 plaza today after unlock.
     // loop 119 ocean zone plate readable.
     // loop 120 hunt hud not over prey.
+    // loop 121 surface ribbon clear of SURFACE.
     const m = sessionChipMetrics();
     const gap = portraitStage() ? phoneCss(8) : 8;
     const sessionLift = (missionVisible() || sessionChipVisible()) ? m.h + gap : 0;
@@ -2122,7 +2133,10 @@
     // hid the first seahorse ! marks. Compact, combine, or
     // move the ribbon — do not cover the prey. TODAY and
     // 70m · Seahorse groves stay readable. Do not camera-clamp.
+    // C121 does not undo this compact — it only lifts the
+    // parked ribbon off wood ↑ SURFACE after a bag.
     // loop 120 hunt hud not over prey.
+    // loop 121 surface ribbon clear of SURFACE.
     return portraitStage() && zoneChipVisible() &&
       (missionVisible() || sessionChipVisible());
   }
@@ -2130,7 +2144,10 @@
     // Bottom of the TODAY + zone stack (money / BAG sit
     // above). The cone ribbon is not part of this floor
     // on a phone hunt — that was the leftover three-chip
-    // cover. loop 120 hunt hud not over prey.
+    // cover. C121 still ignores the catch ribbon here so
+    // a lift off SURFACE cannot cover prey.
+    // loop 120 hunt hud not over prey.
+    // loop 121 surface ribbon clear of SURFACE.
     const gap = portraitStage() ? phoneCss(8) : 8;
     if (zoneChipVisible()) {
       const z = zoneChipBox();
@@ -2145,16 +2162,38 @@
     // Phone ocean: park the cone / catch ribbon above
     // DIVE / SURFACE / the home lip — not under TODAY +
     // 70m over the grove. loop 120 hunt hud not over prey.
+    // C121 — once wood ↑ SURFACE is legal (bag ≥ 1), that
+    // C120 park sat on the same thumb lip as the chip.
+    // Leave a fat gap above the SURFACE box. Bag 0/5 still
+    // hides SURFACE (C114); that low ribbon stays.
+    // loop 121 surface ribbon clear of SURFACE.
     const h = th != null ? th : (portraitStage() ? phoneCss(28) : 32);
     const gap = portraitStage() ? phoneCss(8) : 8;
     const act = actionBtnSize();
     const floor = actionFloor();
     const reserve = (act && act.h ? act.h : 0) + (act && act.pad ? act.pad : 0) + gap;
-    return Math.max(0, floor - reserve - h);
+    let y = Math.max(0, floor - reserve - h);
+    const surf = typeof surfaceChipBox === "function" ? surfaceChipBox() : null;
+    if (surf) {
+      const thumb = typeof ribbonSurfaceGap === "function"
+        ? ribbonSurfaceGap()
+        : (portraitStage() ? phoneCss(28) : 20);
+      const lift = portraitStage() ? phoneCss(28) : 20;
+      y = Math.min(y, Math.max(0, surf.y - Math.max(thumb, lift) - h));
+    } else if (typeof surfaceAssistLegal === "function" && surfaceAssistLegal()) {
+      const surfH = portraitStage() ? phoneCss(40) : 36;
+      const inset = (act && act.pad != null) ? act.pad : (portraitStage() ? phoneCss(18) : 16);
+      const thumb = portraitStage() ? phoneCss(28) : 20;
+      const surfY = floor - inset - surfH;
+      y = Math.min(y, Math.max(0, surfY - thumb - h));
+    }
+    return y;
   }
   function ribbonIsLow(rb) {
     // Painted ribbon sits below the TODAY + zone stack
     // (moved off the grove). loop 120 hunt hud not over prey.
+    // C121 a further lift off SURFACE is still "low".
+    // loop 121 surface ribbon clear of SURFACE.
     if (!rb) return false;
     const gap = portraitStage() ? phoneCss(16) : 16;
     return rb.y >= huntHudFloor() + gap;
@@ -2164,6 +2203,8 @@
     // Moved below huntHudFloor, or combined away when the
     // action lip leaves no room (no painted third chip).
     // loop 120 hunt hud not over prey.
+    // C121 may hide the ribbon when SURFACE owns the lip.
+    // loop 121 surface ribbon clear of SURFACE.
     if (!huntRibbonCompact()) return true;
     const low = ribbonLowParkTop();
     const floor = huntHudFloor();
@@ -2180,6 +2221,28 @@
     const z = Math.max(0.001, (cam && cam.z) || 1);
     const plateR = 10 * z;
     return bang.y - plateR >= huntHudFloor();
+  }
+  function ribbonSurfaceGap() {
+    // Fat clearance so the catch ribbon cannot share the
+    // SURFACE thumb lip. The leftover C120 park sat on
+    // that same bottom strip. loop 121 surface ribbon
+    // clear of SURFACE.
+    return portraitStage() ? phoneCss(20) : 16;
+  }
+  function ribbonSurfaceClear(rb) {
+    // Catch / cone ribbon does not sit on / overlap the
+    // wood ↑ SURFACE chip. After a hunt-species is bagged
+    // SURFACE owns the thumb corner. A missing ribbon
+    // (combined away) is clear. Bag 0/5 hides SURFACE
+    // (C114) — that low ribbon is fine.
+    // loop 121 surface ribbon clear of SURFACE.
+    const surf = typeof surfaceChipBox === "function" ? surfaceChipBox() : null;
+    if (!surf) return true;
+    if (!rb) return true;
+    const gap = ribbonSurfaceGap();
+    if (rb.y + rb.h <= surf.y - gap) return true;
+    if (rb.x + rb.w <= surf.x - gap) return true;
+    return false;
   }
   function huntPreyVisible() {
     // At least one hunt ! / seahorse is fully visible
@@ -12412,6 +12475,39 @@
     if (hunt >= 0 && !huntBagHasPrey(hunt)) return false;
     return true;
   }
+  function surfaceChipLegal() {
+    // Wood ↑ SURFACE is up: C98 assist (hunt bagged) or
+    // legal SURFACE (near-surface / full bag). After bag
+    // ≥ 1 this chip owns the thumb corner.
+    // loop 121 surface ribbon clear of SURFACE.
+    return surfaceAssistLegal() || surfaceActionLegal();
+  }
+  function surfaceChipBox() {
+    // Same thumb-corner chip drawSurfaceAssist / legal
+    // SURFACE paint. Bag 0/5 hunt returns null (C114).
+    // loop 121 surface ribbon clear of SURFACE.
+    if (!surfaceChipLegal()) return null;
+    const legal = surfaceActionLegal();
+    const sz = actionBtnSize();
+    const w = portraitStage() ? phoneCss(120) : (legal ? sz.w : 132);
+    const h = portraitStage()
+      ? (legal ? sz.h : phoneCss(40))
+      : (legal ? sz.h : 36);
+    const inset = portraitStage()
+      ? (sz.pad != null ? sz.pad : phoneCss(18))
+      : 16;
+    const floor = actionFloor();
+    const playW = typeof viewWidth === "function" ? viewWidth() : W;
+    let x = clamp(playW - inset - w, 12, playW - w - inset);
+    if (portraitStage() && phoneShopOpen && typeof phoneShopPanelBox === "function") {
+      const panel = phoneShopPanelBox();
+      if (panel) {
+        x = Math.min(x, panel.x - 10 - w);
+        x = clamp(x, 12, playW - w - inset);
+      }
+    }
+    return { x: x, y: floor - inset - h, w: w, h: h };
+  }
   function huntScoopAllows(f) {
     if (!f || f.caught || f.tease) return false;
     if (!huntScoopExclusive()) return true;
@@ -12863,21 +12959,16 @@
   // until the bag holds a hunt-species. A full bag uses the legal
   // SURFACE board (canSurfaceNow), not a stacked C98 assist.
   // loop 114 hide SURFACE until the hunt bags.
+  // C121 — box comes from surfaceChipBox so the catch
+  // ribbon can clear the same thumb target.
+  // loop 121 surface ribbon clear of SURFACE.
   function drawSurfaceAssist() {
     if (!surfaceAssistLegal()) return;
     const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
-    const w = portraitStage() ? phoneCss(120) : (compactHud() ? thumbCanvas(132, 160, 260) : 132);
-    const h = portraitStage() ? phoneCss(40) : (compactHud() ? thumbCanvas(52, 56, 88) : 36);
-    const sz = actionBtnSize();
-    const playW = viewWidth();
-    const inset = portraitStage() ? actionChipInset() : 16;
-    let x = clamp(playW - inset - w, 12, playW - w - inset);
-    if (portraitStage() && phoneShopOpen) {
-      x = Math.min(x, phoneShopPanelBox().x - 10 - w);
-      x = clamp(x, 12, playW - w - inset);
-    }
-    const floor = actionFloor();
-    const b = hudBox(x, floor - inset - h, w, h, portraitStage() ? inset : 10);
+    const raw = surfaceChipBox();
+    if (!raw) return;
+    const inset = portraitStage() ? actionChipInset() : 10;
+    const b = hudBox(raw.x, raw.y, raw.w, raw.h, inset);
     const surfFont = portraitStage() ? phoneCss(16) : (b.h > 38 ? 18 : 15);
     const stain = 0.10 + pulse * 0.10;
     drawPierBoardChip(b.x, b.y, b.w, b.h, "↑ SURFACE", surfFont, stain);
@@ -13098,7 +13189,9 @@
     // dropping under it) keeps world labels like CASHIER readable.
     const shopB = phoneShopBtnBox();
     const leftPad = 12;
-    const rightLimit = Math.min(muteB.x, pauseB.x, shopB.x) - phoneCss(8);
+    let rightLimit = Math.min(muteB.x, pauseB.x, shopB.x) - phoneCss(8);
+    const surfEarly = typeof surfaceChipBox === "function" ? surfaceChipBox() : null;
+    if (surfEarly) rightLimit = Math.min(rightLimit, surfEarly.x - phoneCss(8));
     const maxW = Math.max(phoneCss(160), Math.min(W - leftPad - 12, rightLimit - leftPad));
     let font = ribbonFont(live);
     ctx.font = font;
@@ -13134,16 +13227,30 @@
     // third chip over the first seahorse ! marks. Move it
     // above DIVE / SURFACE, or combine it away when the
     // action lip leaves no room. TODAY + 70m stay.
+    // C121 — once ↑ SURFACE is legal, that low park sat on
+    // the same thumb lip as the wood chip. Stay left of
+    // SURFACE, park above it with clearance, or combine
+    // away. Do not put the ribbon back over the grove.
     // loop 118 plaza today after unlock.
     // loop 119 ocean zone plate readable.
     // loop 120 hunt hud not over prey.
+    // loop 121 surface ribbon clear of SURFACE.
     const parkedY = Math.max(platesBottom + phoneCss(8), ribbonParkTop());
     let gy = parkedY;
+    const surf = surfEarly;
     if (huntRibbonCompact() && !toastLive) {
       const lowY = ribbonLowParkTop(th);
       const clear = huntHudFloor() + phoneCss(16);
       if (lowY >= clear) gy = lowY;
       else return null;
+    }
+    if (surf && !toastLive) {
+      const gap = typeof ribbonSurfaceGap === "function" ? ribbonSurfaceGap() : phoneCss(20);
+      if (gy + th > surf.y - gap) {
+        const liftY = surf.y - Math.max(gap, phoneCss(28)) - th;
+        if (liftY >= huntHudFloor() + phoneCss(16)) gy = liftY;
+        else return null;
+      }
     }
     const gx = clamp(leftPad, leftPad, Math.max(leftPad, rightLimit - tw));
     return Object.assign(hudBox(gx, gy, tw, th), {
@@ -14084,7 +14191,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 120", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 121", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -14147,7 +14254,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 120", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 121", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -14178,7 +14285,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 120", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 121", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
