@@ -41,14 +41,15 @@ assert(playCss390 >= 380, "390 playfield fills the phone, got " + playCss390.toF
 assert(playCss390 > 335, "playfield is not a 270–335px sliver beside a shop rail");
 
 // DIVE / SURFACE are chips, not a fat banner covering the dock.
-const diveW = cssToStage(108, 390, 150, 220);
-const diveH = cssToStage(40, 390, 52, 70);
-assert(diveW <= 220, "DIVE chip is not a full-width banner, w=" + diveW);
-assert(diveH <= 70, "DIVE chip is not a fat banner, h=" + diveH);
+function phoneCss(cssPx, cssW) { return Math.round(cssPx * W / cssW); }
+const diveW = phoneCss(120, 390);
+const diveH = phoneCss(48, 390);
+assert(diveW < W * 0.4, "DIVE chip is not a full-width banner, w=" + diveW);
+assert(diveH < H390 * 0.08, "DIVE chip is not a fat banner, h=" + diveH);
 const diveCssW = diveW / W * 390;
 const diveCssH = diveH / H390 * 844;
-assert(diveCssW < 160, "DIVE stays a small chip on 390px, cssW=" + diveCssW.toFixed(1));
-assert(diveCssH < 56, "DIVE does not cover the dock boards, cssH=" + diveCssH.toFixed(1));
+assert(diveCssW >= 100 && diveCssW < 160, "DIVE is a thumb chip on 390px, cssW=" + diveCssW.toFixed(1));
+assert(diveCssH >= 40 && diveCssH < 56, "DIVE does not cover the dock boards, cssH=" + diveCssH.toFixed(1));
 const dive = { x: W - 16 - diveW, y: H390 - 16 - diveH, w: diveW, h: diveH };
 assert(dive.y > 0 && dive.y + dive.h <= H390, "DIVE is on-canvas");
 assert(dive.x >= 12 && dive.x + dive.w <= W, "DIVE is on the playfield");
@@ -62,7 +63,7 @@ function phoneShopBtnBox() {
 }
 function phoneShopPanelBox() {
   const btn = phoneShopBtnBox();
-  const w = Math.min(340, cssToStage(136, 390));
+  const w = Math.round(118 * W / 390);
   return { x: W - 10 - w, y: btn.y + btn.h + 8, w: w, h: H390 - (btn.y + btn.h + 8) - 16 };
 }
 function phoneShopHit(x, y) {
@@ -75,7 +76,7 @@ assert(btn.w / W * 390 < 90, "SHOP is one thumb chip, not a catalog column");
 assert(!phoneShopHit(200, H390 * 0.7), "closed tray does not steal the deck");
 phoneShopOpen = true;
 const panel = phoneShopPanelBox();
-assert(panel.w / W * 390 < 160, "open tray is an overlay, not a third of 390px");
+assert(panel.w / W * 390 < 130, "open tray is an overlay chip column, cssW=" + (panel.w / W * 390).toFixed(1));
 assert(phoneShopHit(panel.x + 8, panel.y + 20), "open tray receives shop taps");
 assert(!phoneShopHit(80, H390 * 0.7), "world left of the tray is still the playfield");
 
@@ -121,11 +122,19 @@ function titleMenuLayout(H) {
   y += titleH + gap;
   const pickerY = y + whoH + Math.round(H * 0.006);
   y = pickerY + cardH + Math.round(gap * 1.6);
-  const continueY = y;
+  let continueY = y;
   y += btnH + Math.round(H * 0.012);
-  const captionY = y + Math.round(capH * 0.55);
+  let captionY = y + Math.round(capH * 0.55);
   y += capH + Math.round(H * 0.014);
-  const newY = y;
+  let newY = y;
+  const waterY = H - Math.round(Math.min(520, H * 0.28));
+  const slack = waterY - (newY + newH) - pad;
+  if (slack > 80) {
+    const shift = Math.round(slack * 0.55);
+    continueY += shift;
+    captionY += shift;
+    newY += shift;
+  }
   return {
     titleY, titleH, pickerY, cardW, cardH,
     continueY, continueH: btnH, captionY, newY, newH,

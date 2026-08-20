@@ -1036,6 +1036,13 @@
     const s = Math.max(0.2, cssW / W);
     return clamp(Math.round(cssPx / s), minC, maxC);
   }
+  // Portrait HUD in real CSS pixels. 720-era stage clamps (max 70) collapse
+  // to ~21px on a 2769-tall canvas and make DIVE / SHOP untappable.
+  function phoneCss(cssPx) {
+    const vp = viewportSize();
+    const cssW = Math.max(1, fillPhoneStage() ? vp.w : (canvas.getBoundingClientRect().width || vp.w));
+    return Math.max(8, Math.round(cssPx * W / cssW));
+  }
   function thumbCanvas(cssPx, minC, maxC) {
     if (portraitStage()) return cssToStage(cssPx, minC, maxC);
     const s = Math.max(0.22, displayScale());
@@ -1046,6 +1053,12 @@
     // Keep a ~860px world window so plaza/dock stay two rooms, but the
     // playfield is still the wide part of the phone.
     return H / 860;
+  }
+  function titleWaterY() {
+    if (!portraitStage() || H <= DESKTOP_H + 20) return H * 0.50;
+    // Compact harbor band at the bottom — not a 1300px water column with
+    // a sliver dock. Town sits on a short water strip above the pier.
+    return H - Math.round(Math.min(520, H * 0.28));
   }
   function menuOriginY() {
     if (H <= DESKTOP_H + 20) return 0;
@@ -1091,17 +1104,26 @@
     y += btnH + Math.round(H * 0.012);
     const captionY = y + Math.round(capH * 0.55);
     y += capH + Math.round(H * 0.014);
-    const newY = y;
+    let continueY0 = continueY, captionY0 = captionY, newY = y;
     const titleW = Math.min(W - 56, 1000);
     const btnW = Math.min(W - 140, 620);
+    // Sit fat buttons nearer the harbor / thumb. Do not stretch the cards.
+    const harborTop = titleWaterY() - Math.round(H * 0.02);
+    const slack = harborTop - (newY + newH) - pad;
+    if (slack > 80) {
+      const shift = Math.round(slack * 0.55);
+      continueY0 += shift;
+      captionY0 += shift;
+      newY += shift;
+    }
     return {
       shift: 0,
       titleX: W / 2 - titleW / 2, titleY, titleW, titleH,
       pickerY, cardW, cardH, cardGap,
-      continueY, continueH: btnH, continueW: btnW,
-      captionY,
+      continueY: continueY0, continueH: btnH, continueW: btnW,
+      captionY: captionY0,
       newY, newH, newW: btnW,
-      playY: continueY, playH: btnH,
+      playY: continueY0, playH: btnH,
       stampY: titleY + titleH - Math.round(titleH * 0.10),
       titleFont: Math.max(40, Math.round(H * 0.03)),
       subFont: Math.max(20, Math.round(H * 0.015)),
@@ -1117,7 +1139,7 @@
   }
   function topCtrlBoxes() {
     if (portraitStage()) {
-      const topBtn = cssToStage(36, 48, 68);
+      const topBtn = phoneCss(40);
       const pauseB = hudBox(W - 12 - topBtn, 10, topBtn, topBtn);
       const muteB = hudBox(pauseB.x - 8 - topBtn, 10, topBtn, topBtn);
       return { topBtn, pauseB, muteB };
@@ -1129,7 +1151,7 @@
   }
   function topHudFloor() {
     let floor = 14 + 52 + 8;
-    if (portraitStage()) floor = 12 + cssToStage(44, 56, 80) + 8;
+    if (portraitStage()) floor = 12 + phoneCss(48) + 8;
     if (missionVisible() || sessionChipVisible()) floor += 38;
     const rb = ribbonLayout();
     if (rb) floor = Math.max(floor, rb.y + rb.h + 8);
@@ -1652,7 +1674,7 @@
   }
   function railBarsReady() {
     if (portraitStage()) {
-      return phoneShopOpen && state.mode === "play" && (state.tutorial >= 5 || state.money >= 25 || state.scene === "ocean");
+      return phoneShopOpen && state.mode === "play";
     }
     return shopBarsReady();
   }
@@ -1668,9 +1690,9 @@
   function actionBtnSize() {
     if (portraitStage()) {
       return {
-        w: cssToStage(108, 150, 220),
-        h: cssToStage(40, 52, 70),
-        pad: cssToStage(14, 16, 24),
+        w: phoneCss(120),
+        h: phoneCss(48),
+        pad: phoneCss(16),
       };
     }
     const compact = compactHud();
@@ -1706,7 +1728,7 @@
       const strip = speciesStripLayout();
       const panel = phoneShopPanelBox();
       const cw = strip.cw;
-      const minCh = cssToStage(38, 54, 80);
+      const minCh = phoneCss(44);
       const x = strip.x;
       const y = strip.y + strip.h + 10;
       const room = Math.max(minCh * 4 + 16, panel.y + panel.h - y - 12);
@@ -11027,8 +11049,8 @@
     if (state.mode !== "play" || state.scene !== "ocean") return;
     if (bagIsFull() || nearSurface() || player.y < 300) return;
     const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
-    const w = portraitStage() ? cssToStage(108, 150, 220) : (compactHud() ? thumbCanvas(132, 160, 260) : 132);
-    const h = portraitStage() ? cssToStage(36, 48, 64) : (compactHud() ? thumbCanvas(52, 56, 88) : 36);
+    const w = portraitStage() ? phoneCss(120) : (compactHud() ? thumbCanvas(132, 160, 260) : 132);
+    const h = portraitStage() ? phoneCss(40) : (compactHud() ? thumbCanvas(52, 56, 88) : 36);
     const sz = actionBtnSize();
     const playW = viewWidth();
     let x = clamp(playW - 16 - w, 12, playW - w - 12);
@@ -11217,7 +11239,7 @@
     const th = lines.length > 1 ? (live && live.big ? 54 : 50) : (live && live.big ? 36 : 32);
     const playRight = W;
     const gx = clamp((portraitStage() ? playRight / 2 : W / 2) - tw / 2, leftPad, playRight - 12 - tw);
-    const gy = portraitStage() ? 12 + cssToStage(44, 56, 80) + 6 : 16;
+    const gy = portraitStage() ? 12 + phoneCss(48) + 6 : 16;
     return Object.assign(hudBox(gx, gy, tw, th), {
       text: gt,
       lines,
@@ -11257,9 +11279,7 @@
   }
   function moneyHudBox(ribbon) {
     if (portraitStage()) {
-      const w = cssToStage(132, 200, 320);
-      const h = cssToStage(44, 56, 78);
-      return hudBox(12, 12, w, h);
+      return hudBox(12, 12, phoneCss(124), phoneCss(48));
     }
     return dodgeUpgradeTray(parkChip(hudBox(16, 14, 200, 52), ribbon));
   }
@@ -11288,7 +11308,7 @@
     drawMoneyReadout(moneyBox);
     ctx.restore();
     const bagBox = portraitStage()
-      ? hudBox(moneyBox.x + moneyBox.w + 8, 12, cssToStage(96, 140, 220), moneyBox.h)
+      ? hudBox(moneyBox.x + moneyBox.w + 8, 12, phoneCss(88), moneyBox.h)
       : dodgeUpgradeTray(parkChip(hudBox(224, 14, 168, 52), ribbon));
     ctx.save();
     ctx.globalAlpha = chipAlpha(bagBox, ribbon);
@@ -11896,18 +11916,23 @@
   }
   function drawTitle() {
     ensurePaint();
-    const waterY = H * 0.50;
+    const waterY = titleWaterY();
     const titleDry = [{ x: -8, y: H - 64, w: W + 16, h: 52 }];
-    if (ATLAS.sky && ART.ready) blitTile("sky", 0, -20, W, 200);
+    if (portraitStage() && H > DESKTOP_H + 20) {
+      paintDockHarborSky(0, 0, W, waterY + 4);
+    } else if (ATLAS.sky && ART.ready) {
+      blitTile("sky", 0, -20, W, 200);
+    }
     drawTownSkyline(0, waterY, W, waterY + 8, false);
     drawBayWater(-20, waterY - 10, W + 40, H - waterY + 28, state.time, false, titleDry);
     ctx.save();
     clipOutDecks(titleDry);
-    const wash = ctx.createLinearGradient(0, H * 0.55, 0, H);
+    const washTop = portraitStage() ? waterY : H * 0.55;
+    const wash = ctx.createLinearGradient(0, washTop, 0, H);
     wash.addColorStop(0, "rgba(8, 40, 56, 0)");
     wash.addColorStop(1, "rgba(8, 30, 42, 0.28)");
     ctx.fillStyle = wash;
-    ctx.fillRect(0, H * 0.55, W, H * 0.45);
+    ctx.fillRect(0, washTop, W, H - washTop);
     drawFoamBand(-10, H - 78, W + 20, state.time);
     ctx.restore();
     drawPierBoards(-8, H - 64, W + 16, 72, { plank: 30, wetY: H - 8 });
@@ -11923,14 +11948,15 @@
       ctx.moveTo(x, 0); ctx.lineTo(x + 56, 0); ctx.lineTo(x + 170, H); ctx.lineTo(x - 24, H); ctx.fill();
     }
     ctx.restore();
+    const fy = portraitStage() ? waterY + 28 : 0;
     const tf = [
-      { s: 0, x: 200, y: 400, a: 0.35, ax: 42, ay: 12, sc: 1.7 },
-      { s: 1, x: 1060, y: 490, a: 0.28, ax: 38, ay: 11, sc: 1.6 },
-      { s: 2, x: 380, y: 560, a: 0.24, ax: 48, ay: 13, sc: 1.55 },
-      { s: 3, x: 940, y: 340, a: 0.22, ax: 40, ay: 10, sc: 1.65 },
-      { s: 4, x: 640, y: 610, a: 0.18, ax: 32, ay: 8, sc: 1.8 },
-      { s: 5, x: 820, y: 430, a: 0.26, ax: 22, ay: 16, sc: 1.45 },
-      { s: 11, x: 1180, y: 380, a: 0.16, ax: 50, ay: 10, sc: 1.35 },
+      { s: 0, x: 200, y: fy + (portraitStage() ? 40 : 400), a: 0.35, ax: 42, ay: 12, sc: 1.7 },
+      { s: 1, x: 1060, y: fy + (portraitStage() ? 90 : 490), a: 0.28, ax: 38, ay: 11, sc: 1.6 },
+      { s: 2, x: 380, y: fy + (portraitStage() ? 130 : 560), a: 0.24, ax: 48, ay: 13, sc: 1.55 },
+      { s: 3, x: 940, y: fy + (portraitStage() ? 20 : 340), a: 0.22, ax: 40, ay: 10, sc: 1.65 },
+      { s: 4, x: 640, y: fy + (portraitStage() ? 160 : 610), a: 0.18, ax: 32, ay: 8, sc: 1.8 },
+      { s: 5, x: 820, y: fy + (portraitStage() ? 70 : 430), a: 0.26, ax: 22, ay: 16, sc: 1.45 },
+      { s: 11, x: 1180, y: fy + (portraitStage() ? 50 : 380), a: 0.16, ax: 50, ay: 10, sc: 1.35 },
     ];
     for (let i = 0; i < tf.length; i++) {
       const f = tf[i];
@@ -12096,15 +12122,15 @@
   }
   function phoneShopBtnBox() {
     const { pauseB, muteB, topBtn } = topCtrlBoxes();
-    const bw = Math.max(topBtn || cssToStage(36, 48, 68), cssToStage(56, 80, 120));
-    const bh = cssToStage(36, 48, 68);
+    const bw = Math.max(topBtn || phoneCss(40), phoneCss(72));
+    const bh = phoneCss(40);
     const x = W - 12 - bw;
     const y = Math.max(pauseB.y + pauseB.h, muteB.y + muteB.h) + 8;
     return hudBox(x, y, bw, bh);
   }
   function phoneShopPanelBox() {
     const btn = phoneShopBtnBox();
-    const w = cssToStage(136, 200, 340);
+    const w = phoneCss(118);
     const x = W - 10 - w;
     const y = btn.y + btn.h + 8;
     const h = Math.max(220, H - y - 16);
@@ -12144,7 +12170,7 @@
     if (portraitStage()) {
       const panel = phoneShopPanelBox();
       const cw = Math.max(80, panel.w - 12);
-      const ch = cssToStage(44, 62, 96);
+      const ch = phoneCss(52);
       const xCol = panel.x + 6;
       const startY = panel.y + 8;
       const colH = railSpeciesIds().length * (ch + 6);
