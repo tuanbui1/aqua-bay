@@ -25,33 +25,35 @@ assert(padlockCalls.length === 2, "padlock is defined once and called once, got 
 
 const lockGlassCalls = src.match(/drawTankLockGlass\s*\(/g) || [];
 assert(lockGlassCalls.length === 2, "lock glass is defined once and called once, got " + lockGlassCalls.length);
-assert(/if \(!state\.unlocked\[i\]\) drawTankLockGlass\(t\)/.test(src),
+assert(/if \(!open\) drawTankLockGlass\(t\)/.test(src),
   "padlock / frost draw is gated on locked, not painted on every tank");
 
 const drawTank = src.match(/function drawTank\s*\(\s*i\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(drawTank, "drawTank body is present");
 assert(!/drawTankPadlock\(/.test(drawTank[0]),
   "drawTank does not stamp a padlock on every bowl");
-assert(/if \(!state\.unlocked\[i\]\) drawTankLockGlass\(t\)/.test(drawTank[0]),
+assert(/if \(!open\) drawTankLockGlass\(t\)/.test(drawTank[0]),
   "only the locked branch calls lock glass");
-assert(/if \(state\.unlocked\[i\]\)/.test(drawTank[0]) && /sp\.name/.test(drawTank[0]),
+assert(/if \(open\)/.test(drawTank[0]) && /sp\.name/.test(drawTank[0]),
   "unlocked tanks paint a readable species name");
 assert(/"empty"/.test(drawTank[0]) || /empty/.test(drawTank[0]),
   "empty unlocked bowls still get a stock cue, not a lock");
+assert(/speciesUnlocked\(i\)/.test(drawTank[0]),
+  "drawTank keys open / lock off speciesUnlocked, not stock");
 
 const habitat = src.match(/function drawTankHabitat\s*\(\s*i,\s*t,\s*stocked\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(habitat, "drawTankHabitat body is present");
 const tangHab = (habitat[0].match(/if \(i === 1\) \{[\s\S]*?else if \(i === 2\)/) || [""])[0];
-const goldHab = (habitat[0].match(/if \(i === 2\) \{[\s\S]*?else if \(!state\.unlocked/) || [""])[0];
-assert(/if \(state\.unlocked\[i\]\)/.test(tangHab),
+const goldHab = (habitat[0].match(/if \(i === 2\) \{[\s\S]*?else if \(!speciesUnlocked/) || [""])[0];
+assert(/if \(speciesUnlocked\(i\)\)/.test(tangHab),
   "Blue Tang habitat is unlocked-only (no live-looking locked tang)");
-assert(/if \(state\.unlocked\[i\]\)/.test(goldHab),
+assert(/if \(speciesUnlocked\(i\)\)/.test(goldHab),
   "Goldfish habitat is unlocked-only (no live-looking locked gold)");
-assert(/drawTankSilhouetteFish\("tang"/.test(tangHab) && /state\.unlocked\[i\]/.test(tangHab),
-  "tang silhouette sits inside the unlocked branch");
+assert(/#2f7dff/.test(tangHab) && /speciesUnlocked\(i\)/.test(tangHab),
+  "tang color sits inside the unlocked branch");
 assert(/drawTankSilhouetteFish\("lock"/.test(tangHab),
   "locked Tang paints a lock silhouette, not a live blue disc");
-assert(/else if \(!state\.unlocked\[i\]\)/.test(habitat[0]),
+assert(/else if \(!speciesUnlocked\(i\)\)/.test(habitat[0]),
   "locked tanks keep their own frost habitat");
 assert(/drawTankSilhouetteFish\("lock"/.test(habitat[0]),
   "locked tanks paint a lock silhouette, not a live species");
@@ -61,12 +63,12 @@ assert(!/!\s*stocked\s*\|\|\s*!state\.unlocked\[i\]/.test(habitat[0]),
 const water = src.match(/function tankWaterFill\s*\(\s*i,\s*t\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(water, "tankWaterFill body is present");
 const tangWater = (water[0].match(/if \(i === 1\) \{[\s\S]*?else if \(i === 2\)/) || [""])[0];
-const goldWater = (water[0].match(/if \(i === 2\) \{[\s\S]*?else if \(!state\.unlocked/) || [""])[0];
-assert(/if \(state\.unlocked\[i\]\)/.test(tangWater) && tangWater.indexOf("80,170,255") >= 0,
+const goldWater = (water[0].match(/if \(i === 2\) \{[\s\S]*?else if \(!speciesUnlocked/) || [""])[0];
+assert(/if \(speciesUnlocked\(i\)\)/.test(tangWater) && tangWater.indexOf("80,170,255") >= 0,
   "Tang water is unlocked-only");
-assert(/if \(state\.unlocked\[i\]\)/.test(goldWater) && goldWater.indexOf("180,230,120") >= 0,
+assert(/if \(speciesUnlocked\(i\)\)/.test(goldWater) && goldWater.indexOf("180,230,120") >= 0,
   "Goldfish water is unlocked-only");
-assert(/!state\.unlocked\[i\]/.test(water[0]), "locked water stays slate");
+assert(/!speciesUnlocked\(i\)/.test(water[0]), "locked water stays slate");
 assert(tangWater.indexOf("120,140,160") >= 0, "locked Tang water falls back to slate");
 
 function tankShowsPadlock(unlocked) {
@@ -77,8 +79,8 @@ assert(tankShowsPadlock(false), "locked tank keeps the padlock");
 assert(!tankShowsPadlock(true) && tankShowsPadlock(false),
   "padlock gate matches galleryOpen / unlock-not-met (unlocked flag)");
 
-assert(/Aqua Bay · loop 89/.test(src), "title/pause stamp is loop 89");
-assert(!/Aqua Bay · loop 88/.test(src), "loop 88 stamp is gone");
+assert(/Aqua Bay · loop 90/.test(src), "title/pause stamp is loop 90");
+assert(!/Aqua Bay · loop 89/.test(src), "loop 89 stamp is gone");
 
 assert(/const TANK_W = 210, TANK_H = 156/.test(src), "tank size stays");
 const pos = src.match(/const TANK_POS = \[([\s\S]*?)\];/);

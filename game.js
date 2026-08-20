@@ -148,8 +148,19 @@
   function padSpeciesFlags(arr) {
     const out = [];
     for (let i = 0; i < SPECIES.length; i++) out[i] = !!(arr && arr[i]);
-    if (!out[0]) out[0] = true;
+    out[0] = true;
     return out;
+  }
+  // C90 — species unlock, not tank count / stock. Clownfish is the starter:
+  // New Game, fresh save, and an emptied bowl stay open. Selling must not
+  // re-lock. Frost / padlock read this helper, never `stock === 0`.
+  function speciesUnlocked(i) {
+    if (i === 0) return true;
+    return !!(state && state.unlocked && state.unlocked[i]);
+  }
+  function ensureUnlockFlags() {
+    if (!state) return;
+    state.unlocked = padSpeciesFlags(state.unlocked);
   }
   function padSpeciesNums(arr) {
     const out = [];
@@ -244,7 +255,7 @@
   }
   function nextLockedSafe() {
     if (!state || !state.unlocked) return 1;
-    for (let i = 0; i < SPECIES.length; i++) if (!state.unlocked[i]) return i;
+    for (let i = 0; i < SPECIES.length; i++) if (!speciesUnlocked(i)) return i;
     return -1;
   }
   function landmarkForSpecies(s) {
@@ -262,7 +273,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -881,6 +892,7 @@
         didFirstSale: !!(d.didFirstSale || d.didFirstCollect || (d.money | 0) > 0),
         skin: normalizeSkin(d.skin),
       });
+      ensureUnlockFlags();
       if (!state.missionDone) {
         if ((state.tutorial | 0) >= 1) state.missionStep = Math.max(state.missionStep | 0, 1);
         if (((state.caughtCount && state.caughtCount[0]) | 0) >= 5) state.missionStep = Math.max(state.missionStep | 0, 2);
@@ -893,6 +905,7 @@
   }
   function persist() {
     try {
+      ensureUnlockFlags();
       state.peakMoney = Math.max(state.peakMoney | 0, state.money | 0);
       localStorage.setItem(SAVE_KEY, JSON.stringify({
         money: state.money, speedLv: state.speedLv, bagLv: state.bagLv, catchLv: state.catchLv,
@@ -967,6 +980,7 @@
       catchVerb: null, tankFlash: null, pierChirp: 0,
       camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, camTillHold: 0, almostSfxAt: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
+    ensureUnlockFlags();
     state.hasSave = false;
     player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.route = null; player.blockT = 0; player.walkPhase = 0; player.lean = 0; player.faceS = 1; player.pitch = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0; player.surfaceIntent = false;
     cam.x = 880; cam.y = 1000; cam.z = stageZoom(); cam.rail = 28;
@@ -1750,6 +1764,7 @@
     slip.total += parts.pay;
   }
   function playTankSale(i, who) {
+    ensureUnlockFlags();
     const t = TANK_POS[i];
     if (!t) return;
     const tx = t.x + TANK_W / 2, ty = t.y + TANK_H * 0.42;
@@ -2098,9 +2113,8 @@
       for (let k = 0; k < n; k++) {
         tankFish[i].push({ x: rand(20, TANK_W - 20), y: rand(30, TANK_H - 20), a: rand(0, Math.PI * 2), ph: rand(0, 20) });
       }
-      if (state.unlocked[i] && n === 0) {
-        tankFish[i].push({ x: rand(24, TANK_W - 24), y: rand(36, TANK_H - 18), a: rand(0, 6), ph: rand(0, 20), ceremonial: true });
-      }
+      // C90 — empty unlocked is an empty bowl, not a ceremonial fish
+      // that reads as "stocked" or a lock silhouette.
     }
   }
   function popSaleFish(i) {
@@ -2535,7 +2549,7 @@
         player.scoopLock = null;
         if (state.scene === "shop") {
           const tankHit = tankAtWorld(w.x, w.y);
-          if (tankHit >= 0 && state.unlocked[tankHit] && bagCanStock(tankHit)) {
+          if (tankHit >= 0 && speciesUnlocked(tankHit) && bagCanStock(tankHit)) {
             intentWalk("stock", tankWalkPoint(tankHit), tankHit);
           } else {
             // Free deck / locked painted tank. A leftover Turtle unlock
@@ -2610,7 +2624,7 @@
       const tankHit = tankAtWorld(wx, wy);
       if (tankHit >= 0) {
         if (tankHit >= CORE_SPECIES && !galleryOpen()) return galleryTankDest(tankHit);
-        if (!state.unlocked[tankHit]) {
+        if (!speciesUnlocked(tankHit)) {
           const t = TANK_POS[tankHit];
           const ready = tankHit === nextLockedTank();
           const can = ready && state.money >= SPECIES[tankHit].unlock;
@@ -2767,6 +2781,7 @@
     }
   }
   function startPlay() {
+    ensureUnlockFlags();
     if (oceanFish.length === 0) seedOcean();
     rebuildTankFish();
     state.mode = "play";
@@ -4330,12 +4345,12 @@
   function tryStockOnArrival() {
     if (!bagHasStockable()) return;
     for (let i = 0; i < SPECIES.length; i++) {
-      if (state.unlocked[i] && bagCanStock(i) && nearStockPad(i)) stockTank(i);
+      if (speciesUnlocked(i) && bagCanStock(i) && nearStockPad(i)) stockTank(i);
     }
   }
   function tryUnlockOnArrival() {
     const i = nextLockedTank();
-    if (i < 0 || state.unlocked[i] || !nearStockPad(i)) return;
+    if (i < 0 || speciesUnlocked(i) || !nearStockPad(i)) return;
     if (state.money < SPECIES[i].unlock) return;
     buyTank(i);
   }
@@ -4418,7 +4433,7 @@
   function updateShopInteract(dt) {
     if (allowAutoStock()) {
       for (let i = 0; i < SPECIES.length; i++) {
-        if (state.unlocked[i] && nearStockPad(i)) stockTank(i);
+        if (speciesUnlocked(i) && nearStockPad(i)) stockTank(i);
       }
     } else {
       tryStockOnArrival();
@@ -4440,7 +4455,7 @@
     }
   }
   function stockTank(i) {
-    if (!state.unlocked[i]) return;
+    if (!speciesUnlocked(i)) return;
     const flags = state.bagRare || [];
     const hopped = [];
     const keep = [];
@@ -4617,7 +4632,7 @@
     if (state.tutorial === 5) state.tutorial = 6;
   }
   function buyTank(i) {
-    if (state.unlocked[i]) return;
+    if (speciesUnlocked(i)) return;
     if (i >= CORE_SPECIES && !galleryOpen()) {
       intentWalk("unlock", galleryTankDest(i), 4);
       return;
@@ -5424,7 +5439,7 @@
       if (tankHit >= CORE_SPECIES && !galleryOpen()) {
         return intentWalk("unlock", galleryTankDest(tankHit), 4);
       }
-      if (!state.unlocked[tankHit]) {
+      if (!speciesUnlocked(tankHit)) {
         const t = TANK_POS[tankHit];
         const ready = tankHit === nextLockedTank();
         const can = ready && state.money >= SPECIES[tankHit].unlock;
@@ -9649,6 +9664,7 @@
       drawWelcome();
       drawRegister(); drawKiosk();
       if (galleryOpen()) drawEastGallery();
+      ensureUnlockFlags();
       for (let i = 0; i < SPECIES.length; i++) {
         if (tankLive(i)) drawTank(i);
       }
@@ -9958,7 +9974,7 @@
       water.addColorStop(0.74, "rgba(16,86,112,0.88)");
       water.addColorStop(1, "rgba(8,42,68,0.96)");
     } else if (i === 1) {
-      if (state.unlocked[i]) {
+      if (speciesUnlocked(i)) {
         water.addColorStop(0, "rgba(200,236,255,0.22)");
         water.addColorStop(0.18, "rgba(80,170,255,0.36)");
         water.addColorStop(0.5, "rgba(20,80,180,0.7)");
@@ -9970,7 +9986,7 @@
         water.addColorStop(1, "rgba(16,22,32,0.94)");
       }
     } else if (i === 2) {
-      if (state.unlocked[i]) {
+      if (speciesUnlocked(i)) {
         water.addColorStop(0, "rgba(232,255,210,0.24)");
         water.addColorStop(0.16, "rgba(180,230,120,0.28)");
         water.addColorStop(0.42, "rgba(40,150,118,0.62)");
@@ -9982,7 +9998,7 @@
         water.addColorStop(0.5, "rgba(48,62,78,0.62)");
         water.addColorStop(1, "rgba(16,22,32,0.94)");
       }
-    } else if (!state.unlocked[i]) {
+    } else if (!speciesUnlocked(i)) {
       water.addColorStop(0, "rgba(210,218,228,0.16)");
       water.addColorStop(0.2, "rgba(120,140,160,0.28)");
       water.addColorStop(0.5, "rgba(48,62,78,0.62)");
@@ -10082,9 +10098,8 @@
       ctx.beginPath(); ctx.ellipse(x + w - 38, y + h - 22, 20, 12, 0.2, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#f4a0d8";
       ctx.beginPath(); ctx.ellipse(x + w - 38, y + h - 26, 10, 7, 0.15, 0, Math.PI * 2); ctx.fill();
-      if (!stocked) drawTankSilhouetteFish("clown", x + w * 0.62, y + 62, 1.08);
     } else if (i === 1) {
-      if (state.unlocked[i]) {
+      if (speciesUnlocked(i)) {
         ctx.fillStyle = "rgba(36, 72, 140, 0.5)";
         ctx.fillRect(x, bedY, w, 22);
         ctx.fillStyle = "#ffe14a";
@@ -10100,12 +10115,11 @@
           ctx.quadraticCurveTo(px + 8, y + h - 50, px - 2, y + h - 78);
           ctx.stroke();
         }
-        if (!stocked) drawTankSilhouetteFish("tang", x + w * 0.55, y + 58, 1.1);
       } else {
         drawTankSilhouetteFish("lock", x + w * 0.5, y + 58, 1.05);
       }
     } else if (i === 2) {
-      if (state.unlocked[i]) {
+      if (speciesUnlocked(i)) {
         ctx.fillStyle = "rgba(120,140,52,0.55)";
         ctx.fillRect(x, bedY, w, 22);
         ctx.fillStyle = "rgba(200,210,90,0.3)";
@@ -10132,11 +10146,10 @@
         }
         ctx.fillStyle = "#6aaa3a";
         ctx.beginPath(); ctx.ellipse(x + 36, y + h - 24, 22, 10, 0, 0, Math.PI * 2); ctx.fill();
-        if (!stocked) drawTankSilhouetteFish("gold", x + w * 0.58, y + 60, 1.12);
       } else {
         drawTankSilhouetteFish("lock", x + w * 0.5, y + 58, 1.05);
       }
-    } else if (!state.unlocked[i]) {
+    } else if (!speciesUnlocked(i)) {
       ctx.fillStyle = "rgba(70, 78, 88, 0.55)";
       ctx.fillRect(x, bedY, w, 22);
       ctx.fillStyle = "rgba(40, 48, 58, 0.4)";
@@ -10235,7 +10248,8 @@
     roundRect(t.x + 14, t.y + TANK_H - 2, TANK_W - 28, 8, 2); ctx.fill();
     ctx.fillStyle = "rgba(255, 210, 140, 0.16)";
     ctx.fillRect(t.x + 16, t.y + TANK_H - 2, 18, 6);
-    const stocked = state.unlocked[i] && state.stock[i] > 0;
+    const open = speciesUnlocked(i);
+    const stocked = open && state.stock[i] > 0;
     const water = tankWaterFill(i, t);
     ctx.fillStyle = "#e8f2f6";
     roundRect(t.x - 4, t.y - 4, TANK_W + 8, TANK_H + 8, 13); ctx.fill();
@@ -10275,7 +10289,7 @@
     ctx.quadraticCurveTo(t.x + TANK_W - 18, lineY + 7, t.x + TANK_W - 8, lineY + 3);
     ctx.stroke();
     drawTankHabitat(i, t, stocked);
-    if (!state.unlocked[i]) drawTankLockGlass(t);
+    if (!open) drawTankLockGlass(t);
     drawCaustics(t.x, t.y + 18, TANK_W, TANK_H - 40, state.time + i, 0.14);
     ctx.save();
     ctx.globalAlpha = 0.2;
@@ -10291,7 +10305,7 @@
       ctx.stroke();
     }
     ctx.restore();
-    if (state.unlocked[i]) {
+    if (open) {
       const sc = stocked ? 0.96 : 0.84;
       const tm = state.time; // shared with tankExits — must stay outside the swim loop
       for (const f of tankFish[i]) {
@@ -10372,7 +10386,7 @@
       ctx.beginPath(); ctx.ellipse(dx, dy, 1.6, 2.4, 0.2, 0, Math.PI * 2); ctx.fill();
     }
     ctx.restore();
-    if (state.unlocked[i] && state.bag.some((s) => s === i)) {
+    if (open && state.bag.some((s) => s === i)) {
       ctx.strokeStyle = "rgba(120,255,210," + (0.45 + 0.35 * Math.sin(state.time * 4)) + ")";
       ctx.lineWidth = 6;
       roundRect(t.x - 3, t.y - 3, TANK_W + 6, TANK_H + 6, 12); ctx.stroke();
@@ -10385,7 +10399,7 @@
     ctx.beginPath(); ctx.moveTo(t.x + 10, t.y + 3); ctx.lineTo(t.x + TANK_W - 12, t.y + 3); ctx.stroke();
     ctx.strokeStyle = "rgba(255,255,255,0.28)"; ctx.lineWidth = 1.4;
     ctx.beginPath(); ctx.moveTo(t.x + 8, t.y + 10); ctx.lineTo(t.x + 8, t.y + TANK_H - 14); ctx.stroke();
-    if (state.unlocked[i]) {
+    if (open) {
       const labelY = tankHudClearY(t.x + TANK_W / 2, t.y + TANK_H - 32);
       const nameA = worldLabelAlpha(t.x + 8, labelY, TANK_W - 16, 24);
       if (nameA > 0.04) {
@@ -12574,7 +12588,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, ty + th * 0.74);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 89", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 90", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -12637,7 +12651,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 89", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 90", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -12668,7 +12682,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 89", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 90", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
@@ -12690,7 +12704,7 @@
     const out = [];
     if (state.scene !== "shop") return out;
     for (let i = 0; i < SPECIES.length; i++) {
-      if (!tankLive(i) || state.unlocked[i]) continue;
+      if (!tankLive(i) || speciesUnlocked(i)) continue;
       const b = tankScreenBox(i);
       if (b) out.push(b);
     }
