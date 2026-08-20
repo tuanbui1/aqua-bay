@@ -122,8 +122,8 @@ assert(!tankShowsPadlock(1, play.unlocked, 0),
   "empty unlocked Tang has no padlock");
 assert(tankShowsPadlock(2, play.unlocked, 0), "Goldfish stays locked until its price");
 
-assert(/Aqua Bay · loop 101/.test(src), "title/pause stamp is loop 101");
-assert(!/Aqua Bay · loop 100/.test(src), "loop 100 stamp is gone");
+assert(/Aqua Bay · loop 102/.test(src), "title/pause stamp is loop 102");
+assert(!/Aqua Bay · loop 101/.test(src), "loop 101 stamp is gone");
 
 assert(/const TANK_W = 210, TANK_H = 156/.test(src), "tank size stays");
 const pos = src.match(/const TANK_POS = \[([\s\S]*?)\];/);
