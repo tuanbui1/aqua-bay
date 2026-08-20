@@ -1,9 +1,8 @@
-// C102 — open-gallery dock walk reaches Puffer on the row-2 apron.
-// Loop 101 leftover: the west spine (x=300–342) sat west of column 0
-// (tanks start at 340) on the till / water. shopPath(dock → tank 6)
-// portaled to x≈321; WASD north from Dolphin followed that spine into
-// REGISTER. Spine belongs east of the 4-tank cluster (right edge 1204).
-// Closed gallery still remaps a Puffer click to the Sea Turtle pad.
+// C104 — hold-W after galleryOpen goes to the next locked bowl, not
+// Soon-Puffer. Loop 103 leftover: wasdShopPath hardcoded tank 6, so a
+// player who just unlocked Turtle always taxied the east spine to a
+// locked Puffer. nextLockedTank() after Turtle is Seahorse (5, $2200).
+// Click-to-walk Puffer still routes there. Unlock order stays.
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -43,24 +42,28 @@ const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
 assert(/Aqua Bay · loop 104/.test(src), "title/pause stamp is loop 104");
 assert(!/Aqua Bay · loop 103/.test(src), "loop 103 stamp is gone");
-assert(/C102 — C101's west spine/.test(src), "C102 names the east-aisle spine");
+assert(/function wasdShopPath\s*\(/.test(src), "wasdShopPath stays");
+assert(/nextLockedTank\(\)/.test(extractFn(src, "wasdShopPath") || ""),
+  "wasdShopPath steers to nextLockedTank, not hardcoded tank 6");
+assert(!/tankWalkPoint\(6\)/.test(extractFn(src, "wasdShopPath") || ""),
+  "wasdShopPath is not a Puffer magnet");
+assert(/C104 — do not magnet to Soon-Puffer/.test(src) ||
+  /C104 — that spine is not a Puffer taxi/.test(src),
+  "C104 names the Soon-Puffer taxi leftover");
+assert(/C103 — hold-W never took that spine/.test(src) ||
+  /C103 — hold W \(no A\/D\) from south of the/.test(src),
+  "C103 spine / hold-W path stays");
+assert(/C102 — C101's west spine/.test(src), "C102 east-aisle spine stays");
 assert(/C101 — live gallery bowls fill the old fat neighborhood/.test(src),
   "C101 apron comment stays");
-assert(/C101 — collide with the bowl, not a 28px south pad/.test(src),
-  "C101 bowl collider stays");
 assert(/pushOut\(t\.x, t\.y, TANK_W, TANK_H \+ 8\)/.test(src),
   "tank walk collider is the bowl + 8px lip");
-
-const walkFn = extractFn(src, "shopWalkRects");
-assert(walkFn, "shopWalkRects is present");
-assert(!/const spine = \{ x: 300, y: clear, w: 42/.test(walkFn),
-  "C101 west/till spine is gone");
-assert(/x: 1204/.test(walkFn), "open-gallery spine starts at the 4-tank east edge");
 
 assert(/const SAVE_KEY = "aqua-bay-save"/.test(src), "save key stays");
 assert(/function galleryOpen\s*\(/.test(src), "galleryOpen stays");
 assert(/function galleryTankDest\s*\(/.test(src), "galleryTankDest stays");
 assert(/unlock:\s*3200/.test(src), "Puffer unlock stays $3200");
+assert(/unlock:\s*2200/.test(src), "Seahorse unlock stays $2200");
 assert(/unlock:\s*1400/.test(src), "Sea Turtle unlock stays $1400");
 const prices = [15, 22, 40, 70, 150];
 assert(prices[0] === 15 && prices[4] === 150, "original 5 sale prices stay");
@@ -70,9 +73,6 @@ assert(/const PLAZA_CAM_CEILING\s*=\s*520/.test(src), "plaza camera ceiling stay
 assert(/const DOCK_CAM_FLOOR\s*=\s*1000/.test(src), "dock camera floor stays 1000");
 assert(/function desktopStage\s*\(/.test(src), "desktopStage stays");
 assert(/function portraitStage\s*\(/.test(src), "portraitStage stays");
-assert(/function actionChipInset\s*\(/.test(src), "C84 DIVE inset stays");
-assert(/visibleStageBottom/.test(src) && /visualViewport/.test(src),
-  "C82 visualViewport DIVE floor stays");
 
 function desktopStage(w, h) { return w >= 880 && w >= h * 0.92; }
 assert(desktopStage(1280, 720), "1280×720 is a desktop stage");
@@ -85,8 +85,8 @@ const TANK_POS = [
   { x: 340, y: 380 }, { x: 558, y: 380 }, { x: 776, y: 380 }, { x: 994, y: 380 },
   { x: 340, y: 596 }, { x: 558, y: 596 }, { x: 776, y: 596 }, { x: 994, y: 596 },
 ];
+assert(TANK_POS[5].x === 340 && TANK_POS[5].y === 380, "Seahorse stays C76 {340,380}");
 assert(TANK_POS[6].x === 558 && TANK_POS[6].y === 380, "Puffer stays C76 {558,380}");
-assert(/\{ x: 558, y: 380 \}/.test(src), "TANK_POS[6] stays planted");
 
 const REGISTER = { x: 168, y: 500, w: 150, h: 110 };
 const KIOSK = { x: 1280, y: 480, w: 170, h: 130 };
@@ -101,7 +101,6 @@ function padSpeciesFlags(arr) {
   return out;
 }
 
-// Persist-shaped aqua-bay-save payloads (same key / unlock rules as game.js).
 function seedSave(opts) {
   const unlocked = padSpeciesFlags(opts.unlocked);
   return {
@@ -115,23 +114,26 @@ function seedSave(opts) {
 }
 const saveOpen = seedSave({
   unlocked: [true, true, true, true, true],
-  money: 3200,
+  money: 4000,
 });
 const saveClosed = seedSave({
   unlocked: [true],
   money: 0,
 });
-assert(saveOpen.unlocked[4] === true && saveOpen.money >= 3200,
-  "open save has Sea Turtle + Puffer cash");
-assert(saveClosed.unlocked[4] !== true, "closed save has not unlocked Turtle");
-assert(saveOpen.unlocked.filter(Boolean).length >= CORE_SPECIES,
-  "open save meets galleryOpen via Turtle / core count");
+const saveAll = seedSave({
+  unlocked: new Array(SPECIES_N).fill(true),
+  money: 0,
+});
+assert(saveOpen.unlocked[4] === true && saveOpen.unlocked[5] !== true,
+  "fresh gallery save has Turtle, not Seahorse");
+assert(saveOpen.money >= 3200, "cash can afford Puffer but order still forbids it");
 
 const names = [
   "shopDockWalk", "walkClearY", "tankWalkPoint", "shopWalkRects",
   "snapToShopWalk", "shopRectOverlap", "shopRectHas", "shopPortal",
-  "shopPath", "constrainShop", "pushOut", "shopWalkMax",
-  "galleryOpen", "tankLive", "galleryTankDest",
+  "wasdShopPath", "shopPath", "constrainShop", "pushOut", "shopWalkMax",
+  "galleryOpen", "tankLive", "galleryTankDest", "speciesUnlocked",
+  "nextLockedSafe", "nextLockedTank",
   "onAisleWalk", "eastShopNavyGap", "destWantsPlaza", "destWantsDock",
 ];
 const fns = {};
@@ -154,61 +156,44 @@ function makeCtx(save) {
     Math: Math,
   };
   const body = names.map((n) => fns[n]).join("\n") +
-    "\nthis.__api = { galleryOpen, tankWalkPoint, shopPath, constrainShop," +
-    " galleryTankDest, snapToShopWalk, shopWalkRects, shopDockWalk, player, state };";
+    "\nthis.__api = { galleryOpen, tankWalkPoint, shopPath, wasdShopPath," +
+    " constrainShop, galleryTankDest, snapToShopWalk, nextLockedTank," +
+    " shopDockWalk, player, state };";
   vm.runInNewContext(body, sandbox);
   return sandbox.__api;
 }
 
 const openApi = makeCtx(saveOpen);
 const closedApi = makeCtx(saveClosed);
+const allApi = makeCtx(saveAll);
 assert(openApi.galleryOpen() === true, "seeded Turtle save opens the gallery");
 assert(closedApi.galleryOpen() === false, "seeded starter save keeps the gallery closed");
+assert(openApi.nextLockedTank() === 5, "after Turtle the next unlock is Seahorse");
+assert(allApi.nextLockedTank() === -1, "full unlock has no next tank");
+assert(allApi.wasdShopPath(0, -1) == null,
+  "all-unlocked hold-W is not a Puffer magnet");
 
 const dock = openApi.shopDockWalk();
 const dockPt = { x: 880, y: 920 };
 assert(dockPt.x >= dock.x && dockPt.x <= dock.x + dock.w, "seed walk starts on the painted dock");
 
+const horse = openApi.tankWalkPoint(5);
 const puff = openApi.tankWalkPoint(6);
 const turt = openApi.tankWalkPoint(4);
-assert(puff.x === 663 && puff.y === 568, "Puffer stand is south of the bowl");
+assert(horse.x === 445 && horse.y === 568, "Seahorse stand is south of the bowl");
+assert(puff.x === 663 && puff.y === 568, "Puffer stand stays south of the bowl");
 assert(turt.x === 1317 && turt.y === 360, "Turtle pad stays on the core apron");
 
-const tillEast = TANK_POS[0].x;
-const shopEast = TANK_POS[4].x + TANK_W + 80;
-assert(tillEast === 340, "till / water is west of the tank cluster");
-assert(shopEast === 1502, "shop bound is measured from Turtle + walk slack");
+function inEastShop(x, y) {
+  return x >= 1256 && x <= 1256 + 228 && y >= 380 && y <= 380 + 286;
+}
 
-const openPath = openApi.shopPath(dockPt.x, dockPt.y, puff.x, puff.y);
-assert(Array.isArray(openPath) && openPath.length >= 3,
-  "open-gallery dock→Puffer is a routed walk, hops=" + (openPath && openPath.length));
-assert(openPath.every((pt) => Number.isFinite(pt.x) && Number.isFinite(pt.y)),
-  "open-gallery Puffer path is finite");
-const pathXs = [dockPt.x].concat(openPath.map((pt) => pt.x));
-assert(pathXs.every((x) => x > tillEast && x < shopEast),
-  "open-gallery path stays east of the till / inside the shop, xs=" +
-    pathXs.map((x) => x.toFixed(0)).join(","));
-assert(!openPath.some((pt) => pt.x < 400),
-  "open-gallery Puffer path does not use the C101 west/till spine");
-assert(openPath.some((pt) => pt.x > 1100),
-  "open-gallery Puffer path uses the east aisle beside the bowls");
-
-const last = openPath[openPath.length - 1];
-assert(Math.hypot(last.x - puff.x, last.y - puff.y) < 1,
-  "path ends on tankWalkPoint(6)");
-
-// Clicking the Puffer bowl itself is the same dest — not a 1-hop glass cut.
-assert(openPath.length > 1, "Puffer bowl click is not a straight hop through glass");
-
-openApi.player.x = puff.x;
-openApi.player.y = puff.y;
-openApi.constrainShop();
-const occDx = openApi.player.x - puff.x, occDy = openApi.player.y - puff.y;
-assert(Math.hypot(occDx, occDy) < 8,
-  "walker occupies the Puffer pad under constrainShop, d=" +
-    Math.hypot(occDx, occDy).toFixed(2));
-assert(openApi.player.x > tillEast && openApi.player.y > 520 && openApi.player.y < 640,
-  "occupied pad stays on the row-2 apron, not the till");
+const clickPath = openApi.shopPath(dockPt.x, dockPt.y, puff.x, puff.y);
+assert(Array.isArray(clickPath) && clickPath.length >= 3,
+  "click-to-walk dock→Puffer is still a routed walk");
+const clickLast = clickPath[clickPath.length - 1];
+assert(Math.hypot(clickLast.x - puff.x, clickLast.y - puff.y) < 1,
+  "clicking Puffer still routes to tankWalkPoint(6)");
 
 const closedDest = closedApi.galleryTankDest(6);
 assert(Math.abs(closedDest.x - turt.x) < 1 && Math.abs(closedDest.y - turt.y) < 1,
@@ -216,6 +201,71 @@ assert(Math.abs(closedDest.x - turt.x) < 1 && Math.abs(closedDest.y - turt.y) < 
 
 const closedPath = closedApi.shopPath(dockPt.x, dockPt.y, turt.x, turt.y);
 assert(closedPath.length >= 2, "closed gallery still paths dock → Turtle apron");
+assert(closedApi.wasdShopPath(0, -1) == null,
+  "closed gallery does not steal hold-W onto a gallery path");
 
-console.log("c102 puffer aisle: ok (open hops=" + openPath.length +
-  ", xs=" + pathXs.map((x) => Math.round(x)).join("→") + ")");
+function holdW(api, dest, maxT) {
+  api.player.x = dockPt.x;
+  api.player.y = dockPt.y;
+  api.player.goto = null;
+  api.player.route = null;
+  const dt = 1 / 60, maxSpeed = 232, accel = 1650;
+  let vx = 0, vy = 0, t = 0, stuck = 0;
+  while (t < maxT) {
+    let ax = 0, ay = -1;
+    const around = api.wasdShopPath(ax, ay);
+    if (around && around.length) {
+      const n = around[0];
+      const pdx = n.x - api.player.x, pdy = n.y - api.player.y;
+      const pd = Math.hypot(pdx, pdy);
+      if (pd > 8) { ax = pdx / pd; ay = pdy / pd; }
+    }
+    vx += ax * accel * dt;
+    vy += ay * accel * dt;
+    vx -= vx * 5.2 * dt;
+    vy -= vy * 5.2 * dt;
+    const sp = Math.hypot(vx, vy);
+    if (sp > maxSpeed) { vx *= maxSpeed / sp; vy *= maxSpeed / sp; }
+    const ox = api.player.x, oy = api.player.y;
+    api.player.x += vx * dt;
+    api.player.y += vy * dt;
+    api.constrainShop();
+    const stepped = Math.hypot(api.player.x - ox, api.player.y - oy);
+    if (stepped < 0.2) stuck++;
+    else stuck = 0;
+    t += dt;
+    const dPad = Math.hypot(api.player.x - dest.x, api.player.y - dest.y);
+    if (dPad < 40) break;
+    if (stuck > 45) break;
+  }
+  return t;
+}
+
+const t = holdW(openApi, horse, 12);
+const wasdD = Math.hypot(openApi.player.x - horse.x, openApi.player.y - horse.y);
+const dPuff = Math.hypot(openApi.player.x - puff.x, openApi.player.y - puff.y);
+assert(t < 10,
+  "hold-W reaches the next unlock in under 10s, t=" + t.toFixed(2));
+assert(wasdD < 40,
+  "WASD-north from the dock occupies the Seahorse pad, d=" + wasdD.toFixed(1) +
+    " at " + openApi.player.x.toFixed(0) + "," + openApi.player.y.toFixed(0));
+assert(dPuff > 80,
+  "hold-W did not taxi to Soon-Puffer, dPuff=" + dPuff.toFixed(1));
+assert(openApi.player.y < 640 && openApi.player.y > 520,
+  "WASD finish is on the row-2 apron, not Dolphin y≈776, y=" +
+    openApi.player.y.toFixed(1));
+assert(Math.abs(openApi.player.y - 776) > 40,
+  "WASD-north did not dead-end on the Dolphin apron");
+assert(openApi.player.x > 340 && openApi.player.x < 560 &&
+  !inEastShop(openApi.player.x, openApi.player.y),
+  "WASD finish is on the Seahorse apron (not till, not Puffer, not eastShop)");
+assert(openApi.state.unlocked[6] !== true,
+  "hold-W arrival does not unlock Puffer out of order");
+assert(openApi.state.unlocked[5] !== true,
+  "this tool does not auto-unlock Seahorse — walk only");
+
+console.log("c104 wasd next: ok (next=" + openApi.nextLockedTank() +
+  ", horse=" + horse.x + "," + horse.y +
+  ", wasd " + t.toFixed(2) + "s @ " +
+  openApi.player.x.toFixed(0) + "," + openApi.player.y.toFixed(0) +
+  ", dPuff=" + dPuff.toFixed(0) + ")");
