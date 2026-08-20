@@ -1004,6 +1004,33 @@
       h: vv ? vv.height : window.innerHeight,
     };
   }
+  function visualCssSize() {
+    const vv = window.visualViewport;
+    return {
+      w: Math.max(1, vv ? vv.width : window.innerWidth),
+      h: Math.max(1, vv ? vv.height : window.innerHeight),
+      left: (vv && vv.offsetLeft) || 0,
+      top: (vv && vv.offsetTop) || 0,
+    };
+  }
+  function wrapSafeInset(side) {
+    const wrap = document.getElementById("wrap");
+    if (!wrap) return 0;
+    const pad = parseFloat(getComputedStyle(wrap)["padding" + side]) || 0;
+    return pad;
+  }
+  // Stage Y of the last pixel that is actually on-screen in the visual
+  // viewport. On a 390×844 phone the browser chrome is ~200px; DIVE must
+  // sit above that edge, not at H (the 844 CSS bottom).
+  function visibleStageBottom() {
+    if (!portraitStage()) return H;
+    const vis = visualCssSize();
+    const rect = canvas.getBoundingClientRect();
+    const cssH = Math.max(1, rect.height || vis.h);
+    const visibleCss = clamp((vis.top + vis.h) - rect.top, 1, cssH);
+    const lip = phoneCss(Math.max(10, wrapSafeInset("Bottom") || 12));
+    return Math.max(phoneCss(96), Math.round(H * (visibleCss / cssH)) - lip);
+  }
   function desktopStage() {
     // One live page: a 1280×720 (or any wide landscape) window keeps the
     // 16:9 framed stage and dense HUD. Coarse pointers on a laptop must
@@ -1084,21 +1111,22 @@
     if (!portraitStage() || H <= DESKTOP_H + 20) return desk;
     const pad = Math.round(H * 0.024);
     const titleH = Math.min(210, Math.max(150, Math.round(H * 0.085)));
-    const whoH = Math.max(28, Math.round(H * 0.018));
     const cardGap = 20;
     const cardW = Math.min(300, Math.round((W - 80 - cardGap * 2) / 3));
     // Natural picker cards (near desktop 168×176). Extra phone height
     // goes to padding + fat buttons, not 2.5:1 noodle slots.
     const cardH = Math.round(cardW * 1.12);
-    const btnH = Math.max(96, Math.round(H * 0.055));
-    const newH = Math.max(88, Math.round(H * 0.048));
+    const btnH = Math.max(phoneCss(52), Math.round(H * 0.055));
+    const newH = Math.max(phoneCss(48), Math.round(H * 0.048));
     const gap = Math.round(H * 0.016);
     const capH = Math.max(28, Math.round(H * 0.018));
     let y = pad;
     const titleY = y;
     y += titleH + gap;
-    const whoY = y + whoH;
-    const pickerY = y + whoH + Math.round(H * 0.006);
+    const whoFontPx = Math.max(22, Math.round(H * 0.017));
+    const whoY = y + whoFontPx;
+    y = whoY + Math.round(whoFontPx * 0.35) + Math.max(10, Math.round(gap * 0.6));
+    const pickerY = y;
     y = pickerY + cardH + Math.round(gap * 1.6);
     const continueY = y;
     y += btnH + Math.round(H * 0.012);
@@ -1166,21 +1194,22 @@
   function layoutStage() {
     const wrap = document.getElementById("wrap");
     if (!wrap) return;
-    const vv = window.visualViewport;
-    const w = vv ? vv.width : window.innerWidth;
-    const h = vv ? vv.height : window.innerHeight;
-    wrap.style.width = Math.max(1, w) + "px";
-    wrap.style.height = Math.max(1, h) + "px";
-    wrap.style.left = ((vv && vv.offsetLeft) || 0) + "px";
-    wrap.style.top = ((vv && vv.offsetTop) || 0) + "px";
-    const cw = wrap.clientWidth || w;
-    const ch = wrap.clientHeight || h;
+    const vis = visualCssSize();
+    wrap.style.width = vis.w + "px";
+    wrap.style.height = vis.h + "px";
+    wrap.style.left = vis.left + "px";
+    wrap.style.top = vis.top + "px";
+    const padL = wrapSafeInset("Left");
+    const padR = wrapSafeInset("Right");
+    const padT = wrapSafeInset("Top");
+    const padB = wrapSafeInset("Bottom");
+    const cw = Math.max(1, vis.w - padL - padR);
+    const ch = Math.max(1, vis.h - padT - padB);
     let cssW, cssH;
     if (fillPhoneStage() && phonePortrait()) {
-      // Portrait phone: canvas IS the visual viewport, with square
-      // pixels. Logical H matches the aspect so a 390×844 playfield is
-      // wide — not a 270px desktop column stretched tall, and not a
-      // 16:9 postage stamp.
+      // Portrait phone: canvas IS the visual viewport (not 100dvh / 844
+      // with DIVE under the URL bar). Square pixels. When the chrome
+      // hides or shows, visualViewport resize/scroll re-runs this.
       H = Math.max(960, Math.round(W * ch / Math.max(1, cw)));
       cssW = Math.max(1, Math.round(cw));
       cssH = Math.max(1, Math.round(ch));
@@ -1709,13 +1738,15 @@
     let x = W / 2 - w / 2;
     let y = H - sz.pad - h;
     if (portraitStage()) {
+      const floor = visibleStageBottom();
       x = W - sz.pad - w;
-      y = H - sz.pad - h;
+      y = floor - sz.pad - h;
       if (phoneShopOpen) {
         const panel = phoneShopPanelBox();
         x = Math.min(x, panel.x - 10 - w);
       }
       x = clamp(x, 12, W - w - 12);
+      y = clamp(y, phoneCss(72), floor - h - 4);
       return hudBox(x, y, w, h);
     }
     if (compact && state.scene === "shop" && shopBarsReady()) {
@@ -1726,15 +1757,12 @@
   function upgradeBarBox() {
     if (portraitStage()) {
       const strip = speciesStripLayout();
-      const panel = phoneShopPanelBox();
       const cw = strip.cw;
-      const minCh = phoneCss(44);
+      const ch = phoneCss(56);
       const x = strip.x;
       const y = strip.y + strip.h + 10;
-      const room = Math.max(minCh * 4 + 16, panel.y + panel.h - y - 12);
-      const fitCh = clamp(((room - 18) / 4) | 0, minCh, Math.round(H * 0.08));
-      const h = 4 * (fitCh + 6) + 8;
-      return Object.assign(hudBox(x, y, cw, h), { cw, ch: fitCh, compact: false, phoneRail: true, stacked: true });
+      const h = 4 * (ch + 6) + 8;
+      return Object.assign(hudBox(x, y, cw, h), { cw, ch, compact: false, phoneRail: true, stacked: true });
     }
     const compact = compactHud();
     const cw = compact ? thumbCanvas(148, 168, 260) : 160;
@@ -10339,6 +10367,7 @@
       }
       ctx.restore();
     }
+    drawReefPlates();
     if (state.catchClimax && state.catchClimax.fish) {
       const f = state.catchClimax.fish;
       const tug = 0.5 + 0.5 * Math.sin(state.time * 26);
@@ -11058,10 +11087,11 @@
       x = Math.min(x, phoneShopPanelBox().x - 10 - w);
       x = clamp(x, 12, playW - w - 12);
     }
-    const b = hudBox(x, H - sz.pad - 12 - h, w, h);
+    const floor = portraitStage() ? visibleStageBottom() : H;
+    const b = hudBox(x, floor - sz.pad - 12 - h, w, h);
     card(b.x, b.y, b.w, b.h, "rgba(40, 160, 180," + (0.78 + pulse * 0.16) + ")");
     ctx.fillStyle = "#fff6e8";
-    ctx.font = (b.h > 38 ? "800 18px" : "800 15px") + " Fredoka, sans-serif";
+    ctx.font = (portraitStage() ? "800 " + phoneCss(16) + "px" : (b.h > 38 ? "800 18px" : "800 15px")) + " Fredoka, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("↑ SURFACE", b.x + b.w / 2, b.y + b.h / 2 + 6);
     btn("goto-surface", b.x, b.y, b.w, b.h);
@@ -11290,12 +11320,14 @@
     ctx.translate(-(moneyBox.x + 94), -(moneyBox.y + 26));
     pierChip(moneyBox.x, moneyBox.y, moneyBox.w, moneyBox.h);
     drawCoin(moneyBox.x + 28, moneyBox.y + 26, 14);
-    ctx.fillStyle = "#fff6e8"; ctx.font = "800 22px Nunito, sans-serif"; ctx.textAlign = "left";
+    const cashPx = portraitStage() ? phoneCss(18) : 22;
+    const goalPx = portraitStage() ? phoneCss(11) : 11;
+    ctx.fillStyle = "#fff6e8"; ctx.font = "800 " + cashPx + "px Nunito, sans-serif"; ctx.textAlign = "left";
     ctx.fillText(String(state.displayMoney), moneyBox.x + 52, moneyBox.y + 26);
     const ng = nextGoal();
     if (ng) {
       ctx.fillStyle = "#ffe27a";
-      ctx.font = "700 11px Nunito, sans-serif";
+      ctx.font = "700 " + goalPx + "px Nunito, sans-serif";
       ctx.fillText("Next " + ng.name + " $" + ng.cost, moneyBox.x + 52, moneyBox.y + 42);
     }
     ctx.restore();
@@ -11316,9 +11348,11 @@
     ctx.scale(state.bagPunch, state.bagPunch);
     ctx.translate(-(bagBox.x + 84), -(bagBox.y + 26));
     pierChip(bagBox.x, bagBox.y, bagBox.w, bagBox.h);
-    ctx.fillStyle = "#dce8b0"; ctx.font = "700 13px Nunito, sans-serif"; ctx.textAlign = "left";
+    const bagLabelPx = portraitStage() ? phoneCss(12) : 13;
+    const bagCountPx = portraitStage() ? phoneCss(16) : 22;
+    ctx.fillStyle = "#dce8b0"; ctx.font = "700 " + bagLabelPx + "px Nunito, sans-serif"; ctx.textAlign = "left";
     ctx.fillText("BAG", bagBox.x + 14, bagBox.y + 20);
-    ctx.fillStyle = "#fff6e8"; ctx.font = "800 22px Nunito, sans-serif";
+    ctx.fillStyle = "#fff6e8"; ctx.font = "800 " + bagCountPx + "px Nunito, sans-serif";
     const bagShown = state.bag.length;
     ctx.fillText(bagShown + " / " + bagMax(), bagBox.x + 14, bagBox.y + 42);
     ctx.restore();
@@ -11451,7 +11485,7 @@
     drawSpeaker(muteB.x + muteB.w / 2, muteB.y + muteB.h / 2, state.muted);
     btn("mute", muteB.x, muteB.y, muteB.w, muteB.h);
     card(pauseB.x, pauseB.y, pauseB.w, pauseB.h);
-    ctx.fillStyle = "#fff6e8"; ctx.font = "800 18px Nunito, sans-serif";
+    ctx.fillStyle = "#fff6e8"; ctx.font = "800 " + (portraitStage() ? phoneCss(16) : 18) + "px Nunito, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("II", pauseB.x + pauseB.w / 2, pauseB.y + pauseB.h / 2 + 7);
     btn("pause", pauseB.x, pauseB.y, pauseB.w, pauseB.h);
@@ -11477,14 +11511,14 @@
     if (state.scene === "shop" && nearBoat() && expeditionUnlocked()) {
       const eb = actionBtnBox();
       card(eb.x, eb.y, eb.w, eb.h, "rgba(40, 160, 180, 0.88)");
-      ctx.fillStyle = "#fff"; ctx.font = (portraitStage() ? "800 20px" : (eb.h > 70 ? "800 28px" : "700 16px")) + " Fredoka, sans-serif";
+      ctx.fillStyle = "#fff"; ctx.font = (portraitStage() ? "800 " + phoneCss(16) + "px" : (eb.h > 70 ? "800 28px" : "700 16px")) + " Fredoka, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(thumbCopy() ? "BOAT $35" : "SPACE · Expedition $35", eb.x + eb.w / 2, eb.y + eb.h / 2 + 8);
     } else if (diveActionLegal()) {
       const db = actionBtnBox();
       card(db.x, db.y, db.w, db.h, "rgba(40, 160, 180, 0.92)");
       ctx.fillStyle = "#fff";
-      ctx.font = (portraitStage() ? "800 22px" : (db.h > 70 ? "800 34px" : "700 16px")) + " Fredoka, sans-serif";
+      ctx.font = (portraitStage() ? "800 " + phoneCss(18) + "px" : (db.h > 70 ? "800 34px" : "700 16px")) + " Fredoka, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(thumbCopy() ? "DIVE" : "SPACE  or  click  to  DIVE", db.x + db.w / 2, db.y + db.h / 2 + 10);
       btn("dive", db.x, db.y, db.w, db.h);
@@ -11494,7 +11528,7 @@
       const sb = actionBtnBox();
       card(sb.x, sb.y, sb.w, sb.h, "rgba(40, 160, 180, 0.92)");
       ctx.fillStyle = "#fff";
-      ctx.font = (portraitStage() ? "800 20px" : (sb.h > 70 ? "800 34px" : "700 16px")) + " Fredoka, sans-serif";
+      ctx.font = (portraitStage() ? "800 " + phoneCss(16) + "px" : (sb.h > 70 ? "800 34px" : "700 16px")) + " Fredoka, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(thumbCopy() ? "SURFACE" : "SPACE  or  click  to  SURFACE", sb.x + sb.w / 2, sb.y + sb.h / 2 + 10);
       ctx.globalAlpha = 1;
@@ -11657,6 +11691,9 @@
   }
   function upCard(id, x, y, title, promise, icon, cost, maxed, can, pulse, size) {
     const w = (size && size.w) || 168, h = (size && size.h) || 72;
+    const titlePx = (size && size.titlePx) || 13;
+    const promisePx = (size && size.promisePx) || 11;
+    const pricePx = (size && size.pricePx) || 13;
     const shaking = state.cardShake && state.cardShake.id === id;
     const shake = shaking
       ? Math.sin(state.cardShake.t * 68) * 26 * clamp(state.cardShake.t / 0.2, 0, 1)
@@ -11677,24 +11714,27 @@
       roundRect(x, y, w, h, 12); ctx.stroke();
     }
     ctx.textAlign = "left";
-    ctx.fillStyle = "#fff6e8"; ctx.font = "700 13px Fredoka, sans-serif";
-    ctx.fillText(title, x + 10, y + 20);
+    ctx.fillStyle = "#fff6e8"; ctx.font = "700 " + titlePx + "px Fredoka, sans-serif";
+    ctx.fillText(title, x + 10, y + Math.max(16, Math.round(h * 0.32)));
     ctx.fillStyle = can ? "rgba(20, 48, 44, 0.95)" : "rgba(28, 24, 20, 0.88)";
-    const pillY = y + h - 32;
-    roundRect(x + 8, pillY, Math.min(128, w - 20), 22, 8); ctx.fill();
-    drawUpIcon(icon, x + 20, pillY + 11);
+    const pillH = Math.max(18, Math.round(h * 0.36));
+    const pillY = y + h - pillH - 6;
+    roundRect(x + 8, pillY, Math.min(Math.max(96, w - 16), w - 12), pillH, 8); ctx.fill();
+    drawUpIcon(icon, x + 20, pillY + pillH / 2);
     ctx.fillStyle = can ? "#ffe27a" : "#e8f4f8";
-    ctx.font = "800 11px Nunito, sans-serif";
-    ctx.fillText(promise, x + 32, pillY + 15);
+    ctx.font = "800 " + promisePx + "px Nunito, sans-serif";
+    ctx.fillText(promise, x + 32, pillY + Math.round(pillH * 0.68));
     ctx.textAlign = "right";
     ctx.fillStyle = maxed ? "#8fd" : flashing ? "#ff6a5a" : can ? "#ffe27a" : "#c4b8a4";
-    ctx.font = flashing ? "800 16px Nunito, sans-serif" : "800 13px Nunito, sans-serif";
-    ctx.fillText(maxed ? "MAX" : "$" + cost, x + w - 10, y + 22);
+    ctx.font = flashing ? "800 " + Math.max(pricePx, 16) + "px Nunito, sans-serif" : "800 " + pricePx + "px Nunito, sans-serif";
+    ctx.fillText(maxed ? "MAX" : "$" + cost, x + w - 10, y + Math.max(16, Math.round(h * 0.34)));
     if (!maxed) btn(id, x, y, w, h);
   }
   function drawUpgradeBar() {
     const bar = upgradeBarBox();
-    const size = { w: bar.cw, h: bar.ch };
+    const size = bar.phoneRail
+      ? { w: bar.cw, h: bar.ch, titlePx: phoneCss(14), promisePx: phoneCss(12), pricePx: phoneCss(14) }
+      : { w: bar.cw, h: bar.ch };
     card(bar.x, bar.y, bar.w, bar.h, "rgba(12, 28, 36, 0.72)");
     const sMax = state.speedLv >= SPEED_COST.length;
     const bMax = state.bagLv >= BAG_COST.length;
@@ -11814,7 +11854,8 @@
     const namePx = fnt.nameFont || 16;
     const blurbPx = fnt.blurbFont || 11;
     const whoPx = fnt.whoFont || 14;
-    const whoY = fnt.whoY != null ? fnt.whoY : (cy - 20);
+    let whoY = fnt.whoY != null ? fnt.whoY : (cy - 20);
+    if (whoY > cy - 8) whoY = cy - Math.max(16, (fnt.whoFont || 14) + 6);
     const total = cardW * 3 + gap * 2;
     let x = cx - total / 2;
     const chosen = normalizeSkin(state.skin);
@@ -12133,7 +12174,9 @@
     const w = phoneCss(118);
     const x = W - 10 - w;
     const y = btn.y + btn.h + 8;
-    const h = Math.max(220, H - y - 16);
+    const hug = railSpeciesIds().length * (phoneCss(52) + 6) + 4 * (phoneCss(56) + 6) + phoneCss(28);
+    const maxH = Math.max(phoneCss(180), visibleStageBottom() - y - phoneCss(8));
+    const h = clamp(hug, phoneCss(200), maxH);
     return hudBox(x, y, w, h);
   }
   function phoneShopHit(x, y) {
@@ -12239,20 +12282,25 @@
       else drawFishSilhouette(SPECIES[i], x + cw / 2, y + ch * 0.30, 0.78);
       ctx.restore();
       ctx.textAlign = "center";
+      const pricePx = portraitStage() ? phoneCss(13) : 13;
+      const namePx = portraitStage() ? phoneCss(11) : (compactHud() ? 10 : 11);
+      const needPx = portraitStage() ? phoneCss(11) : 11;
+      const priceY = y + ch - Math.round(ch * 0.34);
+      const nameY = y + ch - Math.round(ch * 0.08);
       if (!state.unlocked[i]) {
         ctx.fillStyle = affordable ? "#ffe27a" : hover && need > 0 ? "#ffb08a" : "#ffe27a";
-        ctx.font = hover && need > 0 ? "800 11px Nunito, sans-serif" : "800 13px Nunito, sans-serif";
-        ctx.fillText(hover && need > 0 ? "need $" + need + " more" : "$" + SPECIES[i].unlock, x + cw / 2, y + ch - 18);
+        ctx.font = "800 " + (hover && need > 0 ? needPx : pricePx) + "px Nunito, sans-serif";
+        ctx.fillText(hover && need > 0 ? "need $" + need + " more" : "$" + SPECIES[i].unlock, x + cw / 2, priceY);
         ctx.fillStyle = affordable ? "#fff6e8" : "#c8e8ee";
-        ctx.font = compactHud() ? "700 10px Nunito, sans-serif" : "700 11px Nunito, sans-serif";
-        ctx.fillText(SPECIES[i].name, x + cw / 2, y + ch - 2);
+        ctx.font = "700 " + namePx + "px Nunito, sans-serif";
+        ctx.fillText(SPECIES[i].name, x + cw / 2, nameY);
       } else {
         ctx.fillStyle = hover ? "#ffe27a" : "#e8d080";
-        ctx.font = "800 13px Nunito, sans-serif";
-        ctx.fillText("$" + SPECIES[i].price, x + cw / 2, y + ch - 18);
+        ctx.font = "800 " + pricePx + "px Nunito, sans-serif";
+        ctx.fillText("$" + SPECIES[i].price, x + cw / 2, priceY);
         ctx.fillStyle = "#c8e8ee";
-        ctx.font = compactHud() ? "700 10px Nunito, sans-serif" : "700 11px Nunito, sans-serif";
-        ctx.fillText(SPECIES[i].name, x + cw / 2, y + ch - 2);
+        ctx.font = "700 " + namePx + "px Nunito, sans-serif";
+        ctx.fillText(SPECIES[i].name, x + cw / 2, nameY);
       }
       btn("book-" + i, x, y, cw, ch + 2);
       ctx.restore();
@@ -12736,7 +12784,14 @@
       ctx.fill();
     }
     ctx.restore();
-    if (s.landmark) drawWorldPlate(s.x, s.y - 40 * sc, "REEF", "reef");
+  }
+  function drawReefPlates() {
+    for (let i = 0; i < oceanScenery.length; i++) {
+      const s = oceanScenery[i];
+      if (!s.landmark) continue;
+      const sc = s.sc == null ? 1 : s.sc;
+      drawWorldPlate(s.x, s.y - 58 * sc, "REEF", "reef");
+    }
   }
   function drawWorldPlate(x, y, text, theme) {
     const shiny = theme === "shiny";

@@ -113,14 +113,18 @@ function titleMenuLayout(H) {
   const cardGap = 20;
   const cardW = Math.min(300, Math.round((W - 80 - cardGap * 2) / 3));
   const cardH = Math.round(cardW * 1.12);
-  const btnH = Math.max(96, Math.round(H * 0.055));
-  const newH = Math.max(88, Math.round(H * 0.048));
+  const cssW = 390;
+  const btnH = Math.max(Math.round(52 * W / cssW), Math.round(H * 0.055));
+  const newH = Math.max(Math.round(48 * W / cssW), Math.round(H * 0.048));
   const gap = Math.round(H * 0.016);
   const capH = Math.max(28, Math.round(H * 0.018));
   let y = pad;
   const titleY = y;
   y += titleH + gap;
-  const pickerY = y + whoH + Math.round(H * 0.006);
+  const whoFontPx = Math.max(22, Math.round(H * 0.017));
+  const whoY = y + whoFontPx;
+  y = whoY + Math.round(whoFontPx * 0.35) + Math.max(10, Math.round(gap * 0.6));
+  const pickerY = y;
   y = pickerY + cardH + Math.round(gap * 1.6);
   let continueY = y;
   y += btnH + Math.round(H * 0.012);
@@ -136,7 +140,7 @@ function titleMenuLayout(H) {
     newY += shift;
   }
   return {
-    titleY, titleH, pickerY, cardW, cardH,
+    titleY, titleH, pickerY, cardW, cardH, whoY,
     continueY, continueH: btnH, captionY, newY, newH,
     portrait: true,
   };
@@ -151,13 +155,48 @@ const phoneLay = titleMenuLayout(H390);
 assert(phoneLay.portrait, "390×844 uses the tall title layout");
 assert(phoneLay.cardW / phoneLay.cardH > 0.8 && phoneLay.cardH / phoneLay.cardW < 1.35,
   "title cards are not vertically elongated noodles, aspect=" + (phoneLay.cardH / phoneLay.cardW).toFixed(2));
-assert(phoneLay.continueH >= 96, "Continue is a fat button, got " + phoneLay.continueH);
-assert(phoneLay.newH >= 88, "New Game is a fat button, got " + phoneLay.newH);
+assert(phoneLay.continueH / H390 * 844 >= 48, "Continue is a fat button, cssH=" + (phoneLay.continueH / H390 * 844).toFixed(1));
+assert(phoneLay.newH / H390 * 844 >= 44, "New Game is a fat button, cssH=" + (phoneLay.newH / H390 * 844).toFixed(1));
 const btnGap = phoneLay.newY - (phoneLay.continueY + phoneLay.continueH);
 assert(btnGap >= 40, "Continue and New Game must not crush, gap=" + btnGap);
 assert(phoneLay.captionY > phoneLay.continueY + phoneLay.continueH, "caption sits below Continue");
 assert(phoneLay.captionY < phoneLay.newY, "caption sits above New Game");
 assert(phoneLay.newY + phoneLay.newH < H390 - 40, "buttons stay on-canvas");
+assert(phoneLay.whoY < phoneLay.pickerY - 8, "Who's diving? sits above the picker cards");
+
+// Live phone: 390-wide with ~200px browser chrome → visual viewport ~655.
+const visH = 655;
+const Hvis = portraitH(390, visH);
+assert(Hvis < H390, "logical H follows the 655 visual viewport, not 844");
+assert(Math.abs((Hvis / W) - (visH / 390)) < 0.01, "655 visual viewport stays square pixels");
+function visibleStageBottom(H, canvasCssH, visCssH, visTop) {
+  const visibleCss = Math.max(1, Math.min(canvasCssH, (visTop + visCssH) - 0));
+  return Math.round(H * (visibleCss / canvasCssH));
+}
+const diveHvis = phoneCss(48, 390);
+const lip = phoneCss(12, 390);
+// Even if the canvas was wrongly sized to 844, DIVE must stay in the 655 window.
+const floorWrong = visibleStageBottom(H390, 844, 655, 0) - lip;
+const diveYWrong = floorWrong - 16 - diveHvis;
+const diveCssBottomWrong = (diveYWrong + diveHvis) / H390 * 844;
+assert(diveCssBottomWrong <= 655, "DIVE stays inside 655 visual viewport if canvas is 844, bottom=" + diveCssBottomWrong.toFixed(1));
+const floorVis = Hvis - lip;
+const diveYVis = floorVis - 16 - diveHvis;
+assert(diveYVis + diveHvis <= Hvis, "DIVE is on the 655-tall stage");
+assert((diveYVis + diveHvis) / Hvis * visH <= visH, "DIVE CSS bottom is in the visual viewport");
+const surfY = diveYVis;
+assert(surfY / Hvis * visH < visH - 8, "SURFACE is not under the browser chrome");
+
+const upCh = phoneCss(56, 390);
+assert(upCh / Hvis * visH < 70, "upgrade rows are compact chips, not tall empty boxes");
+const typeCss = 14;
+assert(typeCss >= 12, "upgrade type is readable, not 8px");
+const visLay = titleMenuLayout(Hvis);
+assert(visLay.whoY < visLay.pickerY - 8, "Who's diving? stays above cards on a 655 visual viewport");
+assert((visLay.continueY + visLay.continueH) / Hvis * visH < visH - 8, "Continue stays in the 655 visual viewport");
+assert(visLay.continueH / Hvis * visH >= 48, "Continue stays fat on a 655 visual viewport, cssH=" + (visLay.continueH / Hvis * visH).toFixed(1));
+const diveTypeCss = 18;
+assert(diveTypeCss >= 16, "DIVE label is readable chip type, not 8px");
 
 function walkHint(thumb) {
   return thumb ? "Walk to the glowing DIVE dock — tap to walk" : "Walk to the glowing DIVE dock and press SPACE";
