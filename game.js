@@ -257,8 +257,10 @@
   const ctx = canvas.getContext("2d");
   ctx.imageSmoothingEnabled = true;
   let canvasDpr = 1;
+  let canvasSx = 1;
+  let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -998,8 +1000,17 @@
     return floor;
   }
   function thumbCanvas(cssPx, minC, maxC) {
-    const s = Math.max(0.28, displayScale());
+    const s = Math.max(0.22, displayScale());
     return clamp(Math.round(cssPx / s), minC, maxC);
+  }
+  function phonePortrait() {
+    const vv = window.visualViewport;
+    const w = vv ? vv.width : window.innerWidth;
+    const h = vv ? vv.height : window.innerHeight;
+    return h > w * 1.05;
+  }
+  function fillPhoneStage() {
+    return isCoarsePointer() || phonePortrait() || displayScale() < 0.72;
   }
   // Resize / visualViewport events must not mutate the live transform or
   // backing store mid-draw. That reset the world blit to screen space and
@@ -1019,19 +1030,28 @@
     wrap.style.top = ((vv && vv.offsetTop) || 0) + "px";
     const cw = wrap.clientWidth || w;
     const ch = wrap.clientHeight || h;
-    const scale = Math.min(cw / W, ch / H);
-    let cssW = Math.max(1, Math.round(W * scale));
-    let cssH = Math.max(1, Math.round(cssW * H / W));
-    if (cssH > ch) {
-      cssH = Math.max(1, Math.round(H * scale));
-      cssW = Math.max(1, Math.round(cssH * W / H));
+    let cssW, cssH;
+    if (fillPhoneStage()) {
+      // Phone / portrait: the canvas *is* the visual viewport. Stretch
+      // 1280×720 into it so a 390×844 thumb tap maps through the full
+      // screen — not a 16:9 postage stamp in the middle.
+      cssW = Math.max(1, Math.round(cw));
+      cssH = Math.max(1, Math.round(ch));
+    } else {
+      const scale = Math.min(cw / W, ch / H);
+      cssW = Math.max(1, Math.round(W * scale));
+      cssH = Math.max(1, Math.round(cssW * H / W));
+      if (cssH > ch) {
+        cssH = Math.max(1, Math.round(H * scale));
+        cssW = Math.max(1, Math.round(cssH * W / H));
+      }
     }
     canvas.style.width = cssW + "px";
     canvas.style.height = cssH + "px";
     const dpr = Math.min(2.5, window.devicePixelRatio || 1);
     const bw = Math.max(1, Math.round(cssW * dpr));
     const bh = Math.max(1, Math.round(cssH * dpr));
-    pendingBacking = { bw: bw, bh: bh, dpr: bw / W };
+    pendingBacking = { bw: bw, bh: bh, sx: bw / W, sy: bh / H };
     if (!frameDrawing) applyCanvasBacking();
   }
   function applyCanvasBacking() {
@@ -1041,7 +1061,9 @@
       canvas.width = bw;
       canvas.height = bh;
     }
-    canvasDpr = pendingBacking.dpr;
+    canvasSx = pendingBacking.sx;
+    canvasSy = pendingBacking.sy;
+    canvasDpr = canvasSx;
     pendingBacking = null;
   }
   function unwindCanvas() {
@@ -1062,7 +1084,7 @@
     // DPR setTransform can miss a device-pixel strip (rounding), which
     // stacked previous-frame wood / water / HUD while cam.y eased.
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.setTransform(canvasDpr, 0, 0, canvasDpr, 0, 0);
+    ctx.setTransform(canvasSx, 0, 0, canvasSy, 0, 0);
     ctx.imageSmoothingEnabled = true;
     if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = "high";
   }
@@ -1070,7 +1092,7 @@
     // HUD stays screen-pinned (C47). Reset so a leaked world translate
     // cannot double-blit the upgrade tray or price cards at cam offsets.
     unwindCanvas();
-    ctx.setTransform(canvasDpr, 0, 0, canvasDpr, 0, 0);
+    ctx.setTransform(canvasSx, 0, 0, canvasSy, 0, 0);
     ctx.imageSmoothingEnabled = true;
     if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = "high";
   }
@@ -1280,8 +1302,8 @@
   }
   function dockCornerBox() {
     const s = worldToScreen(880, 1008);
-    const w = compactHud() ? 118 : 132;
-    const h = compactHud() ? 42 : 36;
+    const w = compactHud() ? thumbCanvas(132, 160, 280) : 132;
+    const h = compactHud() ? thumbCanvas(52, 56, 88) : 36;
     return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h));
   }
   function walkToDock() {
@@ -1326,8 +1348,8 @@
   function tillCornerBox() {
     const t = tillWorld();
     const s = worldToScreen(t.x, t.y);
-    const w = compactHud() ? 132 : 148;
-    const h = compactHud() ? 42 : 36;
+    const w = compactHud() ? thumbCanvas(148, 176, 300) : 148;
+    const h = compactHud() ? thumbCanvas(52, 56, 88) : 36;
     return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h));
   }
   function isDockDest(pt) {
@@ -1507,9 +1529,9 @@
   function actionBtnSize() {
     const compact = compactHud();
     return {
-      w: compact ? thumbCanvas(168, 300, 540) : 340,
-      h: compact ? thumbCanvas(58, 64, 150) : 52,
-      pad: compact ? 22 : 18,
+      w: compact ? thumbCanvas(200, 320, 620) : 340,
+      h: compact ? thumbCanvas(72, 88, 180) : 52,
+      pad: compact ? 18 : 18,
     };
   }
   function actionBtnBox() {
@@ -1525,8 +1547,8 @@
   }
   function upgradeBarBox() {
     const compact = compactHud();
-    const cw = compact ? thumbCanvas(136, 156, 220) : 160;
-    const ch = compact ? thumbCanvas(50, 64, 96) : 66;
+    const cw = compact ? thumbCanvas(148, 168, 260) : 160;
+    const ch = compact ? thumbCanvas(56, 72, 110) : 66;
     const w = compact ? cw * 2 + 24 : 688;
     const h = compact ? ch * 2 + 24 : 82;
     const x = 16;
@@ -2119,10 +2141,14 @@
     const rw = r.width || 1, rh = r.height || 1;
     return { x: (ev.clientX - r.left) * (W / rw), y: (ev.clientY - r.top) * (H / rh) };
   }
-  canvas.addEventListener("pointerdown", (e) => {
-    if (e.cancelable) e.preventDefault();
-    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
-    const p = canvasPos(e);
+  function eventCanvasPos(ev) {
+    const t = (ev.changedTouches && ev.changedTouches[0]) || (ev.touches && ev.touches[0]);
+    if (t) return canvasPos({ clientX: t.clientX, clientY: t.clientY });
+    return canvasPos(ev);
+  }
+  let lastPtrDownAt = 0, lastPtrUpAt = 0;
+  function playPointerDown(p, opts) {
+    const touch = !!(opts && opts.fromTouch);
     mouse.x = p.x; mouse.y = p.y; mouse.down = true; mouse.ui = false;
     mouse.held = 0; mouse.acted = false; mouse.pressX = p.x; mouse.pressY = p.y;
     audio();
@@ -2141,7 +2167,6 @@
       mouse.ui = true; mouse.acted = true; onUI(hit); return;
     }
     if (state.mode === "play") {
-      const touch = e.pointerType === "touch";
       if (!inWorldPlayfield(p.x)) {
         mouse.ui = true;
         return;
@@ -2161,12 +2186,14 @@
         mouse.acted = true; player.goto = null; return;
       }
     }
-  });
-  canvas.addEventListener("pointermove", (e) => { const p = canvasPos(e); mouse.x = p.x; mouse.y = p.y; });
-  canvas.addEventListener("pointerup", (e) => {
+  }
+  function playPointerMove(p) {
+    mouse.x = p.x; mouse.y = p.y;
+  }
+  function playPointerUp(opts) {
+    const touch = !!(opts && opts.fromTouch);
     if (mouse.scoopPress && mouse.held < 0.22 && player.scoopLock) player.scoopTap = true;
     if (state.mode === "play" && !mouse.ui && !mouse.acted && mouse.held < 0.22) {
-      const touch = e && e.pointerType === "touch";
       if (mouse.scoopPress || player.scoopLock) {
         // Scoop tap / hold — do not turn the release into a swim dash.
       } else if (!inWorldPlayfield(mouse.pressX)) {
@@ -2177,23 +2204,54 @@
         player.scoopLock = null;
         if (state.scene === "shop") {
           const tankHit = tankAtWorld(w.x, w.y);
-          const gated = tankHit < 0 ? tankAtAny(w.x, w.y) : -1;
-          if (gated >= CORE_SPECIES && !galleryOpen()) {
-            intentWalk("unlock", galleryTankDest(gated), 4);
-          } else if (tankHit >= 0 && state.unlocked[tankHit] && bagCanStock(tankHit)) {
+          if (tankHit >= 0 && state.unlocked[tankHit] && bagCanStock(tankHit)) {
             intentWalk("stock", tankWalkPoint(tankHit), tankHit);
           } else {
+            // Free deck / locked painted tank. A leftover Turtle unlock
+            // pendingAct must not keep the next thumb tap frozen.
+            player.pendingAct = null;
             setWalkDest(clickWalkTarget(w.x, w.y));
           }
         } else {
+          player.pendingAct = null;
           setWalkDest(clickWalkTarget(w.x, w.y));
         }
       }
     }
     mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.acted = false; mouse.scoopPress = false;
+  }
+  canvas.addEventListener("pointerdown", (e) => {
+    if (e.cancelable) e.preventDefault();
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    lastPtrDownAt = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    playPointerDown(canvasPos(e), { fromTouch: e.pointerType === "touch" || e.pointerType === "pen" });
+  });
+  canvas.addEventListener("pointermove", (e) => { playPointerMove(canvasPos(e)); });
+  canvas.addEventListener("pointerup", (e) => {
+    lastPtrUpAt = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    playPointerUp({ fromTouch: e && (e.pointerType === "touch" || e.pointerType === "pen") });
   });
   canvas.addEventListener("pointercancel", () => { mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.scoopPress = false; });
   canvas.addEventListener("pointerleave", () => { mouse.down = false; mouse.held = 0; });
+  canvas.addEventListener("touchstart", (e) => {
+    if (e.cancelable) e.preventDefault();
+    const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    if (now - lastPtrDownAt < 80) return;
+    lastPtrDownAt = now;
+    playPointerDown(eventCanvasPos(e), { fromTouch: true });
+  }, { passive: false });
+  canvas.addEventListener("touchmove", (e) => {
+    if (e.cancelable) e.preventDefault();
+    playPointerMove(eventCanvasPos(e));
+  }, { passive: false });
+  canvas.addEventListener("touchend", (e) => {
+    if (e.cancelable) e.preventDefault();
+    const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    if (now - lastPtrUpAt < 80) return;
+    lastPtrUpAt = now;
+    playPointerUp({ fromTouch: true });
+  }, { passive: false });
+  canvas.addEventListener("touchcancel", () => { mouse.down = false; mouse.ui = false; mouse.held = 0; mouse.scoopPress = false; });
   window.addEventListener("touchmove", (e) => {
     if (e.target === canvas && e.cancelable) e.preventDefault();
   }, { passive: false });
@@ -2214,10 +2272,6 @@
   function clickWalkTarget(wx, wy) {
     if (state.scene === "shop") {
       const tankHit = tankAtWorld(wx, wy);
-      const gated = tankHit < 0 ? tankAtAny(wx, wy) : -1;
-      if (gated >= CORE_SPECIES && !galleryOpen()) {
-        return galleryTankDest(gated);
-      }
       if (tankHit >= 0) {
         if (tankHit >= CORE_SPECIES && !galleryOpen()) return galleryTankDest(tankHit);
         if (!state.unlocked[tankHit]) {
@@ -2564,7 +2618,13 @@
   // C66 may still hide chips over the bait shack — the column never slides.
   function railGutterLeft() {
     const strip = speciesStripLayout();
-    return Math.max(720, strip.x - 14);
+    const left = strip.x - 14;
+    if (compactHud()) {
+      // Phone: keep a wide playfield. Cards stay in a thumb well.
+      const well = Math.max(strip.w + 18, thumbCanvas(72, 96, 200));
+      return clamp(left, Math.round(W * 0.54), W - well);
+    }
+    return Math.max(720, left);
   }
   function viewWidth() {
     if (state.mode === "title") return W;
@@ -3667,7 +3727,10 @@
     } else {
       constrainShop();
       const stepped = Math.hypot(player.x - ox, player.y - oy);
-      if ((ax || ay) && stepped < 0.45) {
+      if ((ax || ay) && stepped < 0.45 && player.goto) {
+        // Click-walk only. WASD / hold-steer must not be hijacked onto
+        // the ribbon goal — that path portal sat inside the tank glass
+        // and froze plaza Arrow keys at Turtle.
         player.blockT = (player.blockT || 0) + dt;
         if (player.blockT > 0.16) {
           const tgt = currentGoal() && currentGoal().target;
@@ -3725,9 +3788,10 @@
   }
   function shopWalkRects() {
     const dock = shopDockWalk();
+    const clear = walkClearY();
     const rects = [
-      { x: 300, y: 300, w: 900, h: 500 },   /* tank neighborhood x 300–1200 */
-      { x: 1170, y: 300, w: 230, h: 78 },   /* core-5 / Turtle walk apron */
+      { x: 300, y: clear, w: 900, h: 800 - clear },   /* tank neighborhood x 300–1200 */
+      { x: 1100, y: clear, w: 300, h: 378 - clear },   /* core-5 / Turtle walk apron */
       { x: 136, y: 380, w: 208, h: 286 },
       { x: 1256, y: 380, w: 228, h: 286 },
       { x: 120, y: 680, w: 220, h: 180 },
@@ -3785,7 +3849,12 @@
   function shopPortal(a, b) {
     const x0 = Math.max(a.x, b.x), x1 = Math.min(a.x + a.w, b.x + b.w);
     const y0 = Math.max(a.y, b.y), y1 = Math.min(a.y + a.h, b.y + b.h);
-    return { x: (x0 + x1) * 0.5, y: (y0 + y1) * 0.5 };
+    let x = (x0 + x1) * 0.5;
+    let y = (y0 + y1) * 0.5;
+    // Sit on the south lip so a tank-row overlap is not a gate inside glass.
+    const clear = walkClearY();
+    if (y1 > clear && y < clear) y = Math.min(y1 - 4, Math.max(clear + 8, y0 + 4));
+    return { x: x, y: y };
   }
   function shopPath(sx, sy, dx, dy) {
     const rects = shopWalkRects();
@@ -3846,7 +3915,7 @@
     player.y = snapped.y;
     const dock = shopDockWalk();
     player.x = clamp(player.x, 90 + r, shopWalkMax() + 48);
-    player.y = clamp(player.y, 308 + r, dock.y + dock.h);
+    player.y = clamp(player.y, walkClearY() + r, dock.y + dock.h);
     for (let i = 0; i < SPECIES.length; i++) {
       if (!tankLive(i)) continue;
       const t = TANK_POS[i];
@@ -3867,9 +3936,14 @@
   function nearRect(x, y, w, h, pad) {
     return player.x > x - pad && player.x < x + w + pad && player.y > y - pad && player.y < y + h + pad;
   }
+  function walkClearY() {
+    // South of the core-row pushOut box (t.y-8 + TANK_H+28 = 340).
+    return TANK_POS[0].y - 8 + TANK_H + 28 + 4;
+  }
   function tankWalkPoint(i) {
     const t = TANK_POS[i] || TANK_POS[0];
-    return { x: t.x + TANK_W / 2, y: t.y + TANK_H + 32 };
+    const y = Math.max(t.y + TANK_H + 32, walkClearY() + 16);
+    return { x: t.x + TANK_W / 2, y: y };
   }
   function galleryTankDest(i) {
     if (i >= CORE_SPECIES && !galleryOpen()) {
@@ -3886,7 +3960,11 @@
     return tankWalkPoint(i);
   }
   function tankAtAny(wx, wy) {
+    // Only tanks that are actually painted. C76 parked gated gallery
+    // tanks on the plaza walk deck (row y=380). Hitting those invisible
+    // boxes remapped every free-deck click to Turtle.
     for (let i = 0; i < SPECIES.length; i++) {
+      if (!tankLive(i)) continue;
       const t = TANK_POS[i];
       if (!t) continue;
       if (wx > t.x - 8 && wx < t.x + TANK_W + 8 && wy > t.y - 8 && wy < t.y + TANK_H + 28) return i;
@@ -4982,10 +5060,6 @@
         return intentWalk("unlock", tankWalkPoint(tankHit), tankHit);
       }
       return intentWalk("stock", tankWalkPoint(tankHit), tankHit);
-    }
-    const gated = tankAtAny(wx, wy);
-    if (gated >= CORE_SPECIES && !galleryOpen()) {
-      return intentWalk("unlock", galleryTankDest(gated), 4);
     }
     if (tillWaiting()) {
       const rcx = REGISTER.x + REGISTER.w / 2;
@@ -7011,6 +7085,36 @@
     ctx.stroke();
     ctx.restore();
   }
+  function drawPlazaRoofBand() {
+    ctx.fillStyle = "#6a3a18";
+    ctx.fillRect(90, 148, 1480, 20);
+    ctx.fillStyle = "rgba(232, 192, 74, 0.22)";
+    ctx.fillRect(90, 148, 1480, 5);
+    ctx.fillStyle = "#4a2810";
+    ctx.fillRect(90, 166, 1480, 3);
+  }
+  function drawPlazaLantern(lx, ly) {
+    const lg = ctx.createRadialGradient(lx, ly + 10, 6, lx, ly + 24, 110);
+    lg.addColorStop(0, "rgba(255, 200, 110, 0.38)");
+    lg.addColorStop(0.45, "rgba(255, 180, 80, 0.12)");
+    lg.addColorStop(1, "rgba(255, 170, 70, 0)");
+    ctx.fillStyle = lg;
+    ctx.beginPath(); ctx.arc(lx, ly + 22, 110, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#8a5a28";
+    ctx.beginPath();
+    ctx.moveTo(lx - 7, ly - 32);
+    ctx.lineTo(lx + 7, ly - 32);
+    ctx.lineTo(lx + 5, ly - 14);
+    ctx.lineTo(lx - 5, ly - 14);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#f4d078";
+    ctx.beginPath(); ctx.ellipse(lx, ly, 8, 10, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#c49210"; ctx.lineWidth = 1.4;
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(90, 48, 20, 0.45)";
+    ctx.beginPath(); ctx.moveTo(lx, ly - 32); ctx.lineTo(lx, ly - 8); ctx.stroke();
+  }
   function drawPierShade() {
     const sh = ctx.createLinearGradient(80, 70, 1680, 110);
     sh.addColorStop(0, "rgba(28, 40, 62, 0.28)");
@@ -8820,14 +8924,17 @@
     const aisleA = aisleBoardAlpha();
     // Main plaza deck stays opaque — fading it punched sky through the
     // aisle. It sits off-screen at the dock camera (cam.y ≥ 1000).
-    // Stop the deck before the reserved well so the rail is not a saw.
+    // Dock camera still crops to the playfield so the rail is not a saw.
+    // Plaza camera paints the full tank neighborhood — C76's deckEnd cut
+    // a vertical seam through Turtle into the dusk town.
     const deckEnd = playfieldWorldRight() - 56;
-    const plazaW = Math.max(0, Math.min(1480, deckEnd - 90));
+    const plazaFull = plazaCameraReady();
+    const plazaW = plazaFull ? 1480 : Math.max(0, Math.min(1480, deckEnd - 90));
     if (plazaW > 24 && (plazaA > 0.04 || dockCameraReady())) {
       drawPierBoards(90, 80, plazaW, 300, { plank: 26, teal: teal, alignY: 80 });
     }
     if (plazaA > 0.04) {
-      const yardW = Math.max(0, Math.min(1140, deckEnd - 300));
+      const yardW = plazaFull ? 1140 : Math.max(0, Math.min(1140, deckEnd - 300));
       if (yardW > 24) drawPierBoards(300, 300, yardW, 470, { plank: 26, teal: teal, alignY: 80 });
     }
     if (aisleA > 0.04) {
@@ -8852,11 +8959,11 @@
     if (plazaA > 0.04) {
       ctx.save();
       ctx.globalAlpha = plazaA;
-      const westW = Math.max(0, Math.min(172, deckEnd - 156));
+      const westW = plazaFull ? 172 : Math.max(0, Math.min(172, deckEnd - 156));
       if (westW > 20) drawPierBoards(156, 380, westW, 240, { plank: 20, teal: teal, alignY: 80 });
       // Full east deck when the plaza camera is up — shrinking to
       // deckEnd made eastW=0 at cam.x≈880, so feet and POP sat on sky.
-      const eastPaint = Math.max(0, Math.min(188, playfieldWorldRight() - 8 - 1272));
+      const eastPaint = plazaFull ? 188 : Math.max(0, Math.min(188, playfieldWorldRight() - 8 - 1272));
       if (eastPaint > 20) drawPierBoards(1272, 380, eastPaint, 246, { plank: 20, teal: teal, alignY: 80 });
       drawPierBoards(140, 760, 180, 110, { plank: 18, teal: teal, alignY: 80 });
       drawPierShade();
@@ -8975,22 +9082,8 @@
       key.addColorStop(1, "rgba(255, 180, 80, 0)");
       ctx.fillStyle = key;
       ctx.fillRect(80, 50, 1600, 360);
-      for (const lx of [400, 880, 1360]) {
-        const lg = ctx.createRadialGradient(lx, 96, 6, lx, 110, 110);
-        lg.addColorStop(0, "rgba(255, 200, 110, 0.38)");
-        lg.addColorStop(0.45, "rgba(255, 180, 80, 0.12)");
-        lg.addColorStop(1, "rgba(255, 170, 70, 0)");
-        ctx.fillStyle = lg;
-        ctx.beginPath(); ctx.arc(lx, 108, 110, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#2a241c";
-        roundRect(lx - 6, 58, 12, 16, 2); ctx.fill();
-        ctx.fillStyle = "#f4d078";
-        ctx.beginPath(); ctx.arc(lx, 90, 7.5, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = "#1a1610"; ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.strokeStyle = "rgba(40, 24, 10, 0.55)";
-        ctx.beginPath(); ctx.moveTo(lx - 6, 90); ctx.lineTo(lx + 6, 90); ctx.stroke();
-      }
+      drawPlazaRoofBand();
+      for (const lx of [400, 880, 1360]) drawPlazaLantern(lx, 86);
       if (state.unlocked[1]) drawFramedPrint(220, 76, 1);
       if (state.unlocked[2]) drawCoralSouvenir(508, 92);
       if (state.unlocked[3]) drawFramedPrint(1124, 76, 3);
@@ -9051,9 +9144,9 @@
       ctx.save();
       ctx.globalAlpha = plazaA;
       paintWorldSprite(140, 400, 28, function () { drawPot(140, 400, "#4cba6a"); });
-      paintWorldSprite(1600, 400, 28, function () { drawPot(1600, 400, "#3aa35a"); });
+      paintWorldSprite(1468, 420, 28, function () { drawPot(1468, 420, "#3aa35a"); });
       paintWorldSprite(168, 780, 36, function () { drawPot(168, 780, "#3aa35a", 1.7); });
-      paintWorldSprite(1588, 780, 36, function () { drawPot(1588, 780, "#2e8b4a", 1.75); });
+      paintWorldSprite(1448, 640, 36, function () { drawPot(1448, 640, "#2e8b4a", 1.75); });
       paintWorldSprite(381, 748, 52, function () { drawCrateStack(360, 760); });
       ctx.restore();
     }
@@ -9235,7 +9328,16 @@
     ctx.translate(r.x + r.w / 2, r.y + r.h / 2);
     ctx.scale(punch, punch);
     ctx.translate(-(r.x + r.w / 2), -(r.y + r.h / 2));
-    ctx.fillStyle = "#8b5a2b"; roundRect(r.x, r.y, r.w, r.h, 10); ctx.fill();
+    ctx.fillStyle = "#6a3a18"; roundRect(r.x, r.y, r.w, r.h, 10); ctx.fill();
+    const cell = plankCell((r.x + r.y) | 0);
+    if (ART.ready && cell) {
+      ctx.save();
+      roundRect(r.x, r.y, r.w, r.h, 10); ctx.clip();
+      ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, r.x - 4, r.y - 4, r.w + 8, r.h + 8);
+      ctx.restore();
+    }
+    ctx.strokeStyle = "#4a2410"; ctx.lineWidth = 2.2;
+    roundRect(r.x, r.y, r.w, r.h, 10); ctx.stroke();
     // Same rule as Welcome: fade the inner plaque + $ chip as one unit
     // before the left frame bisects them. C34 only boxed the CASHIER
     // word (inset, 26px tall), so $0 / the bouncing $ sat at alpha 1
@@ -9340,7 +9442,18 @@
     if (labelA <= 0.04 || boxesOverlap(kioskBox, strip, 10)) return;
     ctx.save();
     ctx.globalAlpha = labelA;
-    ctx.fillStyle = "#2a7d8a"; roundRect(k.x, k.y, k.w, k.h, 12); ctx.fill();
+    ctx.fillStyle = "#5a3214"; roundRect(k.x, k.y, k.w, k.h, 12); ctx.fill();
+    const cell = plankCell((k.x + k.y) | 0);
+    if (ART.ready && cell) {
+      ctx.save();
+      roundRect(k.x, k.y, k.w, k.h, 12); ctx.clip();
+      ctx.drawImage(ART.img, cell.x, cell.y, cell.w, cell.h, k.x - 6, k.y - 6, k.w + 12, k.h + 12);
+      ctx.restore();
+    }
+    ctx.strokeStyle = "#3a1c0c"; ctx.lineWidth = 2.4;
+    roundRect(k.x, k.y, k.w, k.h, 12); ctx.stroke();
+    ctx.fillStyle = "rgba(20, 70, 78, 0.72)";
+    roundRect(k.x + 10, k.y + 12, k.w - 20, k.h - 24, 8); ctx.fill();
     ctx.fillStyle = "#fff6e8"; ctx.font = "700 14px Fredoka, sans-serif"; ctx.textAlign = "center";
     ctx.fillText("UPGRADES", k.x + k.w / 2, k.y + 42);
     ctx.fillStyle = "#c8e8ee";
@@ -10691,8 +10804,8 @@
     if (state.mode !== "play" || state.scene !== "ocean") return;
     if (bagIsFull() || nearSurface() || player.y < 300) return;
     const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
-    const w = compactHud() ? 118 : 132;
-    const h = compactHud() ? 42 : 36;
+    const w = compactHud() ? thumbCanvas(132, 160, 260) : 132;
+    const h = compactHud() ? thumbCanvas(52, 56, 88) : 36;
     const sz = actionBtnSize();
     const b = hudBox(W - 16 - w, H - sz.pad - 12 - h, w, h);
     card(b.x, b.y, b.w, b.h, "rgba(40, 160, 180," + (0.78 + pulse * 0.16) + ")");
@@ -11590,7 +11703,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, 156);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 76", W / 2, 178);
+      ctx.fillText("Aqua Bay · loop 77", W / 2, 178);
     ctx.restore();
     drawSkinPicker(W / 2, 252, 168, 176, 16);
     const pulse = 1 + Math.sin(state.time * 3) * 0.035;
@@ -11612,9 +11725,9 @@
       ctx.fillText("How to play", W / 2, 108);
       ctx.fillStyle = "#e8f4f8"; ctx.font = "600 15px Nunito, sans-serif"; ctx.textAlign = "left";
       const lines = [
-        "WASD or Arrows — move  ·  tap / click to walk  ·  hold to steer",
-        "DIVE chip, DIVE button, or SPACE / E — dive at the pad, or walk the pier back to it",
-        "↑ SURFACE or swim to the waterline — return to the dock  ·  SPACE also surfaces",
+        "Tap the deck to walk  ·  hold to steer  ·  WASD / Arrows on desktop",
+        "Tap DIVE at the pad (or the DIVE chip) — no keyboard needed",
+        "Tap SURFACE or swim to the waterline — return to the dock",
         "Hold on a fish — the cone locks on  ·  tap a fish to scoop  ·  first catches are forgiving",
         "Tap a tank, till, or unlock card — act now, or walk there then act",
         "Walk into a matching tank — stock  ·  bag clears the instant it lands",
@@ -11631,7 +11744,7 @@
       ctx.fillStyle = "#8ab"; ctx.font = "600 12px Nunito, sans-serif"; ctx.textAlign = "center";
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 518);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 13px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 76", W / 2, 538);
+      ctx.fillText("Aqua Bay · loop 77", W / 2, 538);
       panelBtn("back", W / 2 - 110, 552, 220, 48, "Back");
     } else {
       card(W / 2 - 250, 56, 500, 608, "rgba(16, 32, 42, 0.94)");
@@ -11648,7 +11761,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, 590);
       ctx.fillText("Esc to resume", W / 2, 608);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 14px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 76", W / 2, 632);
+      ctx.fillText("Aqua Bay · loop 77", W / 2, 632);
     }
   }
 
@@ -11675,8 +11788,8 @@
     return out;
   }
   function speciesStripLayout() {
-    const cw = compactHud() ? thumbCanvas(64, 70, 92) : 86;
-    const ch = compactHud() ? thumbCanvas(50, 56, 72) : 64;
+    const cw = compactHud() ? thumbCanvas(56, 96, 180) : 86;
+    const ch = compactHud() ? thumbCanvas(52, 72, 120) : 64;
     const { muteB, pauseB } = topCtrlBoxes();
     const colH = railSpeciesIds().length * (ch + 6);
     // Stay in the reserved HUD rail under mute/pause. Never slide left
