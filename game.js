@@ -11976,15 +11976,22 @@
     // ocean. If the bag already holds that species, keep C100
     // tap-to-stock (do not stack two boards on the bowl).
     // loop 111 dive for the new bowl.
+    // C113 — after TAP DIVE FOR, the bowl board used to stay
+    // legal and world-pin onto the dock camera (clamped over
+    // harbor water for the whole south walk). Hide the on-bowl
+    // board the moment the hunt is armed or they leave the
+    // Seahorse pad. heading-to-DIVE / the DIVE chip stay.
+    // loop 113 hunt locks a seahorse.
     if (state.mode !== "play" || state.scene !== "shop") return false;
     if (state.pendingScene === "ocean") return false;
     if (cashNeedsCollect()) return false;
+    if (diveForHuntIndex() >= 0) return false;
+    if (diveWalkQueued()) return false;
     const i = diveForTankIndex();
     if (i < 0 || !tankLive(i) || !speciesUnlocked(i)) return false;
     if ((state.stock[i] | 0) > 0) return false;
     if (state.bag && state.bag.some((s) => (s | 0) === i)) return false;
-    if (nearStockPad(i)) return true;
-    return (state.diveForAway || 0) < DIVE_FOR_AWAY;
+    return nearStockPad(i);
   }
   function diveForCueLabel() {
     const i = diveForTankIndex();
@@ -12470,6 +12477,7 @@
   // same path as the DIVE chip. Do not auto-dive on unlock.
   function drawDiveForWalkCue() {
     if (!diveForCueLegal()) return;
+    if (diveForHuntIndex() >= 0 || diveWalkQueued()) return;
     if (unlockCueLegal()) return;
     const chip = diveForCueBox();
     if (!chip) return;

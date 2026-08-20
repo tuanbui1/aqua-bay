@@ -93,6 +93,14 @@ assert(/function huntBangWanted\s*\(/.test(src),
   "huntBangWanted is the ! mark filter");
 assert(/function nearestScoopFish\s*\(/.test(src),
   "nearestScoopFish is the cone lock picker");
+assert(/diveForHuntIndex\(\) >= 0/.test(extractFn(src, "diveForCueLegal") || ""),
+  "diveForCueLegal hides the bowl board once the hunt is armed");
+assert(/nearStockPad\(i\)/.test(extractFn(src, "diveForCueLegal") || ""),
+  "diveForCueLegal hides the bowl board once they leave the pad");
+assert(/diveWalkQueued\(\)/.test(extractFn(src, "diveForCueLegal") || ""),
+  "diveForCueLegal hides while heading-to-DIVE");
+assert(/diveForHuntIndex\(\) >= 0 \|\| diveWalkQueued\(\)/.test(extractFn(src, "drawDiveForWalkCue") || ""),
+  "drawDiveForWalkCue does not paint the bowl board on the south walk");
 assert(/function plazaTankStealsDockTap\s*\(/.test(src),
   "plazaTankStealsDockTap stays");
 assert(/function phoneDockPlazaWalkWanted\s*\(/.test(src),
@@ -302,6 +310,7 @@ const names = [
   "unlockPadGoal", "dockWalkPoint",
   "diveForTankIndex", "armDiveForTank", "clearDiveForTank", "tickDiveForCue",
   "diveForCueLegal", "diveForCueLabel", "diveForCueBox", "diveForPadGoal",
+  "diveWalkQueued",
   "diveForHuntIndex", "armDiveForHunt", "clearDiveForHunt", "diveForBandPoint",
   "oceanEntrySpawn", "diveForHuntGoal", "nearestHuntFish",
   "huntBagHasPrey", "huntScoopExclusive", "huntScoopAllows", "huntBangWanted",
@@ -450,7 +459,7 @@ function makeCtx(save, opts) {
     " unlockCueLabel, unlockCueBox, unlockPadGoal, dockWalkPoint," +
     " diveForTankIndex, armDiveForTank, clearDiveForTank, tickDiveForCue," +
     " diveForCueLegal, diveForCueLabel, diveForCueBox, diveForPadGoal," +
-    " diveForHuntIndex, armDiveForHunt, clearDiveForHunt, diveForBandPoint," +
+    " diveWalkQueued, diveForHuntIndex, armDiveForHunt, clearDiveForHunt, diveForBandPoint," +
     " oceanEntrySpawn, diveForHuntGoal, nearestHuntFish," +
     " huntBagHasPrey, huntScoopExclusive, huntScoopAllows, huntBangWanted," +
     " nearestScoopFish, fishAtWorld, lockScoop, startScoopOnFish, fishInCone," +
@@ -652,6 +661,10 @@ assert(huntApi.diveForCueLegal() === true, "DIVE FOR SEAHORSE board is up");
 assert(huntApi.tapDiveForCue() === true, "tapping DIVE FOR SEAHORSE queues the dash");
 assert(huntApi.diveForHuntIndex() === 5, "goto-dive-for arms a Seahorse hunt");
 assert(huntApi.beganDive() === false, "board tap off the dock does not instant-dive");
+assert(huntApi.diveForCueLegal() === false,
+  "on-bowl DIVE FOR board hides the moment the hunt is armed");
+assert(huntApi.diveWalkQueued() === true,
+  "heading-to-DIVE / DIVE chip stay on the south walk");
 
 const walkGoal = huntApi.goalText();
 assert(walkGoal && /Seahorse/i.test(walkGoal),
@@ -809,6 +822,14 @@ chipApi.player.y = horse.y;
 chipApi.tapUnlockCue();
 assert(chipApi.diveForHuntIndex() < 0,
   "unlock alone does not arm the grove hunt");
+assert(chipApi.diveForCueLegal() === true,
+  "DIVE FOR board stays on the Seahorse pad before a hunt");
+chipApi.player.x = dockPt.x;
+chipApi.player.y = dockPt.y;
+assert(chipApi.diveForCueLegal() === false,
+  "DIVE FOR board hides the moment they leave the Seahorse pad");
+chipApi.player.x = horse.x;
+chipApi.player.y = horse.y;
 const chipSpawn = chipApi.oceanEntrySpawn();
 assert(chipSpawn.y === 380 && !chipSpawn.hunt,
   "normal DIVE chip after unlock (no board tap) still starts in shallows");
