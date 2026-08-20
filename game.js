@@ -262,7 +262,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE).
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -1019,17 +1019,52 @@
     const pad = parseFloat(getComputedStyle(wrap)["padding" + side]) || 0;
     return pad;
   }
+  function isiOSPhone() {
+    const nav = typeof navigator !== "undefined" ? navigator : null;
+    if (!nav) return false;
+    const ua = String(nav.userAgent || "");
+    return /iPhone|iPad|iPod/.test(ua) || !!nav.standalone;
+  }
+  // CSS px of the notch / home indicator that still overlap the canvas.
+  // #wrap may already have env() padding — only count what still covers
+  // the bitmap. iOS Safari often reports env() as 0 with viewport-fit=cover,
+  // so a flush canvas on iPhone still reserves the status / home strips.
+  function safeOverlapCss(side) {
+    const vis = visualCssSize();
+    const rect = canvas.getBoundingClientRect();
+    const env = wrapSafeInset(side);
+    let already = 0;
+    if (side === "Top") already = Math.max(0, rect.top - vis.top);
+    else if (side === "Bottom") already = Math.max(0, (vis.top + vis.h) - (rect.top + rect.height));
+    else if (side === "Left") already = Math.max(0, rect.left - vis.left);
+    else if (side === "Right") already = Math.max(0, (vis.left + vis.w) - (rect.left + rect.width));
+    const remain = Math.max(0, env - already);
+    const flush = already < 2;
+    if (remain < 8 && flush && isiOSPhone() && portraitStage()) {
+      return side === "Top" ? 44 : (side === "Bottom" ? 28 : remain);
+    }
+    return remain;
+  }
+  function hudSafeTop() {
+    if (!portraitStage()) return 12;
+    return phoneCss(safeOverlapCss("Top") + 12);
+  }
   // Stage Y of the last pixel that is actually on-screen in the visual
-  // viewport. On a 390×844 phone the browser chrome is ~200px; DIVE must
-  // sit above that edge, not at H (the 844 CSS bottom).
+  // viewport, above the home indicator. On a 390×844 phone the browser
+  // chrome is ~200px; DIVE must sit above that edge in BOTH dock and
+  // plaza cameras — not at H, and not a 19px sliver under the home bar.
   function visibleStageBottom() {
     if (!portraitStage()) return H;
     const vis = visualCssSize();
     const rect = canvas.getBoundingClientRect();
     const cssH = Math.max(1, rect.height || vis.h);
     const visibleCss = clamp((vis.top + vis.h) - rect.top, 1, cssH);
-    const lip = phoneCss(Math.max(10, wrapSafeInset("Bottom") || 12));
-    return Math.max(phoneCss(96), Math.round(H * (visibleCss / cssH)) - lip);
+    const lip = phoneCss(Math.max(12, safeOverlapCss("Bottom") + 12));
+    const floor = Math.round(H * (visibleCss / cssH)) - lip;
+    return Math.max(phoneCss(120), Math.min(H - phoneCss(8), floor));
+  }
+  function actionFloor() {
+    return portraitStage() ? visibleStageBottom() : H;
   }
   function desktopStage() {
     // One live page: a 1280×720 (or any wide landscape) window keeps the
@@ -1109,7 +1144,7 @@
       portrait: false,
     };
     if (!portraitStage() || H <= DESKTOP_H + 20) return desk;
-    const pad = Math.round(H * 0.024);
+    const pad = Math.max(Math.round(H * 0.024), hudSafeTop());
     const titleH = Math.min(210, Math.max(150, Math.round(H * 0.085)));
     const cardGap = 20;
     const cardW = Math.min(300, Math.round((W - 80 - cardGap * 2) / 3));
@@ -1168,8 +1203,9 @@
   function topCtrlBoxes() {
     if (portraitStage()) {
       const topBtn = phoneCss(40);
-      const pauseB = hudBox(W - 12 - topBtn, 10, topBtn, topBtn);
-      const muteB = hudBox(pauseB.x - 8 - topBtn, 10, topBtn, topBtn);
+      const y = hudSafeTop();
+      const pauseB = hudBox(W - 12 - topBtn, y, topBtn, topBtn);
+      const muteB = hudBox(pauseB.x - 8 - topBtn, y, topBtn, topBtn);
       return { topBtn, pauseB, muteB };
     }
     const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
@@ -1179,7 +1215,7 @@
   }
   function topHudFloor() {
     let floor = 14 + 52 + 8;
-    if (portraitStage()) floor = 12 + phoneCss(48) + 8;
+    if (portraitStage()) floor = hudSafeTop() + phoneCss(48) + 8;
     if (missionVisible() || sessionChipVisible()) floor += 38;
     const rb = ribbonLayout();
     if (rb) floor = Math.max(floor, rb.y + rb.h + 8);
@@ -1485,10 +1521,12 @@
     return s.x < 48 || s.x > W - 48 || s.y < 56 || s.y > H - 56;
   }
   function dockCornerBox() {
+    if (portraitStage()) return actionBtnBox();
     const s = worldToScreen(880, 1008);
     const w = compactHud() ? thumbCanvas(132, 160, 280) : 132;
     const h = compactHud() ? thumbCanvas(52, 56, 88) : 36;
-    return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h));
+    const floor = actionFloor();
+    return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, floor - 18 - h), w, h));
   }
   function walkToDock() {
     player.pendingAct = null;
@@ -1534,7 +1572,8 @@
     const s = worldToScreen(t.x, t.y);
     const w = compactHud() ? thumbCanvas(148, 176, 300) : 148;
     const h = compactHud() ? thumbCanvas(52, 56, 88) : 36;
-    return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, 74, H - 18 - h), w, h));
+    const floor = actionFloor();
+    return dodgeUpgradeTray(hudBox(clamp(s.x - w / 2, 16, W - 16 - w), clamp(s.y - h / 2, topHudFloor(), floor - 18 - h), w, h));
   }
   function isDockDest(pt) {
     if (!pt) return false;
@@ -1616,9 +1655,12 @@
   }
   function hudBox(x, y, w, h, pad) {
     const p = pad == null ? 10 : pad;
+    const top = portraitStage() ? hudSafeTop() : p;
+    const bot = portraitStage() ? visibleStageBottom() : H;
+    const maxY = bot - Math.max(p, 4) - h;
     return {
       x: clamp(x, p, W - p - w),
-      y: clamp(y, p, H - p - h),
+      y: clamp(y, top, Math.max(top, maxY)),
       w, h,
     };
   }
@@ -1707,8 +1749,16 @@
     }
     return shopBarsReady();
   }
+  function diveWalkLegal() {
+    return state.mode === "play" && state.scene === "shop" && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect();
+  }
   function diveActionLegal() {
-    return state.mode === "play" && state.scene === "shop" && (inDiveZone() || nearDivePad()) && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect();
+    return diveWalkLegal() && (inDiveZone() || nearDivePad());
+  }
+  function diveChipLegal() {
+    // Full DIVE tap target on the dock AND in the tank room. Plaza used
+    // to show only a teal sliver of the world board / → DIVE chip.
+    return diveActionLegal() || (diveWalkLegal() && (dockOffScreen() || plazaCameraReady()));
   }
   function surfaceActionLegal() {
     return state.mode === "play" && canSurfaceNow();
@@ -1746,8 +1796,13 @@
         x = Math.min(x, panel.x - 10 - w);
       }
       x = clamp(x, 12, W - w - 12);
-      y = clamp(y, phoneCss(72), floor - h - 4);
-      return hudBox(x, y, w, h);
+      y = clamp(y, hudSafeTop() + phoneCss(56), floor - h - phoneCss(4));
+      const box = hudBox(x, y, w, h);
+      // Never let the chip become a sliver — keep the full tap height
+      // above the home indicator in dock AND plaza cameras.
+      if (box.y + box.h > floor) box.y = floor - box.h;
+      if (box.y < hudSafeTop()) box.y = hudSafeTop();
+      return box;
     }
     if (compact && state.scene === "shop" && shopBarsReady()) {
       x = clamp(W - 18 - w, 16, W - 18 - w);
@@ -2595,7 +2650,10 @@
     if (id === "book-dismiss" || id === "book-close") { state.bookOpen = null; return; }
     if (id === "book-panel") return;
     if (id === "goto-dock") {
-      if (state.mode === "play" && state.scene === "shop") walkToDock();
+      if (state.mode === "play" && state.scene === "shop") {
+        if (diveWalkLegal()) intentWalk("dive", dockWalkPoint());
+        else walkToDock();
+      }
       return;
     }
     if (id === "goto-stock") {
@@ -2650,8 +2708,8 @@
       return;
     }
     if (id === "dive" || id === "dive-chip") {
-      if (state.mode === "play" && (inDiveZone() || nearDivePad()) && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect()) beginDive();
-      else if (state.mode === "play" && state.scene === "shop" && !bagHasStockable() && !cashNeedsCollect()) walkToDock();
+      if (state.mode === "play" && diveActionLegal()) beginDive();
+      else if (state.mode === "play" && diveWalkLegal()) intentWalk("dive", dockWalkPoint());
       return;
     }
   }
@@ -2774,6 +2832,7 @@
     player.scoopLock = null; player.scoopTap = false; player.holdGrace = 0;
     player.surfaceIntent = false;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "ocean";
+    state.fadeClock = 0;
     state.decorOpen = false;
     if (state.tutorial === 0) state.tutorial = 1;
     advanceMission();
@@ -2802,6 +2861,7 @@
     player.scoopLock = null; player.scoopTap = false; player.holdGrace = 0;
     player.surfaceIntent = false;
     sfx("dive"); state.fadeDir = 1; state.pendingScene = "shop";
+    state.fadeClock = 0;
     if (state.tutorial === 2) state.tutorial = 3;
     if ((state.bagBonus || 1) > 1) {
       toast("Sale bonus +10%", "#ffe27a");
@@ -2828,6 +2888,7 @@
     state.expeditionTime = EXPEDITION_SECS;
     state.fadeDir = 1;
     state.pendingScene = "ocean";
+    state.fadeClock = 0;
     if (state.nightExpedition) toast("Night expedition — rares are out", "#9ef0ff");
     state.sessionBoat = true;
     checkSessionGoals();
@@ -2935,7 +2996,8 @@
     const p = pad == null ? 6 : pad;
     const topSafe = state.scene === "shop" ? topHudFloor() : 0;
     const rightSafe = viewWidth();
-    const inset = Math.min(x, y - topSafe, rightSafe - (x + w), H - (y + h));
+    const botSafe = portraitStage() ? visibleStageBottom() : H;
+    const inset = Math.min(x, y - topSafe, rightSafe - (x + w), botSafe - (y + h));
     if (inset >= p) return 1;
     if (inset <= 0) return 0;
     return inset / p;
@@ -5271,6 +5333,9 @@
     if (act.kind === "cash") {
       return tillWaiting() && (inTillGlow() || nearRect(REGISTER.x, REGISTER.y, REGISTER.w, REGISTER.h, 48));
     }
+    if (act.kind === "dive") {
+      return diveActionLegal();
+    }
     return false;
   }
   function performPendingAct() {
@@ -5281,6 +5346,7 @@
     if (act.kind === "stock") stockTank(act.i);
     else if (act.kind === "unlock") buyTank(act.i);
     else if (act.kind === "cash") collectCash();
+    else if (act.kind === "dive") beginDive();
     return true;
   }
   function intentWalk(kind, dest, i) {
@@ -7204,11 +7270,29 @@
   // not peek them as a strip over the sky. C72 hid them by player band
   // only and pinned cam.y at 848 — that still framed the east shop deck
   // (y≈380–626) plus a sky void, then walking east yanked onto it.
+  function plazaCamCeiling() {
+    const z = Math.max(0.001, (cam && cam.z) || 1);
+    const hhv = (H / 2) / z;
+    // Dock boards / planted DIVE start at y=890. Keep that row fully
+    // below the plaza view so DIVE cannot become a 19px sliver.
+    const hideDock = 890 - hhv - 28;
+    return Math.min(PLAZA_CAM_CEILING, hideDock);
+  }
   function plazaCameraReady() {
     return !!(cam && cam.y <= PLAZA_CAM_CEILING + 36);
   }
   function dockCameraReady() {
     return !!(cam && cam.y >= DOCK_CAM_FLOOR - 24);
+  }
+  function shopCamYLimits() {
+    const z = Math.max(0.001, cam.z || 1);
+    const hhv = (H / 2) / z;
+    let minY = hhv, maxY = Math.max(hhv, SHOP.h - hhv);
+    // Tall portrait + stageZoom used to clamp maxY≈839, so the dock
+    // camera (1000) was unreachable and the view sat in the navy gap.
+    minY = Math.min(minY, plazaCamCeiling());
+    maxY = Math.max(maxY, DOCK_CAM_FLOOR);
+    return { minY, maxY, hhv };
   }
   function plazaPropAlpha() {
     if (!plazaCameraReady()) return 0;
@@ -10960,9 +11044,11 @@
     const t = TANK_POS[i];
     const tgt = stockableTankTarget() || tankWalkPoint(i);
     const ts = worldToScreen(t.x + TANK_W / 2, t.y + TANK_H * 0.42);
-    const on = ts.x > 36 && ts.x < W - 36 && ts.y > 28 && ts.y < H - 36;
+    const floor = actionFloor();
+    const top = portraitStage() ? hudSafeTop() + phoneCss(52) : 28;
+    const on = ts.x > 36 && ts.x < W - 36 && ts.y > top && ts.y < floor - 36;
     const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
-    const label = "walk here to stock";
+    const label = thumbCopy() ? "tap to stock" : "walk here to stock";
     if (on) {
       const bounce = Math.sin(state.time * 5) * 5;
       const ax = ts.x, ay = ts.y - 52 + bounce;
@@ -10993,15 +11079,16 @@
     const ps = worldToScreen(player.x, player.y);
     const dest = worldToScreen(tgt.x, tgt.y);
     const ang = Math.atan2(dest.y - ps.y, dest.x - ps.x);
-    const cx = clamp(ts.x, 88, W - 88);
-    const cy = clamp(ts.y, topHudFloor() + 10, H - 96);
-    ctx.font = "800 13px Nunito, sans-serif";
-    const tw = Math.min(ctx.measureText(label).width + 36, 260);
-    const chip = hudBox(cx - tw / 2, cy - 16, tw, 32);
+    ctx.font = portraitStage() ? ("800 " + phoneCss(14) + "px Nunito, sans-serif") : "800 13px Nunito, sans-serif";
+    const tw = Math.min(ctx.measureText(label).width + 36, portraitStage() ? phoneCss(200) : 260);
+    const ch = portraitStage() ? phoneCss(36) : 32;
+    const cx = clamp(W / 2, tw / 2 + 16, W - tw / 2 - 16);
+    const cy = clamp(topHudFloor() + ch / 2 + 8, top + ch / 2, floor - actionBtnSize().h - actionBtnSize().pad - ch / 2 - 8);
+    const chip = hudBox(cx - tw / 2, cy - ch / 2, tw, ch);
     card(chip.x, chip.y, chip.w, chip.h, "rgba(40, 160, 180," + (0.74 + pulse * 0.16) + ")");
     ctx.fillStyle = "#fff6e8";
     ctx.textAlign = "center";
-    ctx.fillText(label, chip.x + chip.w / 2, chip.y + 21);
+    ctx.fillText(label, chip.x + chip.w / 2, chip.y + chip.h / 2 + 5);
     ctx.save();
     ctx.translate(chip.x + 14, chip.y + 16);
     ctx.rotate(ang);
@@ -11019,6 +11106,7 @@
   function drawDockCorner() {
     if (state.mode !== "play" || state.scene !== "shop") return;
     if (cashNeedsCollect()) return;
+    if (diveChipLegal()) return;
     if (!dockOffScreen()) return;
     const b = dockCornerBox();
     const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
@@ -11026,8 +11114,8 @@
     ctx.fillStyle = "#fff6e8";
     ctx.font = (b.h > 38 ? "800 20px" : "800 16px") + " Fredoka, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("→ DIVE", b.x + b.w / 2, b.y + b.h / 2 + 6);
-    btn("goto-dock", b.x, b.y, b.w, b.h);
+    ctx.fillText(thumbCopy() ? "DIVE" : "→ DIVE", b.x + b.w / 2, b.y + b.h / 2 + 6);
+    btn("dive", b.x, b.y, b.w, b.h);
   }
   function drawTillCollectCue() {
     if (state.mode !== "play" || state.scene !== "shop") return;
@@ -11087,7 +11175,7 @@
       x = Math.min(x, phoneShopPanelBox().x - 10 - w);
       x = clamp(x, 12, playW - w - 12);
     }
-    const floor = portraitStage() ? visibleStageBottom() : H;
+    const floor = actionFloor();
     const b = hudBox(x, floor - sz.pad - 12 - h, w, h);
     card(b.x, b.y, b.w, b.h, "rgba(40, 160, 180," + (0.78 + pulse * 0.16) + ")");
     ctx.fillStyle = "#fff6e8";
@@ -11269,7 +11357,7 @@
     const th = lines.length > 1 ? (live && live.big ? 54 : 50) : (live && live.big ? 36 : 32);
     const playRight = W;
     const gx = clamp((portraitStage() ? playRight / 2 : W / 2) - tw / 2, leftPad, playRight - 12 - tw);
-    const gy = portraitStage() ? 12 + phoneCss(48) + 6 : 16;
+    const gy = portraitStage() ? hudSafeTop() + phoneCss(48) + 6 : 16;
     return Object.assign(hudBox(gx, gy, tw, th), {
       text: gt,
       lines,
@@ -11309,26 +11397,29 @@
   }
   function moneyHudBox(ribbon) {
     if (portraitStage()) {
-      return hudBox(12, 12, phoneCss(124), phoneCss(48));
+      return hudBox(12, hudSafeTop(), phoneCss(124), phoneCss(48));
     }
     return dodgeUpgradeTray(parkChip(hudBox(16, 14, 200, 52), ribbon));
   }
   function drawMoneyReadout(moneyBox) {
+    const cx = moneyBox.x + moneyBox.w * 0.5, cy = moneyBox.y + moneyBox.h * 0.5;
     ctx.save();
-    ctx.translate(moneyBox.x + 94, moneyBox.y + 26);
+    ctx.translate(cx, cy);
     ctx.scale(state.moneyPunch, state.moneyPunch);
-    ctx.translate(-(moneyBox.x + 94), -(moneyBox.y + 26));
+    ctx.translate(-cx, -cy);
     pierChip(moneyBox.x, moneyBox.y, moneyBox.w, moneyBox.h);
-    drawCoin(moneyBox.x + 28, moneyBox.y + 26, 14);
-    const cashPx = portraitStage() ? phoneCss(18) : 22;
-    const goalPx = portraitStage() ? phoneCss(11) : 11;
+    const coinR = portraitStage() ? Math.max(8, Math.round(moneyBox.h * 0.22)) : 14;
+    drawCoin(moneyBox.x + Math.round(moneyBox.w * 0.18), cy, coinR);
+    const cashPx = portraitStage() ? Math.max(14, Math.round(moneyBox.h * 0.34)) : 22;
+    const goalPx = portraitStage() ? Math.max(10, Math.round(moneyBox.h * 0.20)) : 11;
+    const textX = moneyBox.x + Math.round(moneyBox.w * 0.34);
     ctx.fillStyle = "#fff6e8"; ctx.font = "800 " + cashPx + "px Nunito, sans-serif"; ctx.textAlign = "left";
-    ctx.fillText(String(state.displayMoney), moneyBox.x + 52, moneyBox.y + 26);
+    ctx.fillText(String(state.displayMoney), textX, moneyBox.y + Math.round(moneyBox.h * 0.46));
     const ng = nextGoal();
     if (ng) {
       ctx.fillStyle = "#ffe27a";
       ctx.font = "700 " + goalPx + "px Nunito, sans-serif";
-      ctx.fillText("Next " + ng.name + " $" + ng.cost, moneyBox.x + 52, moneyBox.y + 42);
+      ctx.fillText("Next " + ng.name + " $" + ng.cost, textX, moneyBox.y + Math.round(moneyBox.h * 0.78));
     }
     ctx.restore();
   }
@@ -11340,27 +11431,28 @@
     drawMoneyReadout(moneyBox);
     ctx.restore();
     const bagBox = portraitStage()
-      ? hudBox(moneyBox.x + moneyBox.w + 8, 12, phoneCss(88), moneyBox.h)
+      ? hudBox(moneyBox.x + moneyBox.w + 8, hudSafeTop(), phoneCss(88), moneyBox.h)
       : dodgeUpgradeTray(parkChip(hudBox(224, 14, 168, 52), ribbon));
     ctx.save();
     ctx.globalAlpha = chipAlpha(bagBox, ribbon);
-    ctx.translate(bagBox.x + 84, bagBox.y + 26);
+    const bcx = bagBox.x + bagBox.w * 0.5, bcy = bagBox.y + bagBox.h * 0.5;
+    ctx.translate(bcx, bcy);
     ctx.scale(state.bagPunch, state.bagPunch);
-    ctx.translate(-(bagBox.x + 84), -(bagBox.y + 26));
+    ctx.translate(-bcx, -bcy);
     pierChip(bagBox.x, bagBox.y, bagBox.w, bagBox.h);
-    const bagLabelPx = portraitStage() ? phoneCss(12) : 13;
-    const bagCountPx = portraitStage() ? phoneCss(16) : 22;
+    const bagLabelPx = portraitStage() ? Math.max(11, Math.round(bagBox.h * 0.24)) : 13;
+    const bagCountPx = portraitStage() ? Math.max(14, Math.round(bagBox.h * 0.32)) : 22;
     ctx.fillStyle = "#dce8b0"; ctx.font = "700 " + bagLabelPx + "px Nunito, sans-serif"; ctx.textAlign = "left";
-    ctx.fillText("BAG", bagBox.x + 14, bagBox.y + 20);
+    ctx.fillText("BAG", bagBox.x + Math.round(bagBox.w * 0.12), bagBox.y + Math.round(bagBox.h * 0.40));
     ctx.fillStyle = "#fff6e8"; ctx.font = "800 " + bagCountPx + "px Nunito, sans-serif";
     const bagShown = state.bag.length;
-    ctx.fillText(bagShown + " / " + bagMax(), bagBox.x + 14, bagBox.y + 42);
+    ctx.fillText(bagShown + " / " + bagMax(), bagBox.x + Math.round(bagBox.w * 0.12), bagBox.y + Math.round(bagBox.h * 0.78));
     ctx.restore();
     if (bagShown || bagGhosts.length) {
       const pipN = bagShown + bagGhosts.length;
       const bw = Math.min(36 + pipN * 28, portraitStage() ? Math.max(80, W - 24) : 340);
       let ib = portraitStage()
-        ? hudBox(12, Math.max(moneyBox.y + moneyBox.h + 6, (ribbon ? ribbon.y + ribbon.h + 6 : 12)), bw, Math.min(52, moneyBox.h))
+        ? hudBox(12, Math.max(moneyBox.y + moneyBox.h + 6, (ribbon ? ribbon.y + ribbon.h + 6 : hudSafeTop())), bw, Math.min(52, moneyBox.h))
         : hudBox(400, 14, bw, 52);
       if (ribbon && boxesOverlap(ib, ribbon, 12)) {
         ib = hudBox(portraitStage() ? 12 : 400, ribbon.y + ribbon.h + 8, bw, 52);
@@ -11400,7 +11492,7 @@
       }
       ctx.restore();
     }
-    const sessionY = Math.max(74, moneyBox.y + moneyBox.h + 8, bagBox.y + bagBox.h + 8);
+    const sessionY = Math.max(portraitStage() ? hudSafeTop() + phoneCss(48) + 8 : 74, moneyBox.y + moneyBox.h + 8, bagBox.y + bagBox.h + 8);
     if (missionVisible()) {
       const reached = Math.max(1, Math.min(6, firstSessionReached() || (firstSessionIndex() + 1)));
       const chip = hudBox(16, sessionY, 176, 30);
@@ -11514,13 +11606,16 @@
       ctx.fillStyle = "#fff"; ctx.font = (portraitStage() ? "800 " + phoneCss(16) + "px" : (eb.h > 70 ? "800 28px" : "700 16px")) + " Fredoka, sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(thumbCopy() ? "BOAT $35" : "SPACE · Expedition $35", eb.x + eb.w / 2, eb.y + eb.h / 2 + 8);
-    } else if (diveActionLegal()) {
+    } else if (diveChipLegal()) {
       const db = actionBtnBox();
       card(db.x, db.y, db.w, db.h, "rgba(40, 160, 180, 0.92)");
       ctx.fillStyle = "#fff";
       ctx.font = (portraitStage() ? "800 " + phoneCss(18) + "px" : (db.h > 70 ? "800 34px" : "700 16px")) + " Fredoka, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(thumbCopy() ? "DIVE" : "SPACE  or  click  to  DIVE", db.x + db.w / 2, db.y + db.h / 2 + 10);
+      const diveLbl = diveActionLegal()
+        ? (thumbCopy() ? "DIVE" : "SPACE  or  click  to  DIVE")
+        : (thumbCopy() ? "DIVE" : "→ DIVE");
+      ctx.fillText(diveLbl, db.x + db.w / 2, db.y + db.h / 2 + 10);
       btn("dive", db.x, db.y, db.w, db.h);
     }
     if (surfaceActionLegal()) {
@@ -12039,7 +12134,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, ty + th * 0.74);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 80", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 81", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -12102,7 +12197,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 80", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 81", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -12133,7 +12228,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 80", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 81", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
@@ -12360,13 +12455,55 @@
 
   // ===== LOOP =====
   function fadeSpeed() {
-    if (state.pendingScene === "shop") return 4.8;
-    if (state.scene === "shop" && state.fadeDir) return 4.8;
+    if (state.pendingScene === "shop") return 7.2;
+    if (state.scene === "shop" && state.fadeDir) return 7.2;
     return 2.4;
   }
+  function pinSurfaceDockCam() {
+    player.x = 880;
+    player.y = state.missionDone ? 1000 : 940;
+    player.vx = 0;
+    player.vy = 0;
+    cam.x = 880;
+    cam.y = DOCK_CAM_FLOOR;
+    cam.z = 1.02 * stageZoom();
+    cam.shopBand = "dock";
+    state.camPunch = 0;
+    state.camSettle = 0.28;
+    state.camEase = 0.28;
+  }
+  function leadStockAfterSurface() {
+    if (!bagHasStockable()) return;
+    const si = Math.max(0, glowingStockIndex());
+    const tankDest = stockableTankTarget() || tankWalkPoint(si);
+    player.pendingAct = { kind: "stock", i: si };
+    setWalkDest(tankDest);
+    cuePathWelcome();
+    seedPathCoins([[880, 1008], [880, 820], [880, 760], [tankDest.x, tankDest.y]], 3);
+    state.camEase = Math.max(state.camEase || 0, 0.55);
+  }
   function applyFade(dt) {
-    if (!state.fadeDir) return;
-    state.fade += state.fadeDir * dt * fadeSpeed();
+    if (!state.fadeDir && state.fade <= 0) {
+      state.fadeClock = 0;
+      return;
+    }
+    state.fadeClock = (state.fadeClock || 0) + dt;
+    if (state.fadeDir) state.fade += state.fadeDir * dt * fadeSpeed();
+    // Never sit on a frozen black frame. Surface must show the dock in ~1s.
+    if (state.fadeClock > 1.05) {
+      if (state.pendingScene === "shop" || (state.scene === "ocean" && state.fadeDir > 0 && state.pendingScene === "shop")) {
+        state.fade = 1;
+      } else if (state.scene === "shop" && (state.fadeDir < 0 || state.fade > 0)) {
+        state.fade = 0;
+        state.fadeDir = 0;
+        state.pendingScene = null;
+      } else if (state.fadeDir > 0 && state.pendingScene) {
+        state.fade = 1;
+      } else {
+        state.fade = 0;
+        state.fadeDir = 0;
+      }
+    }
     if (state.fadeDir > 0 && state.fade >= 1) {
       state.fade = 1;
       if (state.pendingScene === "ocean") {
@@ -12410,46 +12547,38 @@
         ensureOceanStock();
       } else if (state.pendingScene === "shop") {
         state.scene = "shop";
-        state.surfaceLock = 1.05;
+        state.surfaceLock = 0.55;
         if (state.expedition) {
           player.x = 1188; player.y = 1000; player.vx = 0; player.vy = -30;
           toast("Expedition complete", "#ffe27a");
           state.expedition = false;
           state.expeditionTime = 0;
           state.nightExpedition = false;
+          cam.x = player.x;
+          cam.y = DOCK_CAM_FLOOR;
+          cam.z = 1.02 * stageZoom();
+          cam.shopBand = "dock";
         } else {
-          player.x = 880; player.y = state.missionDone ? 1000 : 940; player.vx = 0; player.vy = -40;
+          pinSurfaceDockCam();
         }
         state.diveCatches = 0;
         state.surfaceQuiet = 2.2;
-        if (bagHasStockable() && allowAutoStock()) {
-          let si = 0;
-          for (let i = 0; i < SPECIES.length; i++) {
-            if (state.unlocked[i] && state.bag.some((s) => (s | 0) === i)) { si = i; break; }
-          }
-          const tankDest = stockableTankTarget() || tankWalkPoint(si);
-          player.pendingAct = { kind: "stock", i: si };
-          setWalkDest(tankDest);
-          cuePathWelcome();
-          seedPathCoins([[880, 1008], [880, 820], [880, 760], [tankDest.x, tankDest.y]], 3);
-        } else if (bagHasStockable()) {
-          clearWalk();
-          player.pendingAct = null;
+        if (bagHasStockable()) {
+          leadStockAfterSurface();
         } else if (state.registerCash <= 0) {
           seedPathCoins([[880, 860], [880, 1008]], 2);
         }
         maybeBookTease();
         maybeTangRumor();
-        cam.x = player.x;
-        cam.y = Math.max(player.y, DOCK_CAM_FLOOR);
-        cam.z = 1.02 * stageZoom();
         state.camPunch = 0;
-        state.camSettle = 0.4;
-        state.camEase = 0.4;
+        state.camSettle = 0.28;
+        state.camEase = Math.max(state.camEase || 0, 0.28);
       }
-      state.pendingScene = null; state.fadeDir = -1;
+      state.pendingScene = null; state.fadeDir = -1; state.fadeClock = 0;
     }
-    if (state.fadeDir < 0 && state.fade <= 0) { state.fade = 0; state.fadeDir = 0; }
+    if (state.fadeDir < 0 && state.fade <= 0) {
+      state.fade = 0; state.fadeDir = 0; state.fadeClock = 0;
+    }
   }
   function updateCam(dt) {
     const tz = (state.scene === "ocean"
@@ -12467,7 +12596,9 @@
     const vcx = viewCenterX();
     const hw = vcx / cam.z, hhv = (H / 2) / cam.z;
     const minX = hw, maxX = Math.max(hw, ww - hw);
-    const minY = hhv, maxY = Math.max(hhv, hh - hhv);
+    const shopLim = state.scene === "shop" ? shopCamYLimits() : null;
+    const minY = shopLim ? shopLim.minY : hhv;
+    const maxY = shopLim ? shopLim.maxY : Math.max(hhv, hh - hhv);
     let lx = Math.cos(player.facing) * look + player.vx * 0.10;
     let ly = Math.sin(player.facing) * look + player.vy * 0.10;
     if (lx > 0) lx *= clamp((maxX - player.x) / Math.max(1, lx), 0, 1);
@@ -12562,12 +12693,13 @@
     const actionUp = (state.scene === "shop" && diveActionLegal()) ||
       (state.scene === "ocean" && (surfaceActionLegal() || bagIsFull()));
     const padB = Math.max(cam.rail + 36, actionUp ? act.h + act.pad + 22 : 0);
+    const stageBot = actionFloor();
     let psx = (player.x - nx) * cam.z + vcx;
     let psy = (player.y - ny) * cam.z + H / 2;
     if (psx < padL) nx = player.x - (padL - vcx) / cam.z;
     if (psx > vw - padR) nx = player.x - (vw - padR - vcx) / cam.z;
     if (psy < padT) ny = player.y - (padT - H / 2) / cam.z;
-    if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
+    if (psy > stageBot - padB) ny = player.y - (stageBot - padB - H / 2) / cam.z;
     const step = Math.hypot(nx - cam.x, ny - cam.y);
     const pace = state.scene === "ocean" ? swimSpeed() : walkSpeed();
     const cap = Math.max(pace, keyed && state.scene === "shop" ? pace + 120 : (easing ? pace : pace + 40)) * Math.min(dt, 0.05);
@@ -12585,7 +12717,7 @@
     if (psx < padL) nx = player.x - (padL - vcx) / cam.z;
     if (psx > vw - padR) nx = player.x - (vw - padR - vcx) / cam.z;
     if (psy < padT) ny = player.y - (padT - H / 2) / cam.z;
-    if (psy > H - padB) ny = player.y - (H - padB - H / 2) / cam.z;
+    if (psy > stageBot - padB) ny = player.y - (stageBot - padB - H / 2) / cam.z;
     // Dock DIVE padB used to pin cam.y at player.y-210 ≈ 730. That
     // stacked plaza boards / kiosk / sky tiles over the dock. C72's
     // floor of 848 still framed the east shop deck + a sky void
@@ -12598,18 +12730,22 @@
       const onAisle = onAisleForCam(player.x, player.y);
       const atTanks = player.y < 800;
       const onDockBoards = player.y > 820 && !onAisle;
+      const ceil = plazaCamCeiling();
       if (onAisle || atTanks) {
-        if (ny > PLAZA_CAM_CEILING) ny = lerp(ny, PLAZA_CAM_CEILING, 0.55);
-        ny = Math.min(ny, PLAZA_CAM_CEILING);
+        if (ny > ceil) ny = lerp(ny, ceil, 0.55);
+        ny = Math.min(ny, ceil);
       } else if (onDockBoards) {
         if (ny < DOCK_CAM_FLOOR) ny = lerp(ny, DOCK_CAM_FLOOR, 0.55);
         ny = Math.max(ny, DOCK_CAM_FLOOR);
       } else if (cam.y <= PLAZA_CAM_CEILING + 24) {
-        if (ny > PLAZA_CAM_CEILING) ny = lerp(ny, PLAZA_CAM_CEILING, 0.55);
-        ny = Math.min(ny, PLAZA_CAM_CEILING);
+        if (ny > ceil) ny = lerp(ny, ceil, 0.55);
+        ny = Math.min(ny, ceil);
       } else {
         if (ny < DOCK_CAM_FLOOR) ny = lerp(ny, DOCK_CAM_FLOOR, 0.55);
         ny = Math.max(ny, DOCK_CAM_FLOOR);
+      }
+      if (ny > ceil + 8 && ny < DOCK_CAM_FLOOR - 8) {
+        ny = (onDockBoards || (player.y > 820 && !onAisle)) ? DOCK_CAM_FLOOR : ceil;
       }
     }
     // East plaza walk: keep the east boards in the playfield so feet
@@ -13102,18 +13238,22 @@
         state.playClock = (state.playClock || 0) + dt;
         updateFX(dt);
         applyFade(dt);
-        updateCam(dt);
+        if (!state.fadeDir) updateCam(dt);
+        else if (state.scene === "shop" && state.fadeDir < 0) {
+          cam.y = DOCK_CAM_FLOOR;
+          cam.z = 1.02 * stageZoom();
+        }
         if (state.time % 5 < dt) persist();
       } else {
         updateCam(dt);
       }
       beginSpeechFrame();
       drawWorld();
+      beginHudSpace();
       if (state.fade > 0) {
         ctx.fillStyle = "rgba(8, 40, 52," + state.fade + ")";
         ctx.fillRect(0, 0, W, H);
       }
-      beginHudSpace();
       drawHUD();
       if (state.mode === "pause" || state.mode === "help") drawPause();
       drawCollectionBook();
