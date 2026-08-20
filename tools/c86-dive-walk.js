@@ -42,8 +42,8 @@ assert(/else if \(state\.mode === "play" && diveWalkLegal\(\)\) intentWalk\("div
 assert(/function diveActionLegal\s*\(\) \{\s*return diveWalkLegal\(\) && \(inDiveZone\(\) \|\| nearDivePad\(\)\)/.test(src),
   "walk-to-pad rule stays — no tank-row instant dive");
 
-assert(/Aqua Bay · loop 102/.test(src), "title/pause stamp is loop 102");
-assert(!/Aqua Bay · loop 101/.test(src), "loop 101 stamp is gone");
+assert(/Aqua Bay · loop 103/.test(src), "title/pause stamp is loop 103");
+assert(!/Aqua Bay · loop 102/.test(src), "loop 102 stamp is gone");
 
 // Protected chrome from loops 82–85 — do not restack.
 assert(/function actionChipInset\s*\(/.test(src), "DIVE chip inset stays");

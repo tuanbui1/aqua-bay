@@ -4175,6 +4175,15 @@
     if (ax || ay) {
       const m = Math.hypot(ax, ay) || 1; ax /= m; ay /= m;
       clearWalk();
+      // C103 — hold-W from the dock has no N–S alley through the bowls.
+      // Follow the same wood path click-to-walk already uses (east spine
+      // → row-2 apron → Puffer). Do not hijack onto the ribbon goal.
+      const around = wasdShopPath(ax, ay);
+      if (around && around.length) {
+        const n = around[0];
+        const pdx = n.x - player.x, pdy = n.y - player.y, pd = Math.hypot(pdx, pdy);
+        if (pd > 8) { ax = pdx / pd; ay = pdy / pd; }
+      }
     } else if (mouse.down && !mouse.ui && !mouse.acted && state.mode === "play" && mouse.held > 0.16) {
       if (state.scene === "ocean" && !bagIsFull()) {
         // Hold is scoop. Never dash or buoyancy-steer from the same drag.
@@ -4342,6 +4351,9 @@
     // pad. Spine sits east of the 4-tank cluster (right edge 1204),
     // in the real aisle beside the bowls — not the till. Aprons reach
     // 1260 so they overlap that spine; columns still have no N–S alley.
+    // C103 — hold-W never took that spine (dead-end on Dolphin y≈776).
+    // wasdShopPath steers a north-only key onto the same dock→Puffer
+    // wood path. Click-to-walk and the east spine stay.
     const row1 = { x: 300, y: clear, w: 960, h: 36 };
     const row2 = { x: 300, y: 548, w: 960, h: 44 };
     const row3 = { x: 300, y: 764, w: 960, h: 36 };
@@ -4403,6 +4415,16 @@
     const clear = walkClearY();
     if (y1 > clear && y < clear) y = Math.min(y1 - 4, Math.max(clear + 8, y0 + 4));
     return { x: x, y: y };
+  }
+  function wasdShopPath(ax, ay) {
+    // C103 — hold W (no A/D) from south of the Puffer pad. Columns have
+    // no N–S alley, so raw north dies on the Dolphin apron. Return the
+    // click-to-walk wood path so the same east spine is used.
+    if (!galleryOpen()) return null;
+    if (!(ay < -0.5 && Math.abs(ax) < 0.2)) return null;
+    const pad = tankWalkPoint(6);
+    if (!player || player.y <= pad.y + 12) return null;
+    return shopPath(player.x, player.y, pad.x, pad.y);
   }
   function shopPath(sx, sy, dx, dy) {
     const rects = shopWalkRects();
@@ -13105,7 +13127,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 102", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 103", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -13168,7 +13190,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 102", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 103", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -13199,7 +13221,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 102", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 103", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
