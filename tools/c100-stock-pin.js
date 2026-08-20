@@ -87,7 +87,7 @@ assert(/if \(!open\) drawTankLockGlass\(t\)/.test(src),
 assert(/Unlock  \$" \+ sp\.unlock/.test(src) || /Unlock \$/.test(src),
   "locked tanks still show Unlock $N");
 
-assert(/Aqua Bay · loop 108/.test(src), "title/pause stamp is loop 108");
+assert(/Aqua Bay · loop 109/.test(src), "title/pause stamp is loop 109");
 assert(!/Aqua Bay · loop 107/.test(src), "loop 107 stamp is gone");
 
 assert(/function actionChipInset\s*\(/.test(src), "DIVE chip inset stays");

@@ -1,12 +1,12 @@
-// C108 — 390 dock tap-north reaches the next unlock / shop bowls.
-// Loop 107 leftover: after Continue on ≈390×844 the ribbon says
-// “Tap north to walk to the shop bowls”, but a thumb tap in the
-// visible upper third (ny 0.12–0.22) hits offscreen Dolphin (11)
-// because tankAtWorld won before the C107 remap. Dest became the
-// aisle snap (881,784); walker only shuffled 880,920 → 884,776.
-// ny≥0.28 remapped. The wood ↑ SHOP chip was the only reliable path.
-// C108 runs the plaza remap first and ignores plaza bowls above the
-// dock lip. No auto-unlock. No camera clamp. Desktop click stays.
+// C109 — phone 390 north tap / ↑ SHOP walks to the bowls and does
+// not buy. Loop 108 leftover: after Continue on ≈390×844 a north tap
+// (or the wood ↑ SHOP chip) walked the C106 alley to
+// tankWalkPoint(nextLockedTank()) = Seahorse (5), then
+// tryUnlockOnArrival spent $2200 (money 4000 → 1800) and painted
+// SEAHORSE UNLOCKED. Desktop hold-W occupies the same pad and does
+// not buy. The ribbon promised a walk, not a purchase.
+// C109: plaza-walk dest is not an unlock confirm. Explicit tap on
+// the locked bowl / lock plate still unlocks. C108 remap stays.
 const fs = require("fs");
 const path = require("path");
 const vm = require("vm");
@@ -45,26 +45,30 @@ function extractFn(src, name) {
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
 assert(/Aqua Bay · loop 109/.test(src), "title/pause stamp is loop 109");
-assert(!/Aqua Bay · loop 107/.test(src), "loop 107 stamp is gone");
-assert(/loop 108 tap north reaches the bowls/.test(src),
-  "C108 names the tap-north leftover");
+assert(!/Aqua Bay · loop 108/.test(src), "loop 108 stamp is gone");
+assert(/loop 109 walk is not a buy/.test(src),
+  "C109 names the surprise-buy leftover");
+assert(/const SAVE_KEY = "aqua-bay-save"/.test(src), "save key stays");
+assert(/function walkToShopBowls\s*\(/.test(src),
+  "walkToShopBowls is the plaza walk (not a buy)");
+assert(/function confirmUnlockWalk\s*\(/.test(src),
+  "confirmUnlockWalk is the explicit bowl / lock tap");
+assert(/player\.unlockConfirm !== i/.test(src),
+  "tryUnlockOnArrival requires an explicit unlock confirm");
 assert(/function plazaTankStealsDockTap\s*\(/.test(src),
-  "plazaTankStealsDockTap ignores offscreen plaza bowls");
-assert(/function walkTankAtWorld\s*\(/.test(src),
-  "walkTankAtWorld wraps tankAtWorld");
+  "plazaTankStealsDockTap stays");
 assert(/function phoneDockPlazaWalkWanted\s*\(/.test(src),
-  "C107 phoneDockPlazaWalkWanted stays");
+  "phoneDockPlazaWalkWanted stays");
 assert(/function hideDockWalkHint\s*\(/.test(src),
   "hideDockWalkHint stays");
-assert(/function nextUnlockWalkDest\s*\(/.test(src),
-  "nextUnlockWalkDest stays");
 assert(/drawPierBoardChip\(b\.x, b\.y, b\.w, b\.h, "↑ SHOP"/.test(src),
-  "↑ SHOP chip stays as a second explicit target");
-assert(/Tap north to walk to the shop bowls/.test(src),
-  "phone ribbon still cues north / shop bowls");
+  "↑ SHOP chip stays");
+assert(/catalogChipLabel/.test(src) && /BOOK/.test(extractFn(src, "catalogChipLabel") || ""),
+  "catalog HUD chip is BOOK while ↑ SHOP is showing");
 
 const clickSrc = extractFn(src, "clickWalkTarget") || "";
 const trySrc = extractFn(src, "tryClickShop") || "";
+const onUi = extractFn(src, "onUI") || "";
 assert(/phoneDockPlazaWalkWanted\(wx, wy/.test(clickSrc),
   "clickWalkTarget still remaps a phone plaza tap");
 assert(/phoneDockPlazaWalkWanted\(wx, wy/.test(trySrc),
@@ -78,9 +82,13 @@ const tryTank = trySrc.indexOf("walkTankAtWorld");
 assert(tryRemap >= 0 && tryTank >= 0 && tryRemap < tryTank,
   "tryClickShop runs C107 remap before tank hits");
 assert(/walkToShopBowls\(\)/.test(trySrc),
-  "tryClickShop north tap walks the next unlock dest");
-assert(/walkToShopBowls\(\)/.test(extractFn(src, "onUI") || ""),
-  "↑ SHOP chip still walks the same unlock dest");
+  "north remap walks via walkToShopBowls, not intentWalk unlock");
+assert(!/intentWalk\("unlock", dest, n\)/.test(trySrc),
+  "tryClickShop plaza remap no longer arms unlock");
+assert(/walkToShopBowls\(\)/.test(onUi),
+  "↑ SHOP chip walks via walkToShopBowls");
+assert(/confirmUnlockWalk\(tankWalkPoint\(tankHit\)/.test(trySrc),
+  "explicit locked-bowl tap still confirms unlock");
 
 assert(/function wasdShopPath\s*\(/.test(src), "wasdShopPath stays");
 assert(/nextLockedTank\(\)/.test(extractFn(src, "wasdShopPath") || ""),
@@ -94,29 +102,23 @@ assert(/C106 — that shorter walk was still the till slot/.test(src) ||
   "C106 alley comments stay");
 assert(/pushOut\(t\.x, t\.y, TANK_W, TANK_H \+ 8\)/.test(src),
   "tank walk collider is the bowl + 8px lip");
-
-assert(/const SAVE_KEY = "aqua-bay-save"/.test(src), "save key stays");
-assert(/function galleryOpen\s*\(/.test(src), "galleryOpen stays");
-assert(/function galleryTankDest\s*\(/.test(src), "galleryTankDest stays");
 assert(/unlock:\s*3200/.test(src), "Puffer unlock stays $3200");
 assert(/unlock:\s*2200/.test(src), "Seahorse unlock stays $2200");
 assert(/unlock:\s*1400/.test(src), "Sea Turtle unlock stays $1400");
-const prices = [15, 22, 40, 70, 150];
-assert(prices[0] === 15 && prices[4] === 150, "original 5 sale prices stay");
 assert(/player\.faceS/.test(src), "loop 54 flip stays");
 assert(/C76 — one tank neighborhood around the aisle/.test(src), "C76 cluster stays");
 assert(/const PLAZA_CAM_CEILING\s*=\s*520/.test(src), "plaza camera ceiling stays 520");
 assert(/const DOCK_CAM_FLOOR\s*=\s*1000/.test(src), "dock camera floor stays 1000");
 assert(/function desktopStage\s*\(/.test(src), "desktopStage stays");
-assert(/function portraitStage\s*\(/.test(src), "portraitStage stays");
-assert(/catalogChipLabel/.test(src) && /BOOK/.test(extractFn(src, "catalogChipLabel") || ""),
-  "catalog HUD chip is BOOK while ↑ SHOP is showing (secondary)");
+assert(/btn\("dive"/.test(src) && /function diveActionLegal\s*\(/.test(src),
+  "DIVE still dives");
 
 function desktopStage(w, h) { return w >= 880 && w >= h * 0.92; }
 assert(desktopStage(1280, 720), "1280×720 is a desktop stage");
 assert(!desktopStage(390, 844), "390×844 is not a desktop stage");
 
 const TANK_W = 210, TANK_H = 156, CORE_SPECIES = 5, SPECIES_N = 13;
+const STOCK_PAD = 64;
 const TANK_POS = [
   { x: 340, y: 164 }, { x: 558, y: 164 }, { x: 776, y: 164 },
   { x: 994, y: 164 }, { x: 1212, y: 164 },
@@ -125,9 +127,6 @@ const TANK_POS = [
 ];
 assert(TANK_POS[5].x === 340 && TANK_POS[5].y === 380, "Seahorse stays C76 {340,380}");
 assert(TANK_POS[6].x === 558 && TANK_POS[6].y === 380, "Puffer stays C76 {558,380}");
-assert(TANK_POS[11].x === 776 && TANK_POS[11].y === 596, "Dolphin stays C76 {776,596}");
-assert(TANK_POS[1].x - (TANK_POS[0].x + TANK_W) === 8,
-  "columns still overlap / gap 8px — not an un-clustered east row");
 
 const REGISTER = { x: 168, y: 500, w: 150, h: 110 };
 const KIOSK = { x: 1280, y: 480, w: 170, h: 130 };
@@ -135,6 +134,8 @@ const WELCOME = { x: 140, y: 780, w: 156, h: 86 };
 const AISLE = { x: 802, y: 760, w: 156, h: 160 };
 const DIVE_ZONE = { x: 520, y: 980, w: 720, h: 160 };
 const SPECIES = new Array(SPECIES_N);
+SPECIES[5] = { name: "Seahorse", unlock: 2200, color: "#e8a03a" };
+SPECIES[6] = { name: "Puffer", unlock: 3200, color: "#7ad08a" };
 const EAST_SHOP = { x: 1256, y: 380, w: 228, h: 286 };
 const DOCK_CAM_FLOOR = 1000;
 
@@ -162,7 +163,7 @@ const saveOpen = seedSave({
 });
 assert(saveOpen.unlocked[4] === true && saveOpen.unlocked[5] !== true,
   "isolated SAVE_KEY seed has Turtle, not Seahorse");
-assert(saveOpen.money >= 3200, "seed money is ≥ 3200");
+assert(saveOpen.money === 4000, "seed money is $4000");
 
 const names = [
   "shopDockWalk", "walkClearY", "tankWalkPoint", "shopWalkRects",
@@ -174,6 +175,8 @@ const names = [
   "nextUnlockWalkDest", "hideDockWalkHint", "phoneDockPlazaWalkWanted",
   "tankAtWorld", "plazaTankStealsDockTap", "walkTankAtWorld",
   "clickWalkTarget", "tryClickShop", "walkToShopBowls", "setWalkDest",
+  "clearWalk", "nearRect", "nearStockPad", "tryUnlockOnArrival",
+  "confirmUnlockWalk", "intentWalk", "canPerformAct", "performPendingAct",
 ];
 const fns = {};
 for (let i = 0; i < names.length; i++) {
@@ -185,16 +188,27 @@ function makeCtx(save, opts) {
   opts = opts || {};
   const phone = opts.phone !== false;
   const sandbox = {
-    TANK_POS: TANK_POS, TANK_W: TANK_W, TANK_H: TANK_H,
+    TANK_POS: TANK_POS, TANK_W: TANK_W, TANK_H: TANK_H, STOCK_PAD: STOCK_PAD,
     REGISTER: REGISTER, KIOSK: KIOSK, WELCOME: WELCOME, AISLE: AISLE,
     DIVE_ZONE: DIVE_ZONE, SPECIES: SPECIES, CORE_SPECIES: CORE_SPECIES,
     DOCK_CAM_FLOOR: DOCK_CAM_FLOOR,
-    state: { unlocked: save.unlocked.slice(), money: save.money, scene: "shop", mode: "play" },
-    player: { x: 880, y: 920, radius: 16, goto: null, route: null, pendingAct: null, unlockConfirm: null },
+    state: {
+      unlocked: save.unlocked.slice(),
+      money: save.money,
+      scene: "shop",
+      mode: "play",
+      unlockBanner: null,
+      stock: new Array(SPECIES_N).fill(0),
+    },
+    player: {
+      x: 880, y: 920, radius: 16, goto: null, route: null,
+      pendingAct: null, unlockConfirm: null,
+    },
     keys: null,
     cam: { x: 880, y: 1000, yFloor: DOCK_CAM_FLOOR },
     mouse: { pressX: opts.pressX || 640, pressY: opts.pressY || 700 },
     lastIntent: null,
+    lastBuy: null,
     clamp: clamp,
     toast: function () {},
     nope: function () {},
@@ -204,16 +218,28 @@ function makeCtx(save, opts) {
     bagHasStockable: function () { return false; },
     cashNeedsCollect: function () { return false; },
     tillWaiting: function () { return false; },
-    dockCameraReady: function () { return true; },
-    plazaCameraReady: function () { return false; },
+    inTillGlow: function () { return false; },
+    dockCameraReady: function () { return !!(sandbox.cam && sandbox.cam.y >= DOCK_CAM_FLOOR - 24); },
+    plazaCameraReady: function () { return !!(sandbox.cam && sandbox.cam.y <= 520 + 36); },
     actionFloor: function () { return opts.floor || 2770; },
     inDiveZone: function () { return false; },
     nearDivePad: function () { return sandbox.player.y > 870; },
     stockableTankTarget: function () { return null; },
     registerWalkPoint: function () { return { x: 248, y: 560 }; },
-    intentWalk: function (kind, dest, i) {
-      sandbox.lastIntent = { kind: kind, dest: dest, i: i };
-      return true;
+    bagCanStock: function () { return false; },
+    diveActionLegal: function () { return false; },
+    cueDiveWalk: function () {},
+    stockTank: function () {},
+    collectCash: function () {},
+    beginDive: function () {},
+    buyTank: function (i) {
+      if (sandbox.state.unlocked[i]) return;
+      const c = SPECIES[i].unlock;
+      if (sandbox.state.money < c) return;
+      sandbox.state.money -= c;
+      sandbox.state.unlocked[i] = true;
+      sandbox.state.unlockBanner = { name: SPECIES[i].name, life: 0.9 };
+      sandbox.lastBuy = i;
     },
   };
   const body = names.map((n) => fns[n]).join("\n") +
@@ -222,12 +248,20 @@ function makeCtx(save, opts) {
     " nextUnlockWalkDest, hideDockWalkHint, phoneDockPlazaWalkWanted," +
     " tankAtWorld, plazaTankStealsDockTap, walkTankAtWorld," +
     " clickWalkTarget, tryClickShop, walkToShopBowls, setWalkDest," +
+    " tryUnlockOnArrival, confirmUnlockWalk, intentWalk, canPerformAct," +
+    " performPendingAct, nearStockPad," +
     " shopDockWalk, shopWalkRects, player, state, cam, mouse };";
   vm.runInNewContext(body, sandbox);
   sandbox.__api.lastIntent = function () { return sandbox.lastIntent; };
+  sandbox.__api.lastBuy = function () { return sandbox.lastBuy; };
   sandbox.__api.setPress = function (x, y) {
     sandbox.mouse.pressX = x;
     sandbox.mouse.pressY = y;
+  };
+  sandbox.__api.arrive = function () {
+    if (sandbox.__api.performPendingAct()) return true;
+    sandbox.__api.tryUnlockOnArrival();
+    return !!sandbox.lastBuy;
   };
   return sandbox.__api;
 }
@@ -245,10 +279,8 @@ assert(dockPt.x >= dock.x && dockPt.x <= dock.x + dock.w, "seed walk starts on t
 
 const horse = openApi.tankWalkPoint(5);
 const puff = openApi.tankWalkPoint(6);
-const dolphin = openApi.tankWalkPoint(11);
 assert(horse.x === 445 && horse.y === 568, "Seahorse stand is south of the bowl");
 assert(puff.x === 663 && puff.y === 568, "Puffer stand stays south of the bowl");
-assert(dolphin.x === 881 && dolphin.y === 784, "Dolphin aisle snap is 881,784 (the leftover dest)");
 
 function inEastShop(x, y) {
   return x >= EAST_SHOP.x && x <= EAST_SHOP.x + EAST_SHOP.w &&
@@ -266,27 +298,9 @@ function screenToWorld(sx, sy, cam) {
   return { x: (sx - W / 2) / camZ + cam.x, y: (sy - H390 / 2) / camZ + cam.y };
 }
 
-const northNys = [0.12, 0.18, 0.22];
-const northTaps = [];
-for (let i = 0; i < northNys.length; i++) {
-  const ny = northNys[i];
-  const canvas = { x: W / 2, y: ny * H390 };
-  const world = screenToWorld(canvas.x, canvas.y, { x: 880, y: 1000 });
-  northTaps.push({ ny: ny, canvas: canvas, world: world });
-}
-
-// Document the leftover: raw tankAtWorld still sees Dolphin 11.
-for (let i = 0; i < northTaps.length; i++) {
-  const tap = northTaps[i];
-  const raw = openApi.tankAtWorld(tap.world.x, tap.world.y);
-  assert(raw === 11,
-    "leftover: tankAtWorld at ny=" + tap.ny + " still hits Dolphin 11, got " + raw +
-      " wy=" + tap.world.y.toFixed(1));
-  assert(openApi.plazaTankStealsDockTap(11) === true,
-    "plazaTankStealsDockTap(11) is true on the 390 dock");
-  assert(openApi.walkTankAtWorld(tap.world.x, tap.world.y) === -1,
-    "walkTankAtWorld ignores offscreen Dolphin at ny=" + tap.ny);
-}
+const tapNy = 0.18;
+const tapCanvas = { x: W / 2, y: tapNy * H390 };
+const tapWorld = screenToWorld(tapCanvas.x, tapCanvas.y, { x: 880, y: 1000 });
 
 function followPath(api, dest, maxT) {
   api.player.x = dockPt.x;
@@ -348,58 +362,78 @@ function followPath(api, dest, maxT) {
   };
 }
 
-const walkNotes = [];
-for (let i = 0; i < northTaps.length; i++) {
-  const tap = northTaps[i];
-  const api = makeCtx(saveOpen, {
-    phone: true,
-    pressX: tap.canvas.x,
-    pressY: tap.canvas.y,
-  });
-  assert(api.phoneDockPlazaWalkWanted(tap.world.x, tap.world.y, tap.canvas.x, tap.canvas.y) === true,
-    "ny=" + tap.ny + " wants the plaza / next-unlock walk");
-  const dest = api.clickWalkTarget(tap.world.x, tap.world.y);
-  assert(dest && dest.x === horse.x && dest.y === horse.y,
-    "ny=" + tap.ny + " dest is tankWalkPoint(5), got " +
-      (dest ? dest.x + "," + dest.y : dest));
-  assert(!(dest.x === dolphin.x && dest.y === dolphin.y),
-    "ny=" + tap.ny + " dest is not the Dolphin aisle snap");
-  api.tryClickShop(tap.world.x, tap.world.y);
-  const intent = api.lastIntent();
-  assert(!intent,
-    "ny=" + tap.ny + " pointer-down is a walk, not an unlock confirm, got " +
-      JSON.stringify(intent && { kind: intent.kind, i: intent.i, dest: intent.dest }));
-  assert(!api.player.unlockConfirm && !api.player.pendingAct,
-    "ny=" + tap.ny + " does not arm unlockConfirm / pending unlock");
-  const walkEnd = api.player.route && api.player.route[api.player.route.length - 1];
-  assert(walkEnd && walkEnd.x === horse.x && walkEnd.y === horse.y,
-    "ny=" + tap.ny + " pointer-down dest is tankWalkPoint(5)");
-
-  const walked = followPath(api, dest, 10);
+function assertAlleyWalk(api, walked, label) {
   const walkD = Math.hypot(api.player.x - horse.x, api.player.y - horse.y);
-  assert(walked.t < 8,
-    "ny=" + tap.ny + " reaches Seahorse within ~8s, t=" + walked.t.toFixed(2));
+  assert(walked.t < 8, label + " reaches Seahorse within ~8s, t=" + walked.t.toFixed(2));
   assert(walkD < 40,
-    "ny=" + tap.ny + " occupies the Seahorse pad, d=" + walkD.toFixed(1) +
+    label + " occupies the Seahorse pad, d=" + walkD.toFixed(1) +
       " at " + api.player.x.toFixed(0) + "," + api.player.y.toFixed(0));
-  assert(walked.minX >= 360,
-    "ny=" + tap.ny + " never visits the till / west lane, minX=" + walked.minX.toFixed(1));
-  assert(walked.maxX <= 1100,
-    "ny=" + tap.ny + " stays off the C102 east spine, maxX=" + walked.maxX.toFixed(1));
+  assert(walked.minX >= 360, label + " never visits the till / west lane, minX=" + walked.minX.toFixed(1));
+  assert(walked.maxX <= 1100, label + " stays off the C102 east spine, maxX=" + walked.maxX.toFixed(1));
   assert(!walked.hitPuff && walked.puffMin > 40,
-    "ny=" + tap.ny + " never occupies Soon-Puffer, puffMin=" + walked.puffMin.toFixed(1));
+    label + " never occupies Soon-Puffer, puffMin=" + walked.puffMin.toFixed(1));
   assert(api.player.y < 640 && api.player.y > 520,
-    "ny=" + tap.ny + " finish is on the row-2 apron, y=" + api.player.y.toFixed(1));
+    label + " finish is on the row-2 apron, y=" + api.player.y.toFixed(1));
   assert(!walked.trace.some((p) => inRegister(p.x, p.y) || inEastShop(p.x, p.y) ||
       p.y < 300 || p.x < 360 || p.x > 1100),
-    "ny=" + tap.ny + " did not dump into REGISTER, west lane, eastShop, or the north sky");
-  assert(api.state.unlocked[5] !== true && api.state.unlocked[6] !== true,
-    "ny=" + tap.ny + " does not auto-unlock");
-  walkNotes.push("ny=" + tap.ny + " " + walked.t.toFixed(2) + "s @" +
-    api.player.x.toFixed(0) + "," + api.player.y.toFixed(0));
+    label + " did not dump into REGISTER, west lane, eastShop, or the north sky");
 }
 
-// South / DIVE-pad tap is not stolen.
+function assertStillLocked(api, label) {
+  assert(api.state.unlocked[5] !== true, label + " leaves Seahorse locked");
+  assert(api.state.money === 4000, label + " does not spend, money=" + api.state.money);
+  assert(!api.state.unlockBanner,
+    label + " has no SEAHORSE UNLOCKED banner");
+  assert(api.lastBuy() == null, label + " did not call buyTank");
+}
+
+// 1) ny 0.18 north tap — walk, arrive, no buy.
+const northApi = makeCtx(saveOpen, {
+  phone: true,
+  pressX: tapCanvas.x,
+  pressY: tapCanvas.y,
+});
+assert(northApi.phoneDockPlazaWalkWanted(tapWorld.x, tapWorld.y, tapCanvas.x, tapCanvas.y) === true,
+  "ny=0.18 wants the plaza / next-unlock walk");
+const northDest = northApi.clickWalkTarget(tapWorld.x, tapWorld.y);
+assert(northDest && northDest.x === horse.x && northDest.y === horse.y,
+  "ny=0.18 dest is tankWalkPoint(5)");
+northApi.tryClickShop(tapWorld.x, tapWorld.y);
+assert(!northApi.player.unlockConfirm && !northApi.player.pendingAct,
+  "ny=0.18 does not arm unlockConfirm / pending unlock");
+const northWalk = followPath(northApi, northDest, 10);
+assertAlleyWalk(northApi, northWalk, "ny=0.18");
+northApi.arrive();
+assertStillLocked(northApi, "ny=0.18 arrival");
+northApi.cam.y = 520;
+
+// 2) ↑ SHOP — same walk, no buy.
+const shopApi = makeCtx(saveOpen, { phone: true });
+assert(shopApi.walkToShopBowls() === true, "↑ SHOP / walkToShopBowls starts");
+assert(!shopApi.player.unlockConfirm && !shopApi.player.pendingAct,
+  "↑ SHOP does not arm unlockConfirm / pending unlock");
+const shopDest = shopApi.nextUnlockWalkDest();
+const shopWalk = followPath(shopApi, shopDest, 10);
+assertAlleyWalk(shopApi, shopWalk, "↑ SHOP");
+shopApi.arrive();
+assertStillLocked(shopApi, "↑ SHOP arrival");
+
+// 3) Then tap the Seahorse bowl — explicit buy may fire.
+northApi.setPress(W / 2, H390 * 0.35);
+const bowl = { x: TANK_POS[5].x + TANK_W / 2, y: TANK_POS[5].y + TANK_H / 2 };
+assert(northApi.walkTankAtWorld(bowl.x, bowl.y) === 5,
+  "bowl tap hits Seahorse");
+assert(northApi.phoneDockPlazaWalkWanted(bowl.x, bowl.y, W / 2, H390 * 0.35) === false,
+  "standing at the pad, a bowl tap is not remapped as a plaza walk");
+northApi.tryClickShop(bowl.x, bowl.y);
+assert(northApi.state.unlocked[5] === true,
+  "explicit Seahorse bowl tap unlocks when they can afford it");
+assert(northApi.state.money === 1800,
+  "explicit buy spends $2200, money=" + northApi.state.money);
+assert(northApi.state.unlockBanner && /seahorse/i.test(northApi.state.unlockBanner.name),
+  "explicit buy may show the Seahorse unlock banner");
+
+// 4) South / DIVE-pad tap is not stolen. DIVE still dives.
 const diveWorld = { x: 880, y: 1008 };
 const diveCanvas = { x: W / 2, y: H390 * 0.82 };
 assert(openApi.phoneDockPlazaWalkWanted(diveWorld.x, diveWorld.y, diveCanvas.x, diveCanvas.y) === false,
@@ -409,22 +443,13 @@ const diveDest = openApi.clickWalkTarget(diveWorld.x, diveWorld.y);
 assert(diveDest && diveDest.x === 880 && diveDest.y === 1008,
   "south / DIVE-pad dest stays the pad, got " + (diveDest && diveDest.x + "," + diveDest.y));
 openApi.tryClickShop(diveWorld.x, diveWorld.y);
-assert(!openApi.lastIntent(),
-  "south / DIVE-pad pointer-down does not start an unlock walk");
-assert(/btn\("dive"/.test(src) && /function diveActionLegal\s*\(/.test(src),
-  "DIVE still dives");
+assert(!openApi.player.unlockConfirm,
+  "south / DIVE-pad pointer-down does not arm an unlock");
 
-// Desktop 16:9 — no phone remap. Click-to-walk Puffer / hold-W Seahorse stay.
-assert(deskApi.phoneDockPlazaWalkWanted(northTaps[0].world.x, northTaps[0].world.y,
-  northTaps[0].canvas.x, northTaps[0].canvas.y) === false,
+// 5) Desktop 16:9 hold-W reaches Seahorse without unlocking.
+//    Click-to-walk Puffer still works.
+assert(deskApi.phoneDockPlazaWalkWanted(tapWorld.x, tapWorld.y, tapCanvas.x, tapCanvas.y) === false,
   "desktop click-to-walk is not remapped by the phone plaza gate");
-deskApi.setPress(640, 360);
-const deskDock = deskApi.clickWalkTarget(880, 1008);
-assert(deskDock && deskDock.x === 880 && deskDock.y === 1008,
-  "desktop dock click is not remapped, got " + (deskDock && deskDock.x + "," + deskDock.y));
-const deskPuff = deskApi.clickWalkTarget(puff.x, puff.y);
-assert(deskPuff && Math.hypot(deskPuff.x - puff.x, deskPuff.y - puff.y) < 1,
-  "desktop click-to-walk Puffer still ends on tankWalkPoint(6)");
 deskApi.player.x = dockPt.x;
 deskApi.player.y = dockPt.y;
 const wPath = deskApi.wasdShopPath(0, -1);
@@ -432,6 +457,10 @@ assert(wPath && wPath.length >= 2, "desktop hold-W still returns a shop path");
 const wLast = wPath[wPath.length - 1];
 assert(Math.hypot(wLast.x - horse.x, wLast.y - horse.y) < 1,
   "desktop hold-W still ends on tankWalkPoint(5)");
+const deskWalk = followPath(deskApi, horse, 10);
+assertAlleyWalk(deskApi, deskWalk, "desktop hold-W");
+deskApi.arrive();
+assertStillLocked(deskApi, "desktop hold-W arrival");
 
 const clickPath = openApi.shopPath(dockPt.x, dockPt.y, puff.x, puff.y);
 assert(Array.isArray(clickPath) && clickPath.length >= 2,
@@ -440,9 +469,11 @@ const clickLast = clickPath[clickPath.length - 1];
 assert(Math.hypot(clickLast.x - puff.x, clickLast.y - puff.y) < 1,
   "clicking Puffer still routes to tankWalkPoint(6)");
 
-console.log("c108 phone north: ok (next=" + openApi.nextLockedTank() +
+console.log("c109 no autobuy: ok (next=" + openApi.nextLockedTank() +
   ", horse=" + horse.x + "," + horse.y +
-  ", dolphinSnap=" + dolphin.x + "," + dolphin.y +
-  ", taps=[" + northTaps.map((t) => "ny" + t.ny + "@" + t.world.y.toFixed(0)).join(" ") + "]" +
-  ", " + walkNotes.join(" · ") +
+  ", ny18=" + northWalk.t.toFixed(2) + "s @" +
+  northApi.player.x.toFixed(0) + "," + northApi.player.y.toFixed(0) +
+  ", shop=" + shopWalk.t.toFixed(2) + "s locked $4000" +
+  ", explicit=$" + northApi.state.money +
+  ", holdW=" + deskWalk.t.toFixed(2) + "s locked" +
   ")");

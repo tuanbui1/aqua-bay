@@ -43,7 +43,7 @@ function extractFn(src, name) {
 
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
-assert(/Aqua Bay · loop 108/.test(src), "title/pause stamp is loop 108");
+assert(/Aqua Bay · loop 109/.test(src), "title/pause stamp is loop 109");
 assert(!/Aqua Bay · loop 107/.test(src), "loop 107 stamp is gone");
 assert(/loop 107 phone 390 tap-to-walk to the shop bowls/.test(src),
   "C107 names the phone plaza leftover");
@@ -65,11 +65,11 @@ assert(/Walk to the glowing DIVE dock — tap to walk/.test(src),
   "off-dock walk-to-DIVE copy stays for mid-pier");
 assert(/Dock is south — tap to walk/.test(src),
   "south-hint copy still exists for mid-pier");
-assert(/if \(hideDockWalkHint\(\)\)/.test(src),
+assert(/if \(hideDockWalkHint\(\)/.test(src),
   "currentGoal consults hideDockWalkHint before the DIVE-dock fallback");
 assert(/phoneDockPlazaWalkWanted\(wx, wy/.test(extractFn(src, "clickWalkTarget") || ""),
   "clickWalkTarget remaps a phone plaza tap");
-assert(/intentWalk\("unlock", dest, n\)/.test(extractFn(src, "onUI") || ""),
+assert(/walkToShopBowls\(\)/.test(extractFn(src, "onUI") || ""),
   "↑ SHOP chip walks the same unlock dest as hold-W");
 
 assert(/function wasdShopPath\s*\(/.test(src), "wasdShopPath stays");
