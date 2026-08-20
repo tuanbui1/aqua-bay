@@ -87,8 +87,8 @@ assert(/"#a84a3a"/.test(pause[0]),
 
 assert(/panelBtn\("book-close"/.test(src), "book-close stays a flat panelBtn");
 
-assert(/Aqua Bay · loop 96/.test(src), "title/pause stamp is loop 96");
-assert(!/Aqua Bay · loop 95/.test(src), "loop 95 stamp is gone");
+assert(/Aqua Bay · loop 97/.test(src), "title/pause stamp is loop 97");
+assert(!/Aqua Bay · loop 96/.test(src), "loop 96 stamp is gone");
 
 assert(/function drawPickerBackdrop\s*\(/.test(src), "C95 painted backdrop stays");
 assert(/function pickerLabelLayout\s*\(/.test(src), "C95 label inset stays");

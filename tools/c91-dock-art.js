@@ -54,8 +54,8 @@ assert(/return \{ x: 500, y: 890, w: 760, h: 130 \}/.test(src),
 assert(!/pushOut\(POP_VEND/.test(src) && !/pushOut\(OPEN_SIGN/.test(src),
   "POP / OPEN did not grow walk colliders");
 
-assert(/Aqua Bay · loop 96/.test(src), "title/pause stamp is loop 96");
-assert(!/Aqua Bay · loop 95/.test(src), "loop 95 stamp is gone");
+assert(/Aqua Bay · loop 97/.test(src), "title/pause stamp is loop 97");
+assert(!/Aqua Bay · loop 96/.test(src), "loop 96 stamp is gone");
 
 assert(/const DIVE_WALK_SPEED\s*=\s*480/.test(src), "dash speed stays 480");
 assert(/232 \+ state\.speedLv \* 38 \+ firstBump/.test(src),
