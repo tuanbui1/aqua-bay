@@ -34,8 +34,8 @@ assert(/blurbFont = phoneCss\(\s*13\s*\)/.test(src),
   "picker blurbs use phoneCss");
 assert(/whoFontPx = phoneCss\(\s*16\s*\)/.test(src),
   "Who's diving? hint uses phoneCss");
-assert(/Aqua Bay · loop 103/.test(src), "title/pause stamp is loop 103");
-assert(!/Aqua Bay · loop 102/.test(src), "loop 102 stamp is gone");
+assert(/Aqua Bay · loop 104/.test(src), "title/pause stamp is loop 104");
+assert(!/Aqua Bay · loop 103/.test(src), "loop 103 stamp is gone");
 
 assert(/function speechStageRect\s*\(/.test(src), "C93 speech clamp stays");
 assert(/C93 — hang the board off the arm/.test(src), "C93 OPEN hang stays");

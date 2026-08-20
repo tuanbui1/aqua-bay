@@ -40,8 +40,8 @@ function extractFn(src, name) {
 
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
-assert(/Aqua Bay · loop 103/.test(src), "title/pause stamp is loop 103");
-assert(!/Aqua Bay · loop 102/.test(src), "loop 102 stamp is gone");
+assert(/Aqua Bay · loop 104/.test(src), "title/pause stamp is loop 104");
+assert(!/Aqua Bay · loop 103/.test(src), "loop 103 stamp is gone");
 assert(/function wasdShopPath\s*\(/.test(src), "wasdShopPath steers hold-W onto the wood path");
 assert(/C103 — hold-W never took that spine/.test(src) ||
   /C103 — hold W \(no A\/D\) from south of the Puffer pad/.test(src),
@@ -120,15 +120,16 @@ function seedSave(opts) {
   };
 }
 const saveOpen = seedSave({
-  unlocked: [true, true, true, true, true],
+  unlocked: [true, true, true, true, true, true],
   money: 3200,
 });
 const saveClosed = seedSave({
   unlocked: [true],
   money: 0,
 });
-assert(saveOpen.unlocked[4] === true && saveOpen.money >= 3200,
-  "open save has Sea Turtle + Puffer cash");
+assert(saveOpen.unlocked[4] === true && saveOpen.unlocked[5] === true &&
+  saveOpen.money >= 3200,
+  "open save has Turtle + Seahorse so next unlock is Puffer");
 assert(saveClosed.unlocked[4] !== true, "closed save has not unlocked Turtle");
 assert(saveOpen.unlocked.filter(Boolean).length >= CORE_SPECIES,
   "open save meets galleryOpen via Turtle / core count");
@@ -137,7 +138,8 @@ const names = [
   "shopDockWalk", "walkClearY", "tankWalkPoint", "shopWalkRects",
   "snapToShopWalk", "shopRectOverlap", "shopRectHas", "shopPortal",
   "wasdShopPath", "shopPath", "constrainShop", "pushOut", "shopWalkMax",
-  "galleryOpen", "tankLive", "galleryTankDest",
+  "galleryOpen", "tankLive", "galleryTankDest", "speciesUnlocked",
+  "nextLockedSafe", "nextLockedTank",
   "onAisleWalk", "eastShopNavyGap", "destWantsPlaza", "destWantsDock",
 ];
 const fns = {};
