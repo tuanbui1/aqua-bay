@@ -262,7 +262,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -998,20 +998,27 @@
     return r.width > 8 ? r.width / W : 1;
   }
   function viewportSize() {
-    const vv = window.visualViewport;
-    return {
-      w: vv ? vv.width : window.innerWidth,
-      h: vv ? vv.height : window.innerHeight,
-    };
+    const vis = visualCssSize();
+    return { w: vis.w, h: vis.h };
   }
+  // Visible CSS box. innerHeight stays the large layout (844) while
+  // Safari/Chrome chrome shrinks visualViewport.height (~655). Always
+  // prefer the visual viewport — never the layout / 100svh / innerHeight.
   function visualCssSize() {
     const vv = window.visualViewport;
-    return {
-      w: Math.max(1, vv ? vv.width : window.innerWidth),
-      h: Math.max(1, vv ? vv.height : window.innerHeight),
-      left: (vv && vv.offsetLeft) || 0,
-      top: (vv && vv.offsetTop) || 0,
-    };
+    const layoutW = window.innerWidth || 1;
+    const layoutH = window.innerHeight || 1;
+    if (vv && vv.height > 0 && vv.width > 0) {
+      return {
+        w: Math.max(1, vv.width),
+        h: Math.max(1, vv.height),
+        left: vv.offsetLeft || 0,
+        top: vv.offsetTop || 0,
+        layoutW: layoutW,
+        layoutH: layoutH,
+      };
+    }
+    return { w: layoutW, h: layoutH, left: 0, top: 0, layoutW: layoutW, layoutH: layoutH };
   }
   function wrapSafeInset(side) {
     const wrap = document.getElementById("wrap");
@@ -1040,8 +1047,11 @@
     else if (side === "Right") already = Math.max(0, (vis.left + vis.w) - (rect.left + rect.width));
     const remain = Math.max(0, env - already);
     const flush = already < 2;
-    if (remain < 8 && flush && isiOSPhone() && portraitStage()) {
-      return side === "Top" ? 44 : (side === "Bottom" ? 28 : remain);
+    if (portraitStage() && flush) {
+      // viewport-fit=cover often reports env() as 0 on Chrome and iOS.
+      // A notch / status bar is ~44–54 CSS px — 12px comfort is not enough.
+      if (side === "Top") return remain >= 24 ? remain : 50;
+      if (side === "Bottom" && remain < 8) return isiOSPhone() ? 28 : remain;
     }
     return remain;
   }
@@ -1050,14 +1060,14 @@
     return phoneCss(safeOverlapCss("Top") + 12);
   }
   // Stage Y of the last pixel that is actually on-screen in the visual
-  // viewport, above the home indicator. On a 390×844 phone the browser
-  // chrome is ~200px; DIVE must sit above that edge in BOTH dock and
-  // plaza cameras — not at H, and not a 19px sliver under the home bar.
+  // viewport, above the home indicator. innerHeight / canvas CSS may
+  // still be 844 while visualViewport.height is 655 — DIVE / SURFACE
+  // must use that visible floor in BOTH dock and plaza cameras.
   function visibleStageBottom() {
     if (!portraitStage()) return H;
     const vis = visualCssSize();
     const rect = canvas.getBoundingClientRect();
-    const cssH = Math.max(1, rect.height || vis.h);
+    const cssH = Math.max(1, rect.height || vis.layoutH || vis.h);
     const visibleCss = clamp((vis.top + vis.h) - rect.top, 1, cssH);
     const lip = phoneCss(Math.max(12, safeOverlapCss("Bottom") + 12));
     const floor = Math.round(H * (visibleCss / cssH)) - lip;
@@ -1145,7 +1155,7 @@
     };
     if (!portraitStage() || H <= DESKTOP_H + 20) return desk;
     const pad = Math.max(Math.round(H * 0.024), hudSafeTop());
-    const titleH = Math.min(210, Math.max(150, Math.round(H * 0.085)));
+    const titleH = Math.max(phoneCss(96), Math.min(280, Math.round(H * 0.10)));
     const cardGap = 20;
     const cardW = Math.min(300, Math.round((W - 80 - cardGap * 2) / 3));
     // Natural picker cards (near desktop 168×176). Extra phone height
@@ -1188,10 +1198,10 @@
       newY, newH, newW: btnW,
       playY: continueY0, playH: btnH,
       stampY: titleY + titleH - Math.round(titleH * 0.10),
-      titleFont: Math.max(40, Math.round(H * 0.03)),
-      subFont: Math.max(20, Math.round(H * 0.015)),
-      tagFont: Math.max(20, Math.round(H * 0.016)),
-      stampFont: Math.max(18, Math.round(H * 0.013)),
+      titleFont: phoneCss(20),
+      subFont: phoneCss(13),
+      tagFont: phoneCss(13),
+      stampFont: phoneCss(11),
       nameFont: Math.max(24, Math.round(H * 0.017)),
       blurbFont: Math.max(16, Math.round(H * 0.012)),
       btnFont: Math.max(32, Math.round(H * 0.024)),
@@ -1231,8 +1241,21 @@
     const wrap = document.getElementById("wrap");
     if (!wrap) return;
     const vis = visualCssSize();
+    const root = document.documentElement;
+    // Pin the page to the visual viewport so 100svh / innerHeight (844)
+    // cannot keep the canvas taller than the URL-bar window (655).
+    if (root) {
+      root.style.width = vis.w + "px";
+      root.style.height = vis.h + "px";
+    }
+    if (document.body) {
+      document.body.style.width = vis.w + "px";
+      document.body.style.height = vis.h + "px";
+    }
     wrap.style.width = vis.w + "px";
     wrap.style.height = vis.h + "px";
+    wrap.style.maxWidth = vis.w + "px";
+    wrap.style.maxHeight = vis.h + "px";
     wrap.style.left = vis.left + "px";
     wrap.style.top = vis.top + "px";
     const padL = wrapSafeInset("Left");
@@ -11322,9 +11345,10 @@
     return lines;
   }
   function ribbonFont(live) {
-    if (live && live.big) return "800 15px Nunito, sans-serif";
-    if (live) return "800 14px Nunito, sans-serif";
-    return "700 13px Nunito, sans-serif";
+    const px = portraitStage()
+      ? (live && live.big ? phoneCss(15) : live ? phoneCss(14) : phoneCss(13))
+      : (live && live.big ? 15 : live ? 14 : 13);
+    return (live ? "800 " : "700 ") + px + "px Nunito, sans-serif";
   }
   function ribbonLayout() {
     const toastLive = !ribbonLockedToGoal() && state.toasts.length && !state.unlockBanner;
@@ -11341,12 +11365,13 @@
     const inner = maxW - 28;
     let lines = wrapHudLines(gt, inner);
     if (lines.length > 2) {
-      font = live ? "800 12px Nunito, sans-serif" : "700 12px Nunito, sans-serif";
+      const shrink = portraitStage() ? phoneCss(12) : 12;
+      font = (live ? "800 " : "700 ") + shrink + "px Nunito, sans-serif";
       ctx.font = font;
       lines = wrapHudLines(gt, inner);
     }
     if (lines.length > 2) {
-      font = "700 11px Nunito, sans-serif";
+      font = "700 " + (portraitStage() ? phoneCss(11) : 11) + "px Nunito, sans-serif";
       ctx.font = font;
       lines = wrapHudLines(gt, inner);
     }
@@ -11439,10 +11464,10 @@
     ctx.translate(bcx, bcy);
     ctx.scale(state.bagPunch, state.bagPunch);
     ctx.translate(-bcx, -bcy);
-    pierChip(bagBox.x, bagBox.y, bagBox.w, bagBox.h);
+    pierChip(bagBox.x, bagBox.y, bagBox.w, bagBox.h, "rgba(18, 32, 42, 0.94)");
     const bagLabelPx = portraitStage() ? Math.max(11, Math.round(bagBox.h * 0.24)) : 13;
     const bagCountPx = portraitStage() ? Math.max(14, Math.round(bagBox.h * 0.32)) : 22;
-    ctx.fillStyle = "#dce8b0"; ctx.font = "700 " + bagLabelPx + "px Nunito, sans-serif"; ctx.textAlign = "left";
+    ctx.fillStyle = "#fff6e8"; ctx.font = "700 " + bagLabelPx + "px Nunito, sans-serif"; ctx.textAlign = "left";
     ctx.fillText("BAG", bagBox.x + Math.round(bagBox.w * 0.12), bagBox.y + Math.round(bagBox.h * 0.40));
     ctx.fillStyle = "#fff6e8"; ctx.font = "800 " + bagCountPx + "px Nunito, sans-serif";
     const bagShown = state.bag.length;
@@ -12127,14 +12152,14 @@
     roundRect(boardX, boardY, boardW, boardH, 10); ctx.stroke();
     drawFishBody(SPECIES[0], tx + tw * 0.16, ty + th * 0.32, 0.08, lay.portrait ? 1.85 : 1.35, state.time);
     ctx.fillStyle = "#fff6e8"; ctx.font = "700 " + lay.titleFont + "px Fredoka, sans-serif"; ctx.textAlign = "center";
-    ctx.fillText("Aqua Bay Pier Mart", W / 2 + (lay.portrait ? 28 : 18), ty + th * 0.30);
+    ctx.fillText("Aqua Bay Pier Mart", W / 2 + (lay.portrait ? 28 : 18), ty + th * (lay.portrait ? 0.26 : 0.30));
     ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + lay.subFont + "px Nunito, sans-serif";
-    ctx.fillText("Dive. Stock. Sell.", W / 2 + (lay.portrait ? 28 : 18), ty + th * 0.46);
+    ctx.fillText("Dive. Stock. Sell.", W / 2 + (lay.portrait ? 28 : 18), ty + th * (lay.portrait ? 0.50 : 0.46));
     ctx.fillStyle = "#9ef0ff"; ctx.font = "700 " + lay.tagFont + "px Nunito, sans-serif";
     ctx.fillText("A sunny pier aquarium of your own", W / 2, ty + th * 0.74);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 81", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 82", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -12197,7 +12222,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 81", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 82", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -12228,7 +12253,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 81", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 82", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
