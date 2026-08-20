@@ -11402,21 +11402,24 @@
     return dodgeUpgradeTray(parkChip(hudBox(16, 14, 200, 52), ribbon));
   }
   function drawMoneyReadout(moneyBox) {
+    const cx = moneyBox.x + moneyBox.w * 0.5, cy = moneyBox.y + moneyBox.h * 0.5;
     ctx.save();
-    ctx.translate(moneyBox.x + 94, moneyBox.y + 26);
+    ctx.translate(cx, cy);
     ctx.scale(state.moneyPunch, state.moneyPunch);
-    ctx.translate(-(moneyBox.x + 94), -(moneyBox.y + 26));
+    ctx.translate(-cx, -cy);
     pierChip(moneyBox.x, moneyBox.y, moneyBox.w, moneyBox.h);
-    drawCoin(moneyBox.x + 28, moneyBox.y + 26, 14);
-    const cashPx = portraitStage() ? phoneCss(18) : 22;
-    const goalPx = portraitStage() ? phoneCss(11) : 11;
+    const coinR = portraitStage() ? Math.max(8, Math.round(moneyBox.h * 0.22)) : 14;
+    drawCoin(moneyBox.x + Math.round(moneyBox.w * 0.18), cy, coinR);
+    const cashPx = portraitStage() ? Math.max(14, Math.round(moneyBox.h * 0.34)) : 22;
+    const goalPx = portraitStage() ? Math.max(10, Math.round(moneyBox.h * 0.20)) : 11;
+    const textX = moneyBox.x + Math.round(moneyBox.w * 0.34);
     ctx.fillStyle = "#fff6e8"; ctx.font = "800 " + cashPx + "px Nunito, sans-serif"; ctx.textAlign = "left";
-    ctx.fillText(String(state.displayMoney), moneyBox.x + 52, moneyBox.y + 26);
+    ctx.fillText(String(state.displayMoney), textX, moneyBox.y + Math.round(moneyBox.h * 0.46));
     const ng = nextGoal();
     if (ng) {
       ctx.fillStyle = "#ffe27a";
       ctx.font = "700 " + goalPx + "px Nunito, sans-serif";
-      ctx.fillText("Next " + ng.name + " $" + ng.cost, moneyBox.x + 52, moneyBox.y + 42);
+      ctx.fillText("Next " + ng.name + " $" + ng.cost, textX, moneyBox.y + Math.round(moneyBox.h * 0.78));
     }
     ctx.restore();
   }
@@ -11432,17 +11435,18 @@
       : dodgeUpgradeTray(parkChip(hudBox(224, 14, 168, 52), ribbon));
     ctx.save();
     ctx.globalAlpha = chipAlpha(bagBox, ribbon);
-    ctx.translate(bagBox.x + 84, bagBox.y + 26);
+    const bcx = bagBox.x + bagBox.w * 0.5, bcy = bagBox.y + bagBox.h * 0.5;
+    ctx.translate(bcx, bcy);
     ctx.scale(state.bagPunch, state.bagPunch);
-    ctx.translate(-(bagBox.x + 84), -(bagBox.y + 26));
+    ctx.translate(-bcx, -bcy);
     pierChip(bagBox.x, bagBox.y, bagBox.w, bagBox.h);
-    const bagLabelPx = portraitStage() ? phoneCss(12) : 13;
-    const bagCountPx = portraitStage() ? phoneCss(16) : 22;
+    const bagLabelPx = portraitStage() ? Math.max(11, Math.round(bagBox.h * 0.24)) : 13;
+    const bagCountPx = portraitStage() ? Math.max(14, Math.round(bagBox.h * 0.32)) : 22;
     ctx.fillStyle = "#dce8b0"; ctx.font = "700 " + bagLabelPx + "px Nunito, sans-serif"; ctx.textAlign = "left";
-    ctx.fillText("BAG", bagBox.x + 14, bagBox.y + 20);
+    ctx.fillText("BAG", bagBox.x + Math.round(bagBox.w * 0.12), bagBox.y + Math.round(bagBox.h * 0.40));
     ctx.fillStyle = "#fff6e8"; ctx.font = "800 " + bagCountPx + "px Nunito, sans-serif";
     const bagShown = state.bag.length;
-    ctx.fillText(bagShown + " / " + bagMax(), bagBox.x + 14, bagBox.y + 42);
+    ctx.fillText(bagShown + " / " + bagMax(), bagBox.x + Math.round(bagBox.w * 0.12), bagBox.y + Math.round(bagBox.h * 0.78));
     ctx.restore();
     if (bagShown || bagGhosts.length) {
       const pipN = bagShown + bagGhosts.length;

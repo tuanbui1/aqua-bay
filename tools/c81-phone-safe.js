@@ -39,6 +39,14 @@ const hudY = hudSafeTop(notch);
 const hudCss = hudY / H * visH;
 assert(hudCss >= notch + 10, "money/BAG sit below the notch, cssY=" + hudCss.toFixed(1));
 assert(hudY > 40, "portrait HUD is not 12 stage pixels at the canvas lip");
+const moneyH = phoneCss(48, CSS_W);
+const cashPx = Math.max(14, Math.round(moneyH * 0.34));
+const cashBaseline = hudY + Math.round(moneyH * 0.46);
+assert(cashBaseline - cashPx >= hudY + 2, "money glyphs stay inside the chip, not above y=0");
+const bagH = moneyH;
+const bagLabel = Math.max(11, Math.round(bagH * 0.24));
+const bagBase = hudY + Math.round(bagH * 0.40);
+assert(bagBase - bagLabel >= hudY, "BAG label stays inside the chip");
 assert(hudSafeTop(0) / H * visH >= 10, "even with env()=0, HUD has a 12px comfort pad");
 
 // DIVE chip: full tap target above home indicator, both cameras.
