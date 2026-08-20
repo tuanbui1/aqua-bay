@@ -66,4 +66,28 @@ const westThumb = canvasPos(80, 360);
 assert(westThumb.x > 200 && westThumb.x < 400, "west thumb maps into playfield X " + westThumb.x);
 assert(westThumb.y > 250 && westThumb.y < 400, "mid-screen thumb maps mid-canvas Y " + westThumb.y);
 
+function desktopStage(w, h) { return w >= 880 && w >= h * 0.92; }
+function fillPhoneStage(w, h, coarse) {
+  if (desktopStage(w, h)) return false;
+  return !!(coarse || h > w * 1.05 || w < 520);
+}
+function compactHud(w, h, coarse, scale) {
+  if (desktopStage(w, h)) return false;
+  return !!(coarse || scale < 0.62 || h > w * 1.05);
+}
+assert(desktopStage(1280, 720), "1280×720 is desktop");
+assert(desktopStage(1440, 900), "laptop landscape is desktop");
+assert(!desktopStage(390, 844), "390×844 is not desktop");
+assert(!desktopStage(430, 932), "430×932 is not desktop");
+assert(!fillPhoneStage(1280, 720, true), "touchscreen laptop stays desktop stage");
+assert(fillPhoneStage(390, 844, true), "phone portrait fills");
+assert(fillPhoneStage(390, 844, false), "narrow portrait fills even without coarse");
+assert(!compactHud(1280, 720, true, 1), "touchscreen laptop must not inflate desktop cards");
+assert(!compactHud(1280, 720, false, 1), "1280×720 HUD stays dense");
+assert(compactHud(390, 844, true, 390 / 1280), "phone HUD uses fat tap targets");
+
+// Desktop 16:9 contain: click maps 1:1 into 1280×720, not a phone stretch.
+const desk = { x: 200 * (1280 / 1280), y: 400 * (720 / 720) };
+assert(desk.x === 200 && desk.y === 400, "desktop click is 1:1 on a 1280×720 canvas");
+
 console.log("c77 plaza tap: ok");

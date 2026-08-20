@@ -983,8 +983,23 @@
     const r = canvas.getBoundingClientRect();
     return r.width > 8 ? r.width / W : 1;
   }
+  function viewportSize() {
+    const vv = window.visualViewport;
+    return {
+      w: vv ? vv.width : window.innerWidth,
+      h: vv ? vv.height : window.innerHeight,
+    };
+  }
+  function desktopStage() {
+    // One live page: a 1280×720 (or any wide landscape) window keeps the
+    // 16:9 framed stage and dense HUD. Coarse pointers on a laptop must
+    // not flip the whole UI into phone chrome.
+    const vp = viewportSize();
+    return vp.w >= 880 && vp.w >= vp.h * 0.92;
+  }
   function compactHud() {
-    return isCoarsePointer() || displayScale() < 0.62;
+    if (desktopStage()) return false;
+    return isCoarsePointer() || displayScale() < 0.62 || phonePortrait();
   }
   function topCtrlBoxes() {
     const topBtn = compactHud() ? thumbCanvas(44, 54, 84) : 54;
@@ -1004,13 +1019,13 @@
     return clamp(Math.round(cssPx / s), minC, maxC);
   }
   function phonePortrait() {
-    const vv = window.visualViewport;
-    const w = vv ? vv.width : window.innerWidth;
-    const h = vv ? vv.height : window.innerHeight;
-    return h > w * 1.05;
+    const vp = viewportSize();
+    return vp.h > vp.w * 1.05;
   }
   function fillPhoneStage() {
-    return isCoarsePointer() || phonePortrait() || displayScale() < 0.72;
+    if (desktopStage()) return false;
+    const vp = viewportSize();
+    return isCoarsePointer() || phonePortrait() || vp.w < 520;
   }
   // Resize / visualViewport events must not mutate the live transform or
   // backing store mid-draw. That reset the world blit to screen space and
