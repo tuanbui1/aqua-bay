@@ -57,14 +57,15 @@ const card = galleryTankDest(6);
 assert(Math.abs(card.x - tankWalkPoint(4).x) < 1, "Puffer card still walks to Turtle");
 assert(card.y >= walkClearY(), "Turtle pad is south of glass");
 
-// 390×844 tap maps through full canvas, not a 16:9 postage stamp.
-const W = 1280, H = 720, cssW = 390, cssH = 844;
+// 390×844 tap maps through the full canvas (C78 uses aspect-matched H).
+const W = 1280, cssW = 390, cssH = 844;
+const H = Math.max(960, Math.round(W * cssH / cssW));
 function canvasPos(clientX, clientY) {
   return { x: clientX * (W / cssW), y: clientY * (H / cssH) };
 }
 const westThumb = canvasPos(80, 360);
 assert(westThumb.x > 200 && westThumb.x < 400, "west thumb maps into playfield X " + westThumb.x);
-assert(westThumb.y > 250 && westThumb.y < 400, "mid-screen thumb maps mid-canvas Y " + westThumb.y);
+assert(Math.abs(westThumb.y - H * (360 / cssH)) < 1, "mid-screen thumb maps mid-canvas Y " + westThumb.y);
 
 function desktopStage(w, h) { return w >= 880 && w >= h * 0.92; }
 function fillPhoneStage(w, h, coarse) {
