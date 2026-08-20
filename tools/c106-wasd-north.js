@@ -44,7 +44,7 @@ function extractFn(src, name) {
 
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
-assert(/Aqua Bay · loop 108/.test(src), "title/pause stamp is loop 108");
+assert(/Aqua Bay · loop 109/.test(src), "title/pause stamp is loop 109");
 assert(!/Aqua Bay · loop 107/.test(src), "loop 107 stamp is gone");
 assert(/function wasdShopPath\s*\(/.test(src), "wasdShopPath stays");
 assert(/nextLockedTank\(\)/.test(extractFn(src, "wasdShopPath") || ""),

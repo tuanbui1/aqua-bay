@@ -274,7 +274,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -590,7 +590,7 @@
     escapeBar: null, escapeGate: 0,
     tangHintLife: 0, tangHintDone: false,
   };
-  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, route: null, blockT: 0, walkPhase: 0, lean: 0, faceS: 1, pitch: 0, pendingAct: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0, surfaceIntent: false };
+  const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, route: null, blockT: 0, walkPhase: 0, lean: 0, faceS: 1, pitch: 0, pendingAct: null, unlockConfirm: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0, surfaceIntent: false };
   const cam = { x: 880, y: 920, z: 1, rail: 28 };
   const oceanFish = [];
   const tankFish = SPECIES.map(() => []);
@@ -983,7 +983,7 @@
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0 });
     ensureUnlockFlags();
     state.hasSave = false;
-    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.route = null; player.blockT = 0; player.walkPhase = 0; player.lean = 0; player.faceS = 1; player.pitch = 0; player.pendingAct = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0; player.surfaceIntent = false;
+    player.x = 880; player.y = 920; player.vx = 0; player.vy = 0; player.catchProg = 0; player.target = null; player.goto = null; player.route = null; player.blockT = 0; player.walkPhase = 0; player.lean = 0; player.faceS = 1; player.pitch = 0; player.pendingAct = null; player.unlockConfirm = null; player.catchLatch = false; player.scoopLock = null; player.scoopTap = false; player.tillDwell = 0; player.holdGrace = 0; player.surfaceIntent = false;
     cam.x = 880; cam.y = 1000; cam.z = stageZoom(); cam.rail = 28;
     customers.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
@@ -2883,7 +2883,7 @@
     if (id.startsWith("unlock-")) {
       const i = +id.split("-")[1];
       if (i >= CORE_SPECIES && !galleryOpen()) {
-        intentWalk("unlock", galleryTankDest(i), 4);
+        confirmUnlockWalk(galleryTankDest(i), 4);
         return;
       }
       const t = TANK_POS[i];
@@ -2897,7 +2897,7 @@
           msg: !ready ? "Soon" : "$" + SPECIES[i].unlock,
         });
       }
-      intentWalk("unlock", tankWalkPoint(i), i);
+      confirmUnlockWalk(tankWalkPoint(i), i);
       return;
     }
     if (id === "book-dismiss" || id === "book-close") { state.bookOpen = null; return; }
@@ -2918,13 +2918,8 @@
     }
     if (id === "goto-plaza") {
       // C107 — fat ↑ SHOP / north cue. Same dest desktop hold-W uses.
-      if (state.mode === "play" && state.scene === "shop") {
-        const dest = nextUnlockWalkDest();
-        if (dest) {
-          const n = nextLockedTank();
-          intentWalk("unlock", dest, n);
-        }
-      }
+      // C109 — walk only. Arriving at the bowl is not a purchase.
+      if (state.mode === "play" && state.scene === "shop") walkToShopBowls();
       return;
     }
     if (id.startsWith("book-")) {
@@ -2932,7 +2927,7 @@
       if (n >= 0 && n < SPECIES.length) {
         if (!state.unlocked[n]) {
           if (n >= CORE_SPECIES && !galleryOpen()) {
-            intentWalk("unlock", galleryTankDest(n), 4);
+            confirmUnlockWalk(galleryTankDest(n), 4);
             return;
           }
           const t = TANK_POS[n];
@@ -2946,7 +2941,7 @@
               msg: !ready ? "Soon" : "$" + SPECIES[n].unlock,
             });
           }
-          intentWalk("unlock", tankWalkPoint(n), n);
+          confirmUnlockWalk(tankWalkPoint(n), n);
           return;
         }
         state.bookOpen = n;
@@ -4675,10 +4670,17 @@
     }
   }
   function tryUnlockOnArrival() {
+    // C109 — occupying tankWalkPoint(nextLockedTank()) is not a buy.
+    // Phone north tap / ↑ SHOP used to auto-spend ($4000 → $1800,
+    // SEAHORSE UNLOCKED) because tryUnlockOnArrival treated any pad
+    // arrival as confirm. Desktop hold-W never buys. Walk ≠ buy
+    // unless they explicitly tapped the locked bowl / lock plate.
     const i = nextLockedTank();
     if (i < 0 || speciesUnlocked(i) || !nearStockPad(i)) return;
     if (state.money < SPECIES[i].unlock) return;
+    if (player.unlockConfirm !== i) return;
     buyTank(i);
+    player.unlockConfirm = null;
   }
   function bookTeaseReady() {
     if (state.sawBookTease || state.bookOpened || state.bookOpen != null) return false;
@@ -4960,10 +4962,10 @@
   function buyTank(i) {
     if (speciesUnlocked(i)) return;
     if (i >= CORE_SPECIES && !galleryOpen()) {
-      intentWalk("unlock", galleryTankDest(i), 4);
+      confirmUnlockWalk(galleryTankDest(i), 4);
       return;
     }
-    if (!nearStockPad(i)) { intentWalk("unlock", tankWalkPoint(i), i); return; }
+    if (!nearStockPad(i)) { confirmUnlockWalk(tankWalkPoint(i), i); return; }
     const c = SPECIES[i].unlock;
     if (state.money < c) {
       const t = TANK_POS[i];
@@ -5758,21 +5760,32 @@
     if (kind === "dive") cueDiveWalk();
     return true;
   }
+  function confirmUnlockWalk(dest, i) {
+    player.unlockConfirm = i;
+    return intentWalk("unlock", dest, i);
+  }
+  function walkToShopBowls() {
+    // C109 — north tap / ↑ SHOP walks to the next bowl. Not a buy.
+    // Same dest hold-W uses. Do not arm unlockConfirm / pending unlock.
+    const dest = nextUnlockWalkDest();
+    if (!dest) return false;
+    player.pendingAct = null;
+    player.unlockConfirm = null;
+    setWalkDest(dest);
+    return true;
+  }
   function tryClickShop(wx, wy) {
     if (state.scene !== "shop" || state.mode !== "play") return false;
     // C108 — pointer-down path. Remap before tankAtWorld so Dolphin 11
     // cannot steal a 390 upper-third tap (ny≈0.12–0.22).
+    // C109 — that remap is a walk, not an unlock confirm.
     if (phoneDockPlazaWalkWanted(wx, wy, mouse.pressX, mouse.pressY)) {
-      const dest = nextUnlockWalkDest();
-      if (dest) {
-        const n = nextLockedTank();
-        return intentWalk("unlock", dest, n);
-      }
+      if (walkToShopBowls()) return true;
     }
     const tankHit = walkTankAtWorld(wx, wy);
     if (tankHit >= 0) {
       if (tankHit >= CORE_SPECIES && !galleryOpen()) {
-        return intentWalk("unlock", galleryTankDest(tankHit), 4);
+        return confirmUnlockWalk(galleryTankDest(tankHit), 4);
       }
       if (!speciesUnlocked(tankHit)) {
         const t = TANK_POS[tankHit];
@@ -5786,7 +5799,7 @@
             msg: !ready ? "Soon" : "$" + SPECIES[tankHit].unlock,
           });
         }
-        return intentWalk("unlock", tankWalkPoint(tankHit), tankHit);
+        return confirmUnlockWalk(tankWalkPoint(tankHit), tankHit);
       }
       return intentWalk("stock", tankWalkPoint(tankHit), tankHit);
     }
@@ -11772,6 +11785,39 @@
     if (cam && cam.y >= DOCK_CAM_FLOOR - 24) return true;
     return false;
   }
+  function walkFinalDest() {
+    if (player && player.route && player.route.length) return player.route[player.route.length - 1];
+    return (player && player.goto) || null;
+  }
+  function shopWalkRibbonWanted() {
+    // C109 — ~280ms after a north tap the camera is already on the
+    // plaza tanks. hideDockWalkHint is dock-only, so the DIVE-dock
+    // quest came back while Skip was still walking north to the bowls.
+    // Keep the shop / bowls ribbon until they occupy the dest pad.
+    if (state.scene !== "shop") return false;
+    if (bagHasStockable() || cashNeedsCollect()) return false;
+    const dest = nextUnlockWalkDest();
+    if (!dest) return false;
+    if (Math.hypot(player.x - dest.x, player.y - dest.y) < 48) return false;
+    if (player.pendingAct && player.pendingAct.kind === "unlock") {
+      const n = nextLockedTank();
+      if (n >= 0 && (player.pendingAct.i == null || player.pendingAct.i === n)) return true;
+    }
+    const end = walkFinalDest();
+    if (!end) return false;
+    if (Math.hypot(end.x - dest.x, end.y - dest.y) < 40) return true;
+    return destWantsPlaza(end);
+  }
+  function shopBowlsGoal() {
+    const n = nextLockedTank();
+    if (n >= 0 && !bagHasStockable() && !cashNeedsCollect()) {
+      return {
+        text: thumbCopy() ? "Tap north to walk to the shop bowls" : "Walk north to the shop bowls",
+        target: tankWalkPoint(n),
+      };
+    }
+    return { text: "", target: null };
+  }
   function phoneDockPlazaWalkWanted(wx, wy, sx, sy) {
     // C107 — 390 dock camera cannot see the bowls. A tap toward the
     // plaza / tanks (upper third, or north of the dock lip) walks the
@@ -11928,19 +11974,13 @@
     if (state.stock.some(n => n > 0) && state.registerCash === 0) {
       return { text: "Customers are on the way — wait at the cashier", target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
     }
+    // C109 — shop-walk ribbon before the plaza-south / DIVE-dock
+    // fallbacks. Mid-walk the camera is already on Goldfish / Angelfish
+    // / Dolphin; hideDockWalkHint is false the moment they leave the pad.
+    if (hideDockWalkHint() || shopWalkRibbonWanted()) return shopBowlsGoal();
     if (inPlazaYard() && plazaHintSpent()) {
       if (hideSouthDockHint()) return { text: "", target: null };
       return { text: thumbCopy() ? "Dock is south — tap to walk" : "The glowing dock is south — walk or tap", target: { x: 880, y: 980 } };
-    }
-    if (hideDockWalkHint()) {
-      const n = nextLockedTank();
-      if (n >= 0 && !bagHasStockable() && !cashNeedsCollect()) {
-        return {
-          text: thumbCopy() ? "Tap north to walk to the shop bowls" : "Walk north to the shop bowls",
-          target: tankWalkPoint(n),
-        };
-      }
-      return { text: "", target: null };
     }
     return { text: thumbCopy() ? "Walk to the glowing DIVE dock — tap to walk" : "Walk to the glowing DIVE dock and press SPACE", target: { x: 880, y: 980 } };
   }
@@ -13342,7 +13382,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 108", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 109", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -13405,7 +13445,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 108", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 109", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -13436,7 +13476,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 108", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 109", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
