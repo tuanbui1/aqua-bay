@@ -42,8 +42,8 @@ assert(!/chipAlpha\s*\(\s*bagBox/.test(bagDraw),
   "BAG does not fade when the tutorial ribbon sits nearby");
 assert(/#fff6e8/.test(bagDraw), "BAG type is cream / white");
 
-assert(/portraitStage\(\)\s*\n?\s*\?\s*\n?\s*hudBox\(\s*moneyBox\.x\s*\+\s*moneyBox\.w\s*\+\s*8,\s*hudSafeTop\(\),\s*phoneCss\(88\),\s*moneyBox\.h\s*\)/.test(src),
-  "portrait BAG keeps the same chip size and position");
+assert(/portraitStage\(\)\s*\n?\s*\?\s*\n?\s*hudBox\(\s*moneyBox\.x\s*\+\s*moneyBox\.w\s*\+\s*phoneCss\(8\),\s*hudSafeTop\(\),\s*phoneCss\(88\),\s*moneyBox\.h\s*\)/.test(src),
+  "portrait BAG keeps the same chip size with a CSS gap from money");
 
 assert(/portraitStage\(\)\s*\|\|\s*state\.scene\s*===\s*"ocean"/.test(src) &&
   /hudReadoutPlate\s*\(\s*moneyBox\.x/.test(src),
@@ -52,8 +52,8 @@ assert(/portraitStage\(\)\s*\|\|\s*state\.scene\s*===\s*"ocean"/.test(src) &&
 assert(/ribbon\s*\?\s*ribbon\.y\s*\+\s*ribbon\.h\s*\+\s*8/.test(src),
   "tiny session / hint chips park below the tutorial ribbon");
 
-assert(/Aqua Bay · loop 84/.test(src), "title/pause stamp is loop 84");
-assert(!/Aqua Bay · loop 83/.test(src), "loop 83 stamp is gone");
+assert(/Aqua Bay · loop 85/.test(src), "title/pause stamp is loop 85");
+assert(!/Aqua Bay · loop 84/.test(src), "loop 84 stamp is gone");
 
 // Same leftover DIVE floor as C82 — this cycle must not move it.
 const W = 1280;
