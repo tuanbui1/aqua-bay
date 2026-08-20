@@ -2462,15 +2462,10 @@
     player.scoopTap = false;
     player.holdGrace = 0;
     player.pendingAct = null;
-    // Already at the foam, or a full bag — go home now. Deeper clicks
-    // swim to the waterline; applyFade / the frame tick finish the dock
-    // handoff so a 1-fish first dive cannot soft-lock at 1m.
-    if (atWaterline() || nearSurface() || bagIsFull()) {
-      player.goto = null;
-      beginSurface();
-      return;
-    }
-    player.goto = { x: player.x, y: 140 };
+    player.goto = null;
+    // Button / Space must leave the water. A swim-up-only path left
+    // first-dive 1-fish bags floating at 1m after the chip hid.
+    beginSurface();
   }
   function beginSurface() {
     if (state.scene !== "ocean") return;
@@ -5498,30 +5493,29 @@
     ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
   }
   function paintVisibleDuskClouds(x, y, w, h) {
-    // Clouds in the peach band the dock camera frames — not the off-screen
-    // upper wash from y=-400. fy is inside this visible strip.
+    // Big readable puffs in the peach band the dock camera frames.
     const clouds = [
-      [0.07, 0.22, 0.10, 0.28], [0.22, 0.08, 0.13, 0.32],
-      [0.40, 0.30, 0.15, 0.26], [0.58, 0.10, 0.11, 0.24],
-      [0.74, 0.26, 0.12, 0.28], [0.90, 0.14, 0.10, 0.22],
+      [0.08, 0.34, 72, 22], [0.24, 0.18, 88, 26],
+      [0.42, 0.40, 96, 24], [0.61, 0.16, 78, 22],
+      [0.78, 0.36, 84, 24], [0.93, 0.22, 70, 20],
     ];
     for (let i = 0; i < clouds.length; i++) {
       const [fx, fy, rw, rh] = clouds[i];
       const cx = x + w * fx, cy = y + h * fy;
-      const rad = Math.max(18, w * rw * 0.42);
-      const puff = ctx.createRadialGradient(cx, cy, 3, cx, cy + 6, rad);
-      puff.addColorStop(0, "rgba(255, 240, 224, 0.88)");
-      puff.addColorStop(0.42, "rgba(236, 200, 188, 0.48)");
-      puff.addColorStop(1, "rgba(180, 140, 160, 0)");
-      ctx.fillStyle = puff;
+      ctx.fillStyle = "rgba(255, 236, 220, 0.82)";
       ctx.beginPath();
-      ctx.ellipse(cx, cy, w * rw, h * rh, -0.06 + i * 0.03, 0, Math.PI * 2);
+      ctx.ellipse(cx, cy, rw, rh, -0.05 + i * 0.02, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255, 246, 232, 0.70)";
+      ctx.beginPath();
+      ctx.ellipse(cx + rw * 0.42, cy + 4, rw * 0.62, rh * 0.78, 0.08, 0, Math.PI * 2);
       ctx.fill();
       ctx.beginPath();
-      ctx.ellipse(cx + w * rw * 0.38, cy + 5, w * rw * 0.58, h * rh * 0.72, 0.1, 0, Math.PI * 2);
+      ctx.ellipse(cx - rw * 0.36, cy + 3, rw * 0.48, rh * 0.62, -0.06, 0, Math.PI * 2);
       ctx.fill();
+      ctx.fillStyle = "rgba(210, 170, 168, 0.22)";
       ctx.beginPath();
-      ctx.ellipse(cx - w * rw * 0.28, cy + 3, w * rw * 0.40, h * rh * 0.58, -0.08, 0, Math.PI * 2);
+      ctx.ellipse(cx + 6, cy + rh * 0.55, rw * 0.72, rh * 0.42, 0.04, 0, Math.PI * 2);
       ctx.fill();
     }
   }
@@ -5573,7 +5567,7 @@
     const waterY = 776;
     const townH = 168;
     paintDockHarborSky(x, -400, w, waterY + 4);
-    paintVisibleDuskClouds(x, waterY - 158, w, 118);
+    paintVisibleDuskClouds(x, 628, w, 86);
     drawHorizonTown(x, waterY, w, townH, teal);
     return true;
   }
@@ -6892,44 +6886,41 @@
     ctx.restore();
   }
   function drawEastPierCap(endX, y, h) {
-    // Finished east end of the shop dock — end board + two-post railing
-    // so the last plank does not hard-cut into the bay. Decorative only;
-    // shopDockWalk / snap stay at x=1260.
+    // Finished east end of the shop dock — last-plank end board + two
+    // posts standing above the deck, same language as the north cap.
+    // Decorative only; shopDockWalk / snap stay at x=1260.
     ctx.save();
-    const haze = ctx.createLinearGradient(endX - 22, y, endX + 40, y);
+    const haze = ctx.createLinearGradient(endX - 18, y, endX + 46, y);
     haze.addColorStop(0, "rgba(216, 196, 164, 0)");
-    haze.addColorStop(0.55, "rgba(216, 196, 164, 0.20)");
-    haze.addColorStop(1, "rgba(216, 196, 164, 0)");
+    haze.addColorStop(1, "rgba(216, 196, 164, 0.18)");
     ctx.fillStyle = haze;
-    ctx.fillRect(endX - 22, y - 14, 64, h + 30);
+    ctx.fillRect(endX - 18, y - 36, 68, h + 52);
     ctx.fillStyle = "#6b3a18";
-    ctx.fillRect(endX - 7, y - 6, 14, h + 14);
+    ctx.fillRect(endX - 8, y - 8, 16, h + 18);
     ctx.fillStyle = "#c89a62";
-    ctx.fillRect(endX - 4, y - 4, 8, h + 10);
-    ctx.fillStyle = "rgba(255, 226, 170, 0.16)";
-    ctx.fillRect(endX - 4, y - 4, 3, h + 10);
-    const posts = [y + 20, y + h - 18];
+    ctx.fillRect(endX - 5, y - 5, 10, h + 12);
+    ctx.fillStyle = "rgba(255, 226, 170, 0.18)";
+    ctx.fillRect(endX - 5, y - 5, 3, h + 12);
+    const posts = [y + 28, y + h - 24];
     for (let i = 0; i < posts.length; i++) {
       const py = posts[i];
       ctx.fillStyle = "#4a2a14";
-      ctx.fillRect(endX - 5, py - 30, 7.2, 38);
-      ctx.fillStyle = "rgba(255, 214, 150, 0.20)";
-      ctx.fillRect(endX - 5, py - 30, 2.4, 38);
+      ctx.fillRect(endX - 6, py - 44, 8, 48);
+      ctx.fillStyle = "rgba(255, 214, 150, 0.22)";
+      ctx.fillRect(endX - 6, py - 44, 2.6, 48);
     }
     ctx.fillStyle = "#5a3418";
-    ctx.fillRect(endX - 10, y + 6, 20, 5);
-    ctx.fillRect(endX - 10, y + h - 30, 20, 5);
+    ctx.fillRect(endX - 10, y - 20, 20, 6);
     ctx.fillStyle = "#c49248";
-    ctx.fillRect(endX - 10, y + 8, 20, 3);
-    ctx.fillRect(endX - 10, y + h - 28, 20, 3);
-    ctx.strokeStyle = "rgba(90, 48, 20, 0.55)";
-    ctx.lineWidth = 3;
+    ctx.fillRect(endX - 10, y - 18, 20, 3);
+    ctx.strokeStyle = "rgba(90, 48, 20, 0.58)";
+    ctx.lineWidth = 3.2;
     ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.moveTo(endX - 56, y + 10);
-    ctx.lineTo(endX + 4, y + 10);
-    ctx.moveTo(endX - 56, y + h - 26);
-    ctx.lineTo(endX + 4, y + h - 26);
+    ctx.moveTo(endX - 58, y - 16);
+    ctx.lineTo(endX + 8, y - 16);
+    ctx.moveTo(endX - 4, y - 16);
+    ctx.lineTo(endX - 4, y + h + 4);
     ctx.stroke();
     ctx.restore();
   }
@@ -8934,7 +8925,7 @@
       const dockW = Math.max(0, Math.min(760, deckEnd - 500));
       if (dockW > 24) {
         drawPierBoards(500, 890, dockW, 130, { plank: 28, wetY: 1010 });
-        if (dockW >= 740) drawEastPierCap(500 + dockW, 890, 130);
+        drawEastPierCap(500 + dockW, 890, 130);
       }
     }
     // Soft jump glow in the water — never a dashed debug rectangle.
@@ -12456,7 +12447,9 @@
           if (state.expeditionTime <= 0) beginSurface();
         }
         if (state.scene === "ocean" && !state.fadeDir && (
-          atWaterline() || (bagIsFull() && nearSurface()) || (player.surfaceIntent && nearSurface())
+          (player.surfaceIntent && nearSurface()) ||
+          (bagIsFull() && nearSurface()) ||
+          (atWaterline() && !scoopHoldActive())
         )) beginSurface();
         updateCashier(sim);
         state.playClock = (state.playClock || 0) + dt;
