@@ -3043,6 +3043,18 @@
     const aB = clamp((H - (s.y + r)) / fade, 0, 1);
     return clamp(Math.min(aL, aR, aT, aB), 0, 1);
   }
+  function townBackdropAlpha(wx, wy, rad) {
+    // C92 — fade town only into the reserved well. worldSpriteAlpha's
+    // top fade sat a ghost OPEN in the dusk sky on desktop 16:9.
+    if (portraitStage()) return 1;
+    const s = worldToScreen(wx, wy);
+    const r = (rad == null ? 40 : rad) * Math.max(0.6, cam.z || 1);
+    const fade = 72;
+    const rightEdge = viewWidth();
+    const aL = clamp((s.x - r + fade) / fade, 0, 1);
+    const aR = clamp((rightEdge - (s.x + r)) / fade, 0, 1);
+    return clamp(Math.min(aL, aR), 0, 1);
+  }
   function paintWorldSprite(wx, wy, rad, draw) {
     const a = worldSpriteAlpha(wx, wy, rad);
     if (a <= 0.04) return false;
@@ -5649,7 +5661,7 @@
       { kind: "cottage", fx: 0.228, fw: 0.082, fh: 0.11, wall: "#e8c04a", roof: "#8a5a28" },
       { kind: "villa", fx: 0.318, fw: 0.112, fh: 0.175, wall: "#f4efe6", roof: "#c45c4a" },
       { kind: "boat", fx: 0.440, fw: 0.118, fh: 0.10, wall: "#8a6a48", roof: "#5a3a22" },
-      { kind: "inn", fx: 0.568, fw: 0.102, fh: 0.155, wall: "#e0b070", roof: "#a04830" },
+      { kind: "inn", fx: 0.500, fw: 0.102, fh: 0.155, wall: "#e0b070", roof: "#a04830" },
       { kind: "church", fx: 0.678, fw: 0.078, fh: 0.22, wall: "#eee6d4", roof: "#6a6a70" },
       { kind: "pink", fx: 0.768, fw: 0.082, fh: 0.13, wall: "#e8b0b8", roof: "#c45c4a" },
       { kind: "stall", fx: 0.858, fw: 0.10, fh: 0.12, wall: "#3d7aad", roof: "#2a5a7a" },
@@ -5658,7 +5670,7 @@
     for (let i = 0; i < specs.length; i++) {
       const b = specs[i];
       const bx = w * b.fx, bw = w * b.fw, bh = h * b.fh * s, by = base - bh;
-      const fadeA = wellFade ? worldSpriteAlpha(worldOx + bx + bw * 0.5, by + bh * 0.5, Math.max(bw, bh) * 0.52) : 1;
+      const fadeA = wellFade ? townBackdropAlpha(worldOx + bx + bw * 0.5, by + bh * 0.5, Math.max(bw, bh) * 0.52) : 1;
       if (fadeA <= 0.04) continue;
       g.save();
       g.globalAlpha *= fadeA;
@@ -9023,28 +9035,28 @@
     // (~y 918). Wood walls, porch post, hanging life ring, BAIT on the
     // facade. Paint only; walk colliders stay put.
     drawPierBoards(x - 52, y + 62, 112, 28, { plank: 14 });
-    sitShadow(x + 2, y + 80, 52, 12, 0.5);
-    const bw = 86, bh = 64;
-    const bx = x - 40, by = y + 14;
-    // porch post — front-left timber that holds the ring
-    const postX = bx - 8;
-    const post = ctx.createLinearGradient(postX, by, postX + 10, y + 82);
-    post.addColorStop(0, "#c49248");
-    post.addColorStop(0.42, "#8a5a30");
+    sitShadow(x + 2, y + 80, 54, 13, 0.5);
+    const bw = 84, bh = 70;
+    const bx = x - 38, by = y + 8;
+    // porch post — fat front-left timber; the ring hangs off it
+    const postX = bx - 12;
+    const post = ctx.createLinearGradient(postX, by - 4, postX + 12, y + 84);
+    post.addColorStop(0, "#d4a058");
+    post.addColorStop(0.4, "#8a5a30");
     post.addColorStop(1, "#3a1c0c");
     ctx.fillStyle = post;
-    ctx.fillRect(postX, by + 2, 8, 76);
-    ctx.fillStyle = "rgba(255, 226, 170, 0.28)";
-    ctx.fillRect(postX, by + 2, 2.6, 76);
+    ctx.fillRect(postX, by - 2, 10, 82);
+    ctx.fillStyle = "rgba(255, 226, 170, 0.32)";
+    ctx.fillRect(postX, by - 2, 3.2, 82);
     ctx.fillStyle = "#3a1c0c";
-    ctx.fillRect(postX - 2, y + 76, 12, 6);
-    ctx.fillStyle = "#6b3a18";
-    ctx.fillRect(postX, by + 2, 24, 6);
+    ctx.fillRect(postX - 3, y + 76, 16, 7);
+    ctx.fillStyle = "#5a3418";
+    ctx.fillRect(postX - 1, by - 6, 36, 8);
     ctx.fillStyle = "#c49248";
-    ctx.fillRect(postX, by + 2, 24, 2.2);
-    const wall = ctx.createLinearGradient(bx, by, bx + bw * 0.18, by + bh);
-    wall.addColorStop(0, "#c89a62");
-    wall.addColorStop(0.4, "#8a5a30");
+    ctx.fillRect(postX - 1, by - 6, 36, 3);
+    const wall = ctx.createLinearGradient(bx, by, bx + bw * 0.16, by + bh);
+    wall.addColorStop(0, "#d4a868");
+    wall.addColorStop(0.38, "#8a5a30");
     wall.addColorStop(1, "#4a2814");
     ctx.fillStyle = wall;
     roundRect(bx, by, bw, bh, 3); ctx.fill();
@@ -9056,74 +9068,68 @@
         bx - 2, by - 2, bw + 4, bh + 4);
       ctx.restore();
     }
-    ctx.strokeStyle = "rgba(40, 18, 8, 0.38)";
-    ctx.lineWidth = 1.2;
+    ctx.strokeStyle = "rgba(40, 18, 8, 0.4)";
+    ctx.lineWidth = 1.3;
     for (let i = 1; i < 7; i++) {
-      const sx = bx + 6 + i * 11;
-      ctx.beginPath(); ctx.moveTo(sx, by + 4); ctx.lineTo(sx, by + bh - 4); ctx.stroke();
+      const sx = bx + 5 + i * 11;
+      ctx.beginPath(); ctx.moveTo(sx, by + 3); ctx.lineTo(sx, by + bh - 3); ctx.stroke();
     }
     sunWashBox(bx, by, bw, bh, 3);
-    // Modest gable sitting on the wood walls — not a lone triangle.
+    // Shallow shed roof on the walls — not a lone toy triangle.
     ctx.fillStyle = "#6b2418";
-    ctx.beginPath();
-    ctx.moveTo(bx - 10, by + 8);
-    ctx.lineTo(bx + bw * 0.5, by - 16);
-    ctx.lineTo(bx + bw + 10, by + 8);
-    ctx.closePath(); ctx.fill();
+    ctx.fillRect(bx - 8, by - 4, bw + 16, 12);
     ctx.fillStyle = "#c4483a";
-    ctx.beginPath();
-    ctx.moveTo(bx - 8, by + 6);
-    ctx.lineTo(bx + bw * 0.5, by - 14);
-    ctx.lineTo(bx + bw + 8, by + 6);
-    ctx.closePath(); ctx.fill();
+    ctx.fillRect(bx - 6, by - 8, bw + 12, 10);
+    ctx.fillStyle = "#e85d4c";
+    ctx.fillRect(bx - 6, by - 8, bw + 12, 4);
     ctx.fillStyle = "#e8c04a";
-    ctx.fillRect(bx - 10, by + 4, bw + 20, 5);
+    ctx.fillRect(bx - 8, by + 2, bw + 16, 4);
     ctx.fillStyle = "#2a1408";
-    roundRect(x - 8, by + 26, 20, bh - 28, 3); ctx.fill();
+    roundRect(x - 6, by + 28, 20, bh - 30, 3); ctx.fill();
     ctx.fillStyle = "#3a2010";
-    roundRect(x - 6, by + 28, 16, bh - 32, 2); ctx.fill();
+    roundRect(x - 4, by + 30, 16, bh - 34, 2); ctx.fill();
     ctx.fillStyle = "#e8c04a";
-    ctx.beginPath(); ctx.arc(x + 8, by + 48, 1.6, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 8, by + 52, 1.7, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = "#123844";
-    roundRect(bx + 8, by + 24, 18, 16, 2); ctx.fill();
-    ctx.fillStyle = "rgba(158, 240, 255, 0.38)";
-    roundRect(bx + 9, by + 25, 16, 14, 2); ctx.fill();
+    roundRect(bx + 8, by + 28, 18, 16, 2); ctx.fill();
+    ctx.fillStyle = "rgba(158, 240, 255, 0.4)";
+    roundRect(bx + 9, by + 29, 16, 14, 2); ctx.fill();
     ctx.strokeStyle = "#e8c04a"; ctx.lineWidth = 1.6;
-    roundRect(bx + 8, by + 24, 18, 16, 2); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(bx + 17, by + 24); ctx.lineTo(bx + 17, by + 40); ctx.stroke();
+    roundRect(bx + 8, by + 28, 18, 16, 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx + 17, by + 28); ctx.lineTo(bx + 17, by + 44); ctx.stroke();
     // BAIT on the facade, not the roof.
     ctx.fillStyle = "#3a1c0c";
-    roundRect(x - 24, by + 8, 48, 16, 3); ctx.fill();
+    roundRect(x - 26, by + 8, 52, 18, 3); ctx.fill();
     ctx.fillStyle = "#7a3e16";
-    roundRect(x - 26, by + 6, 52, 16, 3); ctx.fill();
-    ctx.strokeStyle = "#ffe27a"; ctx.lineWidth = 1.6;
-    roundRect(x - 24, by + 8, 48, 12, 2); ctx.stroke();
+    roundRect(x - 28, by + 6, 56, 18, 3); ctx.fill();
+    ctx.strokeStyle = "#ffe27a"; ctx.lineWidth = 1.8;
+    roundRect(x - 26, by + 8, 52, 14, 2); ctx.stroke();
     ctx.fillStyle = "#fff6e8";
     ctx.font = "800 13px Fredoka, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("BAIT", x, by + 14);
+    ctx.fillText("BAIT", x, by + 15);
     ctx.textBaseline = "alphabetic";
     // hanging life ring on the porch post
     ctx.save();
-    ctx.translate(postX - 4, by + 40);
+    ctx.translate(postX - 2, by + 36);
     ctx.strokeStyle = "#2a1a10";
-    ctx.lineWidth = 1.6;
+    ctx.lineWidth = 2;
     ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(-12, -18); ctx.lineTo(-3, -6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(6, -22); ctx.lineTo(2, -8); ctx.stroke();
     const ring = ctx.createLinearGradient(-12, -10, 10, 10);
     ring.addColorStop(0, "#f07860");
     ring.addColorStop(0.5, "#e85d4c");
     ring.addColorStop(1, "#8a2c22");
-    ctx.strokeStyle = ring; ctx.lineWidth = 6.2;
-    ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.stroke();
-    ctx.strokeStyle = "#fff6e8"; ctx.lineWidth = 6.2;
-    ctx.setLineDash([6, 6]); ctx.lineDashOffset = 3;
-    ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = ring; ctx.lineWidth = 7;
+    ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = "#fff6e8"; ctx.lineWidth = 7;
+    ctx.setLineDash([6.5, 6.5]); ctx.lineDashOffset = 3;
+    ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.strokeStyle = "#c4483a"; ctx.lineWidth = 1.4;
-    ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = "#c4483a"; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(0, 0, 15.5, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 8.5, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
   }
   function drawPopCan(cx, cy, col, top) {

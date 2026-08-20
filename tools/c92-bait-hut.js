@@ -21,7 +21,9 @@ assert(/800 13px Fredoka/.test(hut[0]), "BAIT type is readable on the facade");
 assert(/[Ww]ood walls/.test(hut[0]), "hut comment names wood walls");
 assert(/roundRect\(bx, by, bw, bh/.test(hut[0]), "hut paints a wall box, not a lone roof");
 assert(/createLinearGradient\(postX/.test(hut[0]), "porch post is a timber, not a missing stick");
-assert(/ctx\.arc\(0, 0, 11/.test(hut[0]), "life ring is a painted ring, not a blue oval blob");
+assert(/ctx\.arc\(0, 0, 12/.test(hut[0]), "life ring is a painted ring, not a blue oval blob");
+assert(/Shallow shed roof/.test(hut[0]) || /fillRect\(bx - 8, by - 4/.test(hut[0]),
+  "roof is a shed on the walls, not a lone triangle");
 assert(!/moveTo\(x - 50, y \+ 22\)/.test(hut[0]), "old toy triangle roof is gone");
 assert(!/800 9px Fredoka/.test(hut[0]), "old 9px roof BAIT scrap is gone");
 assert(!/ellipse\(x \+ 28, y \+ 52, 7, 10/.test(src), "old blue oval blob is gone");
@@ -34,6 +36,11 @@ assert(!/fillText\("OPEN", bx \+ bw \* 0\.5/.test(src),
   "town inn no longer ghosts OPEN in the dusk sky");
 assert(/C92 — dusk town is backdrop only/.test(src),
   "town backdrop comments the one-OPEN rule");
+assert(/function townBackdropAlpha\s*\(/.test(src),
+  "town fade is well-only, not a top-edge ghost");
+assert(/kind: "inn", fx: 0\.500/.test(src),
+  "dusk inn is not stacked on the hanging OPEN x");
+assert(!/kind: "inn", fx: 0\.568/.test(src), "old inn-over-OPEN slot is gone");
 
 assert(/const BAIT_HUT = \{ x: 1124, y: 918 \}/.test(src), "hut planted position stays");
 assert(/const POP_VEND = \{ x: 996, y: 918 \}/.test(src), "POP planted position stays");
