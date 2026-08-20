@@ -1045,11 +1045,12 @@
   }
   function menuOriginY() {
     if (H <= DESKTOP_H + 20) return 0;
-    return Math.round((H - DESKTOP_H) * 0.18);
+    const block = 620;
+    return clamp(Math.round((H - block) * 0.36), 48, Math.max(48, H - block - 64));
   }
   function topCtrlBoxes() {
     if (portraitStage()) {
-      const rail = cssToStage(56, 120, 210);
+      const rail = cssToStage(48, 100, 176);
       const topBtn = cssToStage(40, 48, 76);
       const xCol = W - 10 - rail;
       const pauseB = hudBox(xCol + rail - topBtn, 10, topBtn, topBtn);
@@ -2718,7 +2719,7 @@
       // Slim thumb column — playfield is the wide part of the phone,
       // not a 270px desktop leftover.
       const well = strip.w + 12;
-      return clamp(left, Math.round(W * 0.78), W - well);
+      return clamp(left, Math.round(W * 0.82), W - well);
     }
     if (compactHud()) {
       const well = Math.max(strip.w + 18, thumbCanvas(72, 96, 200));
@@ -10668,7 +10669,7 @@
     }
     if (bagHasStockable()) return 4;
     if (cashNeedsCollect()) return 5;
-    if (inDiveZone() && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect()) return 1;
+    if ((inDiveZone() || nearDivePad() || diveActionLegal()) && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect()) return 1;
     // Already in the plaza with progress — do not stick on "Walk to the glowing dock".
     if (plazaHintSpent()) return -1;
     return 0;
@@ -11949,7 +11950,7 @@
   function speciesStripLayout() {
     const { muteB, pauseB, rail, xCol: railX } = topCtrlBoxes();
     if (portraitStage()) {
-      const cw = rail || cssToStage(56, 120, 210);
+      const cw = rail || cssToStage(48, 100, 176);
       const ch = cssToStage(48, 70, 110);
       const xCol = railX != null ? railX : (W - 10 - cw);
       const startY = Math.max(muteB.y + muteB.h, pauseB.y + pauseB.h) + 10;
