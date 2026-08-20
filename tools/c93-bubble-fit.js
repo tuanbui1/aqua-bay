@@ -31,8 +31,8 @@ assert(/fitSpeechScreen\(scr\.x, scr\.y, tw, th/.test(src),
 assert(!/let x = clamp\(scr\.x, 200, W - 200\)/.test(src),
   "desktop-era 200/196 sale clamp is gone");
 
-assert(/Aqua Bay · loop 98/.test(src), "title/pause stamp is loop 98");
-assert(!/Aqua Bay · loop 97/.test(src), "loop 97 stamp is gone");
+assert(/Aqua Bay · loop 99/.test(src), "title/pause stamp is loop 99");
+assert(!/Aqua Bay · loop 98/.test(src), "loop 98 stamp is gone");
 
 const sign = src.match(/function drawHangingSign\s*\(\s*x,\s*y\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(sign, "drawHangingSign body is present");
