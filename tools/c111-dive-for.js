@@ -1,11 +1,14 @@
-// C110 — after a C109 walk occupies the next locked pad the ribbon
-// dies and the fat DIVE chip is the only verb. Player is on the
-// Seahorse pad with $4000, lock plate says Unlock $2200, and the
-// next obvious tap is DIVE (south, away from the bowl).
-// C110 pins a fat wood TAP TO UNLOCK / UNLOCK $N pier-board to
-// that locked bowl (C100 tank-local — not Crab / Goldfish) and
-// the ribbon says tap the lock. Tapping the board / lock plate
-// is the explicit buy. Walk-to-bowl still does not buy.
+// C111 — after a C110 TAP TO UNLOCK buy the lock board and
+// lock-ribbon vanish on an empty bowl (bag 0/5). Preview fish
+// swim; the plate says empty + a 0 badge; the only fat verb is
+// DIVE at the south thumb. C111 pins a fat wood DIVE FOR
+// SEAHORSE / TAP TO DIVE pier-board to that empty unlocked bowl
+// (C100 tank-local — not Crab / Clownfish). Ribbon: DIVE to
+// catch a Seahorse. Tapping the board walks to the DIVE pad
+// (C86 dash) — do not auto-dive on unlock and do not auto-buy
+// the next lock. If the bag already holds that species, keep
+// C100 tap-to-stock (one board). Hide once they leave the pad
+// for a while, the bowl has stock, or they enter the ocean.
 // Phone 390×844 first. Isolated SAVE_KEY. Turtle unlocked,
 // Seahorse locked, $4000. Continue.
 const fs = require("fs");
@@ -46,9 +49,11 @@ function extractFn(src, name) {
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
 assert(/Aqua Bay · loop 111/.test(src), "title/pause stamp is loop 111");
-assert(!/Aqua Bay · loop 109/.test(src), "loop 109 stamp is gone");
+assert(!/Aqua Bay · loop 110/.test(src), "loop 110 stamp is gone");
+assert(/loop 111 dive for the new bowl/.test(src),
+  "C111 names the empty-bowl leftover");
 assert(/loop 110 tap the lock/.test(src),
-  "C110 names the tap-the-lock leftover");
+  "C110 tap-the-lock leftover stays");
 assert(/loop 109 walk is not a buy/.test(src),
   "C109 walk-is-not-a-buy comment stays");
 assert(/const SAVE_KEY = "aqua-bay-save"/.test(src), "save key stays");
@@ -63,12 +68,18 @@ assert(/player\.unlockConfirm !== i/.test(src),
   "tryUnlockOnArrival requires an explicit unlock confirm");
 assert(/function unlockCueLegal\s*\(/.test(src),
   "unlockCueLegal gates the occupy-and-afford board");
-assert(/function unlockCueBox\s*\(/.test(src),
-  "unlockCueBox pins the board in screen space");
-assert(/function unlockPadGoal\s*\(/.test(src),
-  "unlockPadGoal is the occupy ribbon");
-assert(/function drawUnlockWalkCue\s*\(/.test(src),
-  "drawUnlockWalkCue paints the unlock board");
+assert(/function diveForCueLegal\s*\(/.test(src),
+  "diveForCueLegal gates the empty-unlocked-bowl board");
+assert(/function diveForCueBox\s*\(/.test(src),
+  "diveForCueBox pins the board in screen space");
+assert(/function diveForPadGoal\s*\(/.test(src),
+  "diveForPadGoal is the dive-for-species ribbon");
+assert(/function drawDiveForWalkCue\s*\(/.test(src),
+  "drawDiveForWalkCue paints the dive-for board");
+assert(/function armDiveForTank\s*\(/.test(src),
+  "armDiveForTank remembers the just-unlocked bowl");
+assert(/function tickDiveForCue\s*\(/.test(src),
+  "tickDiveForCue hides after they leave the pad");
 assert(/function plazaTankStealsDockTap\s*\(/.test(src),
   "plazaTankStealsDockTap stays");
 assert(/function phoneDockPlazaWalkWanted\s*\(/.test(src),
@@ -84,9 +95,11 @@ const clickSrc = extractFn(src, "clickWalkTarget") || "";
 const trySrc = extractFn(src, "tryClickShop") || "";
 const onUi = extractFn(src, "onUI") || "";
 const goalSrc = extractFn(src, "currentGoal") || "";
-const drawSrc = extractFn(src, "drawUnlockWalkCue") || "";
-const boxSrc = extractFn(src, "unlockCueBox") || "";
-const legalSrc = extractFn(src, "unlockCueLegal") || "";
+const drawSrc = extractFn(src, "drawDiveForWalkCue") || "";
+const boxSrc = extractFn(src, "diveForCueBox") || "";
+const legalSrc = extractFn(src, "diveForCueLegal") || "";
+const goalFn = extractFn(src, "diveForPadGoal") || "";
+const buySrc = extractFn(src, "buyTank") || "";
 
 assert(/phoneDockPlazaWalkWanted\(wx, wy/.test(clickSrc),
   "clickWalkTarget still remaps a phone plaza tap");
@@ -109,37 +122,50 @@ assert(/walkToShopBowls\(\)/.test(onUi),
 assert(/confirmUnlockWalk\(tankWalkPoint\(tankHit\)/.test(trySrc),
   "explicit locked-bowl tap still confirms unlock");
 assert(/id === "goto-unlock"/.test(onUi),
-  "onUI handles the TAP TO UNLOCK board");
-assert(/confirmUnlockWalk\(tankWalkPoint\(n\), n\)/.test(onUi),
-  "goto-unlock is confirmUnlockWalk — an explicit buy");
-assert(/unlockCueLegal\(\)/.test(goalSrc),
-  "currentGoal consults unlockCueLegal before the DIVE-dock fallback");
-const goalUnlock = goalSrc.indexOf("unlockCueLegal");
-const goalDive = goalSrc.indexOf("Walk to the glowing DIVE dock");
-assert(goalUnlock >= 0 && goalDive >= 0 && goalUnlock < goalDive,
-  "tap-the-lock ribbon wins over Walk to the glowing DIVE dock");
-assert(/Tap the lock to unlock/.test(src),
-  "ribbon copy says Tap the lock to unlock <species>");
-assert(!/Walk to the glowing DIVE dock/.test(extractFn(src, "unlockPadGoal") || ""),
-  "occupy ribbon does not bring back Walk to the glowing DIVE dock");
-assert(/drawPierBoardChip\(chip\.x, chip\.y, chip\.w, chip\.h, unlockCueLabel\(\)/.test(drawSrc),
-  "unlock cue paints through drawPierBoardChip — not a cyan pill");
-assert(/btn\("goto-unlock", chip\.x, chip\.y, chip\.w, chip\.h\)/.test(drawSrc),
-  "unlock cue hitbox is goto-unlock");
-assert(/TAP TO UNLOCK/.test(src) && /UNLOCK \$/.test(extractFn(src, "unlockCueLabel") || ""),
-  "board copy is TAP TO UNLOCK / UNLOCK $N");
+  "onUI still handles the TAP TO UNLOCK board");
+assert(/id === "goto-dive-for"/.test(onUi),
+  "onUI handles the DIVE FOR board");
+assert(/intentWalk\("dive", dockWalkPoint\(\)\)/.test(onUi),
+  "goto-dive-for fires the same DIVE-chip walk");
+assert(/diveActionLegal\(\)\) beginDive\(\)/.test(onUi),
+  "goto-dive-for dives only when already on the pad");
+assert(!/beginDive\(\)/.test(buySrc),
+  "buyTank does not auto-dive on unlock");
+assert(/armDiveForTank\(i\)/.test(buySrc),
+  "buyTank arms the dive-for cue, does not buy the next lock");
+assert(/diveForCueLegal\(\)/.test(goalSrc),
+  "currentGoal consults diveForCueLegal after the unlock board");
+const goalUnlock = goalSrc.indexOf("if (unlockCueLegal())");
+const goalDiveFor = goalSrc.indexOf("if (diveForCueLegal())");
+const goalDive = goalSrc.lastIndexOf("Walk to the glowing DIVE dock");
+assert(goalUnlock >= 0 && goalDiveFor >= 0 && goalUnlock < goalDiveFor,
+  "tap-the-lock ribbon still wins while the bowl is locked");
+assert(goalDiveFor >= 0 && goalDive >= 0 && goalDiveFor < goalDive,
+  "dive-for-species ribbon wins over Walk to the glowing DIVE dock");
+assert(/DIVE to catch/.test(goalFn),
+  "ribbon copy is DIVE to catch a <species>");
+assert(!/Walk to the glowing DIVE dock/.test(goalFn),
+  "dive-for ribbon does not bring back Walk to the glowing DIVE dock");
+assert(!/Tap the lock/.test(goalFn),
+  "dive-for ribbon does not bring back Tap the lock");
+assert(/drawPierBoardChip\(chip\.x, chip\.y, chip\.w, chip\.h, diveForCueLabel\(\)/.test(drawSrc),
+  "dive-for cue paints through drawPierBoardChip — not a cyan pill");
+assert(/btn\("goto-dive-for", chip\.x, chip\.y, chip\.w, chip\.h\)/.test(drawSrc),
+  "dive-for cue hitbox is goto-dive-for");
+assert(/DIVE FOR /.test(extractFn(src, "diveForCueLabel") || "") && /TAP TO DIVE/.test(src),
+  "board copy is DIVE FOR <SPECIES> / TAP TO DIVE");
 assert(/t\.x \+ TANK_W \/ 2, t\.y \+ TANK_H \* 0\.42/.test(boxSrc),
-  "chip anchor is the next locked tank world→screen point");
+  "chip anchor is the just-unlocked tank world→screen point");
 assert(/clamp\(ts\.x, tw \/ 2 \+ 16, W - tw \/ 2 - 16\)/.test(boxSrc),
-  "pier-board x is the locked tank screen x, not W/2");
+  "pier-board x is the unlocked tank screen x, not W/2");
 assert(/wantY = ts\.y - ch \* 0\.65/.test(boxSrc),
-  "pier-board y sits on the locked bowl, not a HUD mid-band");
+  "pier-board y sits on the unlocked bowl, not a HUD mid-band");
 assert(/phoneCss\(\s*36\s*\)/.test(boxSrc),
-  "390-first unlock hitbox stays 36 CSS tall");
-assert(/nearStockPad\(n\)/.test(legalSrc),
-  "cue hides if they walk off the pad");
-assert(/state\.money < SPECIES\[n\]\.unlock/.test(legalSrc),
-  "cue hides if they cannot afford it");
+  "390-first dive-for hitbox stays 36 CSS tall");
+assert(/state\.bag\.some/.test(legalSrc),
+  "cue yields to C100 tap-to-stock when the bag holds that species");
+assert(/state\.stock\[i\]/.test(legalSrc),
+  "cue hides once the bowl has stock");
 
 assert(/function wasdShopPath\s*\(/.test(src), "wasdShopPath stays");
 assert(/nextLockedTank\(\)/.test(extractFn(src, "wasdShopPath") || ""),
@@ -166,6 +192,9 @@ assert(/function desktopStage\s*\(/.test(src), "desktopStage stays");
 assert(/btn\("dive"/.test(src) && /function diveActionLegal\s*\(/.test(src),
   "DIVE still dives");
 assert(/C47/.test(src) || /camEase/.test(src), "C47 camera ease stays");
+assert(/const DIVE_WALK_SPEED\s*=\s*480/.test(src), "C86 dash speed stays 480");
+assert(/232 \+ state\.speedLv \* 38 \+ firstBump/.test(src),
+  "planted / tap-to-walk base speed stays 232");
 
 function desktopStage(w, h) { return w >= 880 && w >= h * 0.92; }
 assert(desktopStage(1280, 720), "1280×720 is a desktop stage");
@@ -198,6 +227,7 @@ const EAST_SHOP = { x: 1256, y: 380, w: 228, h: 286 };
 const DOCK_CAM_FLOOR = 1000;
 const W = 1280;
 const PIN_H = 720;
+const DIVE_FOR_AWAY = 2.8;
 
 function padSpeciesFlags(arr) {
   const out = [];
@@ -238,7 +268,9 @@ const names = [
   "clearWalk", "nearRect", "nearStockPad", "tryUnlockOnArrival",
   "confirmUnlockWalk", "intentWalk", "canPerformAct", "performPendingAct",
   "unlockPadOccupied", "unlockCueLegal", "unlockCueLabel", "unlockCueBox",
-  "unlockPadGoal",
+  "unlockPadGoal", "dockWalkPoint",
+  "diveForTankIndex", "armDiveForTank", "clearDiveForTank", "tickDiveForCue",
+  "diveForCueLegal", "diveForCueLabel", "diveForCueBox", "diveForPadGoal",
 ];
 const fns = {};
 for (let i = 0; i < names.length; i++) {
@@ -255,7 +287,7 @@ function makeCtx(save, opts) {
     TANK_POS: TANK_POS, TANK_W: TANK_W, TANK_H: TANK_H, STOCK_PAD: STOCK_PAD,
     REGISTER: REGISTER, KIOSK: KIOSK, WELCOME: WELCOME, AISLE: AISLE,
     DIVE_ZONE: DIVE_ZONE, SPECIES: SPECIES, CORE_SPECIES: CORE_SPECIES,
-    DOCK_CAM_FLOOR: DOCK_CAM_FLOOR, W: W,
+    DOCK_CAM_FLOOR: DOCK_CAM_FLOOR, W: W, DIVE_FOR_AWAY: DIVE_FOR_AWAY,
     state: {
       unlocked: save.unlocked.slice(),
       money: save.money,
@@ -263,6 +295,10 @@ function makeCtx(save, opts) {
       mode: "play",
       unlockBanner: null,
       stock: new Array(SPECIES_N).fill(0),
+      bag: [],
+      diveForTank: null,
+      diveForAway: 0,
+      pendingScene: null,
     },
     player: {
       x: 880, y: 920, radius: 16, goto: null, route: null,
@@ -273,6 +309,7 @@ function makeCtx(save, opts) {
     mouse: { pressX: opts.pressX || 640, pressY: opts.pressY || 700 },
     lastIntent: null,
     lastBuy: null,
+    beganDive: false,
     clamp: clamp,
     toast: function () {},
     nope: function () {},
@@ -301,16 +338,24 @@ function makeCtx(save, opts) {
         y: (y - sandbox.cam.y) * z + PIN_H / 2,
       };
     },
-    inDiveZone: function () { return false; },
+    inDiveZone: function () {
+      return sandbox.player.x > DIVE_ZONE.x && sandbox.player.x < DIVE_ZONE.x + DIVE_ZONE.w &&
+        sandbox.player.y > DIVE_ZONE.y - 40 && sandbox.player.y < DIVE_ZONE.y + DIVE_ZONE.h;
+    },
     nearDivePad: function () { return sandbox.player.y > 870; },
     stockableTankTarget: function () { return null; },
     registerWalkPoint: function () { return { x: 248, y: 560 }; },
     bagCanStock: function () { return false; },
-    diveActionLegal: function () { return false; },
+    diveWalkLegal: function () {
+      return sandbox.state.mode === "play" && sandbox.state.scene === "shop";
+    },
+    diveActionLegal: function () {
+      return sandbox.diveWalkLegal() && (sandbox.inDiveZone() || sandbox.nearDivePad());
+    },
     cueDiveWalk: function () {},
     stockTank: function () {},
     collectCash: function () {},
-    beginDive: function () {},
+    beginDive: function () { sandbox.beganDive = true; },
     buyTank: function (i) {
       if (sandbox.state.unlocked[i]) return;
       const c = SPECIES[i].unlock;
@@ -319,6 +364,7 @@ function makeCtx(save, opts) {
       sandbox.state.unlocked[i] = true;
       sandbox.state.unlockBanner = { name: SPECIES[i].name, life: 0.9 };
       sandbox.lastBuy = i;
+      sandbox.armDiveForTank(i);
     },
   };
   const body = names.map((n) => fns[n]).join("\n") +
@@ -329,11 +375,15 @@ function makeCtx(save, opts) {
     " clickWalkTarget, tryClickShop, walkToShopBowls, setWalkDest," +
     " tryUnlockOnArrival, confirmUnlockWalk, intentWalk, canPerformAct," +
     " performPendingAct, nearStockPad, unlockPadOccupied, unlockCueLegal," +
-    " unlockCueLabel, unlockCueBox, unlockPadGoal," +
+    " unlockCueLabel, unlockCueBox, unlockPadGoal, dockWalkPoint," +
+    " diveForTankIndex, armDiveForTank, clearDiveForTank, tickDiveForCue," +
+    " diveForCueLegal, diveForCueLabel, diveForCueBox, diveForPadGoal," +
     " shopDockWalk, shopWalkRects, player, state, cam, mouse };";
   vm.runInNewContext(body, sandbox);
+  sandbox.armDiveForTank = sandbox.__api.armDiveForTank;
   sandbox.__api.lastIntent = function () { return sandbox.lastIntent; };
   sandbox.__api.lastBuy = function () { return sandbox.lastBuy; };
+  sandbox.__api.beganDive = function () { return sandbox.beganDive; };
   sandbox.__api.setPress = function (x, y) {
     sandbox.mouse.pressX = x;
     sandbox.mouse.pressY = y;
@@ -347,6 +397,19 @@ function makeCtx(save, opts) {
     const n = sandbox.__api.nextLockedTank();
     if (n < 0) return false;
     return sandbox.__api.confirmUnlockWalk(sandbox.__api.tankWalkPoint(n), n);
+  };
+  sandbox.__api.tapDiveForCue = function () {
+    if (sandbox.state.mode === "play" && sandbox.diveActionLegal()) {
+      sandbox.beginDive();
+      return "dived";
+    }
+    if (sandbox.state.mode === "play" && sandbox.diveWalkLegal()) {
+      return sandbox.__api.intentWalk("dive", sandbox.__api.dockWalkPoint());
+    }
+    return false;
+  };
+  sandbox.__api.tapDiveChip = function () {
+    return sandbox.__api.tapDiveForCue();
   };
   return sandbox.__api;
 }
@@ -364,8 +427,10 @@ assert(dockPt.x >= dock.x && dockPt.x <= dock.x + dock.w, "seed walk starts on t
 
 const horse = openApi.tankWalkPoint(5);
 const puff = openApi.tankWalkPoint(6);
+const divePad = openApi.dockWalkPoint();
 assert(horse.x === 445 && horse.y === 568, "Seahorse stand is south of the bowl");
 assert(puff.x === 663 && puff.y === 568, "Puffer stand stays south of the bowl");
+assert(divePad.x === 880 && divePad.y === 1008, "DIVE pad stays 880,1008");
 
 function inEastShop(x, y) {
   return x >= EAST_SHOP.x && x <= EAST_SHOP.x + EAST_SHOP.w &&
@@ -447,6 +512,51 @@ function followPath(api, dest, maxT) {
   };
 }
 
+function followQueuedWalk(api, dest, maxT) {
+  const dt = 1 / 60, maxSpeed = 480, accel = 3200;
+  let vx = 0, vy = 0, t = 0, stuck = 0;
+  while (t < maxT) {
+    let ax = 0, ay = 0;
+    if (api.player.goto) {
+      const dx = api.player.goto.x - api.player.x, dy = api.player.goto.y - api.player.y;
+      const d = Math.hypot(dx, dy);
+      if (d < 22) {
+        if (api.player.route && api.player.route.length > 1) {
+          api.player.route.shift();
+          api.player.goto = api.player.route[0];
+        } else {
+          api.player.goto = null;
+          api.player.route = null;
+        }
+      }
+    }
+    if (api.player.goto) {
+      const rdx = api.player.goto.x - api.player.x, rdy = api.player.goto.y - api.player.y;
+      const rd = Math.hypot(rdx, rdy);
+      if (rd > 8) { ax = rdx / rd; ay = rdy / rd; }
+    }
+    vx += ax * accel * dt;
+    vy += ay * accel * dt;
+    vx -= vx * 5.2 * dt;
+    vy -= vy * 5.2 * dt;
+    const sp = Math.hypot(vx, vy);
+    if (sp > maxSpeed) { vx *= maxSpeed / sp; vy *= maxSpeed / sp; }
+    const ox = api.player.x, oy = api.player.y;
+    api.player.x += vx * dt;
+    api.player.y += vy * dt;
+    api.constrainShop();
+    const stepped = Math.hypot(api.player.x - ox, api.player.y - oy);
+    if (stepped < 0.2) stuck++;
+    else stuck = 0;
+    t += dt;
+    const dPad = Math.hypot(api.player.x - dest.x, api.player.y - dest.y);
+    if (dPad < 40) break;
+    if (stuck > 45) break;
+    if (!api.player.goto && dPad >= 40) break;
+  }
+  return t;
+}
+
 function assertAlleyWalk(api, walked, label) {
   const walkD = Math.hypot(api.player.x - horse.x, api.player.y - horse.y);
   assert(walked.t < 8, label + " reaches Seahorse within ~8s, t=" + walked.t.toFixed(2));
@@ -497,36 +607,64 @@ function assertUnlockCueOnSeahorse(api, label) {
     label + " ribbon says tap the lock to unlock Seahorse, got " + (goal && goal.text));
   assert(!/Walk to the glowing DIVE dock/.test(goal.text),
     label + " ribbon does not bring back Walk to the glowing DIVE dock");
+}
+
+function assertDiveForOnSeahorse(api, label) {
+  assert(api.state.unlocked[5] === true, label + " Seahorse is unlocked");
+  assert(api.state.money === 1800, label + " money is $1800, got " + api.state.money);
+  assert((api.state.stock[5] | 0) === 0, label + " Seahorse bowl stock is 0");
+  assert(!api.state.bag.length, label + " bag is still 0/5");
+  assert(api.diveForCueLegal() === true, label + " dive-for cue is legal on the empty bowl");
+  assert(api.unlockCueLegal() === false, label + " TAP TO UNLOCK is gone after the buy");
+  const labelTxt = api.diveForCueLabel();
+  assert(/DIVE FOR SEAHORSE/.test(labelTxt) || /TAP TO DIVE/.test(labelTxt) || /DIVE · SEAHORSE/.test(labelTxt),
+    label + " board copy is DIVE FOR SEAHORSE / TAP TO DIVE, got " + labelTxt);
+  const goal = api.diveForPadGoal();
+  assert(goal && /DIVE to catch a Seahorse/.test(goal.text),
+    label + " ribbon says DIVE to catch a Seahorse, got " + (goal && goal.text));
+  assert(!/Walk to the glowing DIVE dock/.test(goal.text),
+    label + " ribbon does not bring back Walk to the glowing DIVE dock");
+  assert(!/Tap the lock/.test(goal.text),
+    label + " ribbon does not bring back Tap the lock");
+  assert(api.beganDive() === false, label + " did not auto-dive on unlock");
+  assert(api.state.unlocked[6] !== true, label + " did not auto-buy Puffer");
   api.cam.x = 445;
   api.cam.y = 420;
   api.cam.z = 1;
-  const chip = api.unlockCueBox();
+  const chip = api.diveForCueBox();
   assert(chip && chip.tank === 5, label + " cue is keyed to Seahorse");
   const horseBox = tankScreenBox(5, api.cam);
   const crabBox = tankScreenBox(9, api.cam);
+  const clownBox = tankScreenBox(0, api.cam);
   const goldBox = tankScreenBox(2, api.cam);
   const puffBox = tankScreenBox(6, api.cam);
   const chipCx = chip.x + chip.w / 2;
   const horseCx = horseBox.x + horseBox.w / 2;
   const goldCx = goldBox.x + goldBox.w / 2;
   const crabCy = crabBox.y + crabBox.h / 2;
+  const clownCy = clownBox.y + clownBox.h / 2;
+  const horseAnchor = horseBox.y + horseBox.h * 0.42;
   const chipCy = chip.y + chip.h / 2;
   assert(Math.abs(chipCx - horseCx) < Math.abs(chipCx - goldCx),
-    label + " board is on Seahorse, not Goldfish");
-  assert(Math.abs(chipCy - (horseBox.y + horseBox.h * 0.42)) < Math.abs(chipCy - crabCy),
+    label + " board is on Seahorse, not Goldfish / Clownfish-center");
+  assert(Math.abs(chipCy - horseAnchor) < Math.abs(chipCy - crabCy),
     label + " board sits on Seahorse, not Crab");
-  assert(!boxesOverlap(chip, goldBox, 0),
-    label + " board does not cover Goldfish");
+  assert(Math.abs(chipCy - horseAnchor) < Math.abs(chipCy - clownCy),
+    label + " board sits on Seahorse, not Clownfish");
+  assert(!boxesOverlap(chip, clownBox, 0),
+    label + " board does not cover Clownfish");
   assert(!boxesOverlap(chip, crabBox, 0),
     label + " board does not cover Crab");
+  assert(!boxesOverlap(chip, goldBox, 0),
+    label + " board does not cover Goldfish");
   assert(!boxesOverlap(chip, puffBox, 0),
     label + " board does not cover Puffer");
   assert(boxesOverlap(chip, { x: horseBox.x, y: chip.y, w: horseBox.w, h: chip.h }, 24),
     label + " board sits over the Seahorse column");
 }
 
-// 1) Stamp loop 110 is asserted above.
-// 2) ny 0.18 / ↑ SHOP — walk, arrive, no buy, cue on Seahorse.
+// 1) Stamp loop 111 is asserted above.
+// 2) ny 0.18 / ↑ SHOP — walk, arrive, still locked, TAP TO UNLOCK on Seahorse.
 const northApi = makeCtx(saveOpen, {
   phone: true,
   pressX: tapCanvas.x,
@@ -545,6 +683,8 @@ assertAlleyWalk(northApi, northWalk, "ny=0.18");
 northApi.arrive();
 assertStillLocked(northApi, "ny=0.18 arrival");
 assertUnlockCueOnSeahorse(northApi, "ny=0.18 occupy");
+assert(northApi.diveForCueLegal() === false, "locked bowl does not show dive-for yet");
+assert(northApi.state.money === 4000, "still $4000 before the buy");
 
 const shopApi = makeCtx(saveOpen, { phone: true });
 assert(shopApi.walkToShopBowls() === true, "↑ SHOP / walkToShopBowls starts");
@@ -557,19 +697,7 @@ shopApi.arrive();
 assertStillLocked(shopApi, "↑ SHOP arrival");
 assertUnlockCueOnSeahorse(shopApi, "↑ SHOP occupy");
 
-// Hide if they walk away or cannot afford.
-const awayX = shopApi.player.x, awayY = shopApi.player.y;
-shopApi.player.x = dockPt.x;
-shopApi.player.y = dockPt.y;
-assert(shopApi.unlockCueLegal() === false, "walk away hides the unlock cue");
-shopApi.player.x = awayX;
-shopApi.player.y = awayY;
-shopApi.state.money = 100;
-assert(shopApi.unlockCueLegal() === false, "broke hide the unlock cue");
-shopApi.state.money = 4000;
-assert(shopApi.unlockCueLegal() === true, "re-afforded cue returns while still on the pad");
-
-// 3) Tap the cue / lock: then unlock fires ($1800, banner).
+// 3) Tap unlock: $1800, Seahorse unlocked, DIVE FOR SEAHORSE on Seahorse.
 northApi.setPress(W / 2, PIN_H * 0.35);
 assert(northApi.tapUnlockCue() === true, "tapping the TAP TO UNLOCK board buys");
 assert(northApi.state.unlocked[5] === true,
@@ -578,40 +706,91 @@ assert(northApi.state.money === 1800,
   "explicit cue tap spends $2200, money=" + northApi.state.money);
 assert(northApi.state.unlockBanner && /seahorse/i.test(northApi.state.unlockBanner.name),
   "explicit cue tap may show the Seahorse unlock banner");
-assert(northApi.unlockCueLegal() === false, "cue hides once Seahorse is unlocked");
+assert(northApi.unlockCueLegal() === false, "unlock cue hides once Seahorse is unlocked");
+assertDiveForOnSeahorse(northApi, "after unlock");
 
-const lockApi = makeCtx(saveOpen, { phone: true });
-lockApi.player.x = horse.x;
-lockApi.player.y = horse.y;
-lockApi.cam.x = 445;
-lockApi.cam.y = 520;
-assert(lockApi.unlockCueLegal() === true, "standing on the pad with $4000 shows the cue");
-lockApi.setPress(W / 2, PIN_H * 0.35);
-const bowl = { x: TANK_POS[5].x + TANK_W / 2, y: TANK_POS[5].y + TANK_H / 2 };
-assert(lockApi.walkTankAtWorld(bowl.x, bowl.y) === 5, "bowl tap hits Seahorse");
-assert(lockApi.phoneDockPlazaWalkWanted(bowl.x, bowl.y, W / 2, PIN_H * 0.35) === false,
-  "standing at the pad, a bowl tap is not remapped as a plaza walk");
-lockApi.tryClickShop(bowl.x, bowl.y);
-assert(lockApi.state.unlocked[5] === true,
-  "explicit Seahorse lock-plate tap unlocks when they can afford it");
-assert(lockApi.state.money === 1800,
-  "explicit lock tap spends $2200, money=" + lockApi.state.money);
+// Bag already has Seahorse → C100 tap-to-stock, no stacked dive-for board.
+const bagApi = makeCtx(saveOpen, { phone: true });
+bagApi.player.x = horse.x;
+bagApi.player.y = horse.y;
+bagApi.tapUnlockCue();
+assert(bagApi.diveForCueLegal() === true, "empty bag shows dive-for after unlock");
+bagApi.state.bag = [5];
+assert(bagApi.diveForCueLegal() === false,
+  "bag holding Seahorse keeps C100 tap-to-stock (no stacked dive-for board)");
+bagApi.state.bag = [];
+assert(bagApi.diveForCueLegal() === true, "emptying the bag brings dive-for back");
 
-// 4) South / DIVE-pad tap is not stolen. DIVE still dives.
+// Hide: leave the pad for a while, stock the bowl, or enter the ocean.
+const hideX = northApi.player.x, hideY = northApi.player.y;
+northApi.player.x = dockPt.x;
+northApi.player.y = dockPt.y;
+assert(northApi.diveForCueLegal() === true, "just leaving the pad still shows the cue");
+northApi.tickDiveForCue(1.0);
+assert(northApi.diveForCueLegal() === true, "1s off the pad still shows the cue");
+northApi.tickDiveForCue(2.0);
+assert(northApi.diveForCueLegal() === false, "leaving the pad for a while hides the cue");
+northApi.player.x = hideX;
+northApi.player.y = hideY;
+northApi.armDiveForTank(5);
+northApi.state.stock[5] = 1;
+assert(northApi.diveForCueLegal() === false, "stocked bowl hides the dive-for cue");
+northApi.state.stock[5] = 0;
+northApi.armDiveForTank(5);
+assert(northApi.diveForCueLegal() === true, "empty bowl on the pad shows the cue again");
+northApi.state.scene = "ocean";
+assert(northApi.diveForCueLegal() === false, "entering the ocean hides the dive-for cue");
+northApi.state.scene = "shop";
+northApi.armDiveForTank(5);
+
+// 4) Tap that board: walker heads to DIVE pad / ocean (same as DIVE chip).
+const diveCueApi = makeCtx(saveOpen, { phone: true });
+diveCueApi.player.x = horse.x;
+diveCueApi.player.y = horse.y;
+diveCueApi.cam.x = 445;
+diveCueApi.cam.y = 420;
+assert(diveCueApi.tapUnlockCue() === true, "pad tap unlocks Seahorse");
+assert(diveCueApi.beganDive() === false, "unlock does not auto-dive");
+assert(diveCueApi.diveForCueLegal() === true, "dive-for board is up after unlock");
+assert(diveCueApi.tapDiveForCue() === true, "tapping DIVE FOR SEAHORSE queues the DIVE walk");
+assert(diveCueApi.beganDive() === false, "tapping the board off the dock does not instant-dive");
+assert(diveCueApi.player.pendingAct && diveCueApi.player.pendingAct.kind === "dive",
+  "board tap arms the same pending dive as the DIVE chip");
+const end = diveCueApi.player.route && diveCueApi.player.route.length
+  ? diveCueApi.player.route[diveCueApi.player.route.length - 1]
+  : diveCueApi.player.goto;
+assert(end && Math.hypot(end.x - divePad.x, end.y - divePad.y) < 1,
+  "board tap dest is the DIVE pad, got " + (end && end.x + "," + end.y));
+const dashT = followQueuedWalk(diveCueApi, divePad, 6);
+assert(dashT < 4, "C86-style dash reaches the DIVE pad, t=" + dashT.toFixed(2));
+assert(Math.hypot(diveCueApi.player.x - divePad.x, diveCueApi.player.y - divePad.y) < 40,
+  "walker occupies the DIVE pad after the board tap");
+assert(diveCueApi.state.scene === "shop", "board tap does not teleport into the ocean");
+assert(diveCueApi.state.unlocked[6] !== true, "board tap does not buy Puffer");
+
+// 5) DIVE chip still works. South tap on dock not stolen to Seahorse.
+const chipApi = makeCtx(saveOpen, { phone: true });
+chipApi.player.x = horse.x;
+chipApi.player.y = horse.y;
+chipApi.tapUnlockCue();
+assert(chipApi.tapDiveChip() === true, "DIVE chip still queues a walk from the tank row");
+assert(chipApi.player.pendingAct && chipApi.player.pendingAct.kind === "dive",
+  "DIVE chip still arms pending dive");
+
 const diveWorld = { x: 880, y: 1008 };
 const diveCanvas = { x: W / 2, y: H390 * 0.82 };
 assert(openApi.phoneDockPlazaWalkWanted(diveWorld.x, diveWorld.y, diveCanvas.x, diveCanvas.y) === false,
   "a south / DIVE-pad tap is not stolen onto Seahorse");
 openApi.setPress(diveCanvas.x, diveCanvas.y);
-const diveDest = openApi.clickWalkTarget(diveWorld.x, diveWorld.y);
-assert(diveDest && diveDest.x === 880 && diveDest.y === 1008,
-  "south / DIVE-pad dest stays the pad, got " + (diveDest && diveDest.x + "," + diveDest.y));
+const southDest = openApi.clickWalkTarget(diveWorld.x, diveWorld.y);
+assert(southDest && southDest.x === 880 && southDest.y === 1008,
+  "south / DIVE-pad dest stays the pad, got " + (southDest && southDest.x + "," + southDest.y));
 openApi.tryClickShop(diveWorld.x, diveWorld.y);
 assert(!openApi.player.unlockConfirm,
   "south / DIVE-pad pointer-down does not arm an unlock");
 
-// 5) Desktop 16:9 hold-W reaches Seahorse without unlocking.
-//    Click-to-walk Puffer still works.
+// 6) Desktop 16:9 hold-W still reaches Seahorse without unlocking.
+//    Click-to-walk Puffer still works. After unlock the same cue can show.
 assert(deskApi.phoneDockPlazaWalkWanted(tapWorld.x, tapWorld.y, tapCanvas.x, tapCanvas.y) === false,
   "desktop click-to-walk is not remapped by the phone plaza gate");
 deskApi.player.x = dockPt.x;
@@ -629,6 +808,14 @@ assert(deskApi.unlockCueLegal() === true,
   "desktop hold-W occupy still shows an unlock board (click may unlock)");
 assert(deskApi.unlockCueLabel().indexOf("UNLOCK $2200") >= 0,
   "desktop board copy is UNLOCK $2200");
+assert(deskApi.tapUnlockCue() === true, "desktop unlock board still buys");
+assert(deskApi.beganDive() === false, "desktop unlock does not auto-dive");
+assert(deskApi.diveForCueLegal() === true,
+  "desktop after unlock still shows the dive-for cue");
+assert(/DIVE/.test(deskApi.diveForCueLabel()),
+  "desktop dive-for copy mentions DIVE, got " + deskApi.diveForCueLabel());
+assert(/DIVE to catch a Seahorse/.test(deskApi.diveForPadGoal().text),
+  "desktop ribbon is still dive-for-species");
 
 const clickPath = openApi.shopPath(dockPt.x, dockPt.y, puff.x, puff.y);
 assert(Array.isArray(clickPath) && clickPath.length >= 2,
@@ -637,11 +824,10 @@ const clickLast = clickPath[clickPath.length - 1];
 assert(Math.hypot(clickLast.x - puff.x, clickLast.y - puff.y) < 1,
   "clicking Puffer still routes to tankWalkPoint(6)");
 
-console.log("c110 unlock cue: ok (next=" + openApi.nextLockedTank() +
+console.log("c111 dive for: ok (next=" + openApi.nextLockedTank() +
   ", horse=" + horse.x + "," + horse.y +
-  ", ny18=" + northWalk.t.toFixed(2) + "s cue@" +
-  (northApi.unlockCueBox() && northApi.unlockCueBox().tank) +
-  " locked→$" + northApi.state.money +
-  ", shop=" + shopWalk.t.toFixed(2) + "s" +
-  ", holdW=" + deskWalk.t.toFixed(2) + "s locked" +
+  ", ny18=" + northWalk.t.toFixed(2) + "s locked→$" + northApi.state.money +
+  " diveFor@" + (diveCueApi.diveForCueBox() && diveCueApi.diveForCueBox().tank) +
+  ", dash=" + dashT.toFixed(2) + "s" +
+  ", holdW=" + deskWalk.t.toFixed(2) + "s" +
   ")");

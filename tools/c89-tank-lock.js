@@ -79,7 +79,7 @@ assert(tankShowsPadlock(false), "locked tank keeps the padlock");
 assert(!tankShowsPadlock(true) && tankShowsPadlock(false),
   "padlock gate matches galleryOpen / unlock-not-met (unlocked flag)");
 
-assert(/Aqua Bay · loop 110/.test(src), "title/pause stamp is loop 110");
+assert(/Aqua Bay · loop 111/.test(src), "title/pause stamp is loop 111");
 assert(!/Aqua Bay · loop 107/.test(src), "loop 107 stamp is gone");
 
 assert(/const TANK_W = 210, TANK_H = 156/.test(src), "tank size stays");
