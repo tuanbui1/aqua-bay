@@ -11871,6 +11871,11 @@
     ctx.fillText(compactHud() ? "→ TILL" : "→ TILL  ·  collect", b.x + b.w / 2, b.y + b.h / 2 + 6);
     btn("goto-till", b.x, b.y, b.w, b.h);
   }
+  // C98 — first-dive ↑ SURFACE assist is the same pier-board sign as
+  // C97 DIVE / legal SURFACE (clip drawPierBoards + #e8c04a gold).
+  // Paint only — box, actionChipInset, visualViewport floor, and
+  // btn("goto-surface") stay. First dive starts at y=380 / 6m, so
+  // the legal SURFACE board (nearSurface y<280) never paints here.
   function drawSurfaceAssist() {
     if (state.mode !== "play" || state.scene !== "ocean") return;
     if (bagIsFull() || nearSurface() || player.y < 300) return;
@@ -11887,11 +11892,9 @@
     }
     const floor = actionFloor();
     const b = hudBox(x, floor - inset - h, w, h, portraitStage() ? inset : 10);
-    card(b.x, b.y, b.w, b.h, "rgba(40, 160, 180," + (0.78 + pulse * 0.16) + ")");
-    ctx.fillStyle = "#fff6e8";
-    ctx.font = (portraitStage() ? "800 " + phoneCss(16) + "px" : (b.h > 38 ? "800 18px" : "800 15px")) + " Fredoka, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("↑ SURFACE", b.x + b.w / 2, b.y + b.h / 2 + 6);
+    const surfFont = portraitStage() ? phoneCss(16) : (b.h > 38 ? 18 : 15);
+    const stain = 0.10 + pulse * 0.10;
+    drawPierBoardChip(b.x, b.y, b.w, b.h, "↑ SURFACE", surfFont, stain);
     btn("goto-surface", b.x, b.y, b.w, b.h);
   }
   function drawBoatEdgeHint() {
@@ -13079,7 +13082,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 97", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 98", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -13142,7 +13145,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 97", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 98", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -13173,7 +13176,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 97", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 98", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
