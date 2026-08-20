@@ -36,7 +36,7 @@ assert(/font:\s*phoneCss\(\s*13\s*\)/.test(src), "portrait quest type is phoneCs
 assert(/ribbon\s*\?\s*ribbon\.y\s*\+\s*ribbon\.h\s*\+\s*8/.test(src),
   "session chips still park below the tutorial ribbon");
 
-assert(/Aqua Bay · loop 109/.test(src), "title/pause stamp is loop 109");
+assert(/Aqua Bay · loop 110/.test(src), "title/pause stamp is loop 110");
 assert(!/Aqua Bay · loop 107/.test(src), "loop 107 stamp is gone");
 
 const W = 1280;
