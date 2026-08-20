@@ -52,8 +52,8 @@ assert(/portraitStage\(\)\s*\|\|\s*state\.scene\s*===\s*"ocean"/.test(src) &&
 assert(/ribbon\s*\?\s*ribbon\.y\s*\+\s*ribbon\.h\s*\+\s*8/.test(src),
   "tiny session / hint chips park below the tutorial ribbon");
 
-assert(/Aqua Bay · loop 85/.test(src), "title/pause stamp is loop 85");
-assert(!/Aqua Bay · loop 84/.test(src), "loop 84 stamp is gone");
+assert(/Aqua Bay · loop 86/.test(src), "title/pause stamp is loop 86");
+assert(!/Aqua Bay · loop 85/.test(src), "loop 85 stamp is gone");
 
 // Same leftover DIVE floor as C82 — this cycle must not move it.
 const W = 1280;
