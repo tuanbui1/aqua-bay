@@ -274,7 +274,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -12740,6 +12740,151 @@
     ctx.restore();
     btn(id, x, y, w, h);
   }
+  // C95 — painted pier / reef / lagoon so picker portraits sit in a
+  // scene, not a flat square sticker. Original canvas paint only.
+  function drawPickerBackdrop(id, x, y, w, h) {
+    ctx.save();
+    roundRect(x, y, w, h, 12); ctx.clip();
+    if (id === "skip") {
+      // C95 — painted pier: noon sky, clouds, shed, boards, pilings.
+      const sky = ctx.createLinearGradient(x, y, x, y + h);
+      sky.addColorStop(0, "#8ec8f0");
+      sky.addColorStop(0.38, "#6ab4dc");
+      sky.addColorStop(0.58, "#4a9cc4");
+      sky.addColorStop(0.72, "#3a8aaa");
+      sky.addColorStop(1, "#c89a58");
+      ctx.fillStyle = sky;
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = "rgba(255, 246, 232, 0.78)";
+      ctx.beginPath(); ctx.ellipse(x + w * 0.22, y + h * 0.16, w * 0.18, h * 0.05, -0.08, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x + w * 0.34, y + h * 0.14, w * 0.14, h * 0.045, 0.1, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x + w * 0.78, y + h * 0.20, w * 0.16, h * 0.04, 0.06, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#d8784a";
+      ctx.beginPath();
+      ctx.moveTo(x + w * 0.62, y + h * 0.38);
+      ctx.lineTo(x + w * 0.78, y + h * 0.28);
+      ctx.lineTo(x + w * 0.94, y + h * 0.38);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#e8c070";
+      ctx.fillRect(x + w * 0.66, y + h * 0.38, w * 0.24, h * 0.16);
+      ctx.fillStyle = "#6a3a18";
+      ctx.fillRect(x + w * 0.74, y + h * 0.44, w * 0.06, h * 0.10);
+      ctx.fillStyle = "rgba(46, 140, 168, 0.55)";
+      ctx.fillRect(x, y + h * 0.58, w, h * 0.16);
+      const deckY = y + h * 0.62;
+      const deckH = h * 0.22;
+      drawPierBoards(x - 2, deckY, w + 4, deckH, { plank: Math.max(8, Math.round(h * 0.055)) });
+      ctx.fillStyle = "#5a3214";
+      ctx.fillRect(x + w * 0.12, y + h * 0.58, w * 0.055, h * 0.28);
+      ctx.fillRect(x + w * 0.82, y + h * 0.58, w * 0.055, h * 0.28);
+      ctx.fillStyle = "#8a5a30";
+      ctx.beginPath(); ctx.ellipse(x + w * 0.147, y + h * 0.58, w * 0.038, h * 0.016, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x + w * 0.847, y + h * 0.58, w * 0.038, h * 0.016, 0, 0, Math.PI * 2); ctx.fill();
+    } else if (id === "reef") {
+      // C95 — painted reef: sky, turquoise shallows, coral heads, sand.
+      const sky = ctx.createLinearGradient(x, y, x, y + h);
+      sky.addColorStop(0, "#7ec8e8");
+      sky.addColorStop(0.32, "#4aa8c4");
+      sky.addColorStop(0.48, "#2a8aaa");
+      sky.addColorStop(0.72, "#1e7a86");
+      sky.addColorStop(1, "#d4a070");
+      ctx.fillStyle = sky;
+      ctx.fillRect(x, y, w, h);
+      ctx.fillStyle = "rgba(255, 246, 232, 0.55)";
+      ctx.beginPath(); ctx.ellipse(x + w * 0.70, y + h * 0.14, w * 0.16, h * 0.04, 0.08, 0, Math.PI * 2); ctx.fill();
+      const water = ctx.createLinearGradient(x, y + h * 0.36, x, y + h);
+      water.addColorStop(0, "rgba(90, 210, 210, 0.55)");
+      water.addColorStop(0.35, "rgba(30, 150, 160, 0.42)");
+      water.addColorStop(1, "rgba(20, 90, 100, 0.20)");
+      ctx.fillStyle = water;
+      ctx.fillRect(x, y + h * 0.36, w, h * 0.64);
+      ctx.strokeStyle = "rgba(210, 250, 255, 0.45)";
+      ctx.lineWidth = Math.max(1.2, h * 0.012);
+      ctx.beginPath();
+      ctx.moveTo(x, y + h * 0.38);
+      ctx.quadraticCurveTo(x + w * 0.35, y + h * 0.34, x + w * 0.7, y + h * 0.39);
+      ctx.quadraticCurveTo(x + w * 0.88, y + h * 0.42, x + w, y + h * 0.37);
+      ctx.stroke();
+      ctx.fillStyle = "#e8c890";
+      ctx.beginPath();
+      ctx.moveTo(x, y + h * 0.86);
+      ctx.quadraticCurveTo(x + w * 0.4, y + h * 0.78, x + w, y + h * 0.88);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x, y + h);
+      ctx.closePath(); ctx.fill();
+      const corals = [
+        [0.16, 0.78, 0.10, 0.14, "#e8786a"],
+        [0.30, 0.82, 0.08, 0.10, "#f0a05a"],
+        [0.78, 0.76, 0.11, 0.16, "#c86bde"],
+        [0.62, 0.80, 0.07, 0.11, "#ffe14a"],
+      ];
+      for (let c = 0; c < corals.length; c++) {
+        const [fx, fy, rw, rh, col] = corals[c];
+        ctx.fillStyle = col;
+        ctx.beginPath(); ctx.ellipse(x + w * fx, y + h * fy, w * rw, h * rh, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "rgba(255, 246, 220, 0.28)";
+        ctx.beginPath(); ctx.ellipse(x + w * fx - w * rw * 0.25, y + h * fy - h * rh * 0.2, w * rw * 0.45, h * rh * 0.4, -0.3, 0, Math.PI * 2); ctx.fill();
+      }
+    } else {
+      // C95 — painted lagoon: warm sun, calm water, sandy spit.
+      const sky = ctx.createLinearGradient(x, y, x, y + h);
+      sky.addColorStop(0, "#f2c878");
+      sky.addColorStop(0.28, "#f0b060");
+      sky.addColorStop(0.50, "#d08858");
+      sky.addColorStop(0.68, "#4aa8b0");
+      sky.addColorStop(1, "#b07a42");
+      ctx.fillStyle = sky;
+      ctx.fillRect(x, y, w, h);
+      const sx = x + w * 0.78, sy = y + h * 0.18, sr = Math.min(w, h) * 0.12;
+      const halo = ctx.createRadialGradient(sx, sy, sr * 0.2, sx, sy, sr * 3.2);
+      halo.addColorStop(0, "rgba(255, 230, 150, 0.90)");
+      halo.addColorStop(0.35, "rgba(255, 180, 90, 0.28)");
+      halo.addColorStop(1, "rgba(255, 160, 70, 0)");
+      ctx.fillStyle = halo;
+      ctx.beginPath(); ctx.arc(sx, sy, sr * 3.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#ffe2a8";
+      ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
+      const lagoon = ctx.createLinearGradient(x, y + h * 0.40, x, y + h * 0.82);
+      lagoon.addColorStop(0, "#7ed4c8");
+      lagoon.addColorStop(0.45, "#3a9aaa");
+      lagoon.addColorStop(1, "#2a6a78");
+      ctx.fillStyle = lagoon;
+      ctx.beginPath();
+      ctx.moveTo(x, y + h * 0.48);
+      ctx.quadraticCurveTo(x + w * 0.35, y + h * 0.40, x + w * 0.70, y + h * 0.46);
+      ctx.quadraticCurveTo(x + w * 0.90, y + h * 0.50, x + w, y + h * 0.44);
+      ctx.lineTo(x + w, y + h * 0.82);
+      ctx.quadraticCurveTo(x + w * 0.5, y + h * 0.88, x, y + h * 0.80);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#e8c890";
+      ctx.beginPath();
+      ctx.moveTo(x, y + h * 0.78);
+      ctx.quadraticCurveTo(x + w * 0.45, y + h * 0.70, x + w, y + h * 0.84);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x, y + h);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#3a8a44";
+      ctx.beginPath();
+      ctx.moveTo(x + w * 0.16, y + h * 0.72);
+      ctx.quadraticCurveTo(x + w * 0.08, y + h * 0.50, x + w * 0.20, y + h * 0.36);
+      ctx.quadraticCurveTo(x + w * 0.28, y + h * 0.52, x + w * 0.22, y + h * 0.72);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#2a6a34";
+      ctx.fillRect(x + w * 0.168, y + h * 0.70, w * 0.035, h * 0.10);
+    }
+    ctx.restore();
+  }
+  function pickerLabelLayout(cardH, namePx, blurbPx) {
+    // C95 — a few CSS px above the card bottom, not flush to the border.
+    const labelInset = portraitStage() ? phoneCss(8) : 10;
+    const platePadY = portraitStage() ? phoneCss(4) : 5;
+    const nameToBlurb = portraitStage() ? Math.max(phoneCss(2), Math.round(namePx * 0.22)) : 4;
+    const plateH = platePadY + namePx + nameToBlurb + blurbPx + platePadY;
+    const plateY = cardH - labelInset - plateH;
+    const nameY = plateY + platePadY + namePx;
+    const blurbY = plateY + plateH - platePadY;
+    return { labelInset, platePadY, nameToBlurb, plateH, plateY, nameY, blurbY };
+  }
   function drawSkinPicker(cx, cy, cardW, cardH, gap, fonts) {
     const fnt = fonts || {};
     const namePx = fnt.nameFont || 16;
@@ -12750,6 +12895,7 @@
     const total = cardW * 3 + gap * 2;
     let x = cx - total / 2;
     const chosen = normalizeSkin(state.skin);
+    const labels = pickerLabelLayout(cardH, namePx, blurbPx);
     ctx.fillStyle = "#c8e8ee";
     ctx.font = "700 " + whoPx + "px Nunito, sans-serif";
     ctx.textAlign = "center";
@@ -12759,74 +12905,14 @@
       const meta = SKIN_META[id];
       const selected = chosen === id;
       card(x, cy, cardW, cardH, selected ? "rgba(28, 58, 52, 0.94)" : "rgba(12, 28, 36, 0.78)");
-      ctx.save();
-      roundRect(x + 6, cy + 8, cardW - 12, cardH * 0.64, 8); ctx.clip();
-      const plate = ctx.createLinearGradient(x, cy + 8, x, cy + cardH * 0.64);
-      if (id === "skip") {
-        plate.addColorStop(0, "#9ad4ee");
-        plate.addColorStop(0.48, "#5aa8c8");
-        plate.addColorStop(1, "#c89a58");
-      } else if (id === "reef") {
-        plate.addColorStop(0, "#7ec8e0");
-        plate.addColorStop(0.46, "#3d8b9a");
-        plate.addColorStop(1, "#d4a070");
-      } else {
-        plate.addColorStop(0, "#f2c878");
-        plate.addColorStop(0.42, "#d07850");
-        plate.addColorStop(1, "#b07a42");
-      }
-      ctx.fillStyle = plate;
-      ctx.fillRect(x + 6, cy + 8, cardW - 12, cardH * 0.64);
-      if (ART.ready && ATLAS.harbortown) {
-        const crops = {
-          skip: [0.00, 0.06, 0.46, 0.70],
-          reef: [0.28, 0.00, 0.50, 0.68],
-          dino: [0.64, 0.00, 0.36, 0.58],
-        };
-        const [sx, sy, sw, sh] = crops[id];
-        ctx.globalAlpha = 0.92;
-        blitHarborPart(sx, sy, sw, sh, x + 6, cy + 8, cardW - 12, cardH * 0.52);
-        ctx.globalAlpha = 1;
-      } else if (ATLAS.sky && ART.ready) {
-        ctx.globalAlpha = 0.62;
-        blitTile("sky", x + 6, cy + 8, cardW - 12, cardH * 0.36);
-        ctx.globalAlpha = 1;
-      }
-      if (id === "skip") {
-        drawPierBoards(x + 4, cy + 8 + cardH * 0.48, cardW - 8, cardH * 0.18, { plank: 12, seg: 40 });
-      } else if (id === "reef") {
-        ctx.fillStyle = "rgba(42, 125, 138, 0.22)";
-        ctx.fillRect(x + 6, cy + 8 + cardH * 0.46, cardW - 12, cardH * 0.20);
-        drawPierBoards(x + 4, cy + 8 + cardH * 0.50, cardW - 8, cardH * 0.16, { plank: 14, wetY: cy + 8 + cardH * 0.58 });
-      } else {
-        // Dusk harbor strip: right-side town + wide pier, not a teal slab.
-        drawPierBoards(x + 3, cy + 8 + cardH * 0.44, cardW - 6, cardH * 0.22, {
-          plank: 10,
-        });
-        ctx.save();
-        ctx.translate(x + 18, cy + 8 + cardH * 0.60);
-        ctx.fillStyle = "#4a2a14";
-        ctx.fillRect(-3.5, -26, 7, 28);
-        ctx.fillStyle = "rgba(255, 210, 140, 0.2)";
-        ctx.fillRect(-3.5, -26, 2.2, 28);
-        ctx.fillStyle = "#8a5a30";
-        ctx.beginPath(); ctx.ellipse(0, -26, 4.4, 2.2, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#c4483a";
-        ctx.beginPath();
-        ctx.moveTo(10, -4);
-        ctx.quadraticCurveTo(22, 2, 34, -2);
-        ctx.lineTo(32, 4);
-        ctx.quadraticCurveTo(22, 8, 10, 3);
-        ctx.closePath(); ctx.fill();
-        ctx.restore();
-      }
-      ctx.restore();
+      drawPickerBackdrop(id, x, cy, cardW, cardH);
       if (selected) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.55 + 0.3 * Math.sin(state.time * 5)) + ")";
         ctx.lineWidth = 3;
         roundRect(x, cy, cardW, cardH, 12); ctx.stroke();
       }
-      drawPlayer(x + cardW / 2, cy + cardH * 0.62, {
+      const charY = Math.min(cy + cardH * 0.62, cy + labels.plateY - 2);
+      drawPlayer(x + cardW / 2, charY, {
         skin: id, vx: 0, vy: 0, facing: 0.08,
         walkPhase: 0, lean: 0.05, bob: Math.sin(state.time * 1.5 + i) * 0.6,
         faceS: 1, drawScale: id === "dino"
@@ -12835,13 +12921,18 @@
         paintOnly: id === "dino",
 
       });
+      const sidePad = portraitStage() ? phoneCss(6) : 6;
+      const plateX = x + sidePad;
+      const plateW = cardW - sidePad * 2;
+      ctx.fillStyle = "rgba(12, 22, 30, 0.88)";
+      roundRect(plateX, cy + labels.plateY, plateW, labels.plateH, 8); ctx.fill();
       ctx.fillStyle = "#fff6e8";
       ctx.font = "800 " + namePx + "px Fredoka, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(meta.name, x + cardW / 2, cy + cardH - Math.max(28, Math.round(cardH * 0.09)));
+      ctx.fillText(meta.name, x + cardW / 2, cy + labels.nameY);
       ctx.fillStyle = selected ? "#ffe27a" : "#9ec8d0";
       ctx.font = "700 " + blurbPx + "px Nunito, sans-serif";
-      ctx.fillText(meta.blurb, x + cardW / 2, cy + cardH - Math.max(12, Math.round(cardH * 0.04)));
+      ctx.fillText(meta.blurb, x + cardW / 2, cy + labels.blurbY);
       btn("skin-" + id, x, cy, cardW, cardH);
       x += cardW + gap;
     }
@@ -12939,7 +13030,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 94", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 95", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -13002,7 +13093,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 94", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 95", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -13033,7 +13124,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 94", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 95", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
