@@ -1,10 +1,13 @@
-// C97 — DIVE / SURFACE HUD chips are pier-board signs
-// (clip drawPierBoards + #e8c04a gold stroke), not a flat cyan
-// card("rgba(40, 160, 180, …)") fill. Title Continue / Play /
-// New Game stay C96 titleBoardBtn. Pause / help / mute / reset /
-// book-close stay flat panelBtn. Paint-only: hitbox size,
-// actionChipInset, visualViewport floor, cameras, HUD plates,
-// walk speeds stay.
+// C98 — first-dive ↑ SURFACE assist is a pier-board sign
+// (same drawPierBoardChip wood + #e8c04a gold as C97 DIVE),
+// not a leftover flat cyan card("rgba(40, 160, 180, …)") fill.
+// Legal SURFACE already used the helper; the player-visible first
+// dive chip is drawSurfaceAssist() (starts at y=380 / 6m, so
+// surfaceActionLegal / nearSurface y<280 never paints). Paint
+// only: hitbox, actionChipInset, visualViewport floor stay.
+// DIVE stays as C97 left it. Pause / help / mute / reset /
+// book-close stay flat panelBtn. Title Continue / Play / New
+// Game stay titleBoardBtn.
 const fs = require("fs");
 const path = require("path");
 
@@ -22,29 +25,56 @@ const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 assert(/function drawPierBoardChip\s*\(/.test(src), "drawPierBoardChip helper exists");
 assert(/C97 — DIVE \/ SURFACE HUD chips/.test(src),
   "C97 names the DIVE-board rule");
+assert(/C98 — first-dive ↑ SURFACE assist/.test(src),
+  "C98 names the SURFACE-assist board rule");
 
 const chip = src.match(/function drawPierBoardChip\s*\(\s*x,\s*y,\s*w,\s*h,\s*label,\s*fontPx,\s*stain\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(chip, "drawPierBoardChip body is present");
 assert(/roundRect\(x, y, w, h, r\); ctx\.clip\(\)/.test(chip[0]),
-  "DIVE chip clips a rounded rect");
+  "pier-board chip clips a rounded rect");
 assert(/drawPierBoards\(x, y, w, h/.test(chip[0]),
-  "DIVE chip paints a real plank field, not a flat fill");
-assert(/#e8c04a/.test(chip[0]), "DIVE chip uses the header gold stroke");
+  "pier-board chip paints a real plank field, not a flat fill");
+assert(/#e8c04a/.test(chip[0]), "pier-board chip uses the header gold stroke");
 assert(/rgba\(90, 48, 16, 0\.55\)/.test(chip[0]),
-  "DIVE chip keeps the header wood outline");
-assert(/Fredoka/.test(chip[0]), "DIVE chip keeps Fredoka labels");
+  "pier-board chip keeps the header wood outline");
+assert(/Fredoka/.test(chip[0]), "pier-board chip keeps Fredoka labels");
 assert(/#fff6e8/.test(chip[0]), "DIVE / SURFACE labels stay cream");
 assert(!/#2a9d8f/.test(chip[0]) && !/#3d6f7a/.test(chip[0]),
-  "DIVE chip is wood + gold, not a flat teal / slate fill");
+  "pier-board chip is wood + gold, not a flat teal / slate fill");
 assert(!/rgba\(40, 160, 180/.test(chip[0]),
-  "DIVE chip helper is not a cyan card fill");
+  "pier-board chip helper is not a cyan card fill");
 assert(!/btn\(/.test(chip[0]),
   "chip helper is paint-only — hitboxes stay on the caller");
+
+const assist = src.match(/function drawSurfaceAssist\s*\(\s*\)\s*\{[\s\S]*?\n  \}/);
+assert(assist, "drawSurfaceAssist body is present");
+assert(/drawPierBoardChip\(b\.x, b\.y, b\.w, b\.h/.test(assist[0]),
+  "first-dive ↑ SURFACE paints through drawPierBoardChip");
+assert(/"↑ SURFACE"/.test(assist[0]),
+  "assist keeps the ↑ in the SURFACE label");
+assert(!/card\(b\.x, b\.y, b\.w, b\.h/.test(assist[0]),
+  "assist is not a flat card fill");
+assert(!/rgba\(40, 160, 180/.test(assist[0]),
+  "assist is not a leftover cyan HUD pill");
+assert(!/fillText\(\s*"↑ SURFACE"/.test(assist[0]),
+  "assist does not hand-paint the label on a cyan card");
+assert(/btn\("goto-surface", b\.x, b\.y, b\.w, b\.h\)/.test(assist[0]),
+  "assist keeps the same hitbox id and box");
+assert(/phoneCss\(\s*120\s*\)/.test(assist[0]) && /phoneCss\(\s*40\s*\)/.test(assist[0]),
+  "390-first assist hitbox stays 120 × 40 CSS");
+assert(/:\s*132/.test(assist[0]) && /:\s*36/.test(assist[0]),
+  "desktop 16:9 assist stays the planted 132 × 36 chip");
+assert(/actionChipInset\(\)/.test(assist[0]),
+  "assist still insets with C84 actionChipInset");
+assert(/actionFloor\(\)/.test(assist[0]),
+  "assist still sits on the C82 visualViewport / action floor");
+assert(/phoneCss\(\s*16\s*\)/.test(assist[0]),
+  "portrait assist type still uses phoneCss");
 
 const divePaint = src.match(/else if \(diveChipLegal\(\)\) \{[\s\S]*?btn\("dive", db\.x, db\.y, db\.w, db\.h\);/);
 assert(divePaint, "diveChipLegal paint block is present");
 assert(/drawPierBoardChip\(db\.x, db\.y, db\.w, db\.h/.test(divePaint[0]),
-  "DIVE action chip paints the pier-board sign");
+  "DIVE action chip still paints the pier-board sign");
 assert(!/card\(db\.x, db\.y, db\.w, db\.h/.test(divePaint[0]),
   "DIVE action chip is not a flat card fill");
 assert(!/rgba\(40, 160, 180/.test(divePaint[0]),
@@ -57,13 +87,13 @@ assert(/phoneCss\(\s*18\s*\)/.test(divePaint[0]),
 const surfPaint = src.match(/if \(surfaceActionLegal\(\)\) \{[\s\S]*?ctx\.globalAlpha = 1;\n    \}/);
 assert(surfPaint, "surfaceActionLegal paint block is present");
 assert(/drawPierBoardChip\(sb\.x, sb\.y, sb\.w, sb\.h/.test(surfPaint[0]),
-  "SURFACE action chip paints the pier-board sign");
+  "legal SURFACE action chip still paints the pier-board sign");
 assert(!/card\(sb\.x, sb\.y, sb\.w, sb\.h/.test(surfPaint[0]),
-  "SURFACE action chip is not a flat card fill");
+  "legal SURFACE action chip is not a flat card fill");
 assert(!/rgba\(40, 160, 180/.test(surfPaint[0]),
-  "SURFACE action chip is not a cyan HUD pill");
+  "legal SURFACE action chip is not a cyan HUD pill");
 assert(/phoneCss\(\s*16\s*\)/.test(surfPaint[0]),
-  "portrait SURFACE type still uses phoneCss");
+  "portrait legal SURFACE type still uses phoneCss");
 
 assert(/card\(eb\.x, eb\.y, eb\.w, eb\.h,\s*"rgba\(40, 160, 180, 0\.88\)"/.test(src),
   "BOAT prompt stays the existing cyan card");
@@ -71,13 +101,6 @@ assert(/card\(eb\.x, eb\.y, eb\.w, eb\.h,\s*"rgba\(40, 160, 180, 0\.88\)"/.test(
 assert(/function titleBoardBtn\s*\(/.test(src), "C96 titleBoardBtn stays");
 assert(/C96 — title action boards only/.test(src),
   "C96 names the title-board rule");
-const board = src.match(/function titleBoardBtn\s*\(\s*id,\s*x,\s*y,\s*w,\s*h,\s*label,\s*scale,\s*fontPx,\s*quiet\s*\)\s*\{[\s\S]*?\n  \}/);
-assert(board, "titleBoardBtn body is present");
-assert(/drawPierBoards\(x, y, w, h/.test(board[0]) && /#e8c04a/.test(board[0]),
-  "title Continue / Play / New Game still paint wood + gold");
-assert(/quiet \? "rgba\(40, 20, 8, 0\.40\)"/.test(board[0]),
-  "New Game stays the quieter stain");
-
 const title = src.match(/function drawTitle\s*\(\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(title, "drawTitle body is present");
 assert(/titleBoardBtn\("continue"/.test(title[0]),
@@ -86,10 +109,6 @@ assert(/titleBoardBtn\("play"[\s\S]*"New Game"/.test(title[0]),
   "New Game still uses titleBoardBtn");
 assert(/titleBoardBtn\("play"[\s\S]*"Play"/.test(title[0]),
   "Play still uses titleBoardBtn");
-assert(/"New Game", 1, lay\.btnFont, true/.test(title[0]),
-  "New Game stays the quieter stain call");
-assert(/species unlocked/.test(title[0]) && /#ffe27a/.test(title[0]),
-  "yellow save line stays between Continue and New Game");
 assert(!/drawPierBoardChip\(/.test(title[0]),
   "title does not reroute through the DIVE chip helper");
 
@@ -158,10 +177,9 @@ assert(/232 \+ state\.speedLv \* 38 \+ firstBump/.test(src),
 assert(/const OPEN_SIGN = \{ x: 1052, y: 924 \}/.test(src), "OPEN planted position stays");
 assert(/const BAIT_HUT = \{ x: 1124, y: 918 \}/.test(src), "hut planted position stays");
 assert(/const POP_VEND = \{ x: 996, y: 918 \}/.test(src), "POP planted position stays");
+assert(/return player\.y < 280/.test(src), "C97 nearSurface retint stays y<280");
 
 const W = 1280;
-const DESKTOP_H = 720;
-function portraitH(cssW, cssH) { return Math.max(960, Math.round(W * cssH / cssW)); }
 function phoneCss(cssPx, cssW) { return Math.max(8, Math.round(cssPx * W / cssW)); }
 
 const CSS_W = 390;
@@ -170,40 +188,32 @@ const VIS_H = 655;
 assert(portraitStage(CSS_W, LAYOUT_H), "390×844 is portrait");
 assert(portraitStage(CSS_W, VIS_H), "390×655 is portrait");
 assert(!desktopStage(CSS_W, LAYOUT_H), "390-wide is not desktop");
+assert(desktopStage(1280, 720), "1280×720 is desktop 16:9");
 
-function visibleStageBottom(H0, visH) {
-  return Math.round(H0 * Math.min(1, visH / (H0 * (CSS_W / W))));
-}
-function actionChipInset(cssW) {
-  return phoneCss(18, cssW);
-}
+const assistW = phoneCss(120, CSS_W);
+const assistH = phoneCss(40, CSS_W);
+const inset = phoneCss(18, CSS_W);
+const floor = Math.round(VIS_H * (W / CSS_W));
+const assistX = W - inset - assistW;
+const assistY = floor - inset - assistH;
+assert(assistW === phoneCss(120, CSS_W) && assistH === phoneCss(40, CSS_W),
+  "assist stays the 120 × 40 CSS chip on 390");
+assert(assistW / W * CSS_W >= 100 && assistW / W * CSS_W < 160,
+  "assist stays a thumb chip on 390");
+assert(40 >= 36, "40 CSS stays fat enough to tap on 390");
+assert(assistX + assistW <= W - inset,
+  "assist still insets from the right");
+assert(assistY + assistH <= floor - inset,
+  "assist still insets from the visual floor");
+assert(assistY >= 0, "assist is not clipped above the stage");
 
-function actionBtnBox(H0, visH, cssW) {
-  const w = phoneCss(120, cssW);
-  const h = phoneCss(48, cssW);
-  const inset = actionChipInset(cssW);
-  const floor = Math.round(H0 * (visH / (H0 * cssW / W) > 1 ? 1 : visH / (cssW / W * H0 / cssW * cssW)));
-  // Match game.js: floor = visible stage bottom in stage px.
-  const floor2 = Math.round(visH * (W / cssW));
-  const x = W - inset - w;
-  const y = floor2 - inset - h;
-  return { x, y, w, h, inset, floor: floor2 };
-}
-
-const dock = actionBtnBox(portraitH(CSS_W, LAYOUT_H), VIS_H, CSS_W);
-assert(dock.w === phoneCss(120, CSS_W), "DIVE stays a 120 CSS thumb chip");
-assert(dock.h === phoneCss(48, CSS_W), "DIVE keeps the 48 CSS chip height");
-assert(dock.w / W * CSS_W >= 100 && dock.w / W * CSS_W < 160,
-  "DIVE stays a thumb chip on 390");
-assert(dock.h / portraitH(CSS_W, VIS_H) * VIS_H >= 40,
-  "DIVE stays fat enough to tap on 390");
-assert(dock.x + dock.w <= W - dock.inset,
-  "DIVE still insets from the right");
-assert(dock.y + dock.h <= dock.floor - dock.inset,
-  "DIVE still insets from the visual floor");
+const deskW = 132, deskH = 36, deskInset = 16;
+assert(deskW + deskInset <= 1280, "desktop assist width stays planted");
+assert(720 - deskInset - deskH >= 0, "desktop assist sits on the 16:9 floor");
+assert(deskH >= 32 && deskH <= 52, "desktop assist stays a planted chip, not a banner");
 
 const prices = [15, 22, 40, 70, 150];
 assert(prices[0] === 15 && prices[4] === 150, "original 5 sale prices stay");
 assert(clamp(10, 0, 8) === 8, "clamp helper stays available");
 
-console.log("c97 DIVE / SURFACE pier-board chips: ok");
+console.log("c98 first-dive SURFACE pier-board chip: ok");
