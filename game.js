@@ -1996,6 +1996,39 @@
     }
     return { x: 16, h: 30, font: 12, pad: 12, maxW: 360, gap: 6 };
   }
+  function huntStockIndex() {
+    // C114 — TODAY / surface-stock follow the DIVE FOR bowl
+    // (empty Seahorse), not a leftover Stock Sea Turtle plate.
+    // Hunt stays armed in the ocean; after surface the hunt is
+    // cleared, so a bag that already holds that fish and an
+    // empty bowl still wins. Do not auto-stock.
+    // loop 114 hide SURFACE until the hunt bags.
+    const hunt = diveForHuntIndex();
+    if (hunt >= 0 && speciesUnlocked(hunt) && (state.stock[hunt] | 0) === 0)
+      return hunt;
+    let best = -1;
+    const bag = state.bag || [];
+    for (let n = 0; n < bag.length; n++) {
+      const s = bag[n] | 0;
+      if (s < 0 || !speciesUnlocked(s)) continue;
+      if ((state.stock[s] | 0) > 0) continue;
+      if (s > best) best = s;
+    }
+    return best;
+  }
+  function applyHuntStockGoal() {
+    const want = huntStockIndex();
+    if (want < 0) return;
+    const goals = state.sessionGoals;
+    if (!goals || !goals.length) return;
+    const id = "stock-" + want;
+    for (let i = 0; i < goals.length; i++) {
+      const g = goals[i];
+      if (!g || ("" + g).indexOf("stock-") !== 0) continue;
+      const s = ("" + g).slice(6) | 0;
+      if (want > s) goals[i] = id;
+    }
+  }
   function sessionGoalLabel(id) {
     if (id === "tang") return "Unlock Blue Tang";
     if (id === "shiny") return "Catch a shiny";
@@ -2011,7 +2044,9 @@
       return n >= 0 ? "Unlock " + SPECIES[n].name : "Unlock a new friend";
     }
     if (id && id.indexOf("stock-") === 0) {
-      const s = id.slice(6) | 0;
+      const over = huntStockIndex();
+      const rolled = id.slice(6) | 0;
+      const s = (over >= 0 && over > rolled) ? over : rolled;
       return "Stock " + (SPECIES[s] ? SPECIES[s].name : "a tank");
     }
     return id;
@@ -2086,6 +2121,7 @@
   function checkSessionGoals() {
     if (!state.missionDone) return;
     if (!(state.sessionGoals || []).length) rollSessionGoals();
+    applyHuntStockGoal();
     if (!state.sessionGoalDone) state.sessionGoalDone = [];
     for (const id of state.sessionGoals) {
       if (state.sessionGoalDone.indexOf(id) >= 0) continue;
@@ -3031,6 +3067,9 @@
     return state.bag.some((s) => state.unlocked[s]);
   }
   function glowingStockIndex() {
+    const hunt = huntStockIndex();
+    if (hunt >= 0 && state.bag && state.bag.some((s) => (s | 0) === hunt))
+      return hunt;
     for (let i = 0; i < SPECIES.length; i++) {
       if (state.unlocked[i] && state.bag.some((s) => (s | 0) === i)) return i;
     }
@@ -11793,6 +11832,8 @@
     return best ? { x: best.x, y: best.y } : null;
   }
   function stockableTankTarget() {
+    const hunt = glowingStockIndex();
+    if (hunt >= 0) return tankWalkPoint(hunt);
     for (let i = 0; i < SPECIES.length; i++) {
       if (state.unlocked[i] && state.bag.some(s => s === i)) return tankWalkPoint(i);
     }
@@ -12039,6 +12080,7 @@
     if (i == null || i < 0) return;
     if (!speciesUnlocked(i)) return;
     state.diveForHunt = i | 0;
+    applyHuntStockGoal();
   }
   function clearDiveForHunt() {
     state.diveForHunt = null;
@@ -12980,6 +13022,7 @@
       }
     } else if (sessionChipVisible()) {
       const goals = state.sessionGoals || [];
+      applyHuntStockGoal();
       let cur = "";
       for (let i = 0; i < goals.length; i++) {
         const ok = (state.sessionGoalDone || []).indexOf(goals[i]) >= 0 || sessionGoalMet(goals[i]);

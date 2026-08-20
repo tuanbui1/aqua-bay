@@ -6,6 +6,8 @@
 // C114 hides that wood assist during diveForHunt until the
 // bag holds a hunt-species (or is full). Regular / first-
 // dive (no hunt) still shows C98 SURFACE in shallows.
+// Secondary: TODAY / surface-stock follow the empty
+// Seahorse bowl, not a leftover Stock Sea Turtle plate.
 // Do not auto-surface / stock / buy. Walk still does not
 // buy. Phone 390×844 first. Isolated SAVE_KEY. Turtle
 // unlocked, Seahorse locked then unlocked via TAP TO
@@ -97,6 +99,10 @@ assert(/function huntBangWanted\s*\(/.test(src),
   "huntBangWanted is the ! mark filter");
 assert(/function surfaceAssistLegal\s*\(/.test(src),
   "surfaceAssistLegal gates the C98 ↑ SURFACE assist");
+assert(/function huntStockIndex\s*\(/.test(src),
+  "huntStockIndex is the TODAY / surface-stock retarget");
+assert(/function applyHuntStockGoal\s*\(/.test(src),
+  "applyHuntStockGoal rewrites leftover stock-Turtle");
 assert(/function nearestScoopFish\s*\(/.test(src),
   "nearestScoopFish is the cone lock picker");
 assert(/diveForHuntIndex\(\) >= 0/.test(extractFn(src, "diveForCueLegal") || ""),
@@ -211,6 +217,14 @@ assert(!/beginSurface\(\)/.test(extractFn(src, "oceanEntrySpawn") || ""),
   "ocean entry does not auto-surface");
 assert(!/beginSurface\(\)/.test(extractFn(src, "armDiveForHunt") || ""),
   "arming a hunt does not auto-surface");
+assert(/applyHuntStockGoal\(\)/.test(extractFn(src, "armDiveForHunt") || ""),
+  "arming a hunt retargets TODAY stock to the hunt bowl");
+assert(!/stockTank\(/.test(extractFn(src, "applyHuntStockGoal") || ""),
+  "applyHuntStockGoal does not auto-stock");
+assert(/huntStockIndex\(\)/.test(extractFn(src, "glowingStockIndex") || ""),
+  "glowingStockIndex prefers the hunt / empty-bowl bag fish");
+assert(/glowingStockIndex\(\)/.test(extractFn(src, "stockableTankTarget") || ""),
+  "stockableTankTarget follows glowingStockIndex");
 
 assert(/diveForCueLegal\(\)/.test(goalSrc),
   "currentGoal consults diveForCueLegal after the unlock board");
@@ -342,6 +356,8 @@ const names = [
   "oceanEntrySpawn", "diveForHuntGoal", "nearestHuntFish",
   "huntBagHasPrey", "huntScoopExclusive", "huntScoopAllows", "huntBangWanted",
   "surfaceAssistLegal",
+  "huntStockIndex", "applyHuntStockGoal", "sessionGoalLabel", "glowingStockIndex",
+  "stockableTankTarget",
   "tutorialGrace", "coneRange", "coneHalf", "scoopEdgeGrace", "normAng",
   "faceToward", "nearestScoopFish", "fishAtWorld", "lockScoop",
   "startScoopOnFish", "fishInCone",
@@ -388,6 +404,9 @@ function makeCtx(save, opts) {
       expedition: false,
       missionDone: true,
       catchVerb: null,
+      sessionGoals: ["stock-4", "serve", "catch6"],
+      sessionGoalDone: [],
+      sessionStocked: -1,
     },
     player: {
       x: 880, y: 920, radius: 16, goto: null, route: null,
@@ -492,7 +511,8 @@ function makeCtx(save, opts) {
     " diveWalkQueued, diveForHuntIndex, armDiveForHunt, clearDiveForHunt, diveForBandPoint," +
     " oceanEntrySpawn, diveForHuntGoal, nearestHuntFish," +
     " huntBagHasPrey, huntScoopExclusive, huntScoopAllows, huntBangWanted," +
-    " surfaceAssistLegal," +
+    " surfaceAssistLegal, huntStockIndex, applyHuntStockGoal, sessionGoalLabel," +
+    " glowingStockIndex, stockableTankTarget," +
     " nearestScoopFish, fishAtWorld, lockScoop, startScoopOnFish, fishInCone," +
     " plazaWalkChipLegal," +
     " zoneBandForSpecies, zoneAtDepth, landmarkForSpecies, depthMeters," +
@@ -681,9 +701,23 @@ function assertStillLocked(api, label) {
 
 // 1) Stamp loop 114 is asserted above.
 // 2) Unlock Seahorse. Tap DIVE FOR SEAHORSE. Enter ocean.
+function todayPlate(api) {
+  api.applyHuntStockGoal();
+  const goals = api.state.sessionGoals || [];
+  for (let i = 0; i < goals.length; i++) {
+    const id = goals[i];
+    if (id && ("" + id).indexOf("stock-") === 0)
+      return api.sessionGoalLabel(id);
+  }
+  return goals[0] ? api.sessionGoalLabel(goals[0]) : "";
+}
+
 const huntApi = makeCtx(saveOpen, { phone: true });
+huntApi.state.stock[4] = 2;
 huntApi.player.x = horse.x;
 huntApi.player.y = horse.y;
+assert(/Sea Turtle/i.test(huntApi.sessionGoalLabel("stock-4")),
+  "before the hunt, leftover TODAY stock is Sea Turtle");
 assert(huntApi.tapUnlockCue() === true, "TAP TO UNLOCK buys Seahorse");
 assert(huntApi.state.unlocked[5] === true, "Seahorse is unlocked");
 assert(huntApi.state.money === 1800, "money is $1800 after the $2200 unlock");
@@ -691,6 +725,13 @@ assert(huntApi.beganDive() === false, "unlock does not auto-dive");
 assert(huntApi.diveForCueLegal() === true, "DIVE FOR SEAHORSE board is up");
 assert(huntApi.tapDiveForCue() === true, "tapping DIVE FOR SEAHORSE queues the dash");
 assert(huntApi.diveForHuntIndex() === 5, "goto-dive-for arms a Seahorse hunt");
+assert(huntApi.huntStockIndex() === 5, "hunt stock target is Seahorse");
+assert(/Seahorse/i.test(todayPlate(huntApi)),
+  "TODAY plate is Stock Seahorse after DIVE FOR, got " + todayPlate(huntApi));
+assert(!/Turtle/i.test(todayPlate(huntApi)),
+  "TODAY plate is not Stock Sea Turtle after DIVE FOR, got " + todayPlate(huntApi));
+assert(huntApi.state.sessionGoals.indexOf("stock-5") >= 0,
+  "session stock goal rewrites stock-4 → stock-5");
 assert(huntApi.beganDive() === false, "board tap off the dock does not instant-dive");
 assert(huntApi.diveForCueLegal() === false,
   "on-bowl DIVE FOR board hides the moment the hunt is armed");
@@ -736,6 +777,8 @@ assert(groveGoal.target && (groveGoal.target.y >= OCEAN_BASE_H),
 assert(huntApi.state.bag.length === 0, "hunt bag starts 0/5");
 assert(huntApi.surfaceAssistLegal() === false,
   "ocean groves bag 0/5 hides the C98 ↑ SURFACE chip");
+assert(/Seahorse/i.test(todayPlate(huntApi)) && !/Turtle/i.test(todayPlate(huntApi)),
+  "ocean groves TODAY is Stock Seahorse, not Turtle, got " + todayPlate(huntApi));
 
 // 3) First cone lock / first scoop is Seahorse (index 5) even
 // when Turtle / Tang sit closer in the cone. ! marks skip them
@@ -823,6 +866,25 @@ assert(huntApi.startScoopOnFish(mix.turtle) === true,
   "startScoopOnFish accepts Turtle after a Seahorse is bagged");
 assert(huntApi.surfaceAssistLegal() === true,
   "after one Seahorse (bag 1/5) the C98 ↑ SURFACE assist appears");
+assert(/Seahorse/i.test(todayPlate(huntApi)),
+  "after the first Seahorse scoop, TODAY still says Stock Seahorse");
+huntApi.state.bag = [5, 4];
+huntApi.clearDiveForHunt();
+huntApi.state.scene = "shop";
+assert(huntApi.diveForHuntIndex() < 0, "surface clears the hunt flag");
+assert(huntApi.huntStockIndex() === 5,
+  "empty Seahorse bowl + bag still retargets after surface");
+assert(huntApi.glowingStockIndex() === 5,
+  "surface stock glow is Seahorse, not Turtle, got " + huntApi.glowingStockIndex());
+assert(huntApi.stockableTankTarget() &&
+    Math.hypot(huntApi.stockableTankTarget().x - horse.x,
+      huntApi.stockableTankTarget().y - horse.y) < 1,
+  "surface quest walks to the Seahorse pad, not Turtle");
+assert(/Seahorse/i.test(todayPlate(huntApi)) && !/Turtle/i.test(todayPlate(huntApi)),
+  "after surface, TODAY is Stock Seahorse, got " + todayPlate(huntApi));
+huntApi.state.diveForHunt = 5;
+huntApi.state.scene = "ocean";
+huntApi.state.bag = [5];
 assert(huntApi.player.y >= 300 && huntApi.player.y > 280,
   "assist is the wood C98 chip (not the near-surface legal cyan-era card)");
 huntApi.state.bag = [5, 5, 5, 5, 5];
@@ -868,6 +930,10 @@ assert(freeLock && (freeLock.s | 0) !== 5,
 freeApi.state.scene = "ocean";
 assert(freeApi.surfaceAssistLegal() === true,
   "regular DIVE (no hunt) still shows C98 SURFACE in groves");
+assert(freeApi.huntStockIndex() < 0,
+  "regular DIVE does not steal TODAY to a hunt bowl");
+assert(/Sea Turtle/i.test(freeApi.sessionGoalLabel("stock-4")),
+  "regular DIVE TODAY stock can still be Sea Turtle");
 
 // Regular DIVE chip after unlock, without tapping DIVE FOR, stays shallows.
 const chipApi = makeCtx(saveOpen, { phone: true });
