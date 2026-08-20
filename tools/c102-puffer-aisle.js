@@ -41,7 +41,7 @@ function extractFn(src, name) {
 
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
-assert(/Aqua Bay · loop 110/.test(src), "title/pause stamp is loop 110");
+assert(/Aqua Bay · loop 111/.test(src), "title/pause stamp is loop 111");
 assert(!/Aqua Bay · loop 107/.test(src), "loop 107 stamp is gone");
 assert(/C102 — C101's west spine/.test(src), "C102 names the east-aisle spine");
 assert(/C101 — live gallery bowls fill the old fat neighborhood/.test(src),
