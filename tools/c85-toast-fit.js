@@ -35,8 +35,8 @@ assert(!/hudBox\(\s*moneyBox\.x\s*\+\s*moneyBox\.w\s*\+\s*8,/.test(src),
 assert(/Catch the SHINY — then 5 Clownfish/.test(src), "SHINY toast copy stays");
 assert(/Customers are on the way — wait at the cashier/.test(src),
   "cashier toast copy stays");
-assert(/Aqua Bay · loop 88/.test(src), "title/pause stamp is loop 88");
-assert(!/Aqua Bay · loop 87/.test(src), "loop 87 stamp is gone");
+assert(/Aqua Bay · loop 89/.test(src), "title/pause stamp is loop 89");
+assert(!/Aqua Bay · loop 88/.test(src), "loop 88 stamp is gone");
 
 const W = 1280;
 const DESKTOP_H = 720;
