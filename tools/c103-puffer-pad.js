@@ -40,8 +40,8 @@ function extractFn(src, name) {
 
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
-assert(/Aqua Bay · loop 106/.test(src), "title/pause stamp is loop 106");
-assert(!/Aqua Bay · loop 105/.test(src), "loop 105 stamp is gone");
+assert(/Aqua Bay · loop 107/.test(src), "title/pause stamp is loop 107");
+assert(!/Aqua Bay · loop 106/.test(src), "loop 106 stamp is gone");
 assert(/function wasdShopPath\s*\(/.test(src), "wasdShopPath steers hold-W onto the wood path");
 assert(/C103 — hold-W never took that spine/.test(src) ||
   /C103 — hold W \(no A\/D\) from south of the Puffer pad/.test(src),
