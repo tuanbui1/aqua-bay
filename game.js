@@ -9957,6 +9957,11 @@
       water.addColorStop(0.38, "rgba(56,186,198,0.62)");
       water.addColorStop(0.74, "rgba(16,86,112,0.88)");
       water.addColorStop(1, "rgba(8,42,68,0.96)");
+    } else if (i === 1) {
+      water.addColorStop(0, "rgba(200,236,255,0.22)");
+      water.addColorStop(0.18, "rgba(80,170,255,0.36)");
+      water.addColorStop(0.5, "rgba(20,80,180,0.7)");
+      water.addColorStop(1, "rgba(8,24,72,0.96)");
     } else if (i === 2) {
       water.addColorStop(0, "rgba(232,255,210,0.24)");
       water.addColorStop(0.16, "rgba(180,230,120,0.28)");
@@ -9968,11 +9973,6 @@
       water.addColorStop(0.2, "rgba(120,140,160,0.28)");
       water.addColorStop(0.5, "rgba(48,62,78,0.62)");
       water.addColorStop(1, "rgba(16,22,32,0.94)");
-    } else if (i === 1) {
-      water.addColorStop(0, "rgba(200,236,255,0.22)");
-      water.addColorStop(0.18, "rgba(80,170,255,0.36)");
-      water.addColorStop(0.5, "rgba(20,80,180,0.7)");
-      water.addColorStop(1, "rgba(8,24,72,0.96)");
     } else {
       water.addColorStop(0, "rgba(230,250,255,0.18)");
       water.addColorStop(0.12, "rgba(150,226,240,0.34)");
@@ -10007,6 +10007,14 @@
       ctx.moveTo(-16, 1); ctx.lineTo(-30, -11); ctx.lineTo(-28, 12); ctx.closePath(); ctx.fill();
       ctx.fillStyle = "#7a2e10";
       ctx.beginPath(); ctx.arc(12, -1, 2.3, 0, Math.PI * 2); ctx.fill();
+    } else if (kind === "tang") {
+      ctx.fillStyle = "#2f7dff";
+      ctx.beginPath(); ctx.ellipse(0, 0, 20, 13, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#ffe14a";
+      ctx.beginPath();
+      ctx.moveTo(-16, 0); ctx.lineTo(-30, -10); ctx.lineTo(-28, 11); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#10224a";
+      ctx.beginPath(); ctx.arc(10, -2, 2.2, 0, Math.PI * 2); ctx.fill();
     } else {
       ctx.fillStyle = "rgba(36, 48, 62, 0.88)";
       ctx.beginPath(); ctx.ellipse(0, 0, 18, 10, 0, 0, Math.PI * 2); ctx.fill();
@@ -10061,6 +10069,23 @@
       ctx.fillStyle = "#f4a0d8";
       ctx.beginPath(); ctx.ellipse(x + w - 38, y + h - 26, 10, 7, 0.15, 0, Math.PI * 2); ctx.fill();
       if (!stocked) drawTankSilhouetteFish("clown", x + w * 0.62, y + 62, 1.08);
+    } else if (i === 1) {
+      ctx.fillStyle = "rgba(36, 72, 140, 0.5)";
+      ctx.fillRect(x, bedY, w, 22);
+      ctx.fillStyle = "#ffe14a";
+      ctx.beginPath(); ctx.ellipse(x + 38, y + h - 26, 24, 14, -0.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2f7dff";
+      ctx.beginPath(); ctx.ellipse(x + w - 42, y + h - 22, 20, 11, 0.15, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#7ad0ff";
+      ctx.lineWidth = 2.6;
+      for (let p = 0; p < 3; p++) {
+        const px = x + 70 + p * 36;
+        ctx.beginPath();
+        ctx.moveTo(px, y + h - 22);
+        ctx.quadraticCurveTo(px + 8, y + h - 50, px - 2, y + h - 78);
+        ctx.stroke();
+      }
+      if (!stocked || !state.unlocked[i]) drawTankSilhouetteFish("tang", x + w * 0.55, y + 58, 1.1);
     } else if (i === 2) {
       ctx.fillStyle = "rgba(120,140,52,0.55)";
       ctx.fillRect(x, bedY, w, 22);
@@ -10147,9 +10172,9 @@
   }
   function drawTankLockGlass(t) {
     const frost = ctx.createLinearGradient(t.x, t.y, t.x, t.y + TANK_H);
-    frost.addColorStop(0, "rgba(210, 220, 230, 0.22)");
-    frost.addColorStop(0.45, "rgba(36, 46, 58, 0.28)");
-    frost.addColorStop(1, "rgba(12, 16, 24, 0.4)");
+    frost.addColorStop(0, "rgba(210, 220, 230, 0.16)");
+    frost.addColorStop(0.45, "rgba(36, 46, 58, 0.18)");
+    frost.addColorStop(1, "rgba(12, 16, 24, 0.28)");
     ctx.fillStyle = frost;
     ctx.fillRect(t.x, t.y, TANK_W, TANK_H);
     ctx.strokeStyle = "rgba(220, 230, 240, 0.18)";

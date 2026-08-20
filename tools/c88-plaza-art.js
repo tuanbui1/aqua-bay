@@ -20,9 +20,11 @@ assert(/function drawPlazaShopWall\s*\(/.test(src), "painted shop wall exists");
 const habitat = src.match(/function drawTankHabitat\s*\(\s*i,\s*t,\s*stocked\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(habitat, "drawTankHabitat body is present");
 assert(/if \(i === 0\)/.test(habitat[0]), "Clownfish habitat is its own branch");
+assert(/if \(i === 1\)/.test(habitat[0]), "Tang habitat is its own branch");
 assert(/if \(i === 2\)/.test(habitat[0]), "Goldfish habitat is its own branch");
 assert(/else if \(!state\.unlocked\[i\]\)/.test(habitat[0]), "locked tanks have their own habitat");
 assert(/drawTankSilhouetteFish\("clown"/.test(habitat[0]), "Clownfish tank paints a clown silhouette");
+assert(/drawTankSilhouetteFish\("tang"/.test(habitat[0]), "Tang tank paints a blue disc silhouette");
 assert(/drawTankSilhouetteFish\("gold"/.test(habitat[0]), "Goldfish tank paints a gold silhouette");
 assert(/drawTankSilhouetteFish\("lock"/.test(habitat[0]), "locked tanks paint a lock silhouette");
 assert(!/#e8786a/.test(habitat[0].split("if (i === 2)")[1] || ""),
@@ -31,15 +33,20 @@ assert(!/#e8786a/.test(habitat[0].split("if (i === 2)")[1] || ""),
 const water = src.match(/function tankWaterFill\s*\(\s*i,\s*t\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(water, "tankWaterFill body is present");
 assert(/if \(i === 0\)/.test(water[0]), "Clownfish water is unique");
+assert(/if \(i === 1\)/.test(water[0]), "Tang water is unique");
 assert(/if \(i === 2\)/.test(water[0]), "Goldfish water is unique");
 assert(/!state\.unlocked\[i\]/.test(water[0]), "locked water is unique");
 const clownStop = (water[0].match(/if \(i === 0\) \{[\s\S]*?else if/) || [""])[0];
+const tangStop = (water[0].match(/if \(i === 1\) \{[\s\S]*?else if/) || [""])[0];
 const goldStop = (water[0].match(/if \(i === 2\) \{[\s\S]*?else if/) || [""])[0];
-const lockStop = (water[0].match(/!state\.unlocked\[i\]\) \{[\s\S]*?else if/) || [""])[0];
+const lockStop = (water[0].match(/!state\.unlocked\[i\]\) \{[\s\S]*?else/) || [""])[0];
 assert(clownStop.indexOf("255,196,120") >= 0, "Clownfish water has warm amber");
+assert(tangStop.indexOf("80,170,255") >= 0, "Tang water has reef blue");
 assert(goldStop.indexOf("180,230,120") >= 0, "Goldfish water has garden green");
 assert(lockStop.indexOf("120,140,160") >= 0, "locked water is slate, not the open teal");
-assert(clownStop !== goldStop && goldStop !== lockStop, "the three water fills are not identical");
+assert(clownStop !== goldStop && goldStop !== lockStop && tangStop !== goldStop,
+  "the gallery water fills are not identical");
+assert(/kind === "tang"/.test(src), "tang silhouette is its own shape");
 
 assert(/drawTankHabitat\(i, t, stocked\)/.test(src), "drawTank uses the unique habitat path");
 assert(/if \(!state\.unlocked\[i\]\) drawTankLockGlass\(t\)/.test(src),
