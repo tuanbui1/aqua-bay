@@ -6,7 +6,7 @@
   const W = 1280, H = 720;
   const SAVE_KEY = "aqua-bay-save";
   const SHOP = { w: 1760, h: 1260 };
-  const SHOP_GALLERY_W = 2280;
+  const SHOP_GALLERY_W = 1760;
   const OCEAN = { w: 2520, h: 1960 };
   const OCEAN_BASE_H = 1960;
   const ZONE_STEP = 440;
@@ -87,20 +87,24 @@
   const DECOR_NAMES = ["String lights", "Shop sign", "Fountain"];
   const DECOR_TOAST = ["String lights hung!", "Shop sign painted!", "Plaza fountain installed!"];
   const BAG_STEPS  = [5, 8, 11, 14, 17, 20];
+  // C76 — one tank neighborhood around the aisle, not two buildings
+  // 500px apart. 5×3-ish grid on the north plaza (never the dock).
+  const TANK_COL = 218;
+  const TANK_ROW = 216;
+  const TANK_GRID_X = 340;
+  const TANK_GRID_Y = 164;
   const TANK_POS = [
-    { x: 170, y: 168 }, { x: 430, y: 168 }, { x: 690, y: 168 },
-    { x: 950, y: 168 }, { x: 1210, y: 168 },
-    { x: 1720, y: 168 }, { x: 1980, y: 168 },
-    { x: 1720, y: 348 }, { x: 1980, y: 348 },
-    { x: 1720, y: 528 }, { x: 1980, y: 528 },
-    { x: 1720, y: 708 }, { x: 1980, y: 708 },
+    { x: 340, y: 164 }, { x: 558, y: 164 }, { x: 776, y: 164 },
+    { x: 994, y: 164 }, { x: 1212, y: 164 },
+    { x: 340, y: 380 }, { x: 558, y: 380 }, { x: 776, y: 380 }, { x: 994, y: 380 },
+    { x: 340, y: 596 }, { x: 558, y: 596 }, { x: 776, y: 596 }, { x: 994, y: 596 },
   ];
   const TANK_W = 210, TANK_H = 156;
   const STOCK_PAD = 64;
   const SESSION_GOAL_BONUS = 8;
   const REGISTER = { x: 168, y: 500, w: 150, h: 110 };
   const KIOSK    = { x: 1280, y: 480, w: 170, h: 130 };
-  const WELCOME  = { x: 300, y: 668, w: 156, h: 86 };
+  const WELCOME  = { x: 140, y: 780, w: 156, h: 86 };
   const DIVE_ZONE = { x: 520, y: 980, w: 720, h: 160 };
   // East dressing sits on the same painted dock as the west walk — not
   // a second room at plaza Y. C72 parked hut / POP on the east shop
@@ -114,10 +118,10 @@
   const EAST_CRATES = { x: 1056, y: 936 };
   // Aisle boards stop here on the dock camera so the ramp does not
   // hard-cut into the sky. Plaza camera still paints the full aisle.
-  const NORTH_WALK_CAP_Y = 702;
+  const NORTH_WALK_CAP_Y = 760;
   const DOCK_CAM_FLOOR = 1000;
   const PLAZA_CAM_CEILING = 520;
-  const AISLE = { x: 802, y: 318, w: 156, h: 560 };
+  const AISLE = { x: 802, y: 760, w: 156, h: 160 };
   const EXPEDITION_COST = 35;
   const EXPEDITION_SECS = 45;
   const BOAT = { x: 1224, y: 1052 };
@@ -157,15 +161,16 @@
     return i >= 0 && i < SPECIES.length && (i < CORE_SPECIES || galleryOpen());
   }
   function shopWalkMax() {
-    return galleryOpen() ? 2200 : 1650;
+    return 1480;
   }
   function onAisleWalk(x, y) {
     return x > AISLE.x - 16 && x < AISLE.x + AISLE.w + 16 &&
       y > AISLE.y - 12 && y < AISLE.y + AISLE.h + 40;
   }
   function eastShopNavyGap(x, y) {
-    // Empty east-shop wood (y≈380) while feet stay on the dock — C73 yank.
-    return x > 1180 && x < 1550 && y > 350 && y < 720;
+    // Empty east-shop wood (y≈380–666) while feet stay on the dock — C73 yank.
+    // Keep the core-5 walk pad (Turtle ≈ y=352) out of this so it stays plaza.
+    return x > 1220 && x < 1550 && y > 378 && y < 720;
   }
   function destWantsPlaza(dest) {
     if (!dest) return false;
@@ -179,7 +184,7 @@
     return dest.y > 820;
   }
   function shopW() {
-    return galleryOpen() ? SHOP_GALLERY_W : SHOP.w;
+    return SHOP.w;
   }
   function namedZoneBottom(s) {
     if (s <= 4) return OCEAN_BASE_H;
@@ -1098,7 +1103,7 @@
   }
   function onDryWood(x, y) {
     if (inAisleWater(x, y) || inTankWater(x, y) || inDockWater(x, y)) return false;
-    return x > 70 && x < (galleryOpen() ? 2220 : 1700) && y > 70 && y < 900;
+    return x > 70 && x < 1700 && y > 70 && y < 900;
   }
   function confineShopSwimmer(sw) {
     const pad = 28;
@@ -3721,27 +3726,18 @@
   function shopWalkRects() {
     const dock = shopDockWalk();
     const rects = [
-      { x: 90, y: 312, w: 1580, h: 128 },
+      { x: 300, y: 300, w: 900, h: 500 },   /* tank neighborhood x 300–1200 */
+      { x: 1170, y: 300, w: 230, h: 78 },   /* core-5 / Turtle walk apron */
       { x: 136, y: 380, w: 208, h: 286 },
       { x: 1256, y: 380, w: 228, h: 286 },
-      { x: 284, y: 636, w: 196, h: 148 },
-      { x: 764, y: 348, w: 248, h: 562 },
+      { x: 120, y: 680, w: 220, h: 180 },
+      { x: 764, y: 740, w: 248, h: 180 },
       dock,
     ];
-    if (galleryOpen()) {
-      rects.push({ x: 1668, y: 312, w: 560, h: 128 });
-      rects.push({ x: 1748, y: 360, w: 236, h: 540 });
-    }
     return rects;
   }
   function snapToShopWalk(x, y, destHint) {
     const rects = shopWalkRects();
-    for (let i = 0; i < rects.length; i++) {
-      const rc = rects[i];
-      if (x >= rc.x && x <= rc.x + rc.w && y >= rc.y && y <= rc.y + rc.h) {
-        return { x: x, y: y };
-      }
-    }
     // Prefer the band the walker is already on. At the east dock lip the
     // east shop deck (y≈380–666) is closer in X than it looks, and a
     // naive nearest-rect yank lifted her ~150px onto sky / empty wood.
@@ -3756,6 +3752,15 @@
       keys.has("arrowleft") || keys.has("arrowright")) && !keyedNS;
     const preferDock = player && player.y > 820 && !onAisle && !headingPlaza &&
       (destWantsDock(dest) || keyedEW || !dest);
+    for (let i = 0; i < rects.length; i++) {
+      const rc = rects[i];
+      if (x >= rc.x && x <= rc.x + rc.w && y >= rc.y && y <= rc.y + rc.h) {
+        /* Dock walker heading along the pier must not accept east empty
+           wood just because the tank neighborhood now sits nearer the aisle. */
+        if (preferDock && eastShopNavyGap(x, y)) break;
+        return { x: x, y: y };
+      }
+    }
     const keyed = !!(keyedNS || keyedEW);
     let bestD = 1e15, nx = x, ny = y;
     for (let i = 0; i < rects.length; i++) {
@@ -3864,12 +3869,12 @@
   }
   function tankWalkPoint(i) {
     const t = TANK_POS[i] || TANK_POS[0];
-    return { x: t.x + TANK_W / 2, y: t.y + TANK_H + 48 };
+    return { x: t.x + TANK_W / 2, y: t.y + TANK_H + 32 };
   }
   function galleryTankDest(i) {
     if (i >= CORE_SPECIES && !galleryOpen()) {
       const t = TANK_POS[4];
-      toast("Unlock Sea Turtle first — it opens the east tanks", "#ffe27a", 2.8);
+      toast("Unlock Sea Turtle first — it opens the tanks next to the aisle", "#ffe27a", 2.8);
       nope({
         tank: 4,
         x: t.x + TANK_W / 2,
@@ -4198,7 +4203,7 @@
       state.boatGlance = 2.2;
       state.aisleSchoolWait = 1.35;
     } else if (i === 4) {
-      toast("East pier tanks opened — walk right", "#ffe27a", 3.6);
+      toast("New tanks opened next to the aisle", "#ffe27a", 3.6);
       toast("Deeper zones stacked under the meadow", "#9ef0ff", 3.2);
       state.aisleSchoolWait = Math.max(state.aisleSchoolWait || 0, 0.95);
     } else if (i >= 5) {
@@ -5002,8 +5007,8 @@
       return;
     }
     const pts = haul
-      ? [[880, 1000], [880, 820], [880, 640], [880, 460], [880, 340], [275, 342]]
-      : [[880, 360], [720, 360], [520, 380], [340, 440], [248, 530]];
+      ? [[880, 1000], [880, 820], [880, 640], [663, 568], [445, 352]]
+      : [[880, 540], [720, 500], [520, 500], [340, 500], [248, 530]];
     if (pathGlints.length < 11 && Math.random() < dt * 7) {
       const i = (Math.random() * (pts.length - 1)) | 0;
       const u = Math.random();
@@ -6514,17 +6519,14 @@
     // Leave a thin front lip so water can kiss the deck edge.
     const lip = 10;
     const decks = [
-      { x: 90, y: 80, w: 1580, h: 300 },
-      { x: 800, y: 360, w: 176, h: 530 - lip, taper: true, topW: 0.56 },
+      { x: 90, y: 80, w: 1480, h: 300 },
+      { x: 300, y: 300, w: 1140, h: 470 },
+      { x: 800, y: 760, w: 176, h: 140 - lip, taper: true, topW: 0.62 },
       { x: 156, y: 380, w: 172, h: 240 },
       { x: 1272, y: 380, w: 188, h: 246 },
-      { x: 304, y: 668, w: 148, h: 78 },
+      { x: 140, y: 760, w: 180, h: 110 },
       { x: 500, y: 890, w: 760, h: 130 - lip },
     ];
-    if (galleryOpen()) {
-      decks.push({ x: 1688, y: 80, w: 524, h: 300 });
-      decks.push({ x: 1760, y: 360, w: 200, h: 530 - lip, taper: true, topW: 0.58 });
-    }
     return decks;
   }
   function drawBayWater(x, y, w, h, t, teal, dry) {
@@ -6857,7 +6859,7 @@
       y < 820 && y > AISLE.y - 20;
   }
   function shopViewBand() {
-    if (player && (player.y < 700 || onAisleForCam(player.x, player.y))) return "plaza";
+    if (player && (player.y < 800 || onAisleForCam(player.x, player.y))) return "plaza";
     if (player && player.y > 820) return "dock";
     if (cam && cam.y >= DOCK_CAM_FLOOR - 20) return "dock";
     if (cam && cam.y <= PLAZA_CAM_CEILING + 20) return "plaza";
@@ -6876,7 +6878,7 @@
   function plazaPropAlpha() {
     if (!plazaCameraReady()) return 0;
     if (player && player.y > 840) return 0;
-    if (player && (player.y < 720 || onAisleForCam(player.x, player.y))) return 1;
+    if (player && (player.y < 800 || onAisleForCam(player.x, player.y))) return 1;
     const py = player && player.y != null ? player.y : 400;
     return clamp((720 - py) / 80, 0, 1);
   }
@@ -8772,22 +8774,8 @@
 
   // ===== SHOP SCENE =====
   function drawEastGallery() {
-    ctx.save();
-    drawPierBoards(1688, 80, 524, 300, { plank: 26, teal: !!state.unlocked[1], alignY: 80 });
-    drawPierBoards(1760, 360, 200, 530, { plank: 26, wetY: 890, teal: !!state.unlocked[1], taper: true, topW: 0.58, alignY: 80 });
-    drawDeckPosts(1760, 360, 200, 530, 4);
-    ctx.fillStyle = "#c4483a"; ctx.fillRect(1680, 50, 540, 8);
-    const a = worldLabelAlpha(1860, 86, 160, 22);
-    if (a > 0.04) {
-      ctx.globalAlpha = a;
-      ctx.fillStyle = "#1b4d6b";
-      roundRect(1860, 86, 160, 22, 6); ctx.fill();
-      ctx.fillStyle = "#9ef0ff";
-      ctx.font = "800 12px Fredoka, sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("EAST PIER", 1940, 102);
-    }
-    ctx.restore();
+    // C76 — gallery tanks sit in the aisle neighborhood, not a second
+    // east-pier building 500px away.
   }
   function drawShop() {
     ensurePaint();
@@ -8834,9 +8822,13 @@
     // aisle. It sits off-screen at the dock camera (cam.y ≥ 1000).
     // Stop the deck before the reserved well so the rail is not a saw.
     const deckEnd = playfieldWorldRight() - 56;
-    const plazaW = Math.max(0, Math.min(1580, deckEnd - 90));
+    const plazaW = Math.max(0, Math.min(1480, deckEnd - 90));
     if (plazaW > 24 && (plazaA > 0.04 || dockCameraReady())) {
       drawPierBoards(90, 80, plazaW, 300, { plank: 26, teal: teal, alignY: 80 });
+    }
+    if (plazaA > 0.04) {
+      const yardW = Math.max(0, Math.min(1140, deckEnd - 300));
+      if (yardW > 24) drawPierBoards(300, 300, yardW, 470, { plank: 26, teal: teal, alignY: 80 });
     }
     if (aisleA > 0.04) {
       ctx.save();
@@ -8845,15 +8837,15 @@
       if (dockLooking) {
         ctx.save();
         ctx.beginPath();
-        ctx.rect(760, NORTH_WALK_CAP_Y, 256, 560);
+        ctx.rect(760, NORTH_WALK_CAP_Y, 256, 280);
         ctx.clip();
-        drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
-        drawWalkRail(800, 360, 176, 530, true);
+        drawPierBoards(800, 760, 176, 140, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.62, alignY: 80 });
+        drawWalkRail(800, 760, 176, 140, true);
         ctx.restore();
         drawNorthPierCap(800, NORTH_WALK_CAP_Y, 176);
       } else {
-        drawPierBoards(800, 360, 176, 530, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.56, alignY: 80 });
-        drawWalkRail(800, 360, 176, 530, true);
+        drawPierBoards(800, 760, 176, 140, { plank: 26, wetY: 890, teal: teal, taper: true, topW: 0.62, alignY: 80 });
+        drawWalkRail(800, 760, 176, 140, true);
       }
       ctx.restore();
     }
@@ -8866,13 +8858,13 @@
       // deckEnd made eastW=0 at cam.x≈880, so feet and POP sat on sky.
       const eastPaint = Math.max(0, Math.min(188, playfieldWorldRight() - 8 - 1272));
       if (eastPaint > 20) drawPierBoards(1272, 380, eastPaint, 246, { plank: 20, teal: teal, alignY: 80 });
-      drawPierBoards(304, 668, 148, 78, { plank: 18, teal: teal, alignY: 80 });
+      drawPierBoards(140, 760, 180, 110, { plank: 18, teal: teal, alignY: 80 });
       drawPierShade();
       const sunPatch = ctx.createRadialGradient(1240, 220, 20, 1100, 420, 520);
       sunPatch.addColorStop(0, "rgba(255, 220, 130, 0.16)");
       sunPatch.addColorStop(1, "rgba(255, 200, 100, 0)");
       ctx.fillStyle = sunPatch;
-      ctx.fillRect(90, 80, 1580, 300);
+      ctx.fillRect(90, 80, 1480, 300);
       ctx.restore();
     }
     if (midA > 0.04) {
@@ -8884,9 +8876,9 @@
       ctx.lineJoin = "round";
       ctx.beginPath();
       ctx.moveTo(880, 860);
-      ctx.lineTo(880, 360);
-      ctx.quadraticCurveTo(760, 348, 520, 370);
-      ctx.quadraticCurveTo(340, 410, 250, 520);
+      ctx.lineTo(880, 760);
+      ctx.quadraticCurveTo(760, 700, 520, 520);
+      ctx.quadraticCurveTo(340, 500, 250, 520);
       ctx.stroke();
       ctx.strokeStyle = "rgba(255, 236, 180, 0.10)";
       ctx.lineWidth = 6;
@@ -9027,8 +9019,8 @@
     const diveSign = { x: 598, y: 1014 };
     if (state.mode === "play") btn("dive-chip", ...screenBtnFromWorld(chip.x, chip.y, chip.w, chip.h));
     const pathPts = [
-      [880, 1008], [880, 860], [880, 680], [880, 500], [880, 360],
-      [720, 360], [520, 370], [340, 430], [250, 520],
+      [880, 1008], [880, 860], [880, 760], [663, 568], [445, 352],
+      [720, 500], [520, 500], [340, 500], [250, 520],
     ];
     ctx.fillStyle = "rgba(255, 236, 180, 0.42)";
     for (let i = 0; i < pathPts.length - 1; i++) {
@@ -11630,7 +11622,7 @@
         "Hire a cashier — they collect while you dive",
         "SPACE at the boat — $35 timed expedition",
         "Every 3rd expedition is a night dive (rares)",
-        "Deeper stacked zones never end — east pier tanks after Turtle",
+        "Deeper stacked zones never end — more tanks next to the aisle after Turtle",
         "Decor chip — lights, sign, fountain",
         "Mute button — sound on/off",
         "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
@@ -11891,7 +11883,7 @@
           player.pendingAct = { kind: "stock", i: si };
           setWalkDest(tankDest);
           cuePathWelcome();
-          seedPathCoins([[880, 1008], [880, 820], [880, 640], [880, 460], [tankDest.x, tankDest.y]], 3);
+          seedPathCoins([[880, 1008], [880, 820], [880, 760], [tankDest.x, tankDest.y]], 3);
         } else if (bagHasStockable()) {
           clearWalk();
           player.pendingAct = null;
@@ -11966,7 +11958,7 @@
       state.camEase = Math.max(state.camEase || 0, 0.46);
     }
     if (state.scene === "shop" && state.bookOpen == null && (state.boatGlance || 0) <= 0) {
-      const band = (player.y < 680 || onAisleForCam(player.x, player.y)) ? "plaza" :
+      const band = (player.y < 800 || onAisleForCam(player.x, player.y)) ? "plaza" :
         (player.y > 860 ? "dock" : "mid");
       if (cam.shopBand && cam.shopBand !== band && (band === "plaza" || band === "dock")) {
         state.camEase = Math.max(state.camEase || 0, 0.46);
@@ -12034,7 +12026,7 @@
     const aisleCam = onAisleForCam(player.x, player.y);
     const bandJump = state.scene === "shop" && (
       (player.y > 820 && !aisleCam && cam.y < DOCK_CAM_FLOOR - 30) ||
-      ((player.y < 700 || aisleCam) && cam.y > PLAZA_CAM_CEILING + 30)
+      ((player.y < 800 || aisleCam) && cam.y > PLAZA_CAM_CEILING + 30)
     );
     if (!bandJump && step > cap && step > 0.001) {
       nx = cam.x + (nx - cam.x) * (cap / step);
@@ -12056,7 +12048,7 @@
       // onto the dock commits dock so the east shop cannot reopen the
       // navy split. Two rooms only.
       const onAisle = onAisleForCam(player.x, player.y);
-      const atTanks = player.y < 700;
+      const atTanks = player.y < 800;
       const onDockBoards = player.y > 820 && !onAisle;
       if (onAisle || atTanks) {
         if (ny > PLAZA_CAM_CEILING) ny = lerp(ny, PLAZA_CAM_CEILING, 0.55);
