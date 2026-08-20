@@ -273,7 +273,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -5739,6 +5739,8 @@
         g.ellipse(bx + bw * 0.5, base + 2, bw * 0.28, 5, 0, 0, Math.PI * 2);
         g.fill();
       } else if (b.kind === "inn") {
+        // C92 — dusk town is backdrop only. Do not paint OPEN here;
+        // the hanging dock sign is the one OPEN a kid should read.
         gable(bx, by, bw, h * 0.024, b.roof);
         win(bx + bw * 0.14, by + bh * 0.28, bw * 0.2, bh * 0.16, true);
         win(bx + bw * 0.42, by + bh * 0.28, bw * 0.16, bh * 0.16, true);
@@ -5747,12 +5749,10 @@
         win(bx + bw * 0.66, by + bh * 0.56, bw * 0.2, bh * 0.16, true);
         g.fillStyle = "#6b3416";
         g.fillRect(bx + bw * 0.38, by + bh * 0.58, bw * 0.24, bh * 0.42);
-        g.fillStyle = "#c4483a";
-        g.fillRect(bx + bw * 0.3, by + bh * 0.12, bw * 0.4, 7);
-        g.fillStyle = "#fff6e8";
-        g.font = "bold " + Math.max(7, (bw * 0.12) | 0) + "px sans-serif";
-        g.textAlign = "center";
-        g.fillText("OPEN", bx + bw * 0.5, by + bh * 0.12 + 6);
+        g.fillStyle = "#8a5a28";
+        g.fillRect(bx + bw * 0.3, by + bh * 0.12, bw * 0.4, 5);
+        g.fillStyle = "#3d8b4a";
+        g.fillRect(bx + 3, by + bh * 0.78, bw * 0.18, bh * 0.12);
       } else if (b.kind === "church") {
         g.fillStyle = b.roof;
         g.beginPath();
@@ -9019,42 +9019,112 @@
     ctx.restore();
   }
   function drawBaitShack(x, y) {
+    // C92 — pier bait hut, not a toy triangle roof. Planted at BAIT_HUT
+    // (~y 918). Wood walls, porch post, hanging life ring, BAIT on the
+    // facade. Paint only; walk colliders stay put.
     drawPierBoards(x - 52, y + 62, 112, 28, { plank: 14 });
-    groundBlob(x + 4, y + 78, 56, 13);
-    ctx.fillStyle = "#8a4a22";
-    roundRect(x - 40, y + 18, 88, 58, 4); ctx.fill();
+    sitShadow(x + 2, y + 80, 52, 12, 0.5);
+    const bw = 86, bh = 64;
+    const bx = x - 40, by = y + 14;
+    // porch post — front-left timber that holds the ring
+    const postX = bx - 8;
+    const post = ctx.createLinearGradient(postX, by, postX + 10, y + 82);
+    post.addColorStop(0, "#c49248");
+    post.addColorStop(0.42, "#8a5a30");
+    post.addColorStop(1, "#3a1c0c");
+    ctx.fillStyle = post;
+    ctx.fillRect(postX, by + 2, 8, 76);
+    ctx.fillStyle = "rgba(255, 226, 170, 0.28)";
+    ctx.fillRect(postX, by + 2, 2.6, 76);
+    ctx.fillStyle = "#3a1c0c";
+    ctx.fillRect(postX - 2, y + 76, 12, 6);
+    ctx.fillStyle = "#6b3a18";
+    ctx.fillRect(postX, by + 2, 24, 6);
+    ctx.fillStyle = "#c49248";
+    ctx.fillRect(postX, by + 2, 24, 2.2);
+    const wall = ctx.createLinearGradient(bx, by, bx + bw * 0.18, by + bh);
+    wall.addColorStop(0, "#c89a62");
+    wall.addColorStop(0.4, "#8a5a30");
+    wall.addColorStop(1, "#4a2814");
+    ctx.fillStyle = wall;
+    roundRect(bx, by, bw, bh, 3); ctx.fill();
     if (ART.ready && ATLAS.plank) {
       ctx.save();
-      roundRect(x - 40, y + 18, 88, 58, 4); ctx.clip();
+      roundRect(bx, by, bw, bh, 3); ctx.clip();
       ctx.globalAlpha = 0.55;
-      ctx.drawImage(ART.img, ATLAS.plank.x, ATLAS.plank.y, ATLAS.plank.w, ATLAS.plank.h, x - 42, y + 16, 92, 62);
+      ctx.drawImage(ART.img, ATLAS.plank.x, ATLAS.plank.y, ATLAS.plank.w, ATLAS.plank.h,
+        bx - 2, by - 2, bw + 4, bh + 4);
       ctx.restore();
     }
-    ctx.fillStyle = "#6b3416";
-    ctx.fillRect(x - 38, y + 22, 8, 52);
-    ctx.fillRect(x + 34, y + 22, 8, 52);
+    ctx.strokeStyle = "rgba(40, 18, 8, 0.38)";
+    ctx.lineWidth = 1.2;
+    for (let i = 1; i < 7; i++) {
+      const sx = bx + 6 + i * 11;
+      ctx.beginPath(); ctx.moveTo(sx, by + 4); ctx.lineTo(sx, by + bh - 4); ctx.stroke();
+    }
+    sunWashBox(bx, by, bw, bh, 3);
+    // Modest gable sitting on the wood walls — not a lone triangle.
+    ctx.fillStyle = "#6b2418";
+    ctx.beginPath();
+    ctx.moveTo(bx - 10, by + 8);
+    ctx.lineTo(bx + bw * 0.5, by - 16);
+    ctx.lineTo(bx + bw + 10, by + 8);
+    ctx.closePath(); ctx.fill();
     ctx.fillStyle = "#c4483a";
     ctx.beginPath();
-    ctx.moveTo(x - 50, y + 22);
-    ctx.lineTo(x, y - 8);
-    ctx.lineTo(x + 50, y + 22);
+    ctx.moveTo(bx - 8, by + 6);
+    ctx.lineTo(bx + bw * 0.5, by - 14);
+    ctx.lineTo(bx + bw + 8, by + 6);
     ctx.closePath(); ctx.fill();
     ctx.fillStyle = "#e8c04a";
-    ctx.fillRect(x - 48, y + 20, 96, 4);
-    ctx.fillStyle = "#3a2415";
-    roundRect(x - 10, y + 40, 22, 34, 3); ctx.fill();
-    ctx.fillStyle = "#6b3a18";
-    roundRect(x - 32, y + 36, 16, 14, 2); ctx.fill();
-    ctx.strokeStyle = "#e8c04a"; ctx.lineWidth = 1.4;
-    roundRect(x - 32, y + 36, 16, 14, 2); ctx.stroke();
+    ctx.fillRect(bx - 10, by + 4, bw + 20, 5);
+    ctx.fillStyle = "#2a1408";
+    roundRect(x - 8, by + 26, 20, bh - 28, 3); ctx.fill();
+    ctx.fillStyle = "#3a2010";
+    roundRect(x - 6, by + 28, 16, bh - 32, 2); ctx.fill();
+    ctx.fillStyle = "#e8c04a";
+    ctx.beginPath(); ctx.arc(x + 8, by + 48, 1.6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#123844";
+    roundRect(bx + 8, by + 24, 18, 16, 2); ctx.fill();
+    ctx.fillStyle = "rgba(158, 240, 255, 0.38)";
+    roundRect(bx + 9, by + 25, 16, 14, 2); ctx.fill();
+    ctx.strokeStyle = "#e8c04a"; ctx.lineWidth = 1.6;
+    roundRect(bx + 8, by + 24, 18, 16, 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx + 17, by + 24); ctx.lineTo(bx + 17, by + 40); ctx.stroke();
+    // BAIT on the facade, not the roof.
+    ctx.fillStyle = "#3a1c0c";
+    roundRect(x - 24, by + 8, 48, 16, 3); ctx.fill();
+    ctx.fillStyle = "#7a3e16";
+    roundRect(x - 26, by + 6, 52, 16, 3); ctx.fill();
+    ctx.strokeStyle = "#ffe27a"; ctx.lineWidth = 1.6;
+    roundRect(x - 24, by + 8, 48, 12, 2); ctx.stroke();
     ctx.fillStyle = "#fff6e8";
-    ctx.font = "800 9px Fredoka, sans-serif";
+    ctx.font = "800 13px Fredoka, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("BAIT", x, y + 14);
-    ctx.fillStyle = "#2a7d8a";
-    ctx.beginPath(); ctx.ellipse(x + 28, y + 52, 7, 10, 0.2, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#9ef0ff";
-    ctx.beginPath(); ctx.ellipse(x + 28, y + 50, 4, 3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.textBaseline = "middle";
+    ctx.fillText("BAIT", x, by + 14);
+    ctx.textBaseline = "alphabetic";
+    // hanging life ring on the porch post
+    ctx.save();
+    ctx.translate(postX - 4, by + 40);
+    ctx.strokeStyle = "#2a1a10";
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-12, -18); ctx.lineTo(-3, -6); ctx.stroke();
+    const ring = ctx.createLinearGradient(-12, -10, 10, 10);
+    ring.addColorStop(0, "#f07860");
+    ring.addColorStop(0.5, "#e85d4c");
+    ring.addColorStop(1, "#8a2c22");
+    ctx.strokeStyle = ring; ctx.lineWidth = 6.2;
+    ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = "#fff6e8"; ctx.lineWidth = 6.2;
+    ctx.setLineDash([6, 6]); ctx.lineDashOffset = 3;
+    ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = "#c4483a"; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.arc(0, 0, 14, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
   }
   function drawPopCan(cx, cy, col, top) {
     ctx.fillStyle = col;
@@ -12713,7 +12783,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, ty + th * 0.74);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 91", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 92", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -12776,7 +12846,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 91", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 92", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -12807,7 +12877,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 91", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 92", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
