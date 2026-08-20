@@ -115,7 +115,8 @@
   const BAIT_HUT = { x: 1124, y: 918 };
   const POP_VEND = { x: 996, y: 918 };
   // Between POP (right 1018) and the hut body (left 1084) so "OPEN" is
-  // not buried under the kiosk. Same dock y as the shops.
+  // not buried under the kiosk. Same dock y as the shops. C93 hangs the
+  // board off the arm (left of the post) — planted X/Y stay.
   const OPEN_SIGN = { x: 1052, y: 924 };
   const EAST_CRATES = { x: 1056, y: 936 };
   // Aisle boards stop here on the dock camera so the ramp does not
@@ -273,7 +274,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -2213,6 +2214,123 @@
     if (pearl) pearl();
     return false;
   }
+  // C93 — visible stage for a full speech bubble. Below money / BAG /
+  // mute / pause plates, above the DIVE chip, inside the left/right
+  // lips. Does not hide the line. NPCs stay planted.
+  function speechHudFloor() {
+    const pad = portraitStage() ? phoneCss(8) : 8;
+    const { muteB, pauseB } = topCtrlBoxes();
+    let floor = portraitStage()
+      ? hudSafeTop() + phoneCss(48) + pad
+      : 14 + 52 + pad;
+    floor = Math.max(floor, muteB.y + muteB.h + pad, pauseB.y + pauseB.h + pad);
+    return floor;
+  }
+  function speechDiveCeil() {
+    const pad = portraitStage() ? phoneCss(8) : 12;
+    let bot = portraitStage() ? visibleStageBottom() : H;
+    if (actionPromptVisible()) {
+      const dive = actionBtnBox();
+      bot = Math.min(bot, dive.y);
+    }
+    return bot - pad;
+  }
+  function speechStageRect() {
+    const pad = portraitStage() ? phoneCss(8) : 12;
+    const top = speechHudFloor();
+    const bot = speechDiveCeil();
+    return {
+      x: pad,
+      y: top,
+      w: Math.max(40, W - pad * 2),
+      h: Math.max(24, bot - top),
+    };
+  }
+  function fitSpeechLocal(wx, wy, bx, ey, bw, bh) {
+    const z = Math.max(0.001, cam.z || 1);
+    const stage = speechStageRect();
+    let lx = bx;
+    let ly = ey;
+    const screenOf = (ox, oy) => ({
+      x: (wx + ox - bw / 2 - cam.x) * z + viewCenterX(),
+      y: (wy + oy - cam.y) * z + H / 2,
+      w: bw * z,
+      h: bh * z,
+    });
+    const clipX = (b) => Math.max(0, stage.x - b.x) + Math.max(0, b.x + b.w - (stage.x + stage.w));
+    const clipY = (b) => Math.max(0, stage.y - b.y) + Math.max(0, b.y + b.h - (stage.y + stage.h));
+    let box = screenOf(lx, ly);
+    if (clipX(box) > 0.5) {
+      const flip = screenOf(-lx, ly);
+      if (clipX(flip) < clipX(box) - 0.5) {
+        lx = -lx;
+        box = flip;
+      }
+    }
+    if (box.w <= stage.w) {
+      if (box.x < stage.x) lx += (stage.x - box.x) / z;
+      box = screenOf(lx, ly);
+      if (box.x + box.w > stage.x + stage.w) lx -= (box.x + box.w - (stage.x + stage.w)) / z;
+    } else {
+      lx += (stage.x + stage.w / 2 - (box.x + box.w / 2)) / z;
+    }
+    box = screenOf(lx, ly);
+    if (clipY(box) > 0.5) {
+      const below = ly < 0 ? 16 : ly;
+      const above = ly >= 0 ? -bh - 16 : ly;
+      const tryY = box.y < stage.y ? below : above;
+      const flip = screenOf(lx, tryY);
+      if (clipY(flip) < clipY(box) - 0.5) {
+        ly = tryY;
+        box = flip;
+      }
+    }
+    if (box.h <= stage.h) {
+      if (box.y < stage.y) ly += (stage.y - box.y) / z;
+      box = screenOf(lx, ly);
+      if (box.y + box.h > stage.y + stage.h) ly -= (box.y + box.h - (stage.y + stage.h)) / z;
+    } else {
+      ly += (stage.y - box.y) / z;
+    }
+    return { bx: lx, ey: ly };
+  }
+  function fitSpeechScreen(cx, cy, tw, th, topOff) {
+    const stage = speechStageRect();
+    const lift = topOff == null ? 24 : topOff;
+    let x = cx;
+    let y = cy;
+    const boxOf = (px, py) => ({ x: px - tw / 2, y: py - lift, w: tw, h: th });
+    const clipX = (b) => Math.max(0, stage.x - b.x) + Math.max(0, b.x + b.w - (stage.x + stage.w));
+    const clipY = (b) => Math.max(0, stage.y - b.y) + Math.max(0, b.y + b.h - (stage.y + stage.h));
+    let box = boxOf(x, y);
+    if (clipX(box) > 0.5 && clipX(boxOf(W - x, y)) < clipX(box) - 0.5) {
+      x = W - x;
+      box = boxOf(x, y);
+    }
+    if (box.w <= stage.w) {
+      if (box.x < stage.x) x += stage.x - box.x;
+      box = boxOf(x, y);
+      if (box.x + box.w > stage.x + stage.w) x -= box.x + box.w - (stage.x + stage.w);
+    } else {
+      x = stage.x + stage.w / 2;
+    }
+    box = boxOf(x, y);
+    if (clipY(box) > 0.5) {
+      const flipped = y < stage.y + stage.h / 2 ? y + th + lift + 20 : y - th - 20;
+      if (clipY(boxOf(x, flipped)) < clipY(box) - 0.5) {
+        y = flipped;
+        box = boxOf(x, y);
+      }
+    }
+    if (box.h <= stage.h) {
+      if (box.y < stage.y) y += stage.y - box.y;
+      box = boxOf(x, y);
+      if (box.y + box.h > stage.y + stage.h) y -= box.y + box.h - (stage.y + stage.h);
+    } else {
+      y += stage.y - box.y;
+    }
+    return { x: x, y: y };
+  }
   function unusedName() {
     const used = new Set(customers.map((c) => c.name));
     for (const n of Object.keys(REGULAR_LOOKS)) used.add(n);
@@ -2410,8 +2528,11 @@
   function drawHangingSign(x, y) {
     // C91 — hanging shop sign, readable on a 390-wide phone. Not a
     // 12px brown scrap. Planted at OPEN_SIGN; paint only.
+    // C93 — hang the board off the arm, left of the post, so it sits
+    // in the POP–hut gap above the roof — not through the hut corner.
+    // Same planted post X/Y. One OPEN.
     const sway = Math.sin(state.time * 1.35) * 0.06;
-    sitShadow(x + 4, y + 22, 28, 8, 0.42);
+    sitShadow(x - 8, y + 22, 28, 8, 0.42);
     const post = ctx.createLinearGradient(x - 6, y - 78, x + 8, y + 18);
     post.addColorStop(0, "#c49248");
     post.addColorStop(0.4, "#8a5a30");
@@ -2430,19 +2551,19 @@
     ctx.lineWidth = 3.4;
     ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.moveTo(x + 4, y - 70);
-    ctx.lineTo(x + 46, y - 70);
-    ctx.lineTo(x + 46, y - 58);
+    ctx.moveTo(x - 4, y - 76);
+    ctx.lineTo(x - 42, y - 76);
+    ctx.lineTo(x - 42, y - 64);
     ctx.stroke();
     ctx.fillStyle = "#3a2a18";
-    ctx.beginPath(); ctx.arc(x + 46, y - 58, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x - 42, y - 64, 3.2, 0, Math.PI * 2); ctx.fill();
     ctx.save();
-    ctx.translate(x + 20, y - 20);
+    ctx.translate(x - 22, y - 48);
     ctx.rotate(sway);
     ctx.strokeStyle = "#2a1a10";
     ctx.lineWidth = 2.2;
-    ctx.beginPath(); ctx.moveTo(-28, -34); ctx.lineTo(-24, -8); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(28, -34); ctx.lineTo(24, -8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-28, -28); ctx.lineTo(-24, -8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(20, -28); ctx.lineTo(24, -8); ctx.stroke();
     ctx.fillStyle = "rgba(16, 8, 4, 0.24)";
     roundRect(-40 + SUN.dx * 0.3, 36, 84, 8, 3); ctx.fill();
     ctx.fillStyle = "#3a1c0c";
@@ -8418,6 +8539,9 @@
         const pulse = gold ? 1 + 0.08 * Math.sin(state.time * 7) : 1;
         const bw = Math.max(28, label.length * (gold ? 10.2 : 8) + (gold ? 22 : 10)) * pulse;
         const bh = gold ? 26 : 16;
+        const fit = fitSpeechLocal(x, y + bob, bx, ey, bw, bh);
+        bx = fit.bx;
+        ey = fit.ey;
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.fillStyle = tint ? tint.fill : gold ? "rgba(255, 236, 170, 0.96)" : "rgba(255,255,255,0.94)";
@@ -11862,19 +11986,23 @@
       const label = t.who ? (t.who + "  ·  " + t.line) : t.line;
       const tw = Math.min(ctx.measureText(label).width + 40, 540);
       const th = 42;
-      let x = clamp(scr.x, 200, W - 200);
-      let y = clamp(scr.y, 196, H - (actionPromptVisible() ? 210 : 130));
+      const parked = fitSpeechScreen(scr.x, scr.y, tw, th, 24);
+      let x = parked.x;
+      let y = parked.y;
       const till = worldToScreen(REGISTER.x + REGISTER.w / 2, REGISTER.y + 28);
       const tillBox = { x: till.x - 86, y: till.y - 22, w: 172, h: 56 };
       const { muteB, pauseB } = topCtrlBoxes();
       const bump = (box) => {
         const mine = { x: x - tw / 2, y: y - 24, w: tw, h: th };
         if (!boxesOverlap(mine, box, 10)) return;
+        const stage = speechStageRect();
         const above = box.y - 14;
         const below = box.y + box.h + 28;
-        if (above >= 196) y = above;
-        else y = clamp(below, 196, H - 130);
-        x = clamp(x, 200, W - 200);
+        if (above >= stage.y) y = above;
+        else y = clamp(below, stage.y, stage.y + stage.h);
+        const parked2 = fitSpeechScreen(x, y, tw, th, 24);
+        x = parked2.x;
+        y = parked2.y;
       };
       bump(tillBox);
       bump(muteB);
@@ -12789,7 +12917,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, ty + th * 0.74);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 92", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 93", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -12852,7 +12980,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 92", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 93", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -12883,7 +13011,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 92", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 93", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
