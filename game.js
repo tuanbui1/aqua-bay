@@ -3057,6 +3057,10 @@
   // Alpha hits 0 when the sprite's right edge reaches the well — C72's
   // 80px / undersized rad still left POP under the razor at x≈798.
   function railPropAlpha(wx, wy, rad) {
+    // C80 / C91 — on a portrait phone the playfield IS the screen.
+    // Do not ghost the dock cooler / OPEN sign against a reserved well
+    // that is not there (viewWidth === W, cam.z ≈ H/860).
+    if (portraitStage()) return 1;
     const s = worldToScreen(wx, wy);
     const r = (rad == null ? 88 : rad) * Math.max(0.6, cam.z || 1);
     const fade = 120;
@@ -7548,15 +7552,15 @@
     ctx.fillStyle = shade;
     ctx.fillRect(x - 6, lipY - 6, w + 12, 36);
     ctx.fillStyle = "#3a1c0c";
-    ctx.fillRect(x - 2, lipY - 8, w + 4, 12);
+    ctx.fillRect(x - 2, lipY - 12, w + 4, 18);
     ctx.fillStyle = "#8a5a30";
-    ctx.fillRect(x, lipY - 6, w, 7);
+    ctx.fillRect(x, lipY - 10, w, 12);
     ctx.fillStyle = "#c49248";
-    ctx.fillRect(x, lipY - 6, w, 3);
-    ctx.fillStyle = "rgba(255, 226, 170, 0.16)";
-    ctx.fillRect(x, lipY - 6, w, 1.6);
-    ctx.fillStyle = "rgba(20, 10, 6, 0.35)";
-    ctx.fillRect(x, lipY + 1, w, 2);
+    ctx.fillRect(x, lipY - 10, w, 5);
+    ctx.fillStyle = "rgba(255, 226, 170, 0.22)";
+    ctx.fillRect(x, lipY - 10, w, 2.2);
+    ctx.fillStyle = "rgba(20, 10, 6, 0.4)";
+    ctx.fillRect(x, lipY + 2, w, 3);
     const posts = 5;
     for (let i = 0; i < posts; i++) {
       const px = x + 28 + (w - 56) * (i / Math.max(1, posts - 1));
@@ -7572,6 +7576,14 @@
       ctx.fillRect(px - 4, lipY - 8, 8, 5);
     }
     drawFoamBand(x - 8, lipY + 4, w + 16, state.time);
+    const t = state.time || 0;
+    for (let i = 0; i < w; i += 18) {
+      const px = x + i + Math.sin(t * 1.8 + i * 0.05) * 5;
+      const py = lipY + 6 + Math.sin(t * 2.4 + i * 0.08) * 2.4;
+      const r = 10 + (i * 11) % 7;
+      ctx.fillStyle = "rgba(255,255,255," + (0.52 + 0.28 * Math.sin(t * 2 + i * 0.04)) + ")";
+      ctx.beginPath(); ctx.ellipse(px, py, r, 5.2, 0, 0, Math.PI * 2); ctx.fill();
+    }
     ctx.restore();
   }
   function drawPlazaShopWall() {
@@ -9046,55 +9058,54 @@
   }
   function drawPopCan(cx, cy, col, top) {
     ctx.fillStyle = col;
-    roundRect(cx - 6, cy - 3, 12, 17, 3.2); ctx.fill();
+    roundRect(cx - 9, cy - 4, 18, 24, 4); ctx.fill();
     ctx.fillStyle = top || "#fff6e8";
-    ctx.beginPath(); ctx.ellipse(cx, cy - 3, 6, 2.6, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "rgba(255, 246, 232, 0.38)";
-    ctx.fillRect(cx - 4.6, cy - 1, 2.4, 12);
+    ctx.beginPath(); ctx.ellipse(cx, cy - 4, 9, 3.4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "rgba(255, 246, 232, 0.42)";
+    ctx.fillRect(cx - 6.5, cy - 1, 3.4, 16);
     ctx.fillStyle = "rgba(16, 8, 4, 0.22)";
-    ctx.beginPath(); ctx.ellipse(cx, cy + 14, 6, 2.2, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = "rgba(255, 236, 190, 0.35)";
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.ellipse(cx, cy - 3, 5.2, 2.1, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(cx, cy + 20, 9, 2.8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(255, 236, 190, 0.4)";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.ellipse(cx, cy - 4, 7.6, 2.6, 0, 0, Math.PI * 2); ctx.stroke();
   }
   function drawVending(x, y) {
     // C91 — soda cooler, not a 40px stick of dots. Planted at POP_VEND.
     // Body + glass + cans; paint only, no walk collider.
-    const bw = 72, bh = 112;
-    const bx = x - 40, by = y - 8;
-    sitShadow(x - 2, y + 102, 34, 10, 0.46);
-    const body = ctx.createLinearGradient(bx, by, bx + bw, by + bh);
-    body.addColorStop(0, "#e85d4c");
-    body.addColorStop(0.42, "#c4483a");
-    body.addColorStop(1, "#6a2218");
+    const bw = 78, bh = 118;
+    const bx = x - 44, by = y - 12;
+    sitShadow(x - 2, y + 104, 38, 11, 0.48);
+    const body = ctx.createLinearGradient(bx, by, bx + bw * 0.2, by + bh);
+    body.addColorStop(0, "#f4efe6");
+    body.addColorStop(0.35, "#d8c4a0");
+    body.addColorStop(1, "#8a6a48");
     ctx.fillStyle = body;
     roundRect(bx, by, bw, bh, 8); ctx.fill();
-    ctx.fillStyle = "#8a2c22";
-    roundRect(bx + 3, by + 3, bw - 6, 18, 5); ctx.fill();
-    ctx.fillStyle = "#f0b429";
-    roundRect(bx + 10, by + 6, bw - 20, 12, 3); ctx.fill();
+    ctx.fillStyle = "#c4483a";
+    roundRect(bx, by, bw, 22, 8); ctx.fill();
+    ctx.fillRect(bx, by + 14, bw, 10);
+    ctx.fillStyle = "#ffe27a";
+    roundRect(bx + 12, by + 5, bw - 24, 14, 3); ctx.fill();
     ctx.fillStyle = "#5a1810";
-    ctx.font = "800 11px Fredoka, sans-serif";
+    ctx.font = "800 13px Fredoka, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("POP", x - 4, by + 16);
-    const glass = ctx.createLinearGradient(bx + 8, by + 26, bx + 8, by + 86);
+    ctx.fillText("POP", x - 5, by + 16);
+    const glass = ctx.createLinearGradient(bx + 8, by + 28, bx + 8, by + 90);
     glass.addColorStop(0, "#9ef0ff");
     glass.addColorStop(0.18, "#2a7d8a");
     glass.addColorStop(0.72, "#123844");
     glass.addColorStop(1, "#0a181c");
     ctx.fillStyle = "#d8e0e4";
-    roundRect(bx + 6, by + 24, 48, 66, 5); ctx.fill();
+    roundRect(bx + 7, by + 26, 50, 68, 5); ctx.fill();
     ctx.fillStyle = glass;
-    roundRect(bx + 9, by + 27, 42, 60, 4); ctx.fill();
+    roundRect(bx + 10, by + 29, 44, 62, 4); ctx.fill();
     ctx.save();
-    roundRect(bx + 9, by + 27, 42, 60, 4); ctx.clip();
+    roundRect(bx + 10, by + 29, 44, 62, 4); ctx.clip();
     const cans = [
-      [bx + 20, by + 40, "#e85d4c", "#ffe27a"],
-      [bx + 38, by + 40, "#3d8bfd", "#fff6e8"],
-      [bx + 20, by + 60, "#f0b429", "#fff6e8"],
-      [bx + 38, by + 60, "#7ad08a", "#e8fff0"],
-      [bx + 20, by + 80, "#c86bde", "#ffe8ff"],
-      [bx + 38, by + 80, "#5ec8c0", "#e8ffff"],
+      [bx + 22, by + 44, "#e85d4c", "#ffe27a"],
+      [bx + 42, by + 44, "#3d8bfd", "#fff6e8"],
+      [bx + 22, by + 72, "#f0b429", "#fff6e8"],
+      [bx + 42, by + 72, "#7ad08a", "#e8fff0"],
     ];
     for (let i = 0; i < cans.length; i++) {
       drawPopCan(cans[i][0], cans[i][1], cans[i][2], cans[i][3]);
@@ -9108,16 +9119,16 @@
     ctx.closePath(); ctx.fill();
     ctx.restore();
     ctx.fillStyle = "#2a1a14";
-    roundRect(bx + 56, by + 28, 10, 58, 3); ctx.fill();
+    roundRect(bx + 60, by + 30, 12, 60, 3); ctx.fill();
     ctx.fillStyle = "#8a9aa4";
-    roundRect(bx + 58, by + 48, 5, 22, 2); ctx.fill();
+    roundRect(bx + 62, by + 50, 6, 24, 2); ctx.fill();
     ctx.fillStyle = "#3a2415";
-    roundRect(bx + 8, by + 94, bw - 16, 14, 3); ctx.fill();
+    roundRect(bx + 8, by + 98, bw - 16, 16, 3); ctx.fill();
     ctx.fillStyle = "#ffe27a";
-    ctx.font = "800 10px Nunito, sans-serif";
-    ctx.fillText("POP", x - 4, by + 105);
+    ctx.font = "800 11px Nunito, sans-serif";
+    ctx.fillText("POP", x - 5, by + 110);
     ctx.fillStyle = "#7dffa0";
-    ctx.beginPath(); ctx.arc(bx + bw - 12, by + 100, 3.4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(bx + bw - 14, by + 106, 3.8, 0, Math.PI * 2); ctx.fill();
     sunWashBox(bx, by, bw, bh, 8);
   }
   function drawBench(x, y) {

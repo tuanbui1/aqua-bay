@@ -17,7 +17,9 @@ assert(vend, "drawVending body is present");
 assert(/C91 — soda cooler/.test(vend[0]), "POP draw path is the C91 cooler");
 assert(/function drawPopCan\s*\(/.test(src), "can helper exists");
 assert(/drawPopCan\(/.test(vend[0]), "cooler paints real cans, not dots");
-assert(/const bw = 72, bh = 112/.test(vend[0]), "cooler body is a box, not a 40x76 stick");
+assert(/const bw = 78, bh = 118/.test(vend[0]), "cooler body is a box, not a 40x76 stick");
+assert(/if \(portraitStage\(\)\) return 1/.test(src),
+  "portrait phone does not ghost POP / OPEN against a missing rail well");
 assert(/#9ef0ff/.test(vend[0]) && /glass/.test(vend[0]), "cooler has a glass door");
 assert(/fillText\("POP"/.test(vend[0]), "cooler stays labeled POP");
 assert(!/roundRect\(x - 18, y, 40, 76/.test(src), "old 40x76 stick body is gone");
