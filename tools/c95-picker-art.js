@@ -78,8 +78,8 @@ assert(/faceS: 1/.test(picker[0]), "loop 54 flip stays on the picker");
 assert(/player\.faceS/.test(src), "loop 54 flip stays");
 assert(/paintOnly: id === "dino"/.test(picker[0]), "Dino still uses the matte paint path");
 
-assert(/Aqua Bay · loop 107/.test(src), "title/pause stamp is loop 107");
-assert(!/Aqua Bay · loop 106/.test(src), "loop 106 stamp is gone");
+assert(/Aqua Bay · loop 108/.test(src), "title/pause stamp is loop 108");
+assert(!/Aqua Bay · loop 107/.test(src), "loop 107 stamp is gone");
 
 assert(/C94 — 390-wide title stack/.test(src), "C94 title-stack rule stays");
 assert(/titleBase/.test(src) && /subBase/.test(src),
