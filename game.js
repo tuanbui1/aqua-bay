@@ -4423,8 +4423,21 @@
     if (!galleryOpen()) return null;
     if (!(ay < -0.5 && Math.abs(ax) < 0.2)) return null;
     const pad = tankWalkPoint(6);
-    if (!player || player.y <= pad.y + 12) return null;
-    return shopPath(player.x, player.y, pad.x, pad.y);
+    if (!player) return null;
+    // Cut out on the pad itself, or once north of the Puffer row (row-1 /
+    // Turtle). Do not cut out on the east spine at the same Y — that left
+    // hold-W climbing to Turtle instead of turning west onto the apron.
+    if (Math.hypot(player.x - pad.x, player.y - pad.y) < 28) return null;
+    const onPufferRow = player.y >= 548 && player.y <= 592;
+    if (player.y <= pad.y + 12 && !onPufferRow) return null;
+    const path = shopPath(player.x, player.y, pad.x, pad.y);
+    if (!path || !path.length) return path;
+    // Already standing on the current portal (row-3 / spine overlap) —
+    // take the next hop or we oscillate at y≈776 and never turn north.
+    const n = path[0];
+    const pd = Math.hypot(n.x - player.x, n.y - player.y);
+    if (pd <= 22 && path.length > 1) return path.slice(1);
+    return path;
   }
   function shopPath(sx, sy, dx, dy) {
     const rects = shopWalkRects();
