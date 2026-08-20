@@ -73,8 +73,8 @@ assert(/\{ x: 340, y: 164 \}/.test(pos[0]) && /\{ x: 776, y: 164 \}/.test(pos[0]
   "clustered aisle tank positions stay (loop 76)");
 assert(/const TANK_W = 210, TANK_H = 156/.test(src), "tank size stays");
 
-assert(/Aqua Bay · loop 104/.test(src), "title/pause stamp is loop 104");
-assert(!/Aqua Bay · loop 103/.test(src), "loop 103 stamp is gone");
+assert(/Aqua Bay · loop 105/.test(src), "title/pause stamp is loop 105");
+assert(!/Aqua Bay · loop 104/.test(src), "loop 104 stamp is gone");
 
 assert(/const DIVE_WALK_SPEED\s*=\s*480/.test(src), "dash speed stays 480");
 assert(/232 \+ state\.speedLv \* 38 \+ firstBump/.test(src),

@@ -40,8 +40,8 @@ function extractFn(src, name) {
 
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
-assert(/Aqua Bay · loop 104/.test(src), "title/pause stamp is loop 104");
-assert(!/Aqua Bay · loop 103/.test(src), "loop 103 stamp is gone");
+assert(/Aqua Bay · loop 105/.test(src), "title/pause stamp is loop 105");
+assert(!/Aqua Bay · loop 104/.test(src), "loop 104 stamp is gone");
 assert(/function wasdShopPath\s*\(/.test(src), "wasdShopPath steers hold-W onto the wood path");
 assert(/C103 — hold-W never took that spine/.test(src) ||
   /C103 — hold W \(no A\/D\) from south of the Puffer pad/.test(src),
@@ -194,12 +194,12 @@ assert(Array.isArray(openPath) && openPath.length >= 3,
 assert(openPath.every((pt) => Number.isFinite(pt.x) && Number.isFinite(pt.y)),
   "open-gallery Puffer path is finite");
 const pathXs = [dockPt.x].concat(openPath.map((pt) => pt.x));
-assert(pathXs.every((x) => x > 340),
-  "open-gallery path stays east of the till, xs=" +
+assert(pathXs.every((x) => x > REGISTER.x + REGISTER.w),
+  "open-gallery path stays east of REGISTER, xs=" +
     pathXs.map((x) => x.toFixed(0)).join(","));
 assert(!openPath.some((pt) => inEastShop(pt.x, pt.y) || pt.x > 1256),
   "open-gallery path does not sit in eastShop / x>1256 empty wood");
-assert(!openPath.some((pt) => pt.x < 400),
+assert(!openPath.some((pt) => pt.x >= 300 && pt.x < 318),
   "open-gallery Puffer path does not use the C101 west/till spine");
 
 const last = openPath[openPath.length - 1];
