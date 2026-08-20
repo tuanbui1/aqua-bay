@@ -136,8 +136,8 @@ assert(/"#a84a3a"/.test(pause[0]),
   "pause reset stays the existing red pill");
 assert(/panelBtn\("book-close"/.test(src), "book-close stays a flat panelBtn");
 
-assert(/Aqua Bay · loop 106/.test(src), "title/pause stamp is loop 106");
-assert(!/Aqua Bay · loop 105/.test(src), "loop 105 stamp is gone");
+assert(/Aqua Bay · loop 107/.test(src), "title/pause stamp is loop 107");
+assert(!/Aqua Bay · loop 106/.test(src), "loop 106 stamp is gone");
 
 assert(/function actionChipInset\s*\(/.test(src), "DIVE chip inset stays");
 assert(/visibleStageBottom/.test(src) && /visualViewport/.test(src),
