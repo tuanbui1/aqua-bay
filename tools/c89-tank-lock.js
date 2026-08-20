@@ -41,10 +41,16 @@ assert(/"empty"/.test(drawTank[0]) || /empty/.test(drawTank[0]),
 
 const habitat = src.match(/function drawTankHabitat\s*\(\s*i,\s*t,\s*stocked\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(habitat, "drawTankHabitat body is present");
-assert(/i === 1 && state\.unlocked\[i\]/.test(habitat[0]),
+const tangHab = (habitat[0].match(/if \(i === 1\) \{[\s\S]*?else if \(i === 2\)/) || [""])[0];
+const goldHab = (habitat[0].match(/if \(i === 2\) \{[\s\S]*?else if \(!state\.unlocked/) || [""])[0];
+assert(/if \(state\.unlocked\[i\]\)/.test(tangHab),
   "Blue Tang habitat is unlocked-only (no live-looking locked tang)");
-assert(/i === 2 && state\.unlocked\[i\]/.test(habitat[0]),
+assert(/if \(state\.unlocked\[i\]\)/.test(goldHab),
   "Goldfish habitat is unlocked-only (no live-looking locked gold)");
+assert(/drawTankSilhouetteFish\("tang"/.test(tangHab) && /state\.unlocked\[i\]/.test(tangHab),
+  "tang silhouette sits inside the unlocked branch");
+assert(/drawTankSilhouetteFish\("lock"/.test(tangHab),
+  "locked Tang paints a lock silhouette, not a live blue disc");
 assert(/else if \(!state\.unlocked\[i\]\)/.test(habitat[0]),
   "locked tanks keep their own frost habitat");
 assert(/drawTankSilhouetteFish\("lock"/.test(habitat[0]),
@@ -54,11 +60,14 @@ assert(!/!\s*stocked\s*\|\|\s*!state\.unlocked\[i\]/.test(habitat[0]),
 
 const water = src.match(/function tankWaterFill\s*\(\s*i,\s*t\s*\)\s*\{[\s\S]*?\n  \}/);
 assert(water, "tankWaterFill body is present");
-assert(/i === 1 && state\.unlocked\[i\]/.test(water[0]),
+const tangWater = (water[0].match(/if \(i === 1\) \{[\s\S]*?else if \(i === 2\)/) || [""])[0];
+const goldWater = (water[0].match(/if \(i === 2\) \{[\s\S]*?else if \(!state\.unlocked/) || [""])[0];
+assert(/if \(state\.unlocked\[i\]\)/.test(tangWater) && tangWater.indexOf("80,170,255") >= 0,
   "Tang water is unlocked-only");
-assert(/i === 2 && state\.unlocked\[i\]/.test(water[0]),
+assert(/if \(state\.unlocked\[i\]\)/.test(goldWater) && goldWater.indexOf("180,230,120") >= 0,
   "Goldfish water is unlocked-only");
 assert(/!state\.unlocked\[i\]/.test(water[0]), "locked water stays slate");
+assert(tangWater.indexOf("120,140,160") >= 0, "locked Tang water falls back to slate");
 
 function tankShowsPadlock(unlocked) {
   return !unlocked;
