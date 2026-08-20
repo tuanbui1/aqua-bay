@@ -11744,6 +11744,9 @@
       ctx.fillText("BOAT", ax + Math.cos(ang) * 22, ay + Math.sin(ang) * 22 + 4);
     }
   }
+  // C99 — HUD “tap to stock” is the same pier-board sign as C97 DIVE /
+  // C98 SURFACE (not a leftover cyan card). On-tank pointer stays a
+  // world label. goto-stock hitbox stays on the caller.
   function drawStockWalkCue() {
     if (state.mode !== "play" || state.scene !== "shop") return;
     if (!bagHasStockable()) return;
@@ -11794,10 +11797,9 @@
     const cx = clamp(W / 2, tw / 2 + 16, W - tw / 2 - 16);
     const cy = clamp(topHudFloor() + ch / 2 + 8, top + ch / 2, floor - actionBtnSize().h - actionBtnSize().pad - ch / 2 - 8);
     const chip = hudBox(cx - tw / 2, cy - ch / 2, tw, ch);
-    card(chip.x, chip.y, chip.w, chip.h, "rgba(40, 160, 180," + (0.74 + pulse * 0.16) + ")");
-    ctx.fillStyle = "#fff6e8";
-    ctx.textAlign = "center";
-    ctx.fillText(label, chip.x + chip.w / 2, chip.y + chip.h / 2 + 5);
+    const stain = 0.10 + pulse * 0.10;
+    const stockFont = portraitStage() ? phoneCss(14) : 13;
+    drawPierBoardChip(chip.x, chip.y, chip.w, chip.h, label, stockFont, stain);
     ctx.save();
     ctx.translate(chip.x + 14, chip.y + 16);
     ctx.rotate(ang);
@@ -11812,6 +11814,9 @@
     ctx.restore();
     btn("goto-stock", chip.x, chip.y, chip.w, chip.h);
   }
+  // C99 — leftover first-two-minute cyan chips (off-dock DIVE after
+  // SURFACE, then tap-to-stock) share C97/C98 drawPierBoardChip paint.
+  // Paint only — dockCornerBox / goto-stock hitboxes stay.
   function drawDockCorner() {
     if (state.mode !== "play" || state.scene !== "shop") return;
     if (cashNeedsCollect()) return;
@@ -11819,11 +11824,9 @@
     if (!dockOffScreen()) return;
     const b = dockCornerBox();
     const pulse = 0.55 + 0.35 * Math.sin(state.time * 6);
-    card(b.x, b.y, b.w, b.h, "rgba(40, 160, 180," + (0.78 + pulse * 0.16) + ")");
-    ctx.fillStyle = "#fff6e8";
-    ctx.font = (b.h > 38 ? "800 20px" : "800 16px") + " Fredoka, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText(thumbCopy() ? "DIVE" : "→ DIVE", b.x + b.w / 2, b.y + b.h / 2 + 6);
+    const stain = 0.10 + pulse * 0.10;
+    const diveFont = portraitStage() ? phoneCss(18) : (b.h > 38 ? 20 : 16);
+    drawPierBoardChip(b.x, b.y, b.w, b.h, thumbCopy() ? "DIVE" : "→ DIVE", diveFont, stain);
     btn("dive", b.x, b.y, b.w, b.h);
   }
   function drawTillCollectCue() {
@@ -13082,7 +13085,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 98", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 99", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -13145,7 +13148,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 98", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 99", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -13176,7 +13179,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 98", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 99", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
