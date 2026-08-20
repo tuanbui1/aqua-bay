@@ -39,9 +39,9 @@ assert(Math.abs((h430 / W) - (932 / 430)) < 0.01, "430×932 pixels stay square")
 
 // Slim rail: cards share the mute/pause column (~56 CSS px), not a 120px well.
 function cssToStage(cssPx, cssW) { return Math.round(cssPx * W / cssW); }
-const rail390 = cssToStage(56, 390);
-assert(rail390 < 220, "rail is a thumb column, not a third of the width " + rail390);
-const gutterLeft = Math.max(Math.round(W * 0.78), W - rail390 - 12);
+const rail390 = cssToStage(48, 390);
+assert(rail390 < 200, "rail is a thumb column, not a third of the width " + rail390);
+const gutterLeft = Math.max(Math.round(W * 0.82), W - rail390 - 12);
 const playCss = gutterLeft / W * 390;
 assert(playCss > 300, "playfield is the wide part of 390px, got " + playCss.toFixed(1));
 assert((390 - playCss) < 90, "species rail must not eat a third of 390px, rail=" + (390 - playCss).toFixed(1));
