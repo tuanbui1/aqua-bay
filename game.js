@@ -274,7 +274,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy + loop 110 tap the lock + loop 111 dive for the new bowl + loop 112 dive for the right band + loop 113 hunt locks a seahorse + loop 114 hide SURFACE until the hunt bags + loop 115 dive chip arms the hunt + loop 116 today hunt copy + loop 117 catalog book not shop.
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy + loop 110 tap the lock + loop 111 dive for the new bowl + loop 112 dive for the right band + loop 113 hunt locks a seahorse + loop 114 hide SURFACE until the hunt bags + loop 115 dive chip arms the hunt + loop 116 today hunt copy + loop 117 catalog book not shop + loop 118 plaza today after unlock.
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -1999,6 +1999,51 @@
     }
     return { x: 16, h: 30, font: 12, pad: 12, maxW: 360, gap: 6 };
   }
+  function sessionChipTop() {
+    // C118 — plaza TODAY sits under money / BAG. Do not park it
+    // under the DIVE-to-catch ribbon (that pushed the plate onto
+    // topHudFloor; screenBoxAlpha then ate it — no TODAY chip
+    // after TAP TO UNLOCK). Unlock toast / ribbon park below
+    // this slot. loop 118 plaza today after unlock.
+    if (portraitStage()) return hudSafeTop() + phoneCss(48) + 8;
+    return 74;
+  }
+  function sessionChipPaintAlpha() {
+    // HUD-pinned FIRST SESSION / TODAY. Shop screenBoxAlpha uses
+    // topHudFloor, which includes this chip, so plaza alpha was 0
+    // whenever a ribbon or unlock banner was live. Ocean already
+    // painted (topSafe 0). Do not hide TODAY.
+    // loop 118 plaza today after unlock.
+    if (!(missionVisible() || sessionChipVisible())) return 0;
+    return 1;
+  }
+  function todayChipBox() {
+    if (!(missionVisible() || sessionChipVisible())) return null;
+    const m = sessionChipMetrics();
+    return { x: m.x, y: sessionChipTop(), w: m.maxW, h: m.h };
+  }
+  function unlockBannerBox() {
+    if (!state.unlockBanner) return null;
+    const bw = Math.min(520, W - 280);
+    const bh = portraitStage() ? phoneCss(36) : 44;
+    const today = todayChipBox();
+    const gap = portraitStage() ? phoneCss(8) : 8;
+    let y = portraitStage() ? hudSafeTop() + phoneCss(48) + gap : 56;
+    if (today) y = today.y + today.h + gap;
+    // Leave a ribbon-sized slot under TODAY so SEAHORSE UNLOCKED
+    // cannot cover Stock Seahorse. loop 118 plaza today after unlock.
+    const ribbonSlot = portraitStage() ? phoneCss(28) + gap : 32 + 8;
+    y += ribbonSlot;
+    return { x: W / 2 - bw / 2, y: y, w: bw, h: bh };
+  }
+  function todayChipClear() {
+    // Visible TODAY is not covered by the unlock banner.
+    const today = todayChipBox();
+    if (!today || sessionChipPaintAlpha() < 1) return false;
+    const banner = unlockBannerBox();
+    if (!banner) return true;
+    return today.y + today.h <= banner.y - 2;
+  }
   function huntStockIndex() {
     // C114 — TODAY / surface-stock follow the DIVE FOR bowl
     // (empty Seahorse), not a leftover Stock Sea Turtle plate.
@@ -2007,11 +2052,19 @@
     // empty bowl still wins. Do not auto-stock.
     // C116 — this same index is the TODAY promote: a live hunt
     // or a just-surfaced empty bowl still the stock target.
+    // C118 — after TAP TO UNLOCK the empty unlocked bowl is
+    // already the stock target. Do not wait for diveForHunt
+    // (70m groves). DIVE FOR board legal + bag empty of that
+    // fish: plaza TODAY reads Stock Seahorse.
     // loop 114 hide SURFACE until the hunt bags.
     // loop 116 today hunt copy.
+    // loop 118 plaza today after unlock.
     const hunt = diveForHuntIndex();
     if (hunt >= 0 && speciesUnlocked(hunt) && (state.stock[hunt] | 0) === 0)
       return hunt;
+    const cue = diveForTankIndex();
+    if (cue >= 0 && speciesUnlocked(cue) && (state.stock[cue] | 0) === 0)
+      return cue;
     let best = -1;
     const bag = state.bag || [];
     for (let n = 0; n < bag.length; n++) {
@@ -2028,7 +2081,11 @@
     // rewrite never fires. TODAY copy uses todayGoalLabel() so a live
     // hunt still reads Stock Seahorse. Do not mutate the rolled boat
     // daily — after the hunt / bowl is stocked it can show again.
-    // Do not auto-stock. loop 116 today hunt copy.
+    // C118 — plaza copy also promotes via huntStockIndex() the
+    // moment the empty unlocked bowl is the DIVE FOR cue, not
+    // only once diveForHunt is armed. Do not auto-stock.
+    // loop 116 today hunt copy.
+    // loop 118 plaza today after unlock.
     const want = huntStockIndex();
     if (want < 0) return;
     const goals = state.sessionGoals;
@@ -2046,10 +2103,16 @@
     // bag empty or already holding that fish, diveForHunt armed
     // or just surfaced with that empty bowl still the stock
     // target), TODAY reads Stock {species}, not leftover
-    // "Take the boat" / "Unlock …" / "Serve 3…". A rolled boat
-    // daily stays when there is no hunt and no empty unlocked
-    // bowl to stock. New-game first DIVE does not force Stock
-    // Seahorse. Do not auto-stock. loop 116 today hunt copy.
+    // "Take the boat" / "Unlock …" / "Serve 3…".
+    // C118 — after TAP TO UNLOCK that same empty unlocked bowl
+    // (DIVE FOR board legal, bag empty of that fish) plaza TODAY
+    // already reads Stock {species}. Do not wait until the
+    // ocean hunt is armed. A rolled boat daily stays when there
+    // is no hunt and no empty unlocked bowl to stock. New-game
+    // first DIVE does not force Stock Seahorse. After the bowl
+    // is stocked the rolled daily can show again. Do not
+    // auto-stock. loop 116 today hunt copy.
+    // loop 118 plaza today after unlock.
     applyHuntStockGoal();
     const want = huntStockIndex();
     if (want >= 0) return sessionGoalLabel("stock-" + want);
@@ -12864,7 +12927,12 @@
       const gx = clamp(W / 2 - tw / 2, leftPad, W - 12 - tw);
       // Desktop DIVE copy used to sit on the dusk sky / shop signage.
       const gy = /DIVE/i.test(gt) ? 64 : 16;
-      return Object.assign(hudBox(gx, gy, tw, th), {
+      // C118 — park under TODAY so the ribbon cannot eat the plate.
+      // loop 118 plaza today after unlock.
+      const sessionH = (missionVisible() || sessionChipVisible()) ? sessionChipMetrics().h : 0;
+      const belowToday = sessionH ? sessionChipTop() + sessionH + 8 : gy;
+      const parkedY = Math.max(gy, belowToday);
+      return Object.assign(hudBox(gx, parkedY, tw, th), {
         text: gt,
         lines,
         font,
@@ -12907,7 +12975,13 @@
       muteB.y + muteB.h,
       pauseB.y + pauseB.h
     );
-    const gy = platesBottom + phoneCss(8);
+    // C118 — park the DIVE-to-catch ribbon under TODAY so the
+    // unlock toast / ribbon cannot eat the plate.
+    // loop 118 plaza today after unlock.
+    const sessionLift = (missionVisible() || sessionChipVisible())
+      ? sessionChipMetrics().h + phoneCss(8)
+      : 0;
+    const gy = platesBottom + sessionLift + phoneCss(8);
     const gx = clamp(leftPad, leftPad, Math.max(leftPad, rightLimit - tw));
     return Object.assign(hudBox(gx, gy, tw, th), {
       text: gt,
@@ -13050,10 +13124,9 @@
       ctx.restore();
     }
     const sessionY = Math.max(
-      portraitStage() ? hudSafeTop() + phoneCss(48) + 8 : 74,
+      sessionChipTop(),
       moneyBox.y + moneyBox.h + 8,
-      bagBox.y + bagBox.h + 8,
-      ribbon ? ribbon.y + ribbon.h + 8 : 0
+      bagBox.y + bagBox.h + 8
     );
     const sessionM = sessionChipMetrics();
     if (missionVisible()) {
@@ -13062,7 +13135,7 @@
       ctx.font = "800 " + sessionM.font + "px Nunito, sans-serif";
       const tw = Math.min(ctx.measureText(label).width + sessionM.pad * 2, sessionM.maxW);
       const chip = hudBox(sessionM.x, sessionY, tw, sessionM.h);
-      const a = screenBoxAlpha(chip.x, chip.y, chip.w, chip.h);
+      const a = sessionChipPaintAlpha();
       if (a > 0.04) {
         ctx.save();
         ctx.globalAlpha = a;
@@ -13084,7 +13157,7 @@
       const label = "TODAY " + day + "  ·  " + cur;
       const tw = Math.min(ctx.measureText(label).width + sessionM.pad * 2, sessionM.maxW);
       const chip = hudBox(sessionM.x, sessionY, tw, sessionM.h);
-      const a = screenBoxAlpha(chip.x, chip.y, chip.w, chip.h);
+      const a = sessionChipPaintAlpha();
       if (a > 0.04) {
         ctx.save();
         ctx.globalAlpha = a;
@@ -13287,14 +13360,13 @@
     if (state.unlockBanner) {
       const u = clamp(state.unlockBanner.life / 0.9, 0, 1);
       const a = u > 0.75 ? (1 - u) / 0.25 : u < 0.2 ? u / 0.2 : 1;
-      const midY = 78;
-      const bw = Math.min(520, W - 280);
+      const box = unlockBannerBox() || { x: W / 2 - 260, y: 56, w: Math.min(520, W - 280), h: 44 };
       ctx.globalAlpha = a;
       ctx.fillStyle = "rgba(8, 16, 24, 0.5)";
-      roundRect(W / 2 - bw / 2, midY - 22, bw, 44, 12); ctx.fill();
+      roundRect(box.x, box.y, box.w, box.h, 12); ctx.fill();
       ctx.fillStyle = state.unlockBanner.color;
-      ctx.font = "800 22px Fredoka, sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(state.unlockBanner.name.toUpperCase() + " UNLOCKED", W / 2, midY + 8);
+      ctx.font = "800 " + (portraitStage() ? phoneCss(16) : 22) + "px Fredoka, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(state.unlockBanner.name.toUpperCase() + " UNLOCKED", box.x + box.w / 2, box.y + Math.round(box.h * 0.68));
       ctx.globalAlpha = 1;
     }
     if (state.flash > 0) {
@@ -13852,7 +13924,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 117", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 118", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -13915,7 +13987,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 117", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 118", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -13946,7 +14018,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 117", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 118", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
