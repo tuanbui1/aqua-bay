@@ -1,0 +1,14 @@
+{
+  "name": "Aqua Bay",
+  "install": "python3 -m pip install --user pillow",
+  "terminals": [
+    {
+      "name": "web",
+      "command": "python3 -m http.server 8000",
+      "description": "Serves the static game over HTTP. Aqua Bay at http://localhost:8000/ , games hub at /games/ , Skipjack at /games/skipjack/ ."
+    }
+  ],
+  "ports": [
+    { "name": "web", "port": 8000 }
+  ]
+}
