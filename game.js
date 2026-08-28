@@ -14759,9 +14759,17 @@
         // the gold buy price with the pulse. Other locked cards keep the
         // plain price; hover still bumps a non-focused card's shortfall.
         const showNeed = need > 0 && (i === next || (hover && need > 0));
+        const priceLbl = showNeed ? "need $" + need + " more" : "$" + SPECIES[i].unlock;
         ctx.fillStyle = affordable ? "#ffe27a" : showNeed ? "#ffb08a" : "#ffe27a";
-        ctx.font = "800 " + (showNeed ? needPx : pricePx) + "px Nunito, sans-serif";
-        ctx.fillText(showNeed ? "need $" + need + " more" : "$" + SPECIES[i].unlock, x + cw / 2, priceY);
+        // Fit the shortfall to the card width so a long "need $1400 more"
+        // (shown by default now, without the hover scale-up) never clips.
+        let priceFont = showNeed ? needPx : pricePx;
+        ctx.font = "800 " + priceFont + "px Nunito, sans-serif";
+        while (showNeed && priceFont > 8 && ctx.measureText(priceLbl).width > cw - 12) {
+          priceFont -= 1;
+          ctx.font = "800 " + priceFont + "px Nunito, sans-serif";
+        }
+        ctx.fillText(priceLbl, x + cw / 2, priceY);
         ctx.fillStyle = affordable ? "#fff6e8" : "#c8e8ee";
         ctx.font = "700 " + namePx + "px Nunito, sans-serif";
         ctx.fillText(SPECIES[i].name, x + cw / 2, nameY);

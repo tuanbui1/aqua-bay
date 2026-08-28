@@ -62,13 +62,17 @@ const strip = extractFn(src, "drawSpeciesStrip") || "";
 assert(strip, "drawSpeciesStrip is extractable");
 assert(/const showNeed = need > 0 && \(i === next \|\| \(hover && need > 0\)\);/.test(strip),
   "showNeed shows the shortfall for the focused next unlock (or any hovered locked card)");
-assert(/ctx\.fillText\(showNeed \? "need \$" \+ need \+ " more" : "\$" \+ SPECIES\[i\]\.unlock/.test(strip),
-  "the price line reads showNeed, not hover-only");
+assert(/const priceLbl = showNeed \? "need \$" \+ need \+ " more" : "\$" \+ SPECIES\[i\]\.unlock;/.test(strip),
+  "the label reads showNeed, not hover-only");
+assert(/ctx\.fillText\(priceLbl, x \+ cw \/ 2, priceY\);/.test(strip),
+  "the fitted label is drawn on the price line");
 assert(!/hover && need > 0 \? "need \$" \+ need \+ " more"/.test(strip),
   "the old hover-only shortfall gate is gone");
-// price/need font + colour follow showNeed
-assert(/\(showNeed \? needPx : pricePx\)/.test(strip),
-  "the shortfall font follows showNeed");
+// the shortfall auto-fits the card so a long "need $1400 more" cannot clip
+assert(/let priceFont = showNeed \? needPx : pricePx;/.test(strip),
+  "the shortfall font starts from needPx");
+assert(/while \(showNeed && priceFont > 8 && ctx\.measureText\(priceLbl\)\.width > cw - 12\)/.test(strip),
+  "the shortfall font shrinks to fit the card width");
 assert(/affordable \? "#ffe27a" : showNeed \? "#ffb08a" : "#ffe27a"/.test(strip),
   "unaffordable focus shows the peach shortfall, affordable flips to gold");
 
