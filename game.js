@@ -1,5 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
-// loop 141 diver pitches into a real dive, not always on his belly
+// loop 143 fish cruise in gentle S-curves, not straight lines
 (() => {
   "use strict";
 
@@ -279,7 +279,7 @@
   let canvasSx = 1;
   let canvasSy = 1;
 
-  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy + loop 110 tap the lock + loop 111 dive for the new bowl + loop 112 dive for the right band + loop 113 hunt locks a seahorse + loop 114 hide SURFACE until the hunt bags + loop 115 dive chip arms the hunt + loop 116 today hunt copy + loop 117 catalog book not shop + loop 118 plaza today after unlock + loop 119 ocean zone plate readable + loop 120 hunt hud not over prey + loop 121 surface ribbon clear of SURFACE + loop 122 surface stays on the dock + loop 123 body turn not paper flip + loop 124 north walk is not a south-dock quest + loop 125 one shore no water-walk boat tap only + loop 126 no store-to-shore cut + loop 127 DIVE works on the dock. + loop 128 walk the west dock + loop 129 west dock tap walks west + loop 130 east dock tap walks east + loop 131 one DIVE prompt, opaque pause + loop 132 title Who's diving readable + loop 133 one SURFACE cue at the waterline + loop 134 one BOAT cue on the action board + loop 135 dino turns flat not a paper flip + loop 136 dino swims flat not a paper flip + loop 137 next unlock shows how much more you need + loop 138 clearer walk-to-stock direction arrow + loop 139 next-buy caption lights up when you can afford it + loop 140 fish face where they swim not belly-up + loop 141 diver pitches into a real dive
+  // Loop 48 characters/fish + loop 53 walk/swim + loop 55 skyline + loop 56 cone/props + loop 57 pier/paddle + loop 58 plant + loop 59 clean blit/pier + loop 60 plant props + loop 61 NPC plate/shadow + loop 62 continuous pier + loop 63 water-on-water + loop 64 seabed/DIVE + loop 65 unique deep bed + loop 66 hang/lang + loop 67 second dive + loop 68 scroll tear + loop 69 HUD gutter + loop 70 reserved rail + loop 71 rail fade / last plank + loop 72 one-scene dock / whole-sprite rail + loop 73 east dock one scene + loop 74 dusk sky / north cap / OPEN + loop 75 surface unstick / visible dusk town / east cap / one SHINY + loop 76 aisle / gallery tank walk + loop 77 plaza click / WASD + loop 78 portrait phone layout + loop 79 phone menu / tap copy / rail + loop 80 playable phone (full playfield, shop tray, chip DIVE) + loop 81 safe-area HUD / full DIVE / findable stock + loop 82 visual-viewport DIVE / BAG plate / notch + loop 83 portrait BAG opaque plate + loop 84 plaza DIVE inset / readable dive pills + loop 85 phone toasts wrap / HUD gap + loop 86 faster plaza DIVE walk + loop 87 one DIVE cue / no stale south hint + loop 88 plaza tanks / planks / painted shop wall + loop 89 padlock only on locked tanks + loop 90 starter unlock stays when empty + loop 91 dock POP cooler / OPEN sign / water-edge foam + loop 92 bait hut / one OPEN sign + loop 93 NPC bubbles stay on stage / OPEN hang + loop 94 390-wide title stack / phoneCss picker + loop 95 picker portraits / label inset + loop 96 pier-board title buttons + loop 97 pier-board DIVE chip + loop 100 pin tap-to-stock to the glowing tank + loop 101 desktop walk to Puffer + loop 102 east gallery aisle to Puffer + loop 103 hold-W east spine + loop 104 hold-W next unlock + loop 105 hold-W west lane + loop 106 hold-W north through the bowls + loop 107 phone 390 tap-to-walk to the shop bowls + loop 108 tap north reaches the bowls + loop 109 walk is not a buy + loop 110 tap the lock + loop 111 dive for the new bowl + loop 112 dive for the right band + loop 113 hunt locks a seahorse + loop 114 hide SURFACE until the hunt bags + loop 115 dive chip arms the hunt + loop 116 today hunt copy + loop 117 catalog book not shop + loop 118 plaza today after unlock + loop 119 ocean zone plate readable + loop 120 hunt hud not over prey + loop 121 surface ribbon clear of SURFACE + loop 122 surface stays on the dock + loop 123 body turn not paper flip + loop 124 north walk is not a south-dock quest + loop 125 one shore no water-walk boat tap only + loop 126 no store-to-shore cut + loop 127 DIVE works on the dock. + loop 128 walk the west dock + loop 129 west dock tap walks west + loop 130 east dock tap walks east + loop 131 one DIVE prompt, opaque pause + loop 132 title Who's diving readable + loop 133 one SURFACE cue at the waterline + loop 134 one BOAT cue on the action board + loop 135 dino turns flat not a paper flip + loop 136 dino swims flat not a paper flip + loop 137 next unlock shows how much more you need + loop 138 clearer walk-to-stock direction arrow + loop 139 next-buy caption lights up when you can afford it + loop 140 fish face where they swim not belly-up + loop 141 diver pitches into a real dive + loop 143 fish cruise in gentle S-curves
   const ATLAS = {"skip_walk0":{"x":2,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk1":{"x":144,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk2":{"x":286,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk3":{"x":428,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk4":{"x":570,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_walk5":{"x":712,"y":2,"w":140,"h":184,"ax":70.0,"ay":176},"skip_swim0":{"x":854,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim1":{"x":1052,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim2":{"x":1250,"y":2,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim3":{"x":2,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim4":{"x":200,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_swim5":{"x":398,"y":188,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_walk0":{"x":596,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk1":{"x":738,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk2":{"x":880,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk3":{"x":1022,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk4":{"x":1164,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_walk5":{"x":1306,"y":188,"w":140,"h":184,"ax":70.0,"ay":176},"reef_swim0":{"x":2,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim1":{"x":200,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim2":{"x":398,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim3":{"x":596,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim4":{"x":794,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"reef_swim5":{"x":992,"y":374,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_walk0":{"x":1190,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk1":{"x":1332,"y":374,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk2":{"x":2,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk3":{"x":144,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk4":{"x":286,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_walk5":{"x":428,"y":560,"w":140,"h":184,"ax":70.0,"ay":176},"dino_swim0":{"x":570,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim1":{"x":768,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim2":{"x":966,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim3":{"x":1164,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim4":{"x":1362,"y":560,"w":196,"h":108,"ax":98.0,"ay":54.0},"dino_swim5":{"x":2,"y":746,"w":196,"h":108,"ax":98.0,"ay":54.0},"skip_stand":{"x":200,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_walk":{"x":330,"y":746,"w":128,"h":176,"ax":64,"ay":168},"skip_dive":{"x":460,"y":746,"w":176,"h":96,"ax":96,"ay":48},"reef_stand":{"x":638,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_walk":{"x":768,"y":746,"w":128,"h":176,"ax":64,"ay":168},"reef_dive":{"x":898,"y":746,"w":176,"h":96,"ax":96,"ay":48},"dino_stand":{"x":1076,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_walk":{"x":1206,"y":746,"w":128,"h":176,"ax":64,"ay":168},"dino_dive":{"x":1336,"y":746,"w":176,"h":96,"ax":96,"ay":48},"fish0":{"x":2,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish1":{"x":116,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish2":{"x":230,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish3":{"x":344,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish4":{"x":458,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish5":{"x":572,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish6":{"x":686,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish7":{"x":800,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish8":{"x":914,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish9":{"x":1028,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish10":{"x":1142,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish11":{"x":1256,"y":924,"w":112,"h":72,"ax":62,"ay":36},"fish12":{"x":1370,"y":924,"w":112,"h":72,"ax":62,"ay":36},"maya":{"x":1484,"y":924,"w":96,"h":140,"ax":48,"ay":132},"nico":{"x":2,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"jun":{"x":100,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"cashier":{"x":198,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"vip":{"x":296,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"kid":{"x":394,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g0":{"x":492,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g1":{"x":590,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g2":{"x":688,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g3":{"x":786,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g4":{"x":884,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"g5":{"x":982,"y":1066,"w":96,"h":140,"ax":48,"ay":132},"crown":{"x":1080,"y":1066,"w":40,"h":32,"ax":20,"ay":28},"shades":{"x":1122,"y":1066,"w":40,"h":20,"ax":20,"ay":12},"tankglass":{"x":1164,"y":1066,"w":140,"h":110,"ax":70,"ay":55},"bed0":{"x":1306,"y":1066,"w":220,"h":92,"ax":110,"ay":68},"bed1":{"x":2,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed2":{"x":224,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed3":{"x":446,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed4":{"x":668,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed5":{"x":890,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed6":{"x":1112,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"bed7":{"x":1334,"y":1208,"w":220,"h":92,"ax":110,"ay":68},"post":{"x":2,"y":1302,"w":44,"h":110,"ax":22,"ay":104},"skip_card":{"x":48,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"reef_card":{"x":190,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"dino_card":{"x":332,"y":1302,"w":140,"h":184,"ax":70.0,"ay":176},"harbortown":{"x":474,"y":1302,"w":630,"h":420,"ax":315.0,"ay":386.40000000000003},"harbor":{"x":1106,"y":1302,"w":480,"h":320,"ax":240.0,"ay":288.0},"sky":{"x":2,"y":1724,"w":630,"h":176,"ax":315.0,"ay":176},"plank":{"x":634,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank1":{"x":876,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank2":{"x":1118,"y":1724,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank3":{"x":2,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank4":{"x":244,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank5":{"x":486,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank6":{"x":728,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"plank7":{"x":970,"y":1902,"w":240,"h":40,"ax":120.0,"ay":20.0},"water":{"x":1212,"y":1902,"w":300,"h":200,"ax":150.0,"ay":56.00000000000001},"waterline":{"x":2,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"waterline2":{"x":364,"y":2104,"w":360,"h":56,"ax":180,"ay":38},"divepad":{"x":726,"y":2104,"w":220,"h":110,"ax":110.0,"ay":94.6},"lifering":{"x":948,"y":2104,"w":96,"h":96,"ax":48,"ay":86},"anchor":{"x":1046,"y":2104,"w":90,"h":110,"ax":45,"ay":102}};
   const ART = { img: null, ready: false };
   (function loadBayArt() {
@@ -4152,6 +4152,7 @@
       const dx = f.x - px, dy = f.y - py;
       const d = Math.hypot(dx, dy) || 0.001;
       const locked = player.scoopLock === f && catchHolding();
+      let cruising = !locked;
       const firstDive = (state.divesThisSession | 0) === 1;
       let fleeR = f.rare ? sp.fleeR * 0.38 : sp.fleeR;
       let fleeSp = f.rare ? sp.flee * 0.36 : sp.flee;
@@ -4167,6 +4168,7 @@
         f.vx *= 0.42;
         f.vy *= 0.42;
       } else if (d < fleeR) {
+        cruising = false;
         f.fleeT = f.rare ? 0.22 : (firstDive ? 0.22 : 0.45);
         const boost = (!f.rare && !firstDive && d < 70) ? 1.25 : 1;
         f.vx = (dx / d) * fleeSp * boost;
@@ -4185,6 +4187,19 @@
           if (c) f.ang = lerp(f.ang, Math.atan2(sy / c - f.y, sx / c - f.x), 0.04);
         }
         applySpeciesGait(f, dt, sp);
+      }
+      // loop 143 gentle swim S-curve — fish used to cruise in near-straight
+      // lines at a steady pace. On the cruise / coast path (not fleeing, not
+      // locked), layer a slow speed ebb (drift → glide) and a gentle
+      // vertical waver so mid-water fish trace organic up-down curves. The
+      // per-fish phase desyncs the school; bottom crawlers (crab / octopus)
+      // skip the vertical waver so they stay on the seabed. Flee / catch set
+      // their own velocity (cruising=false), so the catch feel is unchanged.
+      if (cruising) {
+        const ebb = 0.9 + 0.22 * Math.sin(state.time * 0.5 + f.ph);
+        f.vx *= ebb;
+        const bottomGait = sp.gait === "scuttle" || sp.gait === "crawl";
+        f.vy = f.vy * ebb + (bottomGait ? 0 : Math.sin(state.time * 1.1 + f.ph * 2.3) * sp.cruise * 0.5);
       }
       f.x += f.vx * dt; f.y += f.vy * dt;
       if (f.x < 70) { f.x = 70; f.vx = Math.abs(f.vx); f.ang = 0; }
@@ -11926,6 +11941,14 @@
         continue;
       }
       let dang = f.ang;
+      // loop 143 — nose the fish into its actual swim velocity so the
+      // S-curve reads as swimming, not sliding flat through the water.
+      // Draw-only (does not feed back into the gait's f.ang); the top-down
+      // critters (seahorse / octopus / crab) keep their own dampened facing.
+      if (f.s !== 5 && f.s !== 8 && f.s !== 9) {
+        const velP = clamp(Math.atan2(f.vy, Math.max(1, Math.abs(f.vx))), -0.5, 0.5);
+        dang = (Math.cos(f.ang) < 0) ? (Math.PI - velP) : velP;
+      }
       if (f.s === 0) dang += (f.darting ? 0.18 : -0.06) * Math.sin(state.time * 14 + f.ph);
       else if (f.s === 2) dang += Math.sin(state.time * 0.85 + f.ph) * 0.32;
       else if (f.s === 3) dang += Math.sin(state.time * 0.4 + f.ph) * 0.08;
@@ -14507,7 +14530,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 141", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 143", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -14573,7 +14596,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 141", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 143", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -14604,7 +14627,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 141", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 143", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
