@@ -63,7 +63,19 @@ assert(/const away = state\.lastPlayed \? \(Date\.now\(\) - state\.lastPlayed\) 
   "credit uses the real elapsed time since last play");
 assert(/state\.money \+= earned;/.test(credit) && /toast\("Welcome back!/.test(credit),
   "credit adds the money and shows a welcome-back toast");
+assert(/state\.welcomeBack = \{ amount: earned, life: 5\.0 \};/.test(credit),
+  "credit raises a dedicated welcome-back banner (a toast alone is masked by the goal ribbon)");
 assert(/state\.lastPlayed = Date\.now\(\);/.test(credit), "credit stamps the new lastPlayed");
+// the banner is drawn (on top of the HUD) and ticks down
+assert(/function drawWelcomeBack\(\)/.test(src), "there is a welcome-back banner draw");
+assert(/drawHUD\(\);\s*\n\s*drawWelcomeBack\(\);/.test(src), "the banner draws over the HUD each frame");
+assert(/if \(state\.welcomeBack\) \{\s*\n\s*state\.welcomeBack\.life -= dt;/.test(src),
+  "the banner fades out over time");
+assert(/welcomeBack: null,/.test(src), "welcomeBack defaults to null");
+assert(/Your divers earned \$" \+ wb\.amount \+ " while you were away/.test(src),
+  "the banner reads out the amount the crew earned");
+// no debug test hook shipped
+assert(!/#offlinetest/.test(src), "no #offlinetest debug hook is left in the shipped code");
 
 // ---- the formula: modest and hard-capped ----
 const fn = extractFn(src, "offlineEarnings") || "";

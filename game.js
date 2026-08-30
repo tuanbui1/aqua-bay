@@ -564,7 +564,7 @@
     hitStop: 0, camPunch: 0, bagPunch: 1, moneyPunch: 1, displayMoney: 0,
     moneyRollFrom: 0, moneyRollTo: 0, moneyRollT: 0, audioUnlocked: false,
     diveCatches: 0, bagBonus: 1, flash: 0, dustTimer: 0,
-    splash: null, tankReveal: null, unlockBanner: null, comboPop: null,
+    splash: null, tankReveal: null, unlockBanner: null, comboPop: null, welcomeBack: null,
     shopSwimmers: [], didFirstCollect: false, didFirstUnlock: false,
     hiredCashier: false, cashierAcc: 0, diverLv: 0, diverAcc: 0, lastPlayed: 0,
     sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
@@ -974,7 +974,7 @@
       muted: keepMute, skin: keepSkin, hitStop: 0, camPunch: 0, bagPunch: 1, moneyPunch: 1, displayMoney: 0,
       moneyRollT: 0, audioUnlocked: state.audioUnlocked,
       diveCatches: 0, bagBonus: 1, flash: 0, dustTimer: 0,
-      splash: null, tankReveal: null, unlockBanner: null, comboPop: null, shopSwimmers: [],
+      splash: null, tankReveal: null, unlockBanner: null, comboPop: null, welcomeBack: null, shopSwimmers: [],
       didFirstCollect: false, didFirstUnlock: false, hiredCashier: false, cashierAcc: 0,
       diverLv: 0, diverAcc: 0, lastPlayed: 0,
       sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
@@ -5731,6 +5731,9 @@
       state.money += earned;
       state.peakMoney = Math.max(state.peakMoney | 0, state.money | 0);
       toast("Welcome back! Your divers earned $" + earned + " while you were away.", "#ffe27a", 4.8, { big: true });
+      // A dedicated banner as well — a toast is masked by the goal ribbon,
+      // and a returning player should always see what their crew brought in.
+      state.welcomeBack = { amount: earned, life: 5.0 };
       persist();
     }
     state.lastPlayed = Date.now();
@@ -6280,6 +6283,10 @@
     if (state.unlockBanner) {
       state.unlockBanner.life -= dt;
       if (state.unlockBanner.life <= 0) state.unlockBanner = null;
+    }
+    if (state.welcomeBack) {
+      state.welcomeBack.life -= dt;
+      if (state.welcomeBack.life <= 0) state.welcomeBack = null;
     }
     tickDiveForCue(dt);
     if (state.comboPop) {
@@ -14132,6 +14139,31 @@
     ctx.fillText(maxed ? "MAX" : "$" + cost, x + w - 10, y + Math.max(16, Math.round(h * 0.34)));
     if (!maxed) btn(id, x, y, w, h);
   }
+  function drawWelcomeBack() {
+    const wb = state.welcomeBack;
+    if (!wb || wb.life <= 0) return;
+    const age = 5.0 - wb.life;
+    let alpha = 1;
+    if (age < 0.3) alpha = age / 0.3;
+    else if (wb.life < 0.6) alpha = wb.life / 0.6;
+    const line1 = "Welcome back!";
+    const line2 = "Your divers earned $" + wb.amount + " while you were away";
+    ctx.save();
+    ctx.globalAlpha = clamp(alpha, 0, 1);
+    ctx.font = "700 14px Nunito, sans-serif";
+    const bw = Math.min(Math.max(ctx.measureText(line2).width, 180) + 44, W - 40);
+    const bh = 62;
+    const bx = W / 2 - bw / 2, by = 92;
+    card(bx, by, bw, bh, "rgba(18, 46, 40, 0.95)");
+    ctx.strokeStyle = "rgba(255,226,122,0.85)"; ctx.lineWidth = 2;
+    roundRect(bx, by, bw, bh, 12); ctx.stroke();
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#ffe27a"; ctx.font = "800 19px Fredoka, sans-serif";
+    ctx.fillText(line1, W / 2, by + 24);
+    ctx.fillStyle = "#dfeff2"; ctx.font = "700 14px Nunito, sans-serif";
+    ctx.fillText(line2, W / 2, by + 46);
+    ctx.restore();
+  }
   function drawUpgradeBar() {
     const bar = upgradeBarBox();
     const size = bar.phoneRail
@@ -15775,6 +15807,7 @@
         ctx.fillRect(0, 0, W, H);
       }
       drawHUD();
+      drawWelcomeBack();
       if (state.mode === "pause" || state.mode === "help") drawPause();
       drawCollectionBook();
       registerSurfaceHits();
