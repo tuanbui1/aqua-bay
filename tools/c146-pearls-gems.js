@@ -61,7 +61,10 @@ assert(/const PEARL_CHANCE = 0\.11;/.test(src) && /const PEARL_CHANCE_RARE = 0\.
 assert(/if \(Math\.random\(\) >= \(f && f\.rare \? PEARL_CHANCE_RARE : PEARL_CHANCE\)\) return;/.test(mp),
   "the pearl roll uses the higher chance for a shiny");
 assert(/state\.gems = \(state\.gems \| 0\) \+ 1;/.test(mp), "a pearl grants one gem");
-assert(/toast\("Found a pearl!/.test(mp) && /particles\.push/.test(mp), "a pearl pops with a toast + particles");
+assert(/particles\.push/.test(mp), "a pearl bursts particles");
+assert(/hudPop\("Pearl!  \+1 \\u25C6"/.test(mp),
+  "a pearl shows a floating pop (not masked by the goal ribbon the way a toast is)");
+assert(!/#gemtest/.test(src), "no leftover gem test hook");
 
 // ---- the sink: spend gems to restock every unlocked tank ----
 assert(/const RESTOCK_GEMS = 3;/.test(src), "a restock costs 3 gems");

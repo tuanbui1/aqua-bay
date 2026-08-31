@@ -5719,6 +5719,9 @@
     state.gems = (state.gems | 0) + 1;
     state.gemPop = 1.0;
     sfx("coin");
+    // A floating pop (not masked by the goal ribbon the way a toast is) so
+    // finding a pearl always reads.
+    hudPop("Pearl!  +1 \u25C6", "#bfeaff", player.x, player.y, 2.2);
     toast("Found a pearl!  +1 gem", "#9ef0ff", 2.6, { big: true });
     for (let k = 0; k < 10; k++) {
       particles.push({
