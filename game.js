@@ -916,7 +916,7 @@
         pendingBookTease: !!d.pendingBookTease,
         didFirstStock: !!(d.didFirstStock || (Array.isArray(d.stock) && d.stock.some(n => (n | 0) > 0))),
         didFirstSale: !!(d.didFirstSale || d.didFirstCollect || (d.money | 0) > 0),
-        lastPlayed: d.lastPlayed | 0,
+        lastPlayed: (d.lastPlayed > 0 ? +d.lastPlayed : 0),
         skin: normalizeSkin(d.skin),
       });
       ensureUnlockFlags();

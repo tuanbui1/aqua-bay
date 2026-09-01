@@ -46,6 +46,10 @@ assert(/loop 145 divers earn while you are away/.test(src), "loop 145 breadcrumb
 assert(/loop 144 hireable auto-catching divers/.test(src), "loop 144 breadcrumb stays");
 assert(/const SAVE_KEY = "aqua-bay-save"/.test(src), "save key stays");
 assert(!/\bIAP\b/.test(src), "no IAP");
+assert(/lastPlayed: \(d\.lastPlayed > 0 \? \+d\.lastPlayed : 0\)/.test(src),
+  "lastPlayed loads as a full millisecond timestamp (Date.now()|0 overflows in 2026)");
+assert(!/lastPlayed: d\.lastPlayed \| 0/.test(src),
+  "the overflowing lastPlayed | 0 load is gone");
 
 // ---- crew data + helpers ----
 assert(/const CREW_LOOKS = \[/.test(src), "CREW_LOOKS exists");
