@@ -59,8 +59,8 @@ assert(/if \(opt\.crew \|\| opt\.goggles\) return null;/.test(src),
 
 const home = extractFn(src, "crewHome") || "";
 assert(home, "crewHome is extractable");
-assert(/716 \+ \(i \| 0\) \* 44/.test(home) && /y: 1008/.test(home),
-  "crew home is on the DIVE-pad dock, staggered per hire");
+assert(/760 \+ \(i \| 0\) \* 40/.test(home) && /y: 972/.test(home),
+  "crew home is on the painted dock boards, staggered per hire");
 const pad = extractFn(src, "crewTankPoint") || "";
 assert(/TANK_POS\[tank\]/.test(pad) && /TANK_H \+ 38/.test(pad),
   "a delivery dest is the front of that bowl");
@@ -104,6 +104,8 @@ assert(/if \(opt\.goggles\) \{/.test(src) && /rgba\(90, 210, 230/.test(src),
   "goggles paint a teal dive mask");
 assert(/if \(opt\.crew\) drawFishBody\(SPECIES\[opt\.carry\]/.test(src),
   "a delivering diver carries the fish, not a brown parcel");
+assert(/opt\.carry >= 0 \? "STOCK" : "DIVER"/.test(src),
+  "a DIVER / STOCK chip labels the walker so they are not a silent extra");
 
 // ---- numeric proof: crew size, walk time dock→Clownfish ----
 function crewCount(diverLv) { return clamp(diverLv | 0, 0, 4); }
@@ -111,11 +113,11 @@ assert(crewCount(0) === 0, "no hire → no walker");
 assert(crewCount(1) === 1 && crewCount(3) === 3 && crewCount(4) === 4,
   "1..4 hires → that many walkers");
 assert(crewCount(9) === 4, "crew never exceeds DIVER_MAX");
-function homeX(i) { return 716 + i * 44; }
-assert(homeX(0) === 716 && homeX(3) === 848, "a full crew still stands on the dive pad");
+function homeX(i) { return 760 + i * 40; }
+assert(homeX(0) === 760 && homeX(3) === 880, "a full crew still stands on the dive-pad boards");
 const tank0 = { x: 340, y: 164 };
 const dest = { x: tank0.x + 210 / 2 + 22, y: tank0.y + 156 + 38 };
-const dist = Math.hypot(dest.x - 716, dest.y - 1008);
+const dist = Math.hypot(dest.x - 760, dest.y - 972);
 const walkSec = dist / 168;
 assert(walkSec > 3 && walkSec < 7,
   "dock→Clownfish is a visible walk (~" + walkSec.toFixed(1) + "s), not a teleport");

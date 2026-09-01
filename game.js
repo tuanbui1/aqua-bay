@@ -5705,7 +5705,8 @@
     return true;
   }
   function crewHome(i) {
-    return { x: 716 + (i | 0) * 44, y: 1008 };
+    // On the painted dock boards, left of the DIVE pad — not in the foam.
+    return { x: 760 + (i | 0) * 40, y: 972 };
   }
   function crewTankPoint(tank, i) {
     const t = TANK_POS[tank] || TANK_POS[0];
@@ -9552,6 +9553,14 @@
       if (opt.crew) drawFishBody(SPECIES[opt.carry] || SPECIES[0], 14, -4, 0.22, 0.82, state.time);
       else drawCarryParcel(14, -2);
     }
+    }
+    if (opt.crew) {
+      ctx.fillStyle = "rgba(18, 32, 42, 0.9)";
+      roundRect(-20, -40, 40, 12, 4); ctx.fill();
+      ctx.fillStyle = opt.carry >= 0 ? "#ffe27a" : "#9ef0ff";
+      ctx.font = "800 8px Nunito, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(opt.carry >= 0 ? "STOCK" : "DIVER", 0, -31);
     }
     if (talkVisible(opt)) {
       let ox = opt.emoteOff || 0;
