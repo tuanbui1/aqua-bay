@@ -260,8 +260,8 @@
     return { y0, y1: y0 + ZONE_STEP };
   }
   function inWreck(x, y) {
-    return x > WRECK.x - 36 && x < WRECK.x + WRECK.w + 36 &&
-      y > WRECK.y - 28 && y < WRECK.y + WRECK.h + 40;
+    return x > WRECK.x - 80 && x < WRECK.x + WRECK.w + 80 &&
+      y > WRECK.y - 60 && y < WRECK.y + WRECK.h + 90;
   }
   function wreckCurrentX(x, y) {
     if (y > 980 || y < 240) return 0;
