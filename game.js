@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 149 Nico hangs a wreck lantern on the east dock after he buys one
 // loop 148 hold the cone on the wreck chest — pearls + a lantern, Nico wants it
 // loop 147 the wreck east of the shallows + lanternfish
 // loop 146 visible hired diver NPCs walk the dock and stock the bowls
@@ -39,7 +40,7 @@
   const SPECIES_N = SPECIES.length;
   const REGULAR_LINES = {
     Maya: ["the usual!", "my clownfish!", "don't skimp!"],
-    Nico: ["the usual!", "perfect.", "again please"],
+    Nico: ["the usual!", "perfect.", "again please", "from the wreck!"],
     Jun: ["the usual!", "don't skimp!", "again please"],
     _: ["the usual!", "same as always", "you know me"],
   };
@@ -143,6 +144,9 @@
   // board off the arm (left of the post) — planted X/Y stay.
   const OPEN_SIGN = { x: 1052, y: 924 };
   const EAST_CRATES = { x: 1056, y: 936 };
+  // loop 149 — Nico hangs the wreck lantern off the bait hut's east eave
+  // so OPEN / the life ring stay readable and the glow sits on the dusk dock.
+  const WRECK_LAMP = { x: BAIT_HUT.x + 56, y: BAIT_HUT.y + 8 };
   // Aisle boards stop here on the dock camera so the ramp does not
   // hard-cut into the sky. Plaza camera still paints the full aisle.
   const NORTH_WALK_CAP_Y = 760;
@@ -638,7 +642,7 @@
     shopSwimmers: [], didFirstCollect: false, didFirstUnlock: false,
     hiredCashier: false, cashierAcc: 0, diverLv: 0, diverAcc: 0, lastPlayed: 0,
     sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, sessionChest: false,
+    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false,
     inReef: false, inWreck: false, zoneTitle: null,
     expedition: false, expeditionTime: 0, peakMoney: 0, vipCooldown: 0,
     caughtCount: padSpeciesNums([]), bookOpen: null,
@@ -911,7 +915,7 @@
       stock: padSpeciesNums([]), bag: [], tutorial: 0, registerCash: 0,
       lifetimeCatches: 0, muted: false, hiredCashier: false,
       sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, sessionChest: false,
+    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false,
       peakMoney: 0, caughtCount: padSpeciesNums([]),
       decor: [false, false, false], expeditionCount: 0,
       missionStep: 0, missionDone: false, caughtRare: false,
@@ -951,7 +955,7 @@
         sawReef: !!d.sawReef, sawGoldGarden: !!d.sawGoldGarden,
         sawKoiGate: !!d.sawKoiGate, sawTurtleMeadow: !!d.sawTurtleMeadow,
         sawWreck: !!d.sawWreck, wreckHinted: !!d.wreckHinted, wreckChestReady: false,
-        lanternRumor: !!d.lanternRumor, sessionChest: false,
+        lanternRumor: !!d.lanternRumor, wreckLamp: !!d.wreckLamp, sessionChest: false, sessionNicoLantern: false,
         inReef: false, inWreck: false, zoneTitle: null,
         peakMoney: Math.max(d.peakMoney | 0, d.money | 0),
         expedition: false, expeditionTime: 0, vipCooldown: 0,
@@ -1016,6 +1020,7 @@
         sawKoiGate: state.sawKoiGate, sawTurtleMeadow: state.sawTurtleMeadow,
         sawWreck: !!state.sawWreck, wreckHinted: !!state.wreckHinted,
         lanternRumor: !!state.lanternRumor,
+        wreckLamp: !!state.wreckLamp,
         peakMoney: Math.max(state.peakMoney | 0, state.money | 0),
         caughtCount: padSpeciesNums(state.caughtCount),
         decor: state.decor || [false, false, false],
@@ -1055,7 +1060,7 @@
       didFirstCollect: false, didFirstUnlock: false, hiredCashier: false, cashierAcc: 0,
       diverLv: 0, diverAcc: 0, lastPlayed: 0,
       sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-      sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, sessionChest: false,
+      sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false,
       inReef: false, inWreck: false, zoneTitle: null, expedition: false, expeditionTime: 0, peakMoney: 0, vipCooldown: 0,
       caughtCount: padSpeciesNums([]), bookOpen: null,
       decor: [false, false, false], expeditionCount: 0, nightExpedition: false, decorOpen: false,
@@ -2507,6 +2512,7 @@
     if (id === "wreck") return "Visit the wreck";
     if (id === "chest") return "Crack the wreck chest";
     if (id === "nico") return "Sell Nico a lantern";
+    if (id === "lamp") return "Hang Nico's lantern";
     if (id === "catch6") return "Catch 6 fish  " + Math.min(6, state.sessionDiveCatch | 0) + "/6";
     if (id === "deep") return "Dive a new zone";
     if (id === "unlock") {
@@ -2532,6 +2538,7 @@
     if (id === "wreck") return !!state.sawWreck;
     if (id === "chest") return !!state.sessionChest;
     if (id === "nico") return !!state.sessionNicoLantern;
+    if (id === "lamp") return !!state.wreckLamp;
     if (id === "catch6") return (state.sessionDiveCatch | 0) >= 6;
     if (id === "deep") return (state.sessionSawDeep | 0) > (state.goalDeepAt | 0);
     if (id === "unlock") {
@@ -2559,6 +2566,7 @@
     if (state.didFirstStock && !state.sawWreck) pool.push("wreck");
     if (state.sawWreck) pool.push("chest");
     if (state.lanternRumor && ((state.stock && state.stock[13]) | 0) === 0) pool.push("nico");
+    if (state.lanternRumor && !state.wreckLamp && ((state.stock && state.stock[13]) | 0) > 0) pool.push("lamp");
     if (state.unlocked[4]) pool.push("deep");
     const nl = nextLockedTank();
     if (nl >= 0) pool.push("unlock");
@@ -5553,6 +5561,16 @@
     }
     persist();
   }
+  function hangWreckLamp() {
+    // loop 149 — Nico's lantern comes home to the pier. One hang.
+    if (state.wreckLamp) return;
+    state.wreckLamp = true;
+    spawnP(WRECK_LAMP.x, WRECK_LAMP.y + 20, 22, ["#ffe27a", "#f4d06a", "#fff6e8", "#9ef0ff"], 90);
+    pop(WRECK_LAMP.x, WRECK_LAMP.y - 8, "Nico's lantern", "#f4d06a");
+    sfx("unlock");
+    toast("Nico hung a lantern on the east dock", "#f4d06a", 3.4);
+    persist();
+  }
   function openWreckChest() {
     if (!state.wreckChestReady) return;
     state.wreckChestReady = false;
@@ -6334,6 +6352,13 @@
                 fat: first ? 1.35 : 1.2,
               });
             }
+            if (c.name === "Nico" && (c.carry | 0) === 13) {
+              // loop 149 — unique bark + hang the wreck lantern on the east dock
+              state.sessionNicoLantern = true;
+              c.teaseLantern = false;
+              c.saidLine = "from the wreck!";
+              hangWreckLamp();
+            }
             const who = c.name || "A guest";
             playSale(who, SPECIES[c.carry].name, pay, c.x, c.y - 28, first, c.saidLine || c.emote);
             beatMoment(first ? "firstsale" : "sale", c.x, c.y - 20);
@@ -6346,10 +6371,6 @@
                 player.pendingAct = { kind: "cash" };
                 setWalkDest(registerWalkPoint());
               }
-            }
-            if (c.name === "Nico" && (c.carry | 0) === 13) {
-              state.sessionNicoLantern = true;
-              c.teaseLantern = false;
             }
             const usual = c.regular && (c.favorite == null || c.favorite === c.carry);
             const said = usual ? regularBark(c) : "";
@@ -10610,6 +10631,63 @@
     ctx.beginPath(); ctx.arc(0, 0, 8.5, 0, Math.PI * 2); ctx.stroke();
     ctx.restore();
   }
+  function drawWreckLamp(x, y) {
+    // loop 149 — hanging wreck lantern. Same dusk-dock language as OPEN /
+    // the bait hut: sit shadow, sway, warm glass. Brighter pulse so the
+    // east dock reads as changed after Nico's sale. Continue with
+    // wreckLamp already true still paints it.
+    if (!state.wreckLamp) return;
+    const sway = Math.sin(state.time * 1.55) * 0.07;
+    const pulse = 0.58 + Math.sin(state.time * 2.6) * 0.22;
+    sitShadow(x + 2, y + 46, 18, 8, 0.26 + pulse * 0.14);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(sway);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const halo = ctx.createRadialGradient(0, 24, 2, 0, 24, 40);
+    halo.addColorStop(0, "rgba(255, 226, 122," + (0.62 + pulse * 0.28) + ")");
+    halo.addColorStop(0.42, "rgba(244, 208, 106," + (0.24 + pulse * 0.12) + ")");
+    halo.addColorStop(0.78, "rgba(158, 240, 255, 0.08)");
+    halo.addColorStop(1, "rgba(158, 240, 255, 0)");
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(0, 24, 40, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = "#2a1a10";
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(0, -8); ctx.lineTo(0, 8); ctx.stroke();
+    ctx.fillStyle = "#3a1c0c";
+    ctx.beginPath(); ctx.arc(0, -8, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#5a3418";
+    roundRect(-8, 6, 16, 6, 2); ctx.fill();
+    ctx.fillStyle = "#c49248";
+    roundRect(-7, 7, 14, 3, 1); ctx.fill();
+    ctx.fillStyle = "rgba(255, 236, 160, 0.78)";
+    ctx.beginPath();
+    ctx.moveTo(-8, 12);
+    ctx.lineTo(-11, 28);
+    ctx.quadraticCurveTo(0, 36, 11, 28);
+    ctx.lineTo(8, 12);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "rgba(158, 240, 255, 0.28)";
+    ctx.beginPath();
+    ctx.moveTo(-4, 14);
+    ctx.lineTo(-6, 26);
+    ctx.quadraticCurveTo(0, 30, 1, 16);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#ffe27a";
+    ctx.beginPath(); ctx.ellipse(0, 22, 3.4, 6.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff6e8";
+    ctx.beginPath(); ctx.ellipse(0, 23, 1.5, 3.1, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#3a1c0c";
+    roundRect(-6, 30, 12, 4, 1); ctx.fill();
+    ctx.fillStyle = "#e8c04a";
+    roundRect(-5, 31, 10, 2, 1); ctx.fill();
+    ctx.restore();
+  }
   function drawPopCan(cx, cy, col, top) {
     ctx.fillStyle = col;
     roundRect(cx - 9, cy - 4, 18, 24, 4); ctx.fill();
@@ -11336,6 +11414,9 @@
     paintRailProp(POP_VEND.x, POP_VEND.y + 38, 96, function () { drawVending(POP_VEND.x, POP_VEND.y); });
     paintRailProp(OPEN_SIGN.x, OPEN_SIGN.y - 18, 96, function () { drawHangingSign(OPEN_SIGN.x, OPEN_SIGN.y); });
     paintRailProp(BAIT_HUT.x, BAIT_HUT.y + 36, 96, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
+    if (state.wreckLamp) {
+      paintRailProp(WRECK_LAMP.x, WRECK_LAMP.y + 24, 52, function () { drawWreckLamp(WRECK_LAMP.x, WRECK_LAMP.y); });
+    }
     drawSkiff(pierLife.skiff);
     drawGull(pierLife.gull);
     drawGull(pierLife.gull2);
@@ -15144,7 +15225,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 148", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 149", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -15210,7 +15291,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 148", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 149", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -15241,7 +15322,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 148", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 149", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
