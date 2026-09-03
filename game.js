@@ -15464,13 +15464,13 @@
       panelBtn("help", W / 2 - btnW / 2, y, btnW, Math.max(44, btnH - 4), "Help", "#2a7d8a", 1, btnFont);
       y += Math.max(44, btnH - 4) + gap;
       panelBtn("mute", W / 2 - btnW / 2, y, btnW, Math.max(44, btnH - 4), state.muted ? "Sound Off" : "Sound On", "#3d6f7a", 1, btnFont);
-      y += Math.max(44, btnH - 4) + (tall ? Math.round(H * 0.03) : 28);
+      y += Math.max(44, btnH - 4) + (tall ? Math.round(H * 0.03) : 36);
       const pLay = titleMenuLayout();
       const pCardW = tall ? Math.min(pLay.cardW, 280) : 140;
       const pCardH = tall ? Math.min(pLay.cardH, Math.round(H * 0.18)) : 100;
       drawSkinPicker(W / 2, y, pCardW, pCardH, tall ? 20 : 12, {
         nameFont: tall ? pLay.nameFont : 16, blurbFont: tall ? pLay.blurbFont : 11,
-        whoFont: tall ? pLay.whoFont : 14, whoY: y - (tall ? 28 : 20),
+        whoFont: tall ? pLay.whoFont : 14, whoY: y - (tall ? 28 : 16),
       });
       y += pCardH + (tall ? Math.round(H * 0.02) : 12);
       const saveH = tall ? Math.max(52, btnH - 8) : 40;
