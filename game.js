@@ -10639,10 +10639,11 @@
     if (!state.wreckLamp) return;
     const sway = Math.sin(state.time * 1.55) * 0.07;
     const pulse = 0.58 + Math.sin(state.time * 2.6) * 0.22;
-    sitShadow(x + 2, y + 46, 18, 8, 0.26 + pulse * 0.14);
+    sitShadow(x + 2, y + 58, 22, 10, 0.28 + pulse * 0.16);
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(sway);
+    ctx.scale(1.35, 1.35);
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
     const halo = ctx.createRadialGradient(0, 24, 2, 0, 24, 40);
@@ -11415,7 +11416,7 @@
     paintRailProp(OPEN_SIGN.x, OPEN_SIGN.y - 18, 96, function () { drawHangingSign(OPEN_SIGN.x, OPEN_SIGN.y); });
     paintRailProp(BAIT_HUT.x, BAIT_HUT.y + 36, 96, function () { drawBaitShack(BAIT_HUT.x, BAIT_HUT.y); });
     if (state.wreckLamp) {
-      paintRailProp(WRECK_LAMP.x, WRECK_LAMP.y + 24, 52, function () { drawWreckLamp(WRECK_LAMP.x, WRECK_LAMP.y); });
+      paintRailProp(WRECK_LAMP.x, WRECK_LAMP.y + 28, 72, function () { drawWreckLamp(WRECK_LAMP.x, WRECK_LAMP.y); });
     }
     drawSkiff(pierLife.skiff);
     drawGull(pierLife.gull);
