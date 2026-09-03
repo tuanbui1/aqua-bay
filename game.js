@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 150 the wreck lantern calls Sable, a night guest on the east dock
 // loop 149 Nico hangs a wreck lantern on the east dock after he buys one
 // loop 148 hold the cone on the wreck chest — pearls + a lantern, Nico wants it
 // loop 147 the wreck east of the shallows + lanternfish
@@ -42,6 +43,7 @@
     Maya: ["the usual!", "my clownfish!", "don't skimp!"],
     Nico: ["the usual!", "perfect.", "again please", "from the wreck!"],
     Jun: ["the usual!", "don't skimp!", "again please"],
+    Sable: ["the light!", "pretty!", "night swim?"],
     _: ["the usual!", "same as always", "you know me"],
   };
   const SALE_BARK_POOL = ["the usual!", "my clownfish!", "don't skimp!", "perfect.", "again please"];
@@ -49,11 +51,13 @@
     Maya: { hawaii: true, hat: "#e8c04a", shirt: "#1b6b5a", hair: "#3a2415", hairCut: 1, idle: "glance" },
     Nico: { sailor: true, hat: "#f4efe6", shirt: "#3d8bfd", hair: "#1b1b1b", hairCut: 0, idle: "whistle" },
     Jun: { visor: true, hat: "#e85d4c", shirt: "#f0b429", hair: "#8a4a1a", hairCut: 2, idle: "bounce" },
+    Sable: { hat: "#1a1428", shirt: "#3a2458", hair: "#1a1020", hairCut: 1, idle: "glance", sunglasses: true },
   };
   const REGULAR_TINTS = {
     Maya: { fill: "rgba(18, 78, 68, 0.95)", ink: "#ffe27a", stroke: "#7ad0b0" },
     Nico: { fill: "rgba(16, 48, 108, 0.95)", ink: "#d6ecff", stroke: "#8eb8ff" },
     Jun: { fill: "rgba(122, 36, 30, 0.95)", ink: "#ffe27a", stroke: "#f0a060" },
+    Sable: { fill: "rgba(28, 16, 48, 0.95)", ink: "#f4d06a", stroke: "#c4a0ff" },
   };
   const BOOK_FLAVOR = [
     "Orange stripes and zero fear — first regular of the bay.",
@@ -642,7 +646,7 @@
     shopSwimmers: [], didFirstCollect: false, didFirstUnlock: false,
     hiredCashier: false, cashierAcc: 0, diverLv: 0, diverAcc: 0, lastPlayed: 0,
     sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false,
+    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false, sessionSable: false, sableCd: 0, sableHinted: false,
     inReef: false, inWreck: false, zoneTitle: null,
     expedition: false, expeditionTime: 0, peakMoney: 0, vipCooldown: 0,
     caughtCount: padSpeciesNums([]), bookOpen: null,
@@ -915,7 +919,7 @@
       stock: padSpeciesNums([]), bag: [], tutorial: 0, registerCash: 0,
       lifetimeCatches: 0, muted: false, hiredCashier: false,
       sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false,
+    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false, sessionSable: false, sableCd: 0, sableHinted: false,
       peakMoney: 0, caughtCount: padSpeciesNums([]),
       decor: [false, false, false], expeditionCount: 0,
       missionStep: 0, missionDone: false, caughtRare: false,
@@ -955,7 +959,7 @@
         sawReef: !!d.sawReef, sawGoldGarden: !!d.sawGoldGarden,
         sawKoiGate: !!d.sawKoiGate, sawTurtleMeadow: !!d.sawTurtleMeadow,
         sawWreck: !!d.sawWreck, wreckHinted: !!d.wreckHinted, wreckChestReady: false,
-        lanternRumor: !!d.lanternRumor, wreckLamp: !!d.wreckLamp, sessionChest: false, sessionNicoLantern: false,
+        lanternRumor: !!d.lanternRumor, wreckLamp: !!d.wreckLamp, sessionChest: false, sessionNicoLantern: false, sessionSable: false, sableCd: 0, sableHinted: false,
         inReef: false, inWreck: false, zoneTitle: null,
         peakMoney: Math.max(d.peakMoney | 0, d.money | 0),
         expedition: false, expeditionTime: 0, vipCooldown: 0,
@@ -1060,7 +1064,7 @@
       didFirstCollect: false, didFirstUnlock: false, hiredCashier: false, cashierAcc: 0,
       diverLv: 0, diverAcc: 0, lastPlayed: 0,
       sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-      sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false,
+      sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, wreckLamp: false, sessionChest: false, sessionNicoLantern: false, sessionSable: false, sableCd: 0, sableHinted: false,
       inReef: false, inWreck: false, zoneTitle: null, expedition: false, expeditionTime: 0, peakMoney: 0, vipCooldown: 0,
       caughtCount: padSpeciesNums([]), bookOpen: null,
       decor: [false, false, false], expeditionCount: 0, nightExpedition: false, decorOpen: false,
@@ -1583,6 +1587,7 @@
     c.hawaii = !!look.hawaii;
     c.sailor = !!look.sailor;
     c.visor = !!look.visor;
+    c.sunglasses = !!look.sunglasses;
     if (look.hat) c.hat = look.hat;
     c.shirt = look.shirt;
     c.hair = look.hair;
@@ -2513,6 +2518,7 @@
     if (id === "chest") return "Crack the wreck chest";
     if (id === "nico") return "Sell Nico a lantern";
     if (id === "lamp") return "Hang Nico's lantern";
+    if (id === "sable") return "Serve Sable at the lantern";
     if (id === "catch6") return "Catch 6 fish  " + Math.min(6, state.sessionDiveCatch | 0) + "/6";
     if (id === "deep") return "Dive a new zone";
     if (id === "unlock") {
@@ -2539,6 +2545,7 @@
     if (id === "chest") return !!state.sessionChest;
     if (id === "nico") return !!state.sessionNicoLantern;
     if (id === "lamp") return !!state.wreckLamp;
+    if (id === "sable") return !!state.sessionSable;
     if (id === "catch6") return (state.sessionDiveCatch | 0) >= 6;
     if (id === "deep") return (state.sessionSawDeep | 0) > (state.goalDeepAt | 0);
     if (id === "unlock") {
@@ -2567,6 +2574,7 @@
     if (state.sawWreck) pool.push("chest");
     if (state.lanternRumor && ((state.stock && state.stock[13]) | 0) === 0) pool.push("nico");
     if (state.lanternRumor && !state.wreckLamp && ((state.stock && state.stock[13]) | 0) > 0) pool.push("lamp");
+    if (state.wreckLamp) pool.push("sable");
     if (state.unlocked[4]) pool.push("deep");
     const nl = nextLockedTank();
     if (nl >= 0) pool.push("unlock");
@@ -2587,6 +2595,7 @@
     state.sessionBoat = false;
     state.sessionChest = false;
     state.sessionNicoLantern = false;
+    state.sessionSable = false;
     state.sessionDiveCatch = 0;
     state.sessionStocked = -1;
     state.goalUnlockAt = highestUnlocked();
@@ -3574,6 +3583,7 @@
     }
     creditOffline();
     maybeLanternRumor();
+    maybeNightGuest();
     state.displayMoney = state.money;
     state.playClock = 0;
     seedDockTeasers();
@@ -5570,6 +5580,26 @@
     sfx("unlock");
     toast("Nico hung a lantern on the east dock", "#f4d06a", 3.4);
     persist();
+    maybeNightGuest();
+  }
+  function maybeNightGuest() {
+    // loop 150 — the hung wreck lantern calls Sable. Continue with
+    // wreckLamp already true still sprouts her under the eave.
+    if (!state.wreckLamp || state.mode !== "play") return;
+    if (state.scene !== "shop") return;
+    if ((state.sableCd || 0) > 0) return;
+    for (const c of customers) if (c.name === "Sable") return;
+    if (customers.length >= MAX_CUSTOMERS) return;
+    const want = ((state.stock && state.stock[13]) | 0) > 0 ? 13 : 0;
+    customers.push(newCustomer({
+      x: 1320, y: 1040, state: "lamp", tank: want, hops: 6, offX: -16,
+      name: "Sable", regular: true, favorite: want, nightGuest: true,
+      payMult: 2, emote: "the light!",
+    }));
+    if (!state.sableHinted) {
+      state.sableHinted = true;
+      toast("The lantern called a night guest", "#c4a0ff", 3.2);
+    }
   }
   function openWreckChest() {
     if (!state.wreckChestReady) return;
@@ -6187,7 +6217,7 @@
     const names = new Set();
     for (const c of customers) {
       if (c.regular) {
-        n++;
+        if (!c.nightGuest) n++;
         if (c.favorite == null) c.favorite = 0;
       }
       if (c.name) names.add(c.name);
@@ -6244,6 +6274,8 @@
     }));
   }
   function updateCustomers(dt) {
+    if (state.sableCd > 0) state.sableCd = Math.max(0, state.sableCd - dt);
+    maybeNightGuest();
     if (state.vipCooldown > 0) state.vipCooldown = Math.max(0, state.vipCooldown - dt);
     const totalFish = state.stock.reduce((a, b) => a + b, 0);
     const dec = state.decor || [false, false, false];
@@ -6359,6 +6391,10 @@
               c.saidLine = "from the wreck!";
               hangWreckLamp();
             }
+            if (c.name === "Sable") {
+              state.sessionSable = true;
+              c.saidLine = "the light!";
+            }
             const who = c.name || "A guest";
             playSale(who, SPECIES[c.carry].name, pay, c.x, c.y - 28, first, c.saidLine || c.emote);
             beatMoment(first ? "firstsale" : "sale", c.x, c.y - 20);
@@ -6414,13 +6450,37 @@
             }
           }
         }
+      } else if (c.state === "lamp") {
+        tx = WRECK_LAMP.x - 20; ty = WRECK_LAMP.y + 54;
+        if (Math.hypot(c.x - tx, c.y - ty) < 16) {
+          c.emote = "the light!";
+          c.wait += dt;
+          if (c.wait > 1.6) {
+            if ((state.stock && state.stock[13] | 0) > 0) {
+              c.tank = 13; c.favorite = 13; c.state = "tank"; c.wait = 0;
+            } else {
+              const alt = [];
+              for (let k = 0; k < SPECIES.length; k++) if (state.stock[k] > 0) alt.push(k);
+              if (alt.length) {
+                c.tank = pick(alt); c.favorite = c.tank; c.state = "tank"; c.wait = 0;
+              } else {
+                c.hops = (c.hops || 1) - 1;
+                c.wait = 0.4;
+                if (c.hops <= 0) { c.state = "leave"; c.emote = "later"; state.sableCd = 8; }
+              }
+            }
+          }
+        }
       } else if (c.state === "cross") {
         tx = c.destX != null ? c.destX : 1500;
         ty = c.destY != null ? c.destY : c.y;
         if (Math.hypot(c.x - tx, c.y - ty) < 22) { c.state = "leave"; c.emote = ""; }
       } else {
         ty = 1180;
-        if (c.y > 1120) { customers.splice(i, 1); continue; }
+        if (c.y > 1120) {
+          if (c.nightGuest) state.sableCd = 10;
+          customers.splice(i, 1); continue;
+        }
       }
       const dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy) || 1;
       c.gaitT = (c.gaitT || 0) + dt;
@@ -13677,6 +13737,13 @@
       const t = TANK_POS[want];
       return { text: "A VIP wants " + SPECIES[want].name + " — stock that tank", target: { x: t.x + TANK_W / 2, y: t.y + TANK_H / 2 } };
     }
+    if (state.scene === "shop" && state.wreckLamp && player && player.y > 860) {
+      for (const c of customers) {
+        if (c.name === "Sable" && c.state === "lamp") {
+          return { text: "Sable came for the lantern", target: { x: WRECK_LAMP.x, y: WRECK_LAMP.y + 48 } };
+        }
+      }
+    }
     if (state.stock.some(n => n > 0) && state.registerCash === 0) {
       return { text: "Customers are on the way — wait at the cashier", target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
     }
@@ -15226,7 +15293,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 149", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 150", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -15292,7 +15359,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 149", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 150", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -15323,7 +15390,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 149", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 150", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
