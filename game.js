@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 151 v1.0 stamp + export / import so a shop survives a cleared browser
 // loop 150 the wreck lantern calls Sable, a night guest on the east dock
 // loop 149 Nico hangs a wreck lantern on the east dock after he buys one
 // loop 148 hold the cone on the wreck chest — pearls + a lantern, Nico wants it
@@ -1001,56 +1002,136 @@
       return true;
     } catch (e) { return false; }
   }
+  function savePayload() {
+    // loop 151 — one blob for persist, download, and clipboard.
+    // game + v mark an Aqua Bay file; old saves without them still load.
+    ensureUnlockFlags();
+    state.peakMoney = Math.max(state.peakMoney | 0, state.money | 0);
+    return {
+      game: "aqua-bay",
+      v: 1,
+      lastPlayed: Date.now(),
+      money: state.money, speedLv: state.speedLv, bagLv: state.bagLv, catchLv: state.catchLv,
+      upgrades: {
+        speedLv: state.speedLv | 0,
+        bagLv: state.bagLv | 0,
+        catchLv: state.catchLv | 0,
+        hiredCashier: !!state.hiredCashier,
+        diverLv: state.diverLv | 0,
+      },
+      unlocked: padSpeciesFlags(state.unlocked), stock: padSpeciesNums(state.stock), bag: state.bag,
+      tutorial: state.tutorial, registerCash: state.registerCash,
+      lifetimeCatches: state.lifetimeCatches, muted: state.muted,
+      didFirstCollect: state.didFirstCollect, didFirstUnlock: state.didFirstUnlock,
+      hiredCashier: state.hiredCashier, diverLv: state.diverLv | 0,
+      sawReef: state.sawReef, sawGoldGarden: state.sawGoldGarden,
+      sawKoiGate: state.sawKoiGate, sawTurtleMeadow: state.sawTurtleMeadow,
+      sawWreck: !!state.sawWreck, wreckHinted: !!state.wreckHinted,
+      lanternRumor: !!state.lanternRumor,
+      wreckLamp: !!state.wreckLamp,
+      peakMoney: Math.max(state.peakMoney | 0, state.money | 0),
+      caughtCount: padSpeciesNums(state.caughtCount),
+      decor: state.decor || [false, false, false],
+      expeditionCount: state.expeditionCount | 0,
+      missionStep: state.missionStep | 0,
+      missionDone: !!state.missionDone,
+      caughtRare: !!state.caughtRare,
+      bagRare: state.bagRare || [],
+      stockRare: padSpeciesNums(state.stockRare),
+      sessionGoals: state.sessionGoals || [],
+      sessionGoalDone: state.sessionGoalDone || [],
+      sessionSales: state.sessionSales | 0,
+      sessionDay: Math.max(1, state.sessionDay | 0),
+      sawDeepZone: state.sawDeepZone | 0,
+      sessionCaughtRare: !!state.sessionCaughtRare,
+      sessionBoat: !!state.sessionBoat,
+      bookOpened: !!state.bookOpened,
+      bookTeaseShown: !!state.bookTeaseShown,
+      sawBookTease: !!state.sawBookTease,
+      pendingBookTease: !!state.pendingBookTease,
+      didFirstStock: !!state.didFirstStock,
+      didFirstSale: !!state.didFirstSale,
+      skin: normalizeSkin(state.skin),
+    };
+  }
   function persist() {
     try {
-      ensureUnlockFlags();
-      state.peakMoney = Math.max(state.peakMoney | 0, state.money | 0);
-      localStorage.setItem(SAVE_KEY, JSON.stringify({
-        lastPlayed: Date.now(),
-        money: state.money, speedLv: state.speedLv, bagLv: state.bagLv, catchLv: state.catchLv,
-        upgrades: {
-          speedLv: state.speedLv | 0,
-          bagLv: state.bagLv | 0,
-          catchLv: state.catchLv | 0,
-          hiredCashier: !!state.hiredCashier,
-          diverLv: state.diverLv | 0,
-        },
-        unlocked: padSpeciesFlags(state.unlocked), stock: padSpeciesNums(state.stock), bag: state.bag,
-        tutorial: state.tutorial, registerCash: state.registerCash,
-        lifetimeCatches: state.lifetimeCatches, muted: state.muted,
-        didFirstCollect: state.didFirstCollect, didFirstUnlock: state.didFirstUnlock,
-        hiredCashier: state.hiredCashier, diverLv: state.diverLv | 0,
-        sawReef: state.sawReef, sawGoldGarden: state.sawGoldGarden,
-        sawKoiGate: state.sawKoiGate, sawTurtleMeadow: state.sawTurtleMeadow,
-        sawWreck: !!state.sawWreck, wreckHinted: !!state.wreckHinted,
-        lanternRumor: !!state.lanternRumor,
-        wreckLamp: !!state.wreckLamp,
-        peakMoney: Math.max(state.peakMoney | 0, state.money | 0),
-        caughtCount: padSpeciesNums(state.caughtCount),
-        decor: state.decor || [false, false, false],
-        expeditionCount: state.expeditionCount | 0,
-        missionStep: state.missionStep | 0,
-        missionDone: !!state.missionDone,
-        caughtRare: !!state.caughtRare,
-        bagRare: state.bagRare || [],
-        stockRare: padSpeciesNums(state.stockRare),
-        sessionGoals: state.sessionGoals || [],
-        sessionGoalDone: state.sessionGoalDone || [],
-        sessionSales: state.sessionSales | 0,
-        sessionDay: Math.max(1, state.sessionDay | 0),
-        sawDeepZone: state.sawDeepZone | 0,
-        sessionCaughtRare: !!state.sessionCaughtRare,
-        sessionBoat: !!state.sessionBoat,
-        bookOpened: !!state.bookOpened,
-        bookTeaseShown: !!state.bookTeaseShown,
-        sawBookTease: !!state.sawBookTease,
-        pendingBookTease: !!state.pendingBookTease,
-        didFirstStock: !!state.didFirstStock,
-        didFirstSale: !!state.didFirstSale,
-        skin: normalizeSkin(state.skin),
-      }));
+      localStorage.setItem(SAVE_KEY, JSON.stringify(savePayload()));
       state.hasSave = true;
     } catch (e) {}
+  }
+  function isAquaBaySave(d) {
+    if (!d || typeof d !== "object") return false;
+    if (d.game != null && d.game !== "aqua-bay") return false;
+    if (d.money == null && !Array.isArray(d.unlocked)) return false;
+    return true;
+  }
+  let saveFileInput = null;
+  function exportSave() {
+    persist();
+    let text = "";
+    try { text = localStorage.getItem(SAVE_KEY) || ""; } catch (e) { text = ""; }
+    if (!text) {
+      toast("Nothing to export yet", "#ff8a7a", 2.2);
+      return;
+    }
+    try {
+      const blob = new Blob([text], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "aqua-bay-save.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    } catch (e) {}
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text);
+    } catch (e) {}
+    toast("Save exported — keep the JSON file", "#9ef0ff", 3.2);
+  }
+  function ensureSaveFileInput() {
+    if (saveFileInput) return saveFileInput;
+    const inp = document.createElement("input");
+    inp.type = "file";
+    inp.accept = "application/json,.json,text/plain";
+    inp.setAttribute("aria-label", "Import Aqua Bay save");
+    inp.style.position = "fixed";
+    inp.style.left = "-9999px";
+    inp.addEventListener("change", function () {
+      const f = inp.files && inp.files[0];
+      inp.value = "";
+      if (!f) return;
+      const reader = new FileReader();
+      reader.onload = function () { applyImportedSave(String(reader.result || "")); };
+      reader.readAsText(f);
+    });
+    document.body.appendChild(inp);
+    saveFileInput = inp;
+    return inp;
+  }
+  function pickImportSave() {
+    ensureSaveFileInput().click();
+  }
+  function applyImportedSave(raw) {
+    try {
+      const d = JSON.parse(raw);
+      if (!isAquaBaySave(d)) {
+        toast("Not an Aqua Bay save", "#ff8a7a", 2.4);
+        return false;
+      }
+      localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+      if (!loadSave()) {
+        toast("Could not load that save", "#ff8a7a", 2.4);
+        return false;
+      }
+      toast("Save imported — Continue when ready", "#9ef0ff", 3.0);
+      if (state.mode === "play" || state.mode === "pause" || state.mode === "help") state.mode = "title";
+      return true;
+    } catch (e) {
+      toast("Could not read that file", "#ff8a7a", 2.4);
+      return false;
+    }
   }
   function resetSave() {
     try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
@@ -3425,6 +3506,8 @@
     if (id === "help") { state.mode = "help"; return; }
     if (id === "back") { state.mode = "pause"; return; }
     if (id === "reset") { resetSave(); return; }
+    if (id === "export") { exportSave(); return; }
+    if (id === "import") { pickImportSave(); return; }
     if (id === "mute") { state.muted = !state.muted; persist(); return; }
     if (id === "shop-toggle") { phoneShopOpen = !phoneShopOpen; return; }
     if (id === "shop-panel") return;
@@ -15293,7 +15376,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 150", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · v1.0", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -15308,6 +15391,12 @@
     } else {
       titleBoardBtn("play", W / 2 - lay.continueW / 2, lay.playY, lay.continueW, lay.playH, "Play", pulse, lay.btnFont);
     }
+    const impY = state.hasSave ? lay.newY + lay.newH + 22 : lay.playY + lay.playH + 22;
+    ctx.fillStyle = "#9ef0ff";
+    ctx.font = "700 " + Math.max(13, lay.stampFont) + "px Nunito, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Import save", W / 2, impY);
+    btn("import", W / 2 - 80, impY - 18, 160, 28);
     ctx.restore();
     menuYShift = 0;
   }
@@ -15350,6 +15439,7 @@
         "Deeper stacked zones never end — more tanks next to the aisle after Turtle",
         "Decor chip — lights, sign, fountain",
         "Mute button — sound on/off",
+        "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
       ];
       const lineY = cardY + (tall ? Math.round(H * 0.08) : 86);
@@ -15359,7 +15449,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 150", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · v1.0", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -15377,20 +15467,26 @@
       y += Math.max(44, btnH - 4) + (tall ? Math.round(H * 0.03) : 28);
       const pLay = titleMenuLayout();
       const pCardW = tall ? Math.min(pLay.cardW, 280) : 140;
-      const pCardH = tall ? Math.min(pLay.cardH, Math.round(H * 0.22)) : 148;
+      const pCardH = tall ? Math.min(pLay.cardH, Math.round(H * 0.18)) : 100;
       drawSkinPicker(W / 2, y, pCardW, pCardH, tall ? 20 : 12, {
         nameFont: tall ? pLay.nameFont : 16, blurbFont: tall ? pLay.blurbFont : 11,
         whoFont: tall ? pLay.whoFont : 14, whoY: y - (tall ? 28 : 20),
       });
-      y += pCardH + (tall ? Math.round(H * 0.03) : 28);
-      const resetY = tall ? cardY + cardH - 16 - btnH : 528;
+      y += pCardH + (tall ? Math.round(H * 0.02) : 12);
+      const saveH = tall ? Math.max(52, btnH - 8) : 40;
+      const half = (btnW - 10) / 2;
+      const saveFont = tall ? Math.max(20, btnFont - 4) : 16;
+      panelBtn("export", W / 2 - btnW / 2, y, half, saveH, "Export save", "#2a7d8a", 1, saveFont);
+      panelBtn("import", W / 2 - btnW / 2 + half + 10, y, half, saveH, "Import save", "#3d6f7a", 1, saveFont);
+      y += saveH + (tall ? 10 : 8);
+      const resetY = tall ? cardY + cardH - 16 - btnH : y;
       panelBtn("reset", W / 2 - btnW / 2, resetY, btnW, tall ? btnH : 44, "New Game", "#a84a3a", 1, btnFont);
       ctx.fillStyle = "#8ab"; ctx.font = "600 " + Math.max(12, bodyPx - 2) + "px Nunito, sans-serif";
-      const footY = tall ? resetY - Math.round(H * 0.042) : 590;
-      ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
+      const footY = tall ? resetY - Math.round(H * 0.042) : resetY + 52;
+      ctx.fillText("Save stays on this device. Export to keep it.", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 150", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · v1.0", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
