@@ -57,6 +57,7 @@ const draw = extractFn(src, "drawWreckLamp") || "";
 assert(/if \(!state\.wreckLamp\) return/.test(draw), "lamp paints only after the hang");
 assert(/sitShadow/.test(draw), "lamp casts a sit shadow on the boards");
 assert(/globalCompositeOperation = "lighter"/.test(draw), "lamp glow uses the wreck language");
+assert(/ctx\.scale\(1\.35, 1\.35\)/.test(draw), "lamp reads at dock-camera size");
 
 assert(/drawWreckLamp\(WRECK_LAMP\.x, WRECK_LAMP\.y\)/.test(src), "shop pass paints the planted lamp");
 
