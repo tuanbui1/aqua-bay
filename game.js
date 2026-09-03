@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 152 first-session polish — quiet HUD, wood Import, warmer music
 // loop 151 v1.0 stamp + export / import so a shop survives a cleared browser
 // loop 150 the wreck lantern calls Sable, a night guest on the east dock
 // loop 149 Nico hangs a wreck lantern on the east dock after he buys one
@@ -719,7 +720,7 @@
 
   // ===== AUDIO =====
   let actx = null;
-  const music = { started: false, pad: null, padGain: null, lfo: null, wash: null, washGain: null, washFilter: null, step: 0, acc: 0 };
+  const music = { started: false, pad: null, padGain: null, fifth: null, fifthGain: null, sub: null, subGain: null, lfo: null, wash: null, washGain: null, washFilter: null, step: 0, acc: 0 };
   function audio() {
     if (!actx) {
       const AC = window.AudioContext || window.webkitAudioContext;
@@ -789,6 +790,24 @@
       music.padGain.connect(a.destination);
       music.pad.start();
       music.lfo.start();
+      // loop 152 — a fifth and a quiet triangle sub so the pad is a
+      // chord, not a lone 110 Hz sine. Mute still zeros every gain.
+      music.fifth = a.createOscillator();
+      music.fifth.type = "sine";
+      music.fifth.frequency.value = 165;
+      music.fifthGain = a.createGain();
+      music.fifthGain.gain.value = state.muted ? 0 : 0.010;
+      music.fifth.connect(music.fifthGain);
+      music.fifthGain.connect(a.destination);
+      music.fifth.start();
+      music.sub = a.createOscillator();
+      music.sub.type = "triangle";
+      music.sub.frequency.value = 55;
+      music.subGain = a.createGain();
+      music.subGain.gain.value = state.muted ? 0 : 0.007;
+      music.sub.connect(music.subGain);
+      music.subGain.connect(a.destination);
+      music.sub.start();
       const n = Math.max(1, (a.sampleRate * 2.4) | 0);
       const buf = a.createBuffer(1, n, a.sampleRate);
       const data = buf.getChannelData(0);
@@ -820,8 +839,16 @@
       music.pad.frequency.setTargetAtTime(padFreq, actx.currentTime, 0.35);
       if (music.padGain) music.padGain.gain.setTargetAtTime(state.muted ? 0 : (sectionB ? 0.016 : 0.02), actx.currentTime, 0.12);
     }
+    if (music.fifth) {
+      music.fifth.frequency.setTargetAtTime(padFreq * 1.5, actx.currentTime, 0.35);
+      if (music.fifthGain) music.fifthGain.gain.setTargetAtTime(state.muted ? 0 : (sectionB ? 0.007 : 0.009), actx.currentTime, 0.12);
+    }
+    if (music.sub) {
+      music.sub.frequency.setTargetAtTime(padFreq * 0.5, actx.currentTime, 0.4);
+      if (music.subGain) music.subGain.gain.setTargetAtTime(state.muted ? 0 : 0.006, actx.currentTime, 0.16);
+    }
     if (music.washFilter) {
-      music.washFilter.frequency.setTargetAtTime(ocean ? 280 : 460, actx.currentTime, 0.4);
+      music.washFilter.frequency.setTargetAtTime(ocean ? 300 : 500, actx.currentTime, 0.4);
     }
     if (music.washGain) {
       const washVol = ocean ? 0.022 : 0.014;
@@ -2035,6 +2062,17 @@
     }
     return shopBarsReady();
   }
+  function speciesRailReady() {
+    // loop 152 — desktop species cards wait until the first stock /
+    // collect. Phone BOOK still opens the same tray.
+    if (portraitStage()) return true;
+    return shopBarsReady() || !!state.didFirstStock || !!state.didFirstCollect || (state.tutorial | 0) >= 4;
+  }
+  function syncChrome() {
+    const root = document.documentElement;
+    if (!root) return;
+    root.classList.toggle("ab-playing", state.mode === "play");
+  }
   function diveWalkLegal() {
     return state.mode === "play" && state.scene === "shop" && state.surfaceLock <= 0 && !bagHasStockable() && !cashNeedsCollect();
   }
@@ -2185,6 +2223,8 @@
   }
   function inReefZone(x, y) { return y > REEF_Y || x > REEF_X; }
   function nextGoal() {
+    // loop 152 — hide "Next Speed $40" until the first dollar is real.
+    if (!state.didFirstCollect && !state.didFirstSale) return null;
     const opts = [];
     if (state.speedLv < SPEED_COST.length) opts.push({ name: "Speed", cost: SPEED_COST[state.speedLv] });
     if (state.bagLv < BAG_COST.length) opts.push({ name: "Bag", cost: BAG_COST[state.bagLv] });
@@ -13248,20 +13288,22 @@
     return !!state.hiredCashier && !playerNearRegister();
   }
   function firstSessionReached() {
+    // loop 152 — a New Game dock is 1 / 6. Do not treat spawn-on-pad
+    // or the current-verb index plus one as step 2 before they have dived.
     if (state.missionDone) return 6;
-    let r = 0;
-    if (state.didMove || (state.tutorial | 0) >= 1 || state.scene === "ocean") r = 1;
-    if ((state.tutorial | 0) >= 1 || state.scene === "ocean" || state.pendingScene === "ocean") r = 2;
-    if (((state.caughtCount && state.caughtCount[0]) | 0) >= 1) r = 2;
-    if (((state.caughtCount && state.caughtCount[0]) | 0) >= 5 || bagIsFull() || state.didFirstStock) r = 3;
-    if (state.didFirstStock) r = 4;
-    if (state.didFirstCollect || state.didFirstSale || (state.money | 0) > 0) r = 5;
     // peakMoney / unlock latch so spending Tang $60 cannot drop 6/6 → 5/6.
     if ((state.didFirstCollect || state.didFirstSale) &&
         ((state.money | 0) >= 15 || (state.peakMoney | 0) >= 15 || state.didFirstUnlock || state.unlocked[1])) {
-      r = 6;
+      return 6;
     }
-    return r;
+    if (state.didFirstCollect || state.didFirstSale || (state.money | 0) > 0) return 5;
+    if (state.didFirstStock) return 4;
+    if (((state.caughtCount && state.caughtCount[0]) | 0) >= 5 || bagIsFull()) return 3;
+    if (state.scene === "ocean" || state.pendingScene === "ocean" ||
+        ((state.caughtCount && state.caughtCount[0]) | 0) >= 1 || (state.tutorial | 0) >= 2) {
+      return 2;
+    }
+    return 1;
   }
   function inPlazaYard() {
     return state.scene === "shop" && player.y < 800;
@@ -14537,7 +14579,7 @@
     );
     const sessionM = sessionChipMetrics();
     if (missionVisible()) {
-      const reached = Math.max(1, Math.min(6, firstSessionReached() || (firstSessionIndex() + 1)));
+      const reached = Math.max(1, Math.min(6, firstSessionReached()));
       const label = "FIRST SESSION  " + reached + " / 6";
       ctx.font = "800 " + sessionM.font + "px Nunito, sans-serif";
       const tw = Math.min(ctx.measureText(label).width + sessionM.pad * 2, sessionM.maxW);
@@ -14607,7 +14649,7 @@
         drawPhoneShopPanel();
         drawSpeciesStrip(ribbon);
       }
-    } else {
+    } else if (speciesRailReady()) {
       drawSpeciesStrip(ribbon);
     }
     const { muteB, pauseB } = topCtrlBoxes();
@@ -15391,12 +15433,10 @@
     } else {
       titleBoardBtn("play", W / 2 - lay.continueW / 2, lay.playY, lay.continueW, lay.playH, "Play", pulse, lay.btnFont);
     }
-    const impY = state.hasSave ? lay.newY + lay.newH + 22 : lay.playY + lay.playH + 22;
-    ctx.fillStyle = "#9ef0ff";
-    ctx.font = "700 " + Math.max(13, lay.stampFont) + "px Nunito, sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("Import save", W / 2, impY);
-    btn("import", W / 2 - 80, impY - 18, 160, 28);
+    const impY = state.hasSave ? lay.newY + lay.newH + 14 : lay.playY + lay.playH + 14;
+    const impH = Math.max(36, Math.round((lay.newH || 48) * 0.72));
+    const impW = Math.min(lay.continueW || 300, 240);
+    titleBoardBtn("import", W / 2 - impW / 2, impY, impW, impH, "Import save", 1, Math.max(14, (lay.btnFont || 18) - 2), true);
     ctx.restore();
     menuYShift = 0;
   }
@@ -16506,6 +16546,7 @@
     last = now;
     state.time += dt;
     uiHits = [];
+    syncChrome();
     tickMusic(dt);
     frameDrawing = true;
     applyCanvasBacking();
