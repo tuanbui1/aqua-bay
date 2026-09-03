@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 148 hold the cone on the wreck chest — pearls + a lantern, Nico wants it
 // loop 147 the wreck east of the shallows + lanternfish
 // loop 146 visible hired diver NPCs walk the dock and stock the bowls
 // loop 145 divers earn while you are away (offline accrual)
@@ -262,6 +263,18 @@
   function inWreck(x, y) {
     return x > WRECK.x - 80 && x < WRECK.x + WRECK.w + 80 &&
       y > WRECK.y - 60 && y < WRECK.y + WRECK.h + 90;
+  }
+  function isChestTarget(f) {
+    return !!(f && f.chest);
+  }
+  function wreckChestTarget() {
+    if (state.scene !== "ocean" || !state.wreckChestReady) return null;
+    if (!state.wreckChestObj) {
+      state.wreckChestObj = { chest: true, x: WRECK_CHEST.x, y: WRECK_CHEST.y, vx: 0, vy: 0, ang: 0 };
+    }
+    state.wreckChestObj.x = WRECK_CHEST.x;
+    state.wreckChestObj.y = WRECK_CHEST.y;
+    return state.wreckChestObj;
   }
   function wreckCurrentX(x, y) {
     if (y > 980 || y < 240) return 0;
@@ -625,7 +638,7 @@
     shopSwimmers: [], didFirstCollect: false, didFirstUnlock: false,
     hiredCashier: false, cashierAcc: 0, diverLv: 0, diverAcc: 0, lastPlayed: 0,
     sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-    sawWreck: false, wreckHinted: false, wreckChestReady: false,
+    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, sessionChest: false,
     inReef: false, inWreck: false, zoneTitle: null,
     expedition: false, expeditionTime: 0, peakMoney: 0, vipCooldown: 0,
     caughtCount: padSpeciesNums([]), bookOpen: null,
@@ -898,7 +911,7 @@
       stock: padSpeciesNums([]), bag: [], tutorial: 0, registerCash: 0,
       lifetimeCatches: 0, muted: false, hiredCashier: false,
       sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-    sawWreck: false, wreckHinted: false, wreckChestReady: false,
+    sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, sessionChest: false,
       peakMoney: 0, caughtCount: padSpeciesNums([]),
       decor: [false, false, false], expeditionCount: 0,
       missionStep: 0, missionDone: false, caughtRare: false,
@@ -938,6 +951,7 @@
         sawReef: !!d.sawReef, sawGoldGarden: !!d.sawGoldGarden,
         sawKoiGate: !!d.sawKoiGate, sawTurtleMeadow: !!d.sawTurtleMeadow,
         sawWreck: !!d.sawWreck, wreckHinted: !!d.wreckHinted, wreckChestReady: false,
+        lanternRumor: !!d.lanternRumor, sessionChest: false,
         inReef: false, inWreck: false, zoneTitle: null,
         peakMoney: Math.max(d.peakMoney | 0, d.money | 0),
         expedition: false, expeditionTime: 0, vipCooldown: 0,
@@ -1001,6 +1015,7 @@
         sawReef: state.sawReef, sawGoldGarden: state.sawGoldGarden,
         sawKoiGate: state.sawKoiGate, sawTurtleMeadow: state.sawTurtleMeadow,
         sawWreck: !!state.sawWreck, wreckHinted: !!state.wreckHinted,
+        lanternRumor: !!state.lanternRumor,
         peakMoney: Math.max(state.peakMoney | 0, state.money | 0),
         caughtCount: padSpeciesNums(state.caughtCount),
         decor: state.decor || [false, false, false],
@@ -1040,7 +1055,7 @@
       didFirstCollect: false, didFirstUnlock: false, hiredCashier: false, cashierAcc: 0,
       diverLv: 0, diverAcc: 0, lastPlayed: 0,
       sawReef: false, sawGoldGarden: false, sawKoiGate: false, sawTurtleMeadow: false,
-      sawWreck: false, wreckHinted: false, wreckChestReady: false,
+      sawWreck: false, wreckHinted: false, wreckChestReady: false, lanternRumor: false, sessionChest: false,
       inReef: false, inWreck: false, zoneTitle: null, expedition: false, expeditionTime: 0, peakMoney: 0, vipCooldown: 0,
       caughtCount: padSpeciesNums([]), bookOpen: null,
       decor: [false, false, false], expeditionCount: 0, nightExpedition: false, decorOpen: false,
@@ -1768,7 +1783,7 @@
   function coneHalf() { return 0.85 + tutorialGrace() * 0.42; }
   function scoopStayR(f) {
     const base = (f && f.verb) ? coneRange() * 1.35 : coneRange() * 1.2;
-    return base + tutorialGrace() * 36 + scoopEdgeGrace();
+    return base + tutorialGrace() * 36 + scoopEdgeGrace() + (isChestTarget(f) ? 48 : 0);
   }
   function toast(msg, col, life, opts) {
     const t = { msg, col: col || "#fff6d2", life: life == null ? 2.2 : life };
@@ -2490,6 +2505,8 @@
     if (id === "boat") return "Take the boat";
     if (id === "reef") return "Visit the reef";
     if (id === "wreck") return "Visit the wreck";
+    if (id === "chest") return "Crack the wreck chest";
+    if (id === "nico") return "Sell Nico a lantern";
     if (id === "catch6") return "Catch 6 fish  " + Math.min(6, state.sessionDiveCatch | 0) + "/6";
     if (id === "deep") return "Dive a new zone";
     if (id === "unlock") {
@@ -2513,6 +2530,8 @@
     if (id === "boat") return !!state.sessionBoat;
     if (id === "reef") return !!state.sawReef;
     if (id === "wreck") return !!state.sawWreck;
+    if (id === "chest") return !!state.sessionChest;
+    if (id === "nico") return !!state.sessionNicoLantern;
     if (id === "catch6") return (state.sessionDiveCatch | 0) >= 6;
     if (id === "deep") return (state.sessionSawDeep | 0) > (state.goalDeepAt | 0);
     if (id === "unlock") {
@@ -2538,6 +2557,8 @@
     if (expeditionUnlocked()) pool.push("boat");
     if (state.unlocked[1] && !state.sawReef) pool.push("reef");
     if (state.didFirstStock && !state.sawWreck) pool.push("wreck");
+    if (state.sawWreck) pool.push("chest");
+    if (state.lanternRumor && ((state.stock && state.stock[13]) | 0) === 0) pool.push("nico");
     if (state.unlocked[4]) pool.push("deep");
     const nl = nextLockedTank();
     if (nl >= 0) pool.push("unlock");
@@ -2556,6 +2577,8 @@
     state.sessionSales = 0;
     state.sessionCaughtRare = false;
     state.sessionBoat = false;
+    state.sessionChest = false;
+    state.sessionNicoLantern = false;
     state.sessionDiveCatch = 0;
     state.sessionStocked = -1;
     state.goalUnlockAt = highestUnlocked();
@@ -4306,8 +4329,9 @@
     const dx = f.x - player.x, dy = f.y - player.y;
     const d = Math.hypot(dx, dy);
     const grace = tutorialGrace();
-    const range = coneRange() + (f.rare ? 56 : 0) + grace * 64 + scoopEdgeGrace();
-    if (d > range || d < 16) return false;
+    const range = coneRange() + (f.rare ? 56 : 0) + grace * 64 + scoopEdgeGrace() + (isChestTarget(f) ? 28 : 0);
+    const minD = isChestTarget(f) ? 4 : 16;
+    if (d > range || d < minD) return false;
     const half = (f.rare ? 1.28 : coneHalf()) + grace * 0.12 + 0.035;
     return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < half;
   }
@@ -4316,8 +4340,9 @@
     const d = Math.hypot(dx, dy);
     const verbPad = f.verb ? 36 : 0;
     const grace = tutorialGrace();
-    const range = coneRange() + (f.rare ? 92 : 16) + verbPad + grace * 80 + scoopEdgeGrace();
-    if (d > range || d < 16) return false;
+    const range = coneRange() + (f.rare ? 92 : 16) + verbPad + grace * 80 + scoopEdgeGrace() + (isChestTarget(f) ? 36 : 0);
+    const minD = isChestTarget(f) ? 4 : 16;
+    if (d > range || d < minD) return false;
     const half = (f.rare ? 1.48 : (f.verb ? 1.22 : 0.98)) + grace * 0.65 + 0.05;
     return Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) < half;
   }
@@ -4333,6 +4358,11 @@
       if (!huntScoopAllows(f)) continue;
       const d = Math.hypot(f.x - wx, f.y - wy);
       if (d < bestD) { bestD = d; best = f; }
+    }
+    const chest = wreckChestTarget();
+    if (chest) {
+      const d = Math.hypot(chest.x - wx, chest.y - wy);
+      if (d < bestD) best = chest;
     }
     return best;
   }
@@ -4351,6 +4381,15 @@
       if (Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) > half) continue;
       if (f.rare && d < bestRareD) { bestRareD = d; bestRare = f; }
       if (d < bestD) { bestD = d; best = f; }
+    }
+    const chest = wreckChestTarget();
+    if (chest) {
+      const dx = chest.x - player.x, dy = chest.y - player.y;
+      const d = Math.hypot(dx, dy);
+      if (d <= maxD + 28 && d >= 4 &&
+          Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) <= half + 0.2) {
+        return chest;
+      }
     }
     if (exclusive) {
       if (best) return best;
@@ -4517,7 +4556,7 @@
     }
   }
   function maybeStartCatchVerb(f) {
-    if (!f || f.rare || f.tease || f.verb || state.catchVerb) return;
+    if (!f || f.rare || f.tease || f.verb || f.chest || state.catchVerb) return;
     const n = (state.diveCatches | 0) + 1;
     const firstDive = (state.divesThisSession | 0) === 1;
     if (n === 3) beginYankHold(f);
@@ -4542,7 +4581,7 @@
       return;
     }
     if (player.catchLatch && !catchHolding()) player.catchLatch = false;
-    if (state.bag.length >= bagMax()) {
+    if (state.bag.length >= bagMax() && !(wreckChestTarget() && inWreck(player.x, player.y))) {
       clearCatchVerb();
       clearScoop("fade");
       player.target = null;
@@ -4571,12 +4610,13 @@
       if (!huntScoopAllows(f)) continue;
       if (f.rare && fishNearCone(f)) rareNear = true;
     }
-    if (rareNear && player.scoopLock && !player.scoopLock.rare) {
+    if (rareNear && player.scoopLock && !player.scoopLock.rare && !isChestTarget(player.scoopLock)) {
       if (player.scoopLock.verb) player.scoopLock.verb = "";
       state.catchVerb = null;
       player.scoopLock = null;
     }
-    if (player.scoopLock && (player.scoopLock.caught || oceanFish.indexOf(player.scoopLock) < 0)) {
+    if (player.scoopLock && !isChestTarget(player.scoopLock) &&
+        (player.scoopLock.caught || oceanFish.indexOf(player.scoopLock) < 0)) {
       player.scoopLock = null;
       player.scoopTap = false;
     }
@@ -4604,6 +4644,11 @@
     }
     let best = null, bestD = 1e9;
     let bestRare = null, bestRareD = 1e9;
+    const chestAim = wreckChestTarget();
+    if (chestAim && (fishInCone(chestAim) || fishNearCone(chestAim))) {
+      best = chestAim;
+      bestD = Math.hypot(chestAim.x - player.x, chestAim.y - player.y);
+    }
     for (const f of oceanFish) {
       if (f.caught || f.tease) continue;
       if (!huntScoopAllows(f)) continue;
@@ -4613,9 +4658,10 @@
       if (f.rare && d < bestRareD) { bestRareD = d; bestRare = f; }
       if (d < bestD) { bestD = d; best = f; }
     }
-    if (bestRare) best = bestRare;
+    if (chestAim && best === chestAim) { /* wreck chest wins the cone in the hull */ }
+    else if (bestRare) best = bestRare;
     else if (rareNear) best = null;
-    if (rareNear && player.target && !player.target.rare) {
+    if (rareNear && player.target && !player.target.rare && !isChestTarget(player.target)) {
       clearCatchVerb();
       player.target = null;
       player.catchProg = 0;
@@ -4672,6 +4718,10 @@
     }
   }
   function beginCatchClimax(f) {
+    if (isChestTarget(f)) {
+      openWreckChest();
+      return;
+    }
     if (!f || f.caught || state.catchClimax) return;
     player.catchProg = 1;
     player.target = f;
@@ -4791,6 +4841,7 @@
     });
     beatMoment(f.rare ? "shiny" : "catch", f.x, f.y);
     pop(f.x, f.y - 18, (f.rare ? "Shiny " : "") + SPECIES[f.s].name + "!", f.rare ? "#ffd24a" : SPECIES[f.s].accent);
+    if ((f.s | 0) === 13) maybeLanternRumor();
     if (state.tutorial === 1) state.tutorial = 2;
     for (let i = oceanFish.length - 1; i >= 0; i--) if (oceanFish[i].caught) oceanFish.splice(i, 1);
     ensureOceanStock();
@@ -4926,7 +4977,7 @@
       if (drift) player.x += drift * dt;
       player.x = clamp(player.x, 60, OCEAN.w - 60);
       player.y = clamp(player.y, 90, OCEAN.h - 60);
-      tryScoopWreckChest();
+      // loop 148 — the chest is a cone scoop, not a walk-by.
       if (bubbles.length < 40 && Math.random() < dt * 7) {
         bubbles.push({
           x: player.x + Math.cos(player.facing) * 16,
@@ -5477,22 +5528,69 @@
       s: 13, x, y, vx: 32, vy: -4, ang: 0.08, ph: rand(0, 8), fleeT: 0, caught: false, tease: true,
     });
   }
-  function tryScoopWreckChest() {
-    if (state.scene !== "ocean" || !state.wreckChestReady) return;
-    if (!inWreck(player.x, player.y)) return;
-    const d = Math.hypot(player.x - WRECK_CHEST.x, player.y - WRECK_CHEST.y);
-    if (d > 54) return;
+  function maybeLanternRumor() {
+    if (state.lanternRumor || !state.sawWreck) return;
+    state.lanternRumor = true;
+    toast("Nico wants a lanternfish from the wreck", "#f4d06a", 4.2);
+    let nico = null;
+    for (const c of customers) {
+      if (c.name === "Nico") {
+        c.emote = "Lantern!";
+        c.teaseLantern = true;
+        c.favorite = 13;
+        c.tank = 13;
+        c.payMult = 2;
+        nico = c;
+      }
+    }
+    if (!nico && customers.length < MAX_CUSTOMERS) {
+      customers.push(newCustomer({
+        x: 760, y: 1096, state: "browse", tank: 13, hops: 8, offX: -20,
+        name: "Nico", regular: true, favorite: 13, emote: "Lantern!",
+        teaseLantern: true, payMult: 2,
+      }));
+    }
+    persist();
+  }
+  function openWreckChest() {
+    if (!state.wreckChestReady) return;
     state.wreckChestReady = false;
-    const pay = 28;
+    state.sessionChest = true;
+    const pay = 50;
     state.money += pay;
     state.moneyRollFrom = state.displayMoney;
     state.moneyRollTo = state.money;
     state.moneyRollT = 0.35;
-    state.moneyPunch = 1.2;
-    spawnP(WRECK_CHEST.x, WRECK_CHEST.y, 18, ["#ffe27a", "#f4d06a", "#fff6e8"], 90);
-    pop(WRECK_CHEST.x, WRECK_CHEST.y - 18, "+$" + pay, "#ffe27a");
+    state.moneyPunch = 1.28;
+    spawnP(WRECK_CHEST.x, WRECK_CHEST.y, 26, ["#ffe27a", "#f4d06a", "#fff6e8", "#9ef0ff"], 110);
+    pop(WRECK_CHEST.x, WRECK_CHEST.y - 22, "Pearls! +$" + pay, "#ffe27a");
     sfx("unlock");
-    toast("Wreck chest! +$" + pay, "#ffe27a", 2.8);
+    toast("Pearls! +$" + pay, "#ffe27a", 2.6);
+    if (state.bag.length < bagMax()) {
+      state.bag.push(13);
+      if (!state.bagRare) state.bagRare = [];
+      state.bagRare.push(false);
+      if (!state.caughtCount || state.caughtCount.length < SPECIES.length) {
+        state.caughtCount = padSpeciesNums(state.caughtCount);
+      }
+      state.caughtCount[13] = (state.caughtCount[13] | 0) + 1;
+      state.lifetimeCatches = (state.lifetimeCatches | 0) + 1;
+      state.diveCatches = (state.diveCatches | 0) + 1;
+      state.sessionDiveCatch = (state.sessionDiveCatch | 0) + 1;
+      state.bagPunch = 1.28;
+      pop(WRECK_CHEST.x + 18, WRECK_CHEST.y - 40, "Lanternfish!", "#f4d06a");
+      toast("A lantern slipped out!", "#f4d06a", 2.8);
+    } else {
+      pushOceanFish(13, WRECK_CHEST.x + 24, WRECK_CHEST.y - 20);
+      toast("Bag full — a lantern darted out", "#f4d06a", 2.6);
+    }
+    player.catchProg = 0;
+    player.target = null;
+    player.scoopLock = null;
+    player.scoopTap = false;
+    player.catchLatch = true;
+    maybeLanternRumor();
+    checkSessionGoals();
     persist();
   }
   function tillWaiting() {
@@ -5590,6 +5688,7 @@
     for (const c of customers) {
       if (c.state !== "browse") continue;
       if (c.teaseTang && !state.unlocked[1]) continue;
+      if (c.teaseLantern && ((state.stock && state.stock[13]) | 0) === 0) continue;
       c.state = "tank";
       c.tank = i;
       c.wait = 0;
@@ -5971,6 +6070,7 @@
           state.camPunch = 0.16;
           persist();
           checkSessionGoals();
+          maybeLanternRumor();
         }
       }
     } else {
@@ -6148,7 +6248,8 @@
       let tx = c.x, ty = c.y;
       if (c.regular && c.favorite != null && state.stock[c.favorite] > 0 &&
           (c.state === "tank" || c.state === "browse") && !c.vip &&
-          !(c.teaseTang && !state.unlocked[1])) {
+          !(c.teaseTang && !state.unlocked[1]) &&
+          !(c.teaseLantern && ((state.stock && state.stock[13]) | 0) === 0)) {
         c.tank = c.favorite;
       }
       if (c.state === "tank") {
@@ -6245,6 +6346,10 @@
                 setWalkDest(registerWalkPoint());
               }
             }
+            if (c.name === "Nico" && (c.carry | 0) === 13) {
+              state.sessionNicoLantern = true;
+              c.teaseLantern = false;
+            }
             const usual = c.regular && (c.favorite == null || c.favorite === c.carry);
             const said = usual ? regularBark(c) : "";
             c.carry = -1; c.state = "leave"; c.wait = 0;
@@ -6263,6 +6368,7 @@
           tx = t.x + TANK_W / 2 + (c.offX || 24); ty = t.y + TANK_H + stand;
           if (Math.hypot(c.x - tx, c.y - ty) < 18) {
             if ((c.teaseTang || c.tank === 1) && !state.unlocked[1]) c.emote = "Blue Tang?";
+            else if (c.teaseLantern && ((state.stock && state.stock[13]) | 0) === 0) c.emote = "Lantern!";
             else if (c.regular && (c.favorite == null || c.favorite === c.tank)) {
               if (!isGoldTalk(c.emote) && !c.saidLine) c.emote = "hey!";
             } else if (c.regular) c.emote = c.emote || "wow";
@@ -12161,6 +12267,10 @@
     ctx.font = "700 13px Fredoka, Nunito, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("WRECK", wx + ww * 0.48, wy + 28);
+    if (state.wreckChestReady) {
+      const bob = Math.sin(state.time * 6) * 2;
+      drawWorldPlate(cx, cy - 36 + bob, "CHEST", "shiny");
+    }
     ctx.restore();
   }
   function isNightOcean() { return !!(state.expedition && state.nightExpedition); }
@@ -12537,7 +12647,7 @@
       const bx = f ? f.x : player.x + Math.cos(player.facing) * 40;
       const by = f ? f.y - 38 : player.y - 44;
       const wbar = 56;
-      const col = f ? SPECIES[f.s].color : "#9ef0ff";
+      const col = isChestTarget(f) ? "#ffe27a" : (f && SPECIES[f.s] ? SPECIES[f.s].color : "#9ef0ff");
       ctx.fillStyle = "rgba(0,0,0,0.5)";
       roundRect(bx - wbar / 2, by, wbar, 11, 4); ctx.fill();
       ctx.fillStyle = col;
@@ -13260,6 +13370,7 @@
     return { x: x, y: floor - inset - h, w: w, h: h };
   }
   function huntScoopAllows(f) {
+    if (isChestTarget(f)) return !!state.wreckChestReady;
     if (!f || f.caught || f.tease) return false;
     if (!huntScoopExclusive()) return true;
     return (f.s | 0) === diveForHuntIndex();
@@ -13446,6 +13557,11 @@
       // C112 — DIVE FOR <species> points at that fish / grove, not
       // the first-dive SHINY clownfish. loop 112 dive for the right band.
       if (diveForHuntIndex() >= 0) return diveForHuntGoal();
+      const chest = wreckChestTarget();
+      if (chest && (inWreck(player.x, player.y) ||
+          Math.hypot(player.x - chest.x, player.y - chest.y) < 460)) {
+        return { text: "Hold the cone on the wreck chest", target: { x: chest.x, y: chest.y } };
+      }
       const shiny = firstRareFish();
       if (shiny && (state.shinyCallout > 0 || !state.caughtRare)) {
         return { text: "Point the glowing cone at the SHINY clownfish", target: { x: shiny.x, y: shiny.y } };
@@ -15027,7 +15143,7 @@
     ctx.fillText("A sunny pier aquarium of your own", W / 2, tagTextY);
     ctx.fillStyle = "rgba(255, 226, 122, 0.92)";
     ctx.font = "700 " + lay.stampFont + "px Nunito, sans-serif";
-    ctx.fillText("Aqua Bay · loop 147", W / 2, lay.stampY);
+    ctx.fillText("Aqua Bay · loop 148", W / 2, lay.stampY);
     ctx.restore();
     drawSkinPicker(W / 2, lay.pickerY, lay.cardW, lay.cardH, lay.cardGap, {
       nameFont: lay.nameFont, blurbFont: lay.blurbFont, whoFont: lay.whoFont, whoY: lay.whoY,
@@ -15093,7 +15209,7 @@
       const footY = cardY + cardH - (tall ? btnH + 56 : 90);
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(13, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 147", W / 2, footY + (tall ? 28 : 20));
+      ctx.fillText("Aqua Bay · loop 148", W / 2, footY + (tall ? 28 : 20));
       panelBtn("back", W / 2 - btnW / 2, cardY + cardH - 16 - btnH, btnW, btnH, "Back", null, 1, btnFont);
     } else {
       card(cardX, cardY, cardW, cardH, "rgba(16, 32, 42, 0.94)");
@@ -15124,7 +15240,7 @@
       ctx.fillText("Inspired by the aquarium-tycoon genre", W / 2, footY);
       ctx.fillText(tall ? "Tap Resume" : "Esc to resume", W / 2, footY + (tall ? 26 : 18));
       ctx.fillStyle = "#ffe27a"; ctx.font = "700 " + Math.max(14, bodyPx) + "px Nunito, sans-serif";
-      ctx.fillText("Aqua Bay · loop 147", W / 2, footY + (tall ? 52 : 36));
+      ctx.fillText("Aqua Bay · loop 148", W / 2, footY + (tall ? 52 : 36));
     }
     ctx.restore();
     menuYShift = 0;
