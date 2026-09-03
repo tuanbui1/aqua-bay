@@ -3565,6 +3565,7 @@
       if (state.tutorial === 0) state.didMove = false;
     }
     creditOffline();
+    maybeLanternRumor();
     state.displayMoney = state.money;
     state.playClock = 0;
     seedDockTeasers();
@@ -6070,8 +6071,8 @@
           state.camPunch = 0.16;
           persist();
           checkSessionGoals();
-          maybeLanternRumor();
         }
+        maybeLanternRumor();
       }
     } else {
       state.inWreck = false;
