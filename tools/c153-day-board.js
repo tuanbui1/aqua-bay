@@ -70,6 +70,8 @@ assert(/ensureDayGuest\(\)/.test(src), "Continue / the shop tick sprout the regu
 assert(/rollDayGuest\(\)/.test(src), "startPlay / TODAY roll the slate");
 
 assert(/id === "guest"/.test(src), "TODAY can ask you to serve today's regular");
+const rollGoals = extractFn(src, "rollSessionGoals") || "";
+assert(/picked\.push\("guest"\)/.test(rollGoals), "TODAY pins today's regular first");
 assert(/sessionDayGuest/.test(src), "serving them counts the day goal");
 assert(/dayGuest: state\.dayGuest \|\| ""/.test(src), "the slate persists");
 assert(/dayWant: state\.dayWant == null \? -1 : \(state\.dayWant \| 0\)/.test(src), "the fish persists");
