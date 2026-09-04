@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 153 the west chalkboard names today's regular — they pay 2× for that fish
 // loop 152 first-session polish — quiet HUD, wood Import, warmer music
 // loop 151 v1.0 stamp + export / import so a shop survives a cleared browser
 // loop 150 the wreck lantern calls Sable, a night guest on the east dock
@@ -150,6 +151,10 @@
   // board off the arm (left of the post) — planted X/Y stay.
   const OPEN_SIGN = { x: 1052, y: 924 };
   const EAST_CRATES = { x: 1056, y: 936 };
+  // loop 153 — west of the life ring / DIVE post so the first-session
+  // dock stays quiet and Continue still reads the slate on dock cam.
+  const DAY_BOARD = { x: 348, y: 942 };
+  const DAY_GUESTS = ["Maya", "Nico", "Jun"];
   // loop 149 — Nico hangs the wreck lantern off the bait hut's east eave
   // so OPEN / the life ring stay readable and the glow sits on the dusk dock.
   const WRECK_LAMP = { x: BAIT_HUT.x + 56, y: BAIT_HUT.y + 8 };
@@ -657,6 +662,7 @@
     missionStep: 0, missionDone: false, caughtRare: false,
     bagRare: [], stockRare: padSpeciesNums([]),
     sessionDay: 1, sawDeepZone: 0,
+    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false,
     diveLock: 0, surfaceLock: 0,
     didMove: false, shinyCallout: 0, shinyFocus: 0,
     sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
@@ -954,6 +960,7 @@
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionDay: 1, sawDeepZone: 0,
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false,
       sessionCaughtRare: false, sessionBoat: false,
       bookOpened: false, bookTeaseShown: false, sawBookTease: false,
       pendingBookTease: false,
@@ -1005,6 +1012,10 @@
         sessionGoals: Array.isArray(d.sessionGoals) ? d.sessionGoals.slice(0, 3) : [],
         sessionGoalDone: Array.isArray(d.sessionGoalDone) ? d.sessionGoalDone.slice() : [],
         sessionDay: Math.max(1, d.sessionDay | 0),
+        dayGuest: typeof d.dayGuest === "string" ? d.dayGuest : "",
+        dayWant: d.dayWant == null ? -1 : (d.dayWant | 0),
+        dayAt: d.dayAt | 0,
+        sessionDayGuest: !!d.sessionDayGuest,
         sawDeepZone: d.sawDeepZone | 0,
         sessionSales: d.sessionSales | 0,
         sessionCaughtRare: !!d.sessionCaughtRare,
@@ -1069,6 +1080,10 @@
       sessionGoalDone: state.sessionGoalDone || [],
       sessionSales: state.sessionSales | 0,
       sessionDay: Math.max(1, state.sessionDay | 0),
+      dayGuest: state.dayGuest || "",
+      dayWant: state.dayWant == null ? -1 : (state.dayWant | 0),
+      dayAt: state.dayAt | 0,
+      sessionDayGuest: !!state.sessionDayGuest,
       sawDeepZone: state.sawDeepZone | 0,
       sessionCaughtRare: !!state.sessionCaughtRare,
       sessionBoat: !!state.sessionBoat,
@@ -1179,6 +1194,7 @@
       missionStep: 0, missionDone: false, caughtRare: false,
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionDay: 1, sawDeepZone: 0,
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false,
       diveLock: 0, surfaceLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0,
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionCaughtRare: false, sessionBoat: false,
@@ -2640,6 +2656,11 @@
     if (id === "nico") return "Sell Nico a lantern";
     if (id === "lamp") return "Hang Nico's lantern";
     if (id === "sable") return "Serve Sable at the lantern";
+    if (id === "guest") {
+      const who = state.dayGuest || "a regular";
+      const sp = SPECIES[state.dayWant | 0];
+      return "Serve " + who + (sp ? " a " + sp.name : "");
+    }
     if (id === "catch6") return "Catch 6 fish  " + Math.min(6, state.sessionDiveCatch | 0) + "/6";
     if (id === "deep") return "Dive a new zone";
     if (id === "unlock") {
@@ -2667,6 +2688,7 @@
     if (id === "nico") return !!state.sessionNicoLantern;
     if (id === "lamp") return !!state.wreckLamp;
     if (id === "sable") return !!state.sessionSable;
+    if (id === "guest") return !!state.sessionDayGuest;
     if (id === "catch6") return (state.sessionDiveCatch | 0) >= 6;
     if (id === "deep") return (state.sessionSawDeep | 0) > (state.goalDeepAt | 0);
     if (id === "unlock") {
@@ -2696,6 +2718,8 @@
     if (state.lanternRumor && ((state.stock && state.stock[13]) | 0) === 0) pool.push("nico");
     if (state.lanternRumor && !state.wreckLamp && ((state.stock && state.stock[13]) | 0) > 0) pool.push("lamp");
     if (state.wreckLamp) pool.push("sable");
+    rollDayGuest();
+    if (dayBoardReady()) pool.push("guest");
     if (state.unlocked[4]) pool.push("deep");
     const nl = nextLockedTank();
     if (nl >= 0) pool.push("unlock");
@@ -2717,6 +2741,7 @@
     state.sessionChest = false;
     state.sessionNicoLantern = false;
     state.sessionSable = false;
+    state.sessionDayGuest = false;
     state.sessionDiveCatch = 0;
     state.sessionStocked = -1;
     state.goalUnlockAt = highestUnlocked();
@@ -3018,6 +3043,7 @@
       name: unusedName(),
     }, extra);
     if (c.regular) applyRegularLook(c);
+    applyDayGuest(c);
     return c;
   }
   function seedLivingPier() {
@@ -3255,6 +3281,103 @@
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("OPEN", 0, 10);
+    ctx.textBaseline = "alphabetic";
+    ctx.restore();
+  }
+  function dayBoardReady() {
+    return !!state.missionDone && !!state.dayGuest && (state.dayWant | 0) >= 0;
+  }
+  function dayGuestName(day) {
+    let guest = DAY_GUESTS[(Math.max(1, day | 0) - 1) % DAY_GUESTS.length];
+    // Nico's live lantern ask still owns him — the slate names Maya that day.
+    if (guest === "Nico" && state.lanternRumor && !state.wreckLamp) guest = "Maya";
+    return guest;
+  }
+  function dayWantIndex(day, guest) {
+    const pool = [];
+    for (let i = 0; i < SPECIES.length; i++) {
+      if (!speciesUnlocked(i)) continue;
+      if (isWreckSpecies(i) && !state.sawWreck) continue;
+      pool.push(i);
+    }
+    if (!pool.length) return 0;
+    const n = Math.max(1, day | 0);
+    const salt = (guest || "").length + n * 7;
+    return pool[salt % pool.length];
+  }
+  function rollDayGuest() {
+    // loop 153 — keyed to sessionDay so Continue keeps the same regular.
+    if (!state.missionDone) return;
+    const day = Math.max(1, state.sessionDay | 0);
+    if (state.dayAt === day && state.dayGuest && (state.dayWant | 0) >= 0) return;
+    const guest = dayGuestName(day);
+    const want = dayWantIndex(day, guest);
+    state.dayGuest = guest;
+    state.dayWant = want;
+    state.dayAt = day;
+    persist();
+  }
+  function applyDayGuest(c) {
+    if (!dayBoardReady() || !c || c.name !== state.dayGuest) return;
+    if (c.nightGuest) return;
+    if (c.name === "Nico" && state.lanternRumor && !state.wreckLamp) return;
+    const want = state.dayWant | 0;
+    c.favorite = want;
+    c.tank = want;
+    c.payMult = 2;
+    c.dayGuest = true;
+    const sp = SPECIES[want];
+    if (sp && !c.saidLine) c.emote = (sp.name.split(" ")[0] || sp.name) + "!";
+  }
+  function ensureDayGuest() {
+    if (!dayBoardReady() || state.mode !== "play" || state.scene !== "shop") return;
+    rollDayGuest();
+    for (const c of customers) {
+      if (c.name === state.dayGuest) { applyDayGuest(c); return; }
+    }
+    if (customers.length >= MAX_CUSTOMERS) return;
+    const want = state.dayWant | 0;
+    const sp = SPECIES[want];
+    customers.push(newCustomer({
+      x: 400, y: 1064, state: "browse", tank: want, hops: 8, offX: -12,
+      name: state.dayGuest, regular: true, favorite: want, payMult: 2,
+      emote: ((sp && sp.name.split(" ")[0]) || "hey") + "!",
+      dayGuest: true,
+    }));
+  }
+  function drawDayBoard(x, y) {
+    // loop 153 — a leaning slate. DAY N + regular + the fish they want.
+    const sway = Math.sin(state.time * 0.7) * 0.015;
+    sitShadow(x + 2, y + 18, 44, 10, 0.4);
+    ctx.fillStyle = "#6a4224";
+    ctx.fillRect(x + 22, y - 8, 7, 28);
+    ctx.fillStyle = "rgba(255, 220, 160, 0.22)";
+    ctx.fillRect(x + 22, y - 8, 2.2, 28);
+    ctx.save();
+    ctx.translate(x + 4, y - 36);
+    ctx.rotate(-0.08 + sway);
+    ctx.fillStyle = "#3a2414";
+    roundRect(-40, -28, 88, 62, 6); ctx.fill();
+    ctx.fillStyle = "#24382c";
+    roundRect(-36, -24, 80, 54, 5); ctx.fill();
+    ctx.strokeStyle = "#c8a060";
+    ctx.lineWidth = 2;
+    roundRect(-36, -24, 80, 54, 5); ctx.stroke();
+    ctx.fillStyle = "#ffe27a";
+    ctx.font = "800 12px Nunito, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("DAY " + Math.max(1, state.sessionDay | 0), 4, -10);
+    ctx.fillStyle = "#e8f4e8";
+    ctx.font = "700 11px Nunito, sans-serif";
+    ctx.fillText(state.dayGuest || "", 4, 6);
+    const sp = SPECIES[state.dayWant | 0];
+    if (sp) {
+      ctx.save();
+      ctx.translate(4, 22);
+      drawFishBody(sp, 0, 0, 0.08, 0.55, state.time);
+      ctx.restore();
+    }
     ctx.textBaseline = "alphabetic";
     ctx.restore();
   }
@@ -3707,6 +3830,8 @@
     creditOffline();
     maybeLanternRumor();
     maybeNightGuest();
+    rollDayGuest();
+    ensureDayGuest();
     state.displayMoney = state.money;
     state.playClock = 0;
     seedDockTeasers();
@@ -6399,6 +6524,7 @@
   function updateCustomers(dt) {
     if (state.sableCd > 0) state.sableCd = Math.max(0, state.sableCd - dt);
     maybeNightGuest();
+    ensureDayGuest();
     if (state.vipCooldown > 0) state.vipCooldown = Math.max(0, state.vipCooldown - dt);
     const totalFish = state.stock.reduce((a, b) => a + b, 0);
     const dec = state.decor || [false, false, false];
@@ -6517,6 +6643,9 @@
             if (c.name === "Sable") {
               state.sessionSable = true;
               c.saidLine = "the light!";
+            }
+            if (c.dayGuest && c.name === state.dayGuest && (c.carry | 0) === (state.dayWant | 0)) {
+              state.sessionDayGuest = true;
             }
             const who = c.name || "A guest";
             playSale(who, SPECIES[c.carry].name, pay, c.x, c.y - 28, first, c.saidLine || c.emote);
@@ -11585,6 +11714,9 @@
     paintWorldSprite(748, 944, 28, function () { drawMopBucket(748, 944); });
     paintWorldSprite(1148, 942, 48, function () { drawBench(1108, 942); });
     paintWorldSprite(512, 918, 28, function () { drawLifeRing(512, 918); });
+    if (dayBoardReady()) {
+      paintWorldSprite(DAY_BOARD.x, DAY_BOARD.y, 52, function () { drawDayBoard(DAY_BOARD.x, DAY_BOARD.y); });
+    }
     {
       const diveA = worldBoxAlpha(diveSign.x - 48, diveSign.y - 136, 96, 152);
       if (diveA > 0.04) {
@@ -13869,6 +14001,16 @@
         }
       }
     }
+    if (state.scene === "shop" && dayBoardReady() && !state.sessionDayGuest && player && player.y > 860) {
+      const sp = SPECIES[state.dayWant | 0];
+      const wantName = sp ? sp.name : "a fish";
+      for (const c of customers) {
+        if (c.dayGuest && c.name === state.dayGuest) {
+          return { text: state.dayGuest + " wants " + wantName + " today", target: { x: c.x, y: c.y } };
+        }
+      }
+      return { text: "Today: " + state.dayGuest + " · " + wantName, target: { x: DAY_BOARD.x, y: DAY_BOARD.y } };
+    }
     if (state.stock.some(n => n > 0) && state.registerCash === 0) {
       return { text: "Customers are on the way — wait at the cashier", target: { x: REGISTER.x + REGISTER.w / 2, y: REGISTER.y + REGISTER.h / 2 } };
     }
@@ -15479,6 +15621,7 @@
         "Deeper stacked zones never end — more tanks next to the aisle after Turtle",
         "Decor chip — lights, sign, fountain",
         "Mute button — sound on/off",
+        "After the first session, the west chalkboard names today's regular (2×)",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
       ];
