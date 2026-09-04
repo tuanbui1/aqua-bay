@@ -2726,6 +2726,11 @@
     const hi = highestUnlocked();
     if (state.unlocked[hi]) pool.push("stock-" + hi);
     const picked = [];
+    if (dayBoardReady()) {
+      picked.push("guest");
+      const gi = pool.indexOf("guest");
+      if (gi >= 0) pool.splice(gi, 1);
+    }
     const bag = pool.slice();
     while (picked.length < 3 && bag.length) {
       const i = (Math.random() * bag.length) | 0;
