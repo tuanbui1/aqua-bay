@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 154 today's regular waits at the slate — serve them and it chalks PAID
 // loop 153 the west chalkboard names today's regular — they pay 2× for that fish
 // loop 152 first-session polish — quiet HUD, wood Import, warmer music
 // loop 151 v1.0 stamp + export / import so a shop survives a cleared browser
@@ -3322,6 +3323,9 @@
     state.dayAt = day;
     persist();
   }
+  function dayBoardStand() {
+    return { x: DAY_BOARD.x + 36, y: DAY_BOARD.y + 22 };
+  }
   function applyDayGuest(c) {
     if (!dayBoardReady() || !c || c.name !== state.dayGuest) return;
     if (c.nightGuest) return;
@@ -3333,18 +3337,24 @@
     c.dayGuest = true;
     const sp = SPECIES[want];
     if (sp && !c.saidLine) c.emote = (sp.name.split(" ")[0] || sp.name) + "!";
+    // loop 154 — wait at the slate until they have been served.
+    if (!state.sessionDayGuest && c.state !== "reg" && c.state !== "leave") {
+      c.state = "slate";
+    }
   }
   function ensureDayGuest() {
     if (!dayBoardReady() || state.mode !== "play" || state.scene !== "shop") return;
     rollDayGuest();
+    if (state.sessionDayGuest) return;
     for (const c of customers) {
       if (c.name === state.dayGuest) { applyDayGuest(c); return; }
     }
     if (customers.length >= MAX_CUSTOMERS) return;
     const want = state.dayWant | 0;
     const sp = SPECIES[want];
+    const stand = dayBoardStand();
     customers.push(newCustomer({
-      x: 400, y: 1064, state: "browse", tank: want, hops: 8, offX: -12,
+      x: stand.x + 80, y: stand.y + 40, state: "slate", tank: want, hops: 8, offX: -12,
       name: state.dayGuest, regular: true, favorite: want, payMult: 2,
       emote: ((sp && sp.name.split(" ")[0]) || "hey") + "!",
       dayGuest: true,
@@ -3373,11 +3383,20 @@
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("DAY " + Math.max(1, state.sessionDay | 0), 4, -10);
+    if (state.sessionDayGuest) {
+      ctx.fillStyle = "#ffe27a";
+      ctx.font = "800 14px Fredoka, sans-serif";
+      ctx.fillText("★", 34, -10);
+    }
     ctx.fillStyle = "#e8f4e8";
     ctx.font = "700 11px Nunito, sans-serif";
     ctx.fillText(state.dayGuest || "", 4, 6);
     const sp = SPECIES[state.dayWant | 0];
-    if (sp) {
+    if (state.sessionDayGuest) {
+      ctx.fillStyle = "#9ef0c8";
+      ctx.font = "800 12px Nunito, sans-serif";
+      ctx.fillText("PAID", 4, 22);
+    } else if (sp) {
       ctx.save();
       ctx.translate(4, 22);
       drawFishBody(sp, 0, 0, 0.08, 0.55, state.time);
@@ -6651,6 +6670,8 @@
             }
             if (c.dayGuest && c.name === state.dayGuest && (c.carry | 0) === (state.dayWant | 0)) {
               state.sessionDayGuest = true;
+              spawnP(DAY_BOARD.x, DAY_BOARD.y - 18, 16, ["#ffe27a", "#9ef0c8", "#fff6e8"], 70);
+              pop(DAY_BOARD.x, DAY_BOARD.y - 36, "PAID 2×", "#9ef0c8");
             }
             const who = c.name || "A guest";
             playSale(who, SPECIES[c.carry].name, pay, c.x, c.y - 28, first, c.saidLine || c.emote);
@@ -6704,6 +6725,23 @@
               } else {
                 c.state = "leave"; c.emote = "";
               }
+            }
+          }
+        }
+      } else if (c.state === "slate") {
+        // loop 154 — stand at the chalkboard like Sable at the lantern.
+        const stand = dayBoardStand();
+        tx = stand.x; ty = stand.y;
+        if (Math.hypot(c.x - tx, c.y - ty) < 16) {
+          const sp = SPECIES[state.dayWant | 0];
+          c.emote = sp ? ((sp.name.split(" ")[0] || sp.name) + "!") : "hey!";
+          c.wait += dt;
+          if (c.wait > 1.4) {
+            const want = state.dayWant | 0;
+            if (want >= 0 && ((state.stock && state.stock[want]) | 0) > 0) {
+              c.tank = want; c.favorite = want; c.state = "tank"; c.wait = 0;
+            } else {
+              c.wait = 0.5;
             }
           }
         }
@@ -14011,6 +14049,9 @@
       const wantName = sp ? sp.name : "a fish";
       for (const c of customers) {
         if (c.dayGuest && c.name === state.dayGuest) {
+          if (c.state === "slate") {
+            return { text: state.dayGuest + " is at the slate", target: { x: DAY_BOARD.x, y: DAY_BOARD.y } };
+          }
           return { text: state.dayGuest + " wants " + wantName + " today", target: { x: c.x, y: c.y } };
         }
       }
@@ -15626,7 +15667,7 @@
         "Deeper stacked zones never end — more tanks next to the aisle after Turtle",
         "Decor chip — lights, sign, fountain",
         "Mute button — sound on/off",
-        "After the first session, the west chalkboard names today's regular (2×)",
+        "After the first session, today's regular waits at the west slate — serve them and it chalks PAID",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
       ];
