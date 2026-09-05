@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 155 a 2× sale leaves a tip on the west slate — walk over it
 // loop 154 today's regular waits at the slate — serve them and it chalks PAID
 // loop 153 the west chalkboard names today's regular — they pay 2× for that fish
 // loop 152 first-session polish — quiet HUD, wood Import, warmer music
@@ -663,7 +664,7 @@
     missionStep: 0, missionDone: false, caughtRare: false,
     bagRare: [], stockRare: padSpeciesNums([]),
     sessionDay: 1, sawDeepZone: 0,
-    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false,
+    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0,
     diveLock: 0, surfaceLock: 0,
     didMove: false, shinyCallout: 0, shinyFocus: 0,
     sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
@@ -961,7 +962,7 @@
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionDay: 1, sawDeepZone: 0,
-      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false,
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0,
       sessionCaughtRare: false, sessionBoat: false,
       bookOpened: false, bookTeaseShown: false, sawBookTease: false,
       pendingBookTease: false,
@@ -1017,6 +1018,7 @@
         dayWant: d.dayWant == null ? -1 : (d.dayWant | 0),
         dayAt: d.dayAt | 0,
         sessionDayGuest: !!d.sessionDayGuest,
+        slateTip: Math.max(0, d.slateTip | 0),
         sawDeepZone: d.sawDeepZone | 0,
         sessionSales: d.sessionSales | 0,
         sessionCaughtRare: !!d.sessionCaughtRare,
@@ -1085,6 +1087,7 @@
       dayWant: state.dayWant == null ? -1 : (state.dayWant | 0),
       dayAt: state.dayAt | 0,
       sessionDayGuest: !!state.sessionDayGuest,
+      slateTip: Math.max(0, state.slateTip | 0),
       sawDeepZone: state.sawDeepZone | 0,
       sessionCaughtRare: !!state.sessionCaughtRare,
       sessionBoat: !!state.sessionBoat,
@@ -1195,7 +1198,7 @@
       missionStep: 0, missionDone: false, caughtRare: false,
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionDay: 1, sawDeepZone: 0,
-      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false,
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0,
       diveLock: 0, surfaceLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0,
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionCaughtRare: false, sessionBoat: false,
@@ -2749,7 +2752,10 @@
     state.sessionChest = false;
     state.sessionNicoLantern = false;
     state.sessionSable = false;
-    if (newDay) state.sessionDayGuest = false;
+    if (newDay) {
+      state.sessionDayGuest = false;
+      state.slateTip = 0;
+    }
     state.sessionDiveCatch = 0;
     state.sessionStocked = -1;
     state.goalUnlockAt = highestUnlocked();
@@ -3327,6 +3333,53 @@
   }
   function dayBoardStand() {
     return { x: DAY_BOARD.x + 36, y: DAY_BOARD.y + 22 };
+  }
+  function slateTipPos() {
+    return { x: DAY_BOARD.x + 16, y: DAY_BOARD.y + 28 };
+  }
+  function slateTipAmount() {
+    const sp = SPECIES[state.dayWant | 0];
+    const price = sp ? (sp.price | 0) : 8;
+    return Math.max(6, Math.round(price * 0.25));
+  }
+  function dropSlateTip() {
+    // loop 155 — one coin per day, on the boards in front of the slate.
+    if ((state.slateTip | 0) > 0) return;
+    state.slateTip = slateTipAmount();
+    persist();
+  }
+  function updateSlateTip() {
+    if ((state.slateTip | 0) <= 0 || state.scene !== "shop" || state.mode !== "play") return;
+    const p = slateTipPos();
+    if (Math.hypot(player.x - p.x, player.y - p.y) >= 40) return;
+    const v = state.slateTip | 0;
+    state.slateTip = 0;
+    state.money += v;
+    state.moneyRollFrom = state.displayMoney;
+    state.moneyRollTo = state.money;
+    state.moneyRollT = 0.22;
+    state.moneyPunch = 1.18;
+    pop(p.x, p.y - 14, "+$" + v, "#ffe27a", 1.15, 1.2);
+    sfx("coin");
+    toast((state.dayGuest || "They") + " left $" + v + " on the slate", "#ffe27a", 2.4);
+    persist();
+  }
+  function drawSlateTip() {
+    if ((state.slateTip | 0) <= 0 || state.scene !== "shop") return;
+    const p = slateTipPos();
+    const bob = Math.sin(state.time * 5.2) * 3.5;
+    ctx.save();
+    sitShadow(p.x, p.y + 10, 16, 7, 0.4);
+    ctx.fillStyle = "#ffd24a";
+    ctx.beginPath(); ctx.ellipse(p.x, p.y + bob, 13, 9, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#c49210"; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = "#6a4810";
+    ctx.font = "800 11px Nunito, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("$" + (state.slateTip | 0), p.x, p.y + bob);
+    ctx.textBaseline = "alphabetic";
+    ctx.restore();
   }
   function applyDayGuest(c) {
     if (!dayBoardReady() || !c || c.name !== state.dayGuest) return;
@@ -6672,6 +6725,7 @@
             }
             if (c.dayGuest && c.name === state.dayGuest && (c.carry | 0) === (state.dayWant | 0)) {
               state.sessionDayGuest = true;
+              dropSlateTip();
               spawnP(DAY_BOARD.x, DAY_BOARD.y - 18, 16, ["#ffe27a", "#9ef0c8", "#fff6e8"], 70);
               pop(DAY_BOARD.x, DAY_BOARD.y - 36, "PAID 2×", "#9ef0c8");
             }
@@ -7037,6 +7091,7 @@
     updateStockHops(dt);
     updateBagGhosts(dt);
     updatePathCoins(dt);
+    updateSlateTip();
     updatePathGlints(dt);
     if (state.scene === "shop") {
       ensureBaySchool();
@@ -11761,6 +11816,7 @@
     paintWorldSprite(512, 918, 28, function () { drawLifeRing(512, 918); });
     if (dayBoardReady()) {
       paintWorldSprite(DAY_BOARD.x, DAY_BOARD.y, 52, function () { drawDayBoard(DAY_BOARD.x, DAY_BOARD.y); });
+      paintWorldSprite(DAY_BOARD.x + 16, DAY_BOARD.y + 28, 28, function () { drawSlateTip(); });
     }
     {
       const diveA = worldBoxAlpha(diveSign.x - 48, diveSign.y - 136, 96, 152);
@@ -14046,6 +14102,11 @@
         }
       }
     }
+    if (state.scene === "shop" && (state.slateTip | 0) > 0 && player && player.y > 860) {
+      const who = state.dayGuest || "They";
+      const tipAt = slateTipPos();
+      return { text: "Scoop " + who + "'s tip at the slate", target: { x: tipAt.x, y: tipAt.y } };
+    }
     if (state.scene === "shop" && dayBoardReady() && !state.sessionDayGuest && player && player.y > 860) {
       const sp = SPECIES[state.dayWant | 0];
       const wantName = sp ? sp.name : "a fish";
@@ -15670,6 +15731,7 @@
         "Decor chip — lights, sign, fountain",
         "Mute button — sound on/off",
         "After the first session, today's regular waits at the west slate — serve them and it chalks PAID",
+        "A 2× sale leaves a tip on the slate — walk over it",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
       ];
