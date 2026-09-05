@@ -2719,6 +2719,8 @@
     if (state.lanternRumor && ((state.stock && state.stock[13]) | 0) === 0) pool.push("nico");
     if (state.lanternRumor && !state.wreckLamp && ((state.stock && state.stock[13]) | 0) > 0) pool.push("lamp");
     if (state.wreckLamp) pool.push("sable");
+    const day = Math.max(1, state.sessionDay | 0);
+    const newDay = (state.dayAt | 0) !== day || !state.dayGuest;
     rollDayGuest();
     if (dayBoardReady()) pool.push("guest");
     if (state.unlocked[4]) pool.push("deep");
@@ -2747,7 +2749,7 @@
     state.sessionChest = false;
     state.sessionNicoLantern = false;
     state.sessionSable = false;
-    state.sessionDayGuest = false;
+    if (newDay) state.sessionDayGuest = false;
     state.sessionDiveCatch = 0;
     state.sessionStocked = -1;
     state.goalUnlockAt = highestUnlocked();
