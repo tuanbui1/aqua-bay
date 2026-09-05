@@ -44,7 +44,7 @@ html, body {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   background: #0a3040;
-  cursor: crosshair;
+  cursor: pointer;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
@@ -79,6 +79,8 @@ html, body {
 @media (max-width: 879px), (orientation: portrait) {
   .more-games { display: none; }
 }
+
+html.ab-playing .more-games { display: none; }
 
 #boot {
   position: fixed;
