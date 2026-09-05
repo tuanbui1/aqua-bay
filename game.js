@@ -3444,7 +3444,7 @@
     // loop 156 — YEST under the slate; AGAIN / 3× when they walk back.
     const again = dayGuestAgain();
     const yest = (!again && state.yestGuest) ? state.yestGuest : "";
-    const extra = (yest || (again && !state.sessionDayGuest)) ? 12 : 0;
+    const extra = (again && !state.sessionDayGuest) ? 12 : 0;
     const sway = Math.sin(state.time * 0.7) * 0.015;
     sitShadow(x + 2, y + 18, 44, 10, 0.4);
     ctx.fillStyle = "#6a4224";
@@ -3489,17 +3489,29 @@
       drawFishBody(sp, 0, 0, 0.08, 0.55, state.time);
       ctx.restore();
     }
-    if (yest) {
-      ctx.fillStyle = "rgba(200, 210, 180, 0.7)";
-      ctx.font = "600 9px Nunito, sans-serif";
-      ctx.fillText("YEST " + yest, 4, 34);
-    } else if (again && !state.sessionDayGuest) {
+    if (again && !state.sessionDayGuest) {
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 9px Nunito, sans-serif";
       ctx.fillText("AGAIN", 4, 34);
     }
     ctx.textBaseline = "alphabetic";
     ctx.restore();
+    if (yest) {
+      // loop 156 — sit left of the slate so Nico's bubble does not eat it.
+      ctx.save();
+      ctx.fillStyle = "#3a2414";
+      roundRect(x - 38, y - 6, 46, 18, 4); ctx.fill();
+      ctx.strokeStyle = "#c8a060";
+      ctx.lineWidth = 1.5;
+      roundRect(x - 38, y - 6, 46, 18, 4); ctx.stroke();
+      ctx.fillStyle = "#e8d8a0";
+      ctx.font = "700 10px Nunito, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("YEST " + yest, x - 15, y + 3);
+      ctx.textBaseline = "alphabetic";
+      ctx.restore();
+    }
   }
   function spawnAisleCrossing() {
     if (customers.length >= MAX_CUSTOMERS) return;
