@@ -65,6 +65,9 @@ assert(/sessionDayGuest/.test(paint), "a served day marks the slate");
 assert(/PAID/.test(paint), "the slate chalks PAID");
 
 assert(/pop\(DAY_BOARD\.x/.test(src), "the sale pops PAID 2× on the slate");
+const rollGoals = extractFn(src, "rollSessionGoals") || "";
+assert(/if \(newDay\) state\.sessionDayGuest = false/.test(rollGoals),
+  "Continue on the same day keeps PAID");
 assert(/waits at the west slate/.test(src), "help names the wait");
 assert(/is at the slate/.test(src), "the ribbon points at a waiting regular");
 
