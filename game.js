@@ -3481,16 +3481,12 @@
     const streak = slateStreakN();
     if (state.sessionDayGuest) {
       ctx.fillStyle = "#ffe27a";
-      ctx.font = "800 12px Fredoka, sans-serif";
-      ctx.fillText("★".repeat(Math.max(1, streak)), streak >= 3 ? 26 : 34, -10);
+      ctx.font = "800 14px Fredoka, sans-serif";
+      ctx.fillText("★", 34, -10);
     } else if (again) {
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 11px Nunito, sans-serif";
       ctx.fillText("3×", 34, -10);
-    } else if (streak >= 2) {
-      ctx.fillStyle = "rgba(232, 216, 160, 0.7)";
-      ctx.font = "800 11px Fredoka, sans-serif";
-      ctx.fillText("★".repeat(streak), 34, -10);
     }
     ctx.fillStyle = "#e8f4e8";
     ctx.font = "700 11px Nunito, sans-serif";
@@ -3513,6 +3509,17 @@
     }
     ctx.textBaseline = "alphabetic";
     ctx.restore();
+    if (streak >= 2) {
+      // loop 157 — stars sit under the slate so they never cover DAY N.
+      ctx.save();
+      ctx.fillStyle = state.sessionDayGuest ? "#ffe27a" : "rgba(232, 216, 160, 0.85)";
+      ctx.font = "800 13px Fredoka, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("★".repeat(streak), x + 4, y + 26);
+      ctx.textBaseline = "alphabetic";
+      ctx.restore();
+    }
     if (yest) {
       // loop 156 — sit left of the slate so Nico's bubble does not eat it.
       ctx.save();
