@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 158 scoop the tip and the slate chalks THX
 // loop 157 serve the slate three days in a row for a STREAK
 // loop 156 yesterday stays on the slate — a return pays 3×
 // loop 155 a 2× sale leaves a tip on the west slate — walk over it
@@ -666,7 +667,7 @@
     missionStep: 0, missionDone: false, caughtRare: false,
     bagRare: [], stockRare: padSpeciesNums([]),
     sessionDay: 1, sawDeepZone: 0,
-    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0,
+    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false,
     diveLock: 0, surfaceLock: 0,
     didMove: false, shinyCallout: 0, shinyFocus: 0,
     sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
@@ -964,7 +965,7 @@
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionDay: 1, sawDeepZone: 0,
-      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0,
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false,
       sessionCaughtRare: false, sessionBoat: false,
       bookOpened: false, bookTeaseShown: false, sawBookTease: false,
       pendingBookTease: false,
@@ -1023,6 +1024,7 @@
         slateTip: Math.max(0, d.slateTip | 0),
         yestGuest: typeof d.yestGuest === "string" ? d.yestGuest : "",
         slateStreak: Math.max(0, Math.min(5, d.slateStreak | 0)),
+        slateThanks: !!d.slateThanks,
         sawDeepZone: d.sawDeepZone | 0,
         sessionSales: d.sessionSales | 0,
         sessionCaughtRare: !!d.sessionCaughtRare,
@@ -1094,6 +1096,7 @@
       slateTip: Math.max(0, state.slateTip | 0),
       yestGuest: state.yestGuest || "",
       slateStreak: Math.max(0, Math.min(5, state.slateStreak | 0)),
+      slateThanks: !!state.slateThanks,
       sawDeepZone: state.sawDeepZone | 0,
       sessionCaughtRare: !!state.sessionCaughtRare,
       sessionBoat: !!state.sessionBoat,
@@ -1204,7 +1207,7 @@
       missionStep: 0, missionDone: false, caughtRare: false,
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionDay: 1, sawDeepZone: 0,
-      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0,
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false,
       diveLock: 0, surfaceLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0,
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionCaughtRare: false, sessionBoat: false,
@@ -2741,6 +2744,7 @@
       }
       state.sessionDayGuest = false;
       state.slateTip = 0;
+      state.slateThanks = false;
     }
     rollDayGuest();
     if (dayBoardReady()) pool.push("guest");
@@ -3395,6 +3399,10 @@
     state.moneyRollT = 0.22;
     state.moneyPunch = 1.18;
     pop(p.x, p.y - 14, "+$" + v, "#ffe27a", 1.15, 1.2);
+    // loop 158 — the coin goes, the thanks stays on the slate.
+    state.slateThanks = true;
+    pop(DAY_BOARD.x, DAY_BOARD.y - 36, "THX", "#ffb0d0");
+    spawnP(DAY_BOARD.x, DAY_BOARD.y - 12, 10, ["#ffb0d0", "#ffe27a", "#fff6e8"], 50);
     sfx("coin");
     toast((state.dayGuest || "They") + " left $" + v + " on the slate", "#ffe27a", 2.4);
     persist();
@@ -3456,7 +3464,7 @@
     // loop 156 — YEST under the slate; AGAIN / 3× when they walk back.
     const again = dayGuestAgain();
     const yest = (!again && state.yestGuest) ? state.yestGuest : "";
-    const extra = (again && !state.sessionDayGuest) ? 12 : 0;
+    const extra = ((again && !state.sessionDayGuest) || state.slateThanks) ? 12 : 0;
     const sway = Math.sin(state.time * 0.7) * 0.015;
     sitShadow(x + 2, y + 18, 44, 10, 0.4);
     ctx.fillStyle = "#6a4224";
@@ -3502,7 +3510,11 @@
       drawFishBody(sp, 0, 0, 0.08, 0.55, state.time);
       ctx.restore();
     }
-    if (again && !state.sessionDayGuest) {
+    if (state.slateThanks) {
+      ctx.fillStyle = "#ffb0d0";
+      ctx.font = "800 11px Nunito, sans-serif";
+      ctx.fillText("THX", 4, 34);
+    } else if (again && !state.sessionDayGuest) {
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 9px Nunito, sans-serif";
       ctx.fillText("AGAIN", 4, 34);
@@ -14189,6 +14201,9 @@
       const tipAt = slateTipPos();
       return { text: "Scoop " + who + "'s tip at the slate", target: { x: tipAt.x, y: tipAt.y } };
     }
+    if (state.scene === "shop" && state.slateThanks && player && player.y > 860) {
+      return { text: (state.dayGuest || "They") + " chalked THX on the slate", target: { x: DAY_BOARD.x, y: DAY_BOARD.y } };
+    }
     if (state.scene === "shop" && dayBoardReady() && !state.sessionDayGuest && player && player.y > 860) {
       const sp = SPECIES[state.dayWant | 0];
       const wantName = sp ? sp.name : "a fish";
@@ -15822,6 +15837,7 @@
         "A 2× sale leaves a tip on the slate — walk over it",
         "Yesterday stays on the slate — a return pays 3×",
         "Serve the slate three days in a row for a STREAK",
+        "Scoop the tip and the slate chalks THX",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
       ];
