@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 157 serve the slate three days in a row for a STREAK
 // loop 156 yesterday stays on the slate — a return pays 3×
 // loop 155 a 2× sale leaves a tip on the west slate — walk over it
 // loop 154 today's regular waits at the slate — serve them and it chalks PAID
@@ -665,7 +666,7 @@
     missionStep: 0, missionDone: false, caughtRare: false,
     bagRare: [], stockRare: padSpeciesNums([]),
     sessionDay: 1, sawDeepZone: 0,
-    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "",
+    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0,
     diveLock: 0, surfaceLock: 0,
     didMove: false, shinyCallout: 0, shinyFocus: 0,
     sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
@@ -963,7 +964,7 @@
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionDay: 1, sawDeepZone: 0,
-      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "",
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0,
       sessionCaughtRare: false, sessionBoat: false,
       bookOpened: false, bookTeaseShown: false, sawBookTease: false,
       pendingBookTease: false,
@@ -1021,6 +1022,7 @@
         sessionDayGuest: !!d.sessionDayGuest,
         slateTip: Math.max(0, d.slateTip | 0),
         yestGuest: typeof d.yestGuest === "string" ? d.yestGuest : "",
+        slateStreak: Math.max(0, Math.min(5, d.slateStreak | 0)),
         sawDeepZone: d.sawDeepZone | 0,
         sessionSales: d.sessionSales | 0,
         sessionCaughtRare: !!d.sessionCaughtRare,
@@ -1091,6 +1093,7 @@
       sessionDayGuest: !!state.sessionDayGuest,
       slateTip: Math.max(0, state.slateTip | 0),
       yestGuest: state.yestGuest || "",
+      slateStreak: Math.max(0, Math.min(5, state.slateStreak | 0)),
       sawDeepZone: state.sawDeepZone | 0,
       sessionCaughtRare: !!state.sessionCaughtRare,
       sessionBoat: !!state.sessionBoat,
@@ -1201,7 +1204,7 @@
       missionStep: 0, missionDone: false, caughtRare: false,
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionDay: 1, sawDeepZone: 0,
-      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "",
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0,
       diveLock: 0, surfaceLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0,
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionCaughtRare: false, sessionBoat: false,
@@ -2667,6 +2670,7 @@
       const who = state.dayGuest || "a regular";
       const sp = SPECIES[state.dayWant | 0];
       if (dayGuestAgain()) return "Serve " + who + " again (3×)";
+      if ((state.slateStreak | 0) >= 2) return "Serve " + who + " — slate streak ×" + (state.slateStreak | 0);
       return "Serve " + who + (sp ? " a " + sp.name : "");
     }
     if (id === "catch6") return "Catch 6 fish  " + Math.min(6, state.sessionDiveCatch | 0) + "/6";
@@ -2731,7 +2735,10 @@
     if (newDay) {
       // loop 156 — latch yesterday before today's roll so a return can pay 3×.
       if (state.sessionDayGuest && state.dayGuest) state.yestGuest = state.dayGuest;
-      else state.yestGuest = "";
+      else {
+        state.yestGuest = "";
+        state.slateStreak = 0;
+      }
       state.sessionDayGuest = false;
       state.slateTip = 0;
     }
@@ -3314,6 +3321,9 @@
   function dayGuestMult() {
     return dayGuestAgain() ? 3 : 2;
   }
+  function slateStreakN() {
+    return Math.max(0, Math.min(5, state.slateStreak | 0));
+  }
   function dayGuestName(day) {
     const n = Math.max(1, day | 0);
     const yest = state.yestGuest || "";
@@ -3361,8 +3371,10 @@
   function slateTipAmount() {
     const sp = SPECIES[state.dayWant | 0];
     const price = sp ? (sp.price | 0) : 8;
-    if (dayGuestAgain()) return Math.max(6, Math.round(price * 0.4));
-    return Math.max(6, Math.round(price * 0.25));
+    let tip = dayGuestAgain() ? Math.max(6, Math.round(price * 0.4)) : Math.max(6, Math.round(price * 0.25));
+    const n = slateStreakN();
+    if (n >= 3) tip += 4 * (n - 2);
+    return tip;
   }
   function dropSlateTip() {
     // loop 155 — one coin per day, on the boards in front of the slate.
@@ -3466,14 +3478,19 @@
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("DAY " + Math.max(1, state.sessionDay | 0), 4, -10);
+    const streak = slateStreakN();
     if (state.sessionDayGuest) {
       ctx.fillStyle = "#ffe27a";
-      ctx.font = "800 14px Fredoka, sans-serif";
-      ctx.fillText("★", 34, -10);
+      ctx.font = "800 12px Fredoka, sans-serif";
+      ctx.fillText("★".repeat(Math.max(1, streak)), streak >= 3 ? 26 : 34, -10);
     } else if (again) {
       ctx.fillStyle = "#ffe27a";
       ctx.font = "800 11px Nunito, sans-serif";
       ctx.fillText("3×", 34, -10);
+    } else if (streak >= 2) {
+      ctx.fillStyle = "rgba(232, 216, 160, 0.7)";
+      ctx.font = "800 11px Fredoka, sans-serif";
+      ctx.fillText("★".repeat(streak), 34, -10);
     }
     ctx.fillStyle = "#e8f4e8";
     ctx.font = "700 11px Nunito, sans-serif";
@@ -6778,8 +6795,12 @@
             }
             if (c.dayGuest && c.name === state.dayGuest && (c.carry | 0) === (state.dayWant | 0)) {
               state.sessionDayGuest = true;
+              state.slateStreak = Math.min(5, (state.slateStreak | 0) + 1);
               dropSlateTip();
               spawnP(DAY_BOARD.x, DAY_BOARD.y - 18, 16, ["#ffe27a", "#9ef0c8", "#fff6e8"], 70);
+              if (slateStreakN() >= 3) {
+                pop(DAY_BOARD.x, DAY_BOARD.y - 52, "STREAK ×" + slateStreakN(), "#ffe27a");
+              }
               const paidPop = dayGuestAgain() ? "PAID 3×" : "PAID 2×";
               pop(DAY_BOARD.x, DAY_BOARD.y - 36, paidPop, "#9ef0c8");
             }
@@ -14167,6 +14188,9 @@
       if (dayGuestAgain()) {
         return { text: state.dayGuest + "'s back — 3× at the slate", target: { x: DAY_BOARD.x, y: DAY_BOARD.y } };
       }
+      if ((state.slateStreak | 0) >= 2) {
+        return { text: "Keep the slate streak — serve " + state.dayGuest, target: { x: DAY_BOARD.x, y: DAY_BOARD.y } };
+      }
       for (const c of customers) {
         if (c.dayGuest && c.name === state.dayGuest) {
           if (c.state === "slate") {
@@ -15790,6 +15814,7 @@
         "After the first session, today's regular waits at the west slate — serve them and it chalks PAID",
         "A 2× sale leaves a tip on the slate — walk over it",
         "Yesterday stays on the slate — a return pays 3×",
+        "Serve the slate three days in a row for a STREAK",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
       ];
