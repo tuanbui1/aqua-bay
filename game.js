@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 161 Ryan World is a fourth diver — globe kid on the title picker
 // loop 160 a read note tucks under the slate — walk over it again
 // loop 159 a scooped tip leaves a note on the west boards — walk over it
 // loop 158 scoop the tip and the slate chalks THX
@@ -189,12 +190,25 @@
   ];
   const SHIRTS = ["#e85d4c", "#3d8bfd", "#f0b429", "#7ad08a", "#c86bde", "#f2789f", "#5ec8c0"];
   const CUST_NAMES = ["Maya", "Nico", "Jun", "Sable", "Rio", "Piper", "Eden", "Wren"];
-  const SKIN_IDS = ["skip", "reef", "dino"];
+  const SKIN_IDS = ["skip", "reef", "dino", "ryan"];
   const SKIN_META = {
     skip: { name: "Skip", blurb: "dock kid" },
     reef: { name: "Reef", blurb: "reef girl" },
     dino: { name: "Dino", blurb: "snorkel dino" },
+    ryan: { name: "Ryan World", blurb: "globe kid" },
   };
+  function skinPickerCols() {
+    return (portraitStage() && SKIN_IDS.length > 3) ? 2 : SKIN_IDS.length;
+  }
+  function skinPickerSize(cardW, cardH, gap) {
+    const cols = skinPickerCols();
+    const rows = Math.ceil(SKIN_IDS.length / cols);
+    return {
+      cols, rows,
+      w: cardW * cols + gap * Math.max(0, cols - 1),
+      h: cardH * rows + gap * Math.max(0, rows - 1),
+    };
+  }
 
   function speciesN() { return SPECIES.length; }
   function padSpeciesFlags(arr) {
@@ -1408,7 +1422,7 @@
     const desk = {
       shift: 0,
       titleX: W / 2 - 250, titleY: 40, titleW: 500, titleH: 156,
-      pickerY: 252, cardW: 168, cardH: 176, cardGap: 16,
+      pickerY: 248, cardW: 150, cardH: 168, cardGap: 14,
       continueY: 452, continueH: 56, continueW: 300,
       captionY: 528,
       newY: 548, newH: 48, newW: 300,
@@ -1435,8 +1449,9 @@
     const lineGap = phoneCss(10);
     const titlePadT = phoneCss(18);
     const titlePadB = phoneCss(14);
-    const cardGap = 20;
-    const cardW = Math.min(300, Math.round((W - 80 - cardGap * 2) / 3));
+    const cardGap = 16;
+    const pickerCols = 2;
+    const cardW = Math.min(300, Math.round((W - 80 - cardGap * (pickerCols - 1)) / pickerCols));
     // Natural picker cards (near desktop 168×176). Extra phone height
     // goes to padding + fat buttons, not 2.5:1 noodle slots.
     const cardH = Math.round(cardW * 1.12);
@@ -1455,7 +1470,8 @@
     const whoY = y + whoFontPx;
     y = whoY + Math.round(whoFontPx * 0.35) + Math.max(10, Math.round(gap * 0.6));
     const pickerY = y;
-    y = pickerY + cardH + Math.round(gap * 1.6);
+    const pickerBox = skinPickerSize(cardW, cardH, cardGap);
+    y = pickerY + pickerBox.h + Math.round(gap * 1.6);
     const continueY = y;
     y += btnH + Math.round(H * 0.012);
     const captionY = y + Math.round(capH * 0.55);
@@ -10627,7 +10643,7 @@
     shadow(x, y + 3, moving ? 13 : 11, moving ? 4.8 : 4.0);
     const fi = moving ? gaitIndex(walkPhase, 6) : 0;
     const skipAtlas = !!p.paintOnly;
-    const skipCard = skipAtlas || skin === "dino";
+    const skipCard = skipAtlas || skin === "dino" || skin === "ryan";
     if (!skipAtlas && moving) {
       if (blitGait(skin, "walk", fi, x, plant, {
         scaleX: turnScaleX(squashX), scaleY: squashY + turnThinDraw * 0.08,
@@ -10651,7 +10667,65 @@
     ctx.translate(x, plant);
     ctx.scale(flip * short, short);
     ctx.rotate(lean * 0.55 + (moving ? walk * 0.04 : 0));
-    if (skin === "dino") {
+    if (skin === "ryan") {
+      // loop 161 — globe kid: sunset shirt, khaki shorts, a world floatie.
+      ctx.fillStyle = "#2f7dff";
+      ctx.beginPath(); ctx.ellipse(0, 7.2, 13.2, 5.4, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#3d8b4a";
+      ctx.beginPath(); ctx.ellipse(-3.2, 6.6, 5.2, 3.2, -0.35, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(255, 226, 122, 0.7)";
+      ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.ellipse(0, 7.2, 13.2, 5.4, 0, 0, Math.PI * 2); ctx.stroke();
+      drawLimbChain(-4.8, 8, 0.14 + walk * 0.48, 8.6, 0.22 + walk * 0.28, 8.8, 2.9, "#5a4a28", "#3a3018");
+      drawLimbChain(5.0, 8, 0.14 - walk * 0.48, 8.6, 0.22 - walk * 0.28, 8.8, 2.9, "#5a4a28", "#3a3018");
+      ctx.fillStyle = "#3a2415";
+      ctx.beginPath(); ctx.ellipse(-4.4, 25.2 + walk * 3.6, 3.7, 1.65, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(5.4, 25.2 - walk * 3.6, 3.7, 1.65, 0, 0, Math.PI * 2); ctx.fill();
+      drawLimbChain(-11.4, -1, 0.32 + swing, 7.8, 0.28, 7.2, 2.55, "#d4a070", "#c88850");
+      drawLimbChain(11.4, -1, -0.32 - swing, 7.8, -0.28, 7.2, 2.55, "#d4a070", "#c88850");
+      const shirt = ctx.createLinearGradient(-6, -10, 8, 12);
+      shirt.addColorStop(0, "#ffb04a");
+      shirt.addColorStop(0.45, "#e85d4c");
+      shirt.addColorStop(1, "#b43a28");
+      ctx.fillStyle = shirt;
+      ctx.beginPath();
+      ctx.moveTo(-11.5, -8);
+      ctx.quadraticCurveTo(-13.5, 1, -8.5, 12);
+      ctx.lineTo(8.5, 12);
+      ctx.quadraticCurveTo(13.5, 1, 11.5, -8);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#2f7dff";
+      ctx.beginPath(); ctx.ellipse(0, 1.2, 4.4, 4.0, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#3d8b4a";
+      ctx.beginPath(); ctx.ellipse(-1.1, 0.6, 2.3, 1.6, -0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(255, 246, 232, 0.55)";
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.ellipse(0, 1.2, 4.4, 4.0, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.save();
+      ctx.translate(moving ? 1.6 : 0, 0);
+      ctx.rotate(lean * 0.2);
+      ctx.fillStyle = "#d4a070";
+      fillCapsule(0, -8.2, 0, -13.6, 2.45);
+      ctx.beginPath(); ctx.ellipse(0, -18.6, 7.6, 8.4, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(-7.6, -17.2, 2.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(7.6, -17.2, 2.05, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2a1a12";
+      ctx.beginPath(); ctx.arc(0, -21.8, 8.0, Math.PI * 0.95, Math.PI * 2.08); ctx.fill();
+      ctx.beginPath(); ctx.arc(-5.6, -19.0, 3.2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(5.4, -19.6, 3.0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(-2.2, -23.4, 2.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.4, -23.2, 2.2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2a1a12";
+      ctx.beginPath(); ctx.arc(-2.5, -17.8, 1.15, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(2.7, -17.8, 1.15, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#fff";
+      ctx.beginPath(); ctx.arc(-3.1, -18.5, 0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#a86a48"; ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.arc(0, -15.6, 2.1, 0.2, Math.PI - 0.2); ctx.stroke();
+      drawMaskVisor(0.3, -22.4, 5.7, 2.7, false);
+      drawSnorkel(5.6, -24.2, 7.8, -32.4);
+      ctx.restore();
+    } else if (skin === "dino") {
       drawLimbChain(-4.6, 8, 0.12 + walk * 0.42, 8.4, walk * 0.32, 8.2, 2.7, "#2a6a34", "#1e4a24");
       drawLimbChain(4.8, 8, 0.12 - walk * 0.42, 8.4, -walk * 0.32, 8.2, 2.7, "#2a6a34", "#1e4a24");
       ctx.fillStyle = "#1e4a24";
@@ -10767,9 +10841,10 @@
   }
   function paintSwimFlipper(side, kick, skin) {
     const dino = skin === "dino";
-    const col = dino ? "#4aaa4a" : "#2ec8c4";
-    const edge = dino ? "#1e4a24" : "#146a6e";
-    const tip = dino ? "#8fd86a" : "#f0b429";
+    const ryan = skin === "ryan";
+    const col = dino ? "#4aaa4a" : ryan ? "#e85d4c" : "#2ec8c4";
+    const edge = dino ? "#1e4a24" : ryan ? "#7a2a18" : "#146a6e";
+    const tip = dino ? "#8fd86a" : ryan ? "#ffe27a" : "#f0b429";
     ctx.save();
     ctx.translate(dino ? -20 : -32, side * (dino ? 7.2 : 8.6));
     ctx.rotate(side * (0.38 + kick * 0.92));
@@ -10888,8 +10963,8 @@
     }
     drawSwimPaddle(skin, phase, kickWave, stroke, true);
     const kick = kickWave * 0.48;
-    drawLimbChain(-2, 4, Math.PI * 0.92 + kick * 0.35, 8, kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
-    drawLimbChain(2, 4, -Math.PI * 0.92 - kick * 0.35, 8, -kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : "#243848");
+    drawLimbChain(-2, 4, Math.PI * 0.92 + kick * 0.35, 8, kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : skin === "ryan" ? "#5a4a28" : "#243848");
+    drawLimbChain(2, 4, -Math.PI * 0.92 - kick * 0.35, 8, -kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : skin === "ryan" ? "#5a4a28" : "#243848");
     if (skin === "dino") {
       ctx.fillStyle = "#b8c4ce";
       roundRect(-13, -8, 9, 16, 3); ctx.fill();
@@ -10917,6 +10992,34 @@
       ctx.beginPath(); ctx.arc(22.6, 0.8, 1.05, 0, Math.PI * 2); ctx.fill();
       drawMaskVisor(18.0, -0.5, 5.0, 3.5, true);
       drawSnorkel(19.2, -3.4, 21.4, -13.6);
+    } else if (skin === "ryan") {
+      ctx.fillStyle = "#2f7dff";
+      ctx.beginPath(); ctx.ellipse(1, 5.4, 14.2, 6.2, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#3d8b4a";
+      ctx.beginPath(); ctx.ellipse(-2.4, 5.0, 5.6, 3.4, -0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(255, 226, 122, 0.7)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.ellipse(1, 5.4, 14.2, 6.2, 0, 0, Math.PI * 2); ctx.stroke();
+      const rb = ctx.createLinearGradient(-4, -10, 10, 10);
+      rb.addColorStop(0, "#ffb04a");
+      rb.addColorStop(1, "#b43a28");
+      ctx.fillStyle = rb;
+      ctx.beginPath();
+      ctx.ellipse(2, 0, 11.4, 8.4, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2f7dff";
+      ctx.beginPath(); ctx.ellipse(3, 0.4, 3.6, 3.2, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#3d8b4a";
+      ctx.beginPath(); ctx.ellipse(2.2, 0.2, 1.8, 1.3, -0.3, 0, Math.PI * 2); ctx.fill();
+      drawLimbChain(4, -6.2, -1.2 + stroke, 7.4, -0.35, 6.2, 2.25, "#d4a070");
+      drawLimbChain(4, 6.2, 1.2 - stroke, 7.4, 0.35, 6.2, 2.25, "#d4a070");
+      ctx.fillStyle = "#d4a070";
+      fillCapsule(11, 0, 14.2, 0, 2.2);
+      ctx.beginPath(); ctx.ellipse(17.2, 0, 6.8, 6.8, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2a1a12";
+      ctx.beginPath(); ctx.arc(16.2, -3.4, 5.2, Math.PI * 0.7, Math.PI * 1.9); ctx.fill();
+      ctx.beginPath(); ctx.arc(14.4, 2.6, 2.4, 0, Math.PI * 2); ctx.fill();
+      drawMaskVisor(19.4, -0.2, 5.0, 3.6, true);
+      drawSnorkel(20.8, -3.2, 23.0, -13.8);
     } else {
       ctx.fillStyle = "#cfd8e3";
       roundRect(-12, -10, 10, 20, 3); ctx.fill();
@@ -15663,7 +15766,7 @@
         ctx.fillStyle = "rgba(255, 246, 220, 0.28)";
         ctx.beginPath(); ctx.ellipse(x + w * fx - w * rw * 0.25, y + h * fy - h * rh * 0.2, w * rw * 0.45, h * rh * 0.4, -0.3, 0, Math.PI * 2); ctx.fill();
       }
-    } else {
+    } else if (id === "dino") {
       // C95 — painted lagoon: warm sun, calm water, sandy spit.
       const sky = ctx.createLinearGradient(x, y, x, y + h);
       sky.addColorStop(0, "#f2c878");
@@ -15709,6 +15812,35 @@
       ctx.closePath(); ctx.fill();
       ctx.fillStyle = "#2a6a34";
       ctx.fillRect(x + w * 0.168, y + h * 0.70, w * 0.035, h * 0.10);
+    } else if (id === "ryan") {
+      // loop 161 — painted world: night-blue map, gold meridians, a sun.
+      const sky = ctx.createLinearGradient(x, y, x, y + h);
+      sky.addColorStop(0, "#1a2a58");
+      sky.addColorStop(0.42, "#243888");
+      sky.addColorStop(0.68, "#1e6a8a");
+      sky.addColorStop(1, "#c88840");
+      ctx.fillStyle = sky;
+      ctx.fillRect(x, y, w, h);
+      const gx = x + w * 0.50, gy = y + h * 0.42, gr = Math.min(w, h) * 0.28;
+      ctx.fillStyle = "#2f7dff";
+      ctx.beginPath(); ctx.arc(gx, gy, gr, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#3d8b4a";
+      ctx.beginPath(); ctx.ellipse(gx - gr * 0.22, gy - gr * 0.08, gr * 0.42, gr * 0.28, -0.4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(gx + gr * 0.28, gy + gr * 0.18, gr * 0.30, gr * 0.22, 0.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "rgba(255, 226, 122, 0.55)";
+      ctx.lineWidth = Math.max(1.1, h * 0.012);
+      ctx.beginPath(); ctx.arc(gx, gy, gr, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(gx, gy, gr * 0.42, gr, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(gx - gr, gy); ctx.lineTo(gx + gr, gy); ctx.stroke();
+      const sx = x + w * 0.82, sy = y + h * 0.16, sr = Math.min(w, h) * 0.08;
+      ctx.fillStyle = "#ffe27a";
+      ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#ffe27a";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(x + w * 0.18, y + h * 0.22);
+      ctx.quadraticCurveTo(x + w * 0.32, y + h * 0.12, x + w * 0.40, y + h * 0.20);
+      ctx.stroke();
     }
     ctx.restore();
   }
@@ -15730,8 +15862,8 @@
     const whoPx = fnt.whoFont || 14;
     let whoY = fnt.whoY != null ? fnt.whoY : (cy - 20);
     if (whoY > cy - 8) whoY = cy - Math.max(16, (fnt.whoFont || 14) + 6);
-    const total = cardW * 3 + gap * 2;
-    let x = cx - total / 2;
+    const pack = skinPickerSize(cardW, cardH, gap);
+    let x0 = cx - pack.w / 2;
     const chosen = normalizeSkin(state.skin);
     const labels = pickerLabelLayout(cardH, namePx, blurbPx);
     // loop 132 title Who's diving readable — a soft dark shadow so the
@@ -15750,37 +15882,39 @@
       const id = SKIN_IDS[i];
       const meta = SKIN_META[id];
       const selected = chosen === id;
-      card(x, cy, cardW, cardH, selected ? "rgba(28, 58, 52, 0.94)" : "rgba(12, 28, 36, 0.78)");
-      drawPickerBackdrop(id, x, cy, cardW, cardH);
+      const col = i % pack.cols;
+      const row = (i / pack.cols) | 0;
+      const x = x0 + col * (cardW + gap);
+      const cardY = cy + row * (cardH + gap);
+      card(x, cardY, cardW, cardH, selected ? "rgba(28, 58, 52, 0.94)" : "rgba(12, 28, 36, 0.78)");
+      drawPickerBackdrop(id, x, cardY, cardW, cardH);
       if (selected) {
         ctx.strokeStyle = "rgba(255,226,122," + (0.55 + 0.3 * Math.sin(state.time * 5)) + ")";
         ctx.lineWidth = 3;
-        roundRect(x, cy, cardW, cardH, 12); ctx.stroke();
+        roundRect(x, cardY, cardW, cardH, 12); ctx.stroke();
       }
-      const charY = Math.min(cy + cardH * 0.62, cy + labels.plateY - 2);
+      const charY = Math.min(cardY + cardH * 0.62, cardY + labels.plateY - 2);
       drawPlayer(x + cardW / 2, charY, {
         skin: id, vx: 0, vy: 0, facing: 0.08,
         walkPhase: 0, lean: 0.05, bob: Math.sin(state.time * 1.5 + i) * 0.6,
         faceS: 1, drawScale: id === "dino"
           ? (cardH > 240 ? 2.55 : 1.82)
           : (cardH > 240 ? 2.35 : 1.65),
-        paintOnly: id === "dino",
-
+        paintOnly: id === "dino" || id === "ryan",
       });
       const sidePad = portraitStage() ? phoneCss(6) : 6;
       const plateX = x + sidePad;
       const plateW = cardW - sidePad * 2;
       ctx.fillStyle = "rgba(12, 22, 30, 0.88)";
-      roundRect(plateX, cy + labels.plateY, plateW, labels.plateH, 8); ctx.fill();
+      roundRect(plateX, cardY + labels.plateY, plateW, labels.plateH, 8); ctx.fill();
       ctx.fillStyle = "#fff6e8";
-      ctx.font = "800 " + namePx + "px Fredoka, sans-serif";
+      ctx.font = "800 " + (id === "ryan" ? Math.max(12, namePx - 2) : namePx) + "px Fredoka, sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText(meta.name, x + cardW / 2, cy + labels.nameY);
+      ctx.fillText(meta.name, x + cardW / 2, cardY + labels.nameY);
       ctx.fillStyle = selected ? "#ffe27a" : "#9ec8d0";
       ctx.font = "700 " + blurbPx + "px Nunito, sans-serif";
-      ctx.fillText(meta.blurb, x + cardW / 2, cy + labels.blurbY);
-      btn("skin-" + id, x, cy, cardW, cardH);
-      x += cardW + gap;
+      ctx.fillText(meta.blurb, x + cardW / 2, cardY + labels.blurbY);
+      btn("skin-" + id, x, cardY, cardW, cardH);
     }
   }
   function drawTitle() {
@@ -15945,7 +16079,7 @@
         "A scooped tip leaves a note — walk over it",
         "A read note tucks under the slate — walk over it again",
         "Pause → Export save — keep your shop if the browser clears",
-        "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
+        "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
       const lineY = cardY + (tall ? Math.round(H * 0.08) : 86);
       const lineH = tall ? Math.round((cardH - Math.round(H * 0.16)) / lines.length) : 26;
@@ -15973,11 +16107,12 @@
       const pLay = titleMenuLayout();
       const pCardW = tall ? Math.min(pLay.cardW, 280) : 140;
       const pCardH = tall ? Math.min(pLay.cardH, Math.round(H * 0.18)) : 100;
-      drawSkinPicker(W / 2, y, pCardW, pCardH, tall ? 20 : 12, {
+      const pGap = tall ? 20 : 12;
+      drawSkinPicker(W / 2, y, pCardW, pCardH, pGap, {
         nameFont: tall ? pLay.nameFont : 16, blurbFont: tall ? pLay.blurbFont : 11,
         whoFont: tall ? pLay.whoFont : 14, whoY: y - (tall ? 28 : 16),
       });
-      y += pCardH + (tall ? Math.round(H * 0.02) : 12);
+      y += skinPickerSize(pCardW, pCardH, pGap).h + (tall ? Math.round(H * 0.02) : 12);
       const saveH = tall ? Math.max(52, btnH - 8) : 40;
       const half = (btnW - 10) / 2;
       const saveFont = tall ? Math.max(20, btnFont - 4) : 16;
