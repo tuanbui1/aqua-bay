@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 160 a read note tucks under the slate — walk over it again
 // loop 159 a scooped tip leaves a note on the west boards — walk over it
 // loop 158 scoop the tip and the slate chalks THX
 // loop 157 serve the slate three days in a row for a STREAK
@@ -668,7 +669,7 @@
     missionStep: 0, missionDone: false, caughtRare: false,
     bagRare: [], stockRare: padSpeciesNums([]),
     sessionDay: 1, sawDeepZone: 0,
-    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false, slateNote: 0, slateNoteLock: 0,
+    dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false, slateNote: 0, slateNoteLock: 0, slateQuote: "", slateQuoteWho: "",
     diveLock: 0, surfaceLock: 0,
     didMove: false, shinyCallout: 0, shinyFocus: 0,
     sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
@@ -966,7 +967,7 @@
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionDay: 1, sawDeepZone: 0,
-      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false, slateNote: 0, slateNoteLock: 0,
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false, slateNote: 0, slateNoteLock: 0, slateQuote: "", slateQuoteWho: "",
       sessionCaughtRare: false, sessionBoat: false,
       bookOpened: false, bookTeaseShown: false, sawBookTease: false,
       pendingBookTease: false,
@@ -1028,6 +1029,8 @@
         slateThanks: !!d.slateThanks,
         slateNote: (d.slateNote | 0) ? 1 : 0,
         slateNoteLock: 0,
+        slateQuote: typeof d.slateQuote === "string" ? d.slateQuote.slice(0, 40) : "",
+        slateQuoteWho: typeof d.slateQuoteWho === "string" ? d.slateQuoteWho.slice(0, 16) : "",
         sawDeepZone: d.sawDeepZone | 0,
         sessionSales: d.sessionSales | 0,
         sessionCaughtRare: !!d.sessionCaughtRare,
@@ -1101,6 +1104,8 @@
       slateStreak: Math.max(0, Math.min(5, state.slateStreak | 0)),
       slateThanks: !!state.slateThanks,
       slateNote: (state.slateNote | 0) ? 1 : 0,
+      slateQuote: (state.slateQuote || "").slice(0, 40),
+      slateQuoteWho: (state.slateQuoteWho || "").slice(0, 16),
       sawDeepZone: state.sawDeepZone | 0,
       sessionCaughtRare: !!state.sessionCaughtRare,
       sessionBoat: !!state.sessionBoat,
@@ -1211,7 +1216,7 @@
       missionStep: 0, missionDone: false, caughtRare: false,
       bagRare: [], stockRare: padSpeciesNums([]),
       sessionDay: 1, sawDeepZone: 0,
-      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false, slateNote: 0, slateNoteLock: 0,
+      dayGuest: "", dayWant: -1, dayAt: 0, sessionDayGuest: false, slateTip: 0, yestGuest: "", slateStreak: 0, slateThanks: false, slateNote: 0, slateNoteLock: 0, slateQuote: "", slateQuoteWho: "",
       diveLock: 0, surfaceLock: 0, didMove: false, shinyCallout: 0, shinyFocus: 0,
       sessionGoals: [], sessionGoalDone: [], sessionSales: 0,
       sessionCaughtRare: false, sessionBoat: false,
@@ -3442,39 +3447,72 @@
     return "see you tomorrow";
   }
   function updateSlateNote(dt) {
-    if ((state.slateNote | 0) <= 0 || state.scene !== "shop" || state.mode !== "play") return;
+    if (state.scene !== "shop" || state.mode !== "play") return;
     if ((state.slateNoteLock || 0) > 0) {
       state.slateNoteLock = Math.max(0, (state.slateNoteLock || 0) - (dt || 0));
-      return;
     }
     const p = slateNotePos();
     if (Math.hypot(player.x - p.x, player.y - p.y) >= 36) return;
-    state.slateNote = 0;
-    pop(p.x, p.y - 16, "♡", "#ffb0d0", 1.1, 1.15);
-    sfx("coin");
-    toast((state.dayGuest || "They") + ": " + slateNoteLine(), "#ffb0d0", 2.6);
-    persist();
+    if ((state.slateNote | 0) > 0) {
+      if ((state.slateNoteLock || 0) > 0) return;
+      const line = slateNoteLine();
+      state.slateNote = 0;
+      // loop 160 — the read note tucks under the slate.
+      state.slateQuote = line;
+      state.slateQuoteWho = state.dayGuest || "";
+      state.slateNoteLock = 1.2;
+      pop(p.x, p.y - 16, "♡", "#ffb0d0", 1.1, 1.15);
+      sfx("coin");
+      toast((state.dayGuest || "They") + ": " + line, "#ffb0d0", 2.6);
+      persist();
+      return;
+    }
+    if (state.slateQuote && (state.slateNoteLock || 0) <= 0) {
+      state.slateNoteLock = 1.8;
+      toast((state.slateQuoteWho || "They") + ": " + state.slateQuote, "#ffb0d0", 2.4);
+    }
   }
   function drawSlateNote() {
-    if ((state.slateNote | 0) <= 0 || state.scene !== "shop") return;
+    if (state.scene !== "shop") return;
     const p = slateNotePos();
-    const bob = Math.sin(state.time * 4.4) * 2.2;
+    if ((state.slateNote | 0) > 0) {
+      const bob = Math.sin(state.time * 4.4) * 2.2;
+      ctx.save();
+      sitShadow(p.x, p.y + 10, 18, 8, 0.35);
+      ctx.translate(p.x, p.y + bob);
+      ctx.rotate(-0.12);
+      ctx.fillStyle = "#fff4d6";
+      roundRect(-13, -9, 26, 20, 3); ctx.fill();
+      ctx.strokeStyle = "#c8a060";
+      ctx.lineWidth = 1.6;
+      roundRect(-13, -9, 26, 20, 3); ctx.stroke();
+      ctx.fillStyle = "rgba(200, 160, 80, 0.35)";
+      ctx.fillRect(-13, -2, 26, 2);
+      ctx.fillStyle = "#ffb0d0";
+      ctx.font = "800 12px Nunito, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("♡", 0, 2);
+      ctx.textBaseline = "alphabetic";
+      ctx.restore();
+      return;
+    }
+    if (!state.slateQuote) return;
+    // loop 160 — tucked, no bob, peeking under the slate.
     ctx.save();
-    sitShadow(p.x, p.y + 10, 18, 8, 0.35);
-    ctx.translate(p.x, p.y + bob);
-    ctx.rotate(-0.12);
-    ctx.fillStyle = "#fff4d6";
-    roundRect(-13, -9, 26, 20, 3); ctx.fill();
-    ctx.strokeStyle = "#c8a060";
-    ctx.lineWidth = 1.6;
-    roundRect(-13, -9, 26, 20, 3); ctx.stroke();
-    ctx.fillStyle = "rgba(200, 160, 80, 0.35)";
-    ctx.fillRect(-13, -2, 26, 2);
-    ctx.fillStyle = "#ffb0d0";
-    ctx.font = "800 12px Nunito, sans-serif";
+    sitShadow(p.x + 6, p.y + 8, 16, 6, 0.28);
+    ctx.translate(p.x + 8, p.y + 4);
+    ctx.rotate(-0.28);
+    ctx.fillStyle = "#f4e4b8";
+    roundRect(-14, -6, 28, 14, 2); ctx.fill();
+    ctx.strokeStyle = "#b89050";
+    ctx.lineWidth = 1.3;
+    roundRect(-14, -6, 28, 14, 2); ctx.stroke();
+    ctx.fillStyle = "#8a6030";
+    ctx.font = "700 8px Nunito, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("♡", 0, 2);
+    ctx.fillText((state.slateQuoteWho || "note").slice(0, 6), 0, 1);
     ctx.textBaseline = "alphabetic";
     ctx.restore();
   }
@@ -14262,6 +14300,11 @@
       const who = state.dayGuest || "";
       return { text: who ? ("Read " + who + "'s note at the slate") : "Read the note at the slate", target: { x: noteAt.x, y: noteAt.y } };
     }
+    if (state.scene === "shop" && state.slateQuote && !(state.slateNote | 0) && player && player.y > 860) {
+      const who = state.slateQuoteWho || "Their";
+      const noteAt = slateNotePos();
+      return { text: who + "'s note is tucked under the slate", target: { x: noteAt.x, y: noteAt.y } };
+    }
     if (state.scene === "shop" && state.slateThanks && player && player.y > 860) {
       return { text: (state.dayGuest || "They") + " chalked THX on the slate", target: { x: DAY_BOARD.x, y: DAY_BOARD.y } };
     }
@@ -15900,6 +15943,7 @@
         "Serve the slate three days in a row for a STREAK",
         "Scoop the tip and the slate chalks THX",
         "A scooped tip leaves a note — walk over it",
+        "A read note tucks under the slate — walk over it again",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, or Dino on title",
       ];
