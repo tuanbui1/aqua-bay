@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 162 fish cruise in gentle S-curves, not straight lines
 // loop 161 Ryan World is a fourth diver — globe kid on the title picker
 // loop 160 a read note tucks under the slate — walk over it again
 // loop 159 a scooped tip leaves a note on the west boards — walk over it
@@ -4818,6 +4819,7 @@
       const dx = f.x - px, dy = f.y - py;
       const d = Math.hypot(dx, dy) || 0.001;
       const locked = player.scoopLock === f && catchHolding();
+      let cruising = !locked;
       const firstDive = (state.divesThisSession | 0) === 1;
       let fleeR = f.rare ? sp.fleeR * 0.38 : sp.fleeR;
       let fleeSp = f.rare ? sp.flee * 0.36 : sp.flee;
@@ -4833,6 +4835,7 @@
         f.vx *= 0.42;
         f.vy *= 0.42;
       } else if (d < fleeR) {
+        cruising = false;
         f.fleeT = f.rare ? 0.22 : (firstDive ? 0.22 : 0.45);
         const boost = (!f.rare && !firstDive && d < 70) ? 1.25 : 1;
         f.vx = (dx / d) * fleeSp * boost;
@@ -4851,6 +4854,19 @@
           if (c) f.ang = lerp(f.ang, Math.atan2(sy / c - f.y, sx / c - f.x), 0.04);
         }
         applySpeciesGait(f, dt, sp);
+      }
+      // loop 162 gentle swim S-curve — fish used to cruise in near-straight
+      // lines at a steady pace. On the cruise / coast path (not fleeing, not
+      // locked), layer a slow speed ebb (drift → glide) and a gentle
+      // vertical waver so mid-water fish trace organic up-down curves. The
+      // per-fish phase desyncs the school; bottom crawlers (crab / octopus)
+      // skip the vertical waver so they stay on the seabed. Flee / catch set
+      // their own velocity (cruising=false), so the catch feel is unchanged.
+      if (cruising) {
+        const ebb = 0.9 + 0.22 * Math.sin(state.time * 0.5 + f.ph);
+        f.vx *= ebb;
+        const bottomGait = sp.gait === "scuttle" || sp.gait === "crawl";
+        f.vy = f.vy * ebb + (bottomGait ? 0 : Math.sin(state.time * 1.1 + f.ph * 2.3) * sp.cruise * 0.5);
       }
       f.x += f.vx * dt; f.y += f.vy * dt;
       if (f.x < 70) { f.x = 70; f.vx = Math.abs(f.vx); f.ang = 0; }
@@ -13314,6 +13330,14 @@
         continue;
       }
       let dang = f.ang;
+      // loop 162 — nose the fish into its actual swim velocity so the
+      // S-curve reads as swimming, not sliding flat through the water.
+      // Draw-only (does not feed back into the gait's f.ang); the top-down
+      // critters (seahorse / octopus / crab) keep their own dampened facing.
+      if (f.s !== 5 && f.s !== 8 && f.s !== 9) {
+        const velP = clamp(Math.atan2(f.vy, Math.max(1, Math.abs(f.vx))), -0.5, 0.5);
+        dang = (Math.cos(f.ang) < 0) ? (Math.PI - velP) : velP;
+      }
       if (f.s === 0) dang += (f.darting ? 0.18 : -0.06) * Math.sin(state.time * 14 + f.ph);
       else if (f.s === 2) dang += Math.sin(state.time * 0.85 + f.ph) * 0.32;
       else if (f.s === 3) dang += Math.sin(state.time * 0.4 + f.ph) * 0.08;
