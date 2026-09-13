@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 164 ocean monsters — jellies sting, urchins poke, a moray lunges
 // loop 163 a reef shark patrols — a bump drops your last catch
 // loop 162 fish cruise in gentle S-curves, not straight lines
 // loop 161 Ryan World is a fourth diver — globe kid on the title picker
@@ -1830,7 +1831,10 @@
       f.vy = Math.sin(f.ang) * speed * 0.55 + Math.sin(f.gaitT * 1.15 + f.ph) * 10;
     }
   }
-  function swimSpeed() { return 215 + state.speedLv * 42; }
+  function swimSpeed() {
+    const slow = (state.urchinSlow || 0) > 0 ? 0.42 : 1;
+    return (215 + state.speedLv * 42) * slow;
+  }
   function catchTime() { return (state.lifetimeCatches < 3 ? 0.62 : 0.74) / (1 + 0.24 * state.catchLv); }
   function catchHoldingRaw() {
     return !!(mouse.down || keys.has(" ") || keys.has("enter") || player.scoopTap);
@@ -4588,6 +4592,27 @@
         ph: 0.2,
         facing: -1,
       });
+      oceanScenery.push({
+        kind: "eel",
+        x: px + 70,
+        y: py + 188,
+        homeX: px + 70,
+        homeY: py + 188,
+        vx: 0,
+        vy: 0,
+        ph: 1.4,
+        facing: 1,
+        lunge: 0,
+      });
+      for (let i = 0; i < 3; i++) {
+        oceanScenery.push({
+          kind: "urchin",
+          x: px + rand(-90, 160),
+          y: py + 210 + rand(10, 90),
+          ph: i * 1.7,
+          sc: rand(0.85, 1.2),
+        });
+      }
     }
   }
   function seedDiveLandmark() {
@@ -4637,9 +4662,51 @@
     sfx("escape");
     persist();
   }
+  function jellySting(s) {
+    state.jellyLock = 1.6;
+    state.sharkStun = Math.max(state.sharkStun || 0, 0.38);
+    state.hitStop = Math.max(state.hitStop || 0, 0.08);
+    state.camPunch = Math.max(state.camPunch || 0, 0.14);
+    const away = s.x >= player.x ? -1 : 1;
+    player.vx = away * 140;
+    player.vy = -24;
+    clearScoop("shark");
+    pop(player.x, player.y - 26, "sting!", "#ffb07a", 0.8, 1.15);
+    toast("A jelly stung you!", "#ffb07a", 2.4);
+    sfx("escape");
+  }
+  function morayBite(s) {
+    state.eelLock = 2.4;
+    state.sharkStun = Math.max(state.sharkStun || 0, 0.4);
+    state.hitStop = Math.max(state.hitStop || 0, 0.1);
+    state.camPunch = Math.max(state.camPunch || 0, 0.2);
+    const away = s.x >= player.x ? -1 : 1;
+    player.vx = away * 200;
+    player.vy = -36;
+    s.lunge = -0.45;
+    clearScoop("shark");
+    const dropped = dropLastBagCatch();
+    pop(player.x, player.y - 28, dropped ? "dropped!" : "lunge!", "#ff9a7a", 0.9, 1.2);
+    toast(dropped ? "A moray lunged — last catch got away" : "A moray lunged!", "#ff9a7a", 3.0);
+    sfx("escape");
+    persist();
+  }
+  function urchinPoke() {
+    state.urchinLock = 1.15;
+    state.urchinSlow = 1.35;
+    state.camPunch = Math.max(state.camPunch || 0, 0.1);
+    clearScoop("shark");
+    pop(player.x, player.y - 22, "ow!", "#e8c070", 0.7, 1.05);
+    toast("Urchin spines — you swim slower", "#e8c070", 2.2);
+    sfx("escape");
+  }
   function updateOceanScenery(dt) {
     if ((state.sharkBumpLock || 0) > 0) state.sharkBumpLock = Math.max(0, state.sharkBumpLock - dt);
     if ((state.sharkStun || 0) > 0) state.sharkStun = Math.max(0, state.sharkStun - dt);
+    if ((state.jellyLock || 0) > 0) state.jellyLock = Math.max(0, state.jellyLock - dt);
+    if ((state.eelLock || 0) > 0) state.eelLock = Math.max(0, state.eelLock - dt);
+    if ((state.urchinLock || 0) > 0) state.urchinLock = Math.max(0, state.urchinLock - dt);
+    if ((state.urchinSlow || 0) > 0) state.urchinSlow = Math.max(0, state.urchinSlow - dt);
     for (const s of oceanScenery) {
       if (s.kind === "ray") {
         s.x += s.vx * dt;
@@ -4652,6 +4719,10 @@
         s.x += Math.sin(state.time * 0.55 + s.ph) * 16 * dt;
         if (s.y < 250) s.y = OCEAN.h - 160;
         s.x = clamp(s.x, 80, OCEAN.w - 80);
+        if (sharkLegal() && state.scene === "ocean" && !state.fadeDir && (state.jellyLock || 0) <= 0) {
+          const jd = Math.hypot(player.x - s.x, player.y - s.y);
+          if (jd < 30) jellySting(s);
+        }
       } else if (s.kind === "kelp") {
         s.x += Math.sin(state.time * 0.7 + s.ph) * 4 * dt;
       } else if (s.kind === "shark") {
@@ -4666,6 +4737,39 @@
         s.facing = s.vx >= 0 ? 1 : -1;
         if (state.scene === "ocean" && !state.fadeDir && (state.sharkBumpLock || 0) <= 0 && d < 52) {
           reefSharkBump(s);
+        }
+      } else if (s.kind === "eel") {
+        const dx = player.x - s.x, dy = player.y - s.y;
+        const d = Math.hypot(dx, dy) || 1;
+        if ((s.lunge || 0) === 0 && d < 108 && (state.eelLock || 0) <= 0) s.lunge = 0.55;
+        if ((s.lunge || 0) > 0) {
+          s.vx = (dx / d) * 260;
+          s.vy = (dy / d) * 220;
+          s.lunge = Math.max(0, s.lunge - dt);
+          if (s.lunge <= 0) s.lunge = -0.5;
+        } else if ((s.lunge || 0) < 0) {
+          const hx = (s.homeX != null ? s.homeX : s.x) - s.x;
+          const hy = (s.homeY != null ? s.homeY : s.y) - s.y;
+          const hd = Math.hypot(hx, hy) || 1;
+          s.vx = (hx / hd) * 140;
+          s.vy = (hy / hd) * 120;
+          s.lunge = Math.min(0, s.lunge + dt);
+        } else {
+          s.vx = Math.sin(state.time * 1.3 + s.ph) * 18;
+          s.vy = Math.cos(state.time * 0.9 + s.ph) * 10;
+        }
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
+        s.x = clamp(s.x, 80, OCEAN.w - 80);
+        s.y = clamp(s.y, 260, OCEAN.h - 90);
+        s.facing = s.vx >= 0 ? 1 : -1;
+        if (state.scene === "ocean" && !state.fadeDir && (state.eelLock || 0) <= 0 && d < 36) {
+          morayBite(s);
+        }
+      } else if (s.kind === "urchin") {
+        if (sharkLegal() && state.scene === "ocean" && !state.fadeDir && (state.urchinLock || 0) <= 0) {
+          const ud = Math.hypot(player.x - s.x, player.y - s.y);
+          if (ud < 24) urchinPoke();
         }
       } else {
         s.x += s.vx * dt;
@@ -16168,6 +16272,7 @@
         "A scooped tip leaves a note — walk over it",
         "A read note tucks under the slate — walk over it again",
         "After the first dive a reef shark patrols — a bump drops your last catch",
+        "Jellies sting, urchins poke, and a moray lunges — first dive stays quiet",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
@@ -16825,8 +16930,8 @@
         keepSwimmerOffRail(f, Math.max(28, (SPECIES[f.s] && SPECIES[f.s].size) || 20));
       }
       for (const s of oceanScenery) {
-        if (s.kind === "kelp" || s.kind === "rock") continue;
-        keepSwimmerOffRail(s, s.kind === "ray" ? 40 : s.kind === "shark" ? 52 : 20);
+        if (s.kind === "kelp" || s.kind === "rock" || s.kind === "urchin") continue;
+        keepSwimmerOffRail(s, s.kind === "ray" ? 40 : s.kind === "shark" ? 52 : s.kind === "eel" ? 40 : 20);
       }
       for (const b of bubbles) keepSwimmerOffRail(b, (b.r || 3) + 4);
     } else {
@@ -16875,7 +16980,7 @@
   }
   function drawOceanScenery() {
     for (const s of oceanScenery) {
-      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : s.kind === "shark" ? 64 : 32);
+      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : (s.kind === "shark" || s.kind === "eel") ? 64 : 32);
       if (sa <= 0.04) continue;
       ctx.save();
       ctx.globalAlpha *= sa;
@@ -16884,6 +16989,8 @@
       else if (s.kind === "kelp") drawKelpPatch(s);
       else if (s.kind === "rock") drawRockProp(s.x, s.y, s.seed || 1, s.sc || 1);
       else if (s.kind === "shark") drawSceneryShark(s);
+      else if (s.kind === "eel") drawSceneryEel(s);
+      else if (s.kind === "urchin") drawSceneryUrchin(s);
       else drawSceneryMinnow(s);
       ctx.restore();
     }
@@ -17079,6 +17186,65 @@
       }
     }
     ctx.restore();
+  }
+  function drawSceneryEel(s) {
+    const face = (s.facing || 1) >= 0 ? 1 : -1;
+    const slither = Math.sin(state.time * 8 + s.ph) * 6;
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.scale(face, 1);
+    ctx.rotate(slither * 0.02);
+    ctx.fillStyle = "rgba(6, 16, 12, 0.28)";
+    ctx.beginPath(); ctx.ellipse(0, 8, 26, 5, 0, 0, Math.PI * 2); ctx.fill();
+    const body = ctx.createLinearGradient(-36, -6, 28, 8);
+    body.addColorStop(0, "#1a3a28");
+    body.addColorStop(0.45, "#3d8b4a");
+    body.addColorStop(1, "#c8a04a");
+    ctx.strokeStyle = body;
+    ctx.lineWidth = 7.4;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(-34, slither * 0.15);
+    ctx.quadraticCurveTo(-8, -10 - slither * 0.4, 8, slither * 0.2);
+    ctx.quadraticCurveTo(22, 8 + slither * 0.3, 30, 2);
+    ctx.stroke();
+    ctx.fillStyle = "#2a4a32";
+    ctx.beginPath(); ctx.ellipse(26, 1, 9, 5.2, 0.1, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#1a2020";
+    ctx.beginPath(); ctx.arc(30, 0, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffe27a";
+    ctx.beginPath(); ctx.arc(29.4, -0.5, 0.45, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    drawWorldPlate(s.x, s.y - 22, "EEL", "shiny");
+  }
+  function drawSceneryUrchin(s) {
+    const sc = s.sc || 1;
+    const pulse = 1 + Math.sin(state.time * 3 + s.ph) * 0.04;
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.scale(sc * pulse, sc * pulse);
+    ctx.fillStyle = "rgba(8, 10, 16, 0.3)";
+    ctx.beginPath(); ctx.ellipse(0, 8, 12, 4, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#4a2060";
+    ctx.beginPath(); ctx.arc(0, 0, 8.4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#7a3a88";
+    ctx.beginPath(); ctx.arc(-1.4, -1.6, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#2a1038";
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2 + s.ph * 0.05;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a) * 6, Math.sin(a) * 6);
+      ctx.lineTo(Math.cos(a) * 15, Math.sin(a) * 15);
+      ctx.stroke();
+      ctx.fillStyle = "#e8c070";
+      ctx.beginPath();
+      ctx.arc(Math.cos(a) * 15, Math.sin(a) * 15, 1.15, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    drawWorldPlate(s.x, s.y - 20, "SPIKE", "shiny");
   }
   function drawSceneryShark(s) {
     const face = (s.facing || (s.vx >= 0 ? 1 : -1)) >= 0 ? 1 : -1;
