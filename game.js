@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 163 a reef shark patrols — a bump drops your last catch
 // loop 162 fish cruise in gentle S-curves, not straight lines
 // loop 161 Ryan World is a fourth diver — globe kid on the title picker
 // loop 160 a read note tucks under the slate — walk over it again
@@ -4527,6 +4528,12 @@
     seedTangTease();
     seedWreckTease();
   }
+  function sharkLegal() {
+    // loop 163 — first New Game dive stays quiet (loop 152). After they
+    // have surfaced once, or a shop that already stocks, a reef shark
+    // patrols. Not a new catchable — scenery with a bump.
+    return (state.divesThisSession | 0) >= 2 || !!state.didFirstStock || !!state.missionDone;
+  }
   function seedOceanScenery() {
     oceanScenery.length = 0;
     const px = player.x, py = player.y;
@@ -4571,6 +4578,17 @@
         ph: rand(0, 4),
       });
     }
+    if (sharkLegal()) {
+      oceanScenery.push({
+        kind: "shark",
+        x: px + 300,
+        y: py + 18,
+        vx: -110,
+        vy: 0,
+        ph: 0.2,
+        facing: -1,
+      });
+    }
   }
   function seedDiveLandmark() {
     if (state.expedition || state.unlocked[1]) return;
@@ -4588,7 +4606,40 @@
     }
     return null;
   }
+  function dropLastBagCatch() {
+    if (!state.bag.length) return false;
+    const sid = state.bag.pop() | 0;
+    if (state.bagRare && state.bagRare.length) state.bagRare.pop();
+    pushOceanFish(sid, player.x + 36, player.y + 10);
+    const f = oceanFish[oceanFish.length - 1];
+    if (f) {
+      f.fleeT = 0.7;
+      f.vx = (player.vx >= 0 ? 1 : -1) * 170;
+      f.vy = -28;
+    }
+    state.bagPunch = 1.28;
+    return true;
+  }
+  function reefSharkBump(s) {
+    state.sharkBumpLock = 2.6;
+    state.sharkStun = 0.42;
+    state.hitStop = Math.max(state.hitStop || 0, 0.12);
+    state.camPunch = Math.max(state.camPunch || 0, 0.22);
+    const away = s.x >= player.x ? -1 : 1;
+    player.vx = away * 220;
+    player.vy = -40;
+    s.vx = -away * 160;
+    s.facing = s.vx >= 0 ? 1 : -1;
+    clearScoop("shark");
+    const dropped = dropLastBagCatch();
+    pop(player.x, player.y - 28, dropped ? "dropped!" : "whoa!", "#ff9a7a", 0.9, 1.25);
+    toast(dropped ? "A reef shark bumped you — last catch got away" : "A reef shark bumped you!", "#ff9a7a", 3.2);
+    sfx("escape");
+    persist();
+  }
   function updateOceanScenery(dt) {
+    if ((state.sharkBumpLock || 0) > 0) state.sharkBumpLock = Math.max(0, state.sharkBumpLock - dt);
+    if ((state.sharkStun || 0) > 0) state.sharkStun = Math.max(0, state.sharkStun - dt);
     for (const s of oceanScenery) {
       if (s.kind === "ray") {
         s.x += s.vx * dt;
@@ -4603,6 +4654,19 @@
         s.x = clamp(s.x, 80, OCEAN.w - 80);
       } else if (s.kind === "kelp") {
         s.x += Math.sin(state.time * 0.7 + s.ph) * 4 * dt;
+      } else if (s.kind === "shark") {
+        const dx = player.x - s.x, dy = player.y - s.y;
+        const d = Math.hypot(dx, dy) || 1;
+        s.vy = clamp(s.vy + (dy / d) * 28 * dt, -40, 40);
+        s.x += s.vx * dt;
+        s.y += s.vy * dt + Math.sin(state.time * 0.9 + s.ph) * 10 * dt;
+        s.y = clamp(s.y, 260, OCEAN.h - 100);
+        if (s.x < 80) { s.x = 80; s.vx = Math.abs(s.vx); }
+        if (s.x > OCEAN.w - 80) { s.x = OCEAN.w - 80; s.vx = -Math.abs(s.vx); }
+        s.facing = s.vx >= 0 ? 1 : -1;
+        if (state.scene === "ocean" && !state.fadeDir && (state.sharkBumpLock || 0) <= 0 && d < 52) {
+          reefSharkBump(s);
+        }
       } else {
         s.x += s.vx * dt;
         s.y += Math.sin(state.time * 6 + s.ph) * 28 * dt;
@@ -5479,6 +5543,7 @@
         if (rd > 8) { ax = rdx / rd; ay = rdy / rd; }
       }
     }
+    if (ocean && (state.sharkStun || 0) > 0) { ax = 0; ay = 0; }
     const accel = player.goto ? (diveWalkQueued() ? DIVE_WALK_ACCEL : 2200) : 1650;
     player.vx += ax * accel * dt; player.vy += ay * accel * dt;
     const headingUp = ocean && (ay < -0.12 || (player.goto && player.goto.y < player.y - 8));
@@ -16102,6 +16167,7 @@
         "Scoop the tip and the slate chalks THX",
         "A scooped tip leaves a note — walk over it",
         "A read note tucks under the slate — walk over it again",
+        "After the first dive a reef shark patrols — a bump drops your last catch",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
@@ -16760,7 +16826,7 @@
       }
       for (const s of oceanScenery) {
         if (s.kind === "kelp" || s.kind === "rock") continue;
-        keepSwimmerOffRail(s, s.kind === "ray" ? 40 : 20);
+        keepSwimmerOffRail(s, s.kind === "ray" ? 40 : s.kind === "shark" ? 52 : 20);
       }
       for (const b of bubbles) keepSwimmerOffRail(b, (b.r || 3) + 4);
     } else {
@@ -16809,7 +16875,7 @@
   }
   function drawOceanScenery() {
     for (const s of oceanScenery) {
-      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : 32);
+      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : s.kind === "shark" ? 64 : 32);
       if (sa <= 0.04) continue;
       ctx.save();
       ctx.globalAlpha *= sa;
@@ -16817,6 +16883,7 @@
       else if (s.kind === "jelly") drawSceneryJelly(s);
       else if (s.kind === "kelp") drawKelpPatch(s);
       else if (s.kind === "rock") drawRockProp(s.x, s.y, s.seed || 1, s.sc || 1);
+      else if (s.kind === "shark") drawSceneryShark(s);
       else drawSceneryMinnow(s);
       ctx.restore();
     }
@@ -17012,6 +17079,45 @@
       }
     }
     ctx.restore();
+  }
+  function drawSceneryShark(s) {
+    const face = (s.facing || (s.vx >= 0 ? 1 : -1)) >= 0 ? 1 : -1;
+    const wag = Math.sin(state.time * 7 + s.ph) * 0.18;
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.scale(face, 1);
+    ctx.rotate(wag * 0.12);
+    ctx.fillStyle = "rgba(6, 14, 22, 0.28)";
+    ctx.beginPath(); ctx.ellipse(2, 10, 28, 6, 0, 0, Math.PI * 2); ctx.fill();
+    const body = ctx.createLinearGradient(-28, -10, 18, 12);
+    body.addColorStop(0, "#3a4a58");
+    body.addColorStop(0.45, "#5a6a74");
+    body.addColorStop(1, "#8aa0a8");
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 32, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#d8e4e8";
+    ctx.beginPath(); ctx.ellipse(2, 4, 22, 5.2, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#2a3844";
+    ctx.beginPath();
+    ctx.moveTo(-4, -9);
+    ctx.lineTo(6, -22);
+    ctx.lineTo(10, -8);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#3a4a58";
+    ctx.beginPath();
+    ctx.moveTo(-28, 0);
+    ctx.lineTo(-44, -10 + wag * 8);
+    ctx.lineTo(-40, 0);
+    ctx.lineTo(-44, 10 - wag * 8);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#1a2028";
+    ctx.beginPath(); ctx.arc(18, -2, 1.6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff6e8";
+    ctx.beginPath(); ctx.arc(17.4, -2.4, 0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    drawWorldPlate(s.x, s.y - 28, "SHARK", "shiny");
   }
   function drawSceneryRay(s) {
     const flap = Math.sin(state.time * 1.6 + s.ph) * 0.22;
