@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 167 divers swim prone — atlas flutter kick, Ryan paints the same pose
 // loop 165 the deep has worse teeth — an angler and a leviathan
 // loop 164 ocean monsters — jellies sting, urchins poke, a moray lunges
 // loop 163 a reef shark patrols — a bump drops your last catch
@@ -5816,7 +5817,11 @@
     // loop 141 real diving angle — the diver used to lean at most ~27°, so
     // he always read as swimming flat on his belly. Let the vertical velocity
     // pitch him toward a genuine head-down dive / head-up ascent.
-    const wantPitch = ocean ? clamp(player.vy / 120, -0.85, 0.85) : 0;
+    // loop 167 — pitch with the real heading, not only vertical speed,
+    // so a diagonal swim noses along the path instead of staying flat.
+    const wantPitch = ocean
+      ? clamp(Math.sin(player.facing) * 0.58 + player.vy / 180, -0.88, 0.88)
+      : 0;
     player.pitch = lerp(player.pitch || 0, wantPitch, 1 - Math.pow(0.0018, dt));
     if (ocean) {
       // Flutter-kick even while scooping / hovering — a frozen swim frame
@@ -11150,215 +11155,177 @@
     }
     ctx.restore();
   }
-  function paintSwimFlipper(side, kick, skin) {
+  function swimFoot(hipX, hipY, a, len) {
+    return { x: hipX - Math.sin(a) * len, y: hipY + Math.cos(a) * len };
+  }
+  function paintTrailFlipper(fx, fy, kick, skin) {
     const dino = skin === "dino";
     const ryan = skin === "ryan";
-    const col = dino ? "#4aaa4a" : ryan ? "#e85d4c" : "#2ec8c4";
-    const edge = dino ? "#1e4a24" : ryan ? "#7a2a18" : "#146a6e";
-    const tip = dino ? "#8fd86a" : ryan ? "#ffe27a" : "#f0b429";
+    const col = dino ? "#4aaa4a" : "#2ec8c4";
+    const edge = dino ? "#1e4a24" : "#146a6e";
     ctx.save();
-    ctx.translate(dino ? -20 : -32, side * (dino ? 7.2 : 8.6));
-    ctx.rotate(side * (0.38 + kick * 0.92));
+    ctx.translate(fx, fy);
+    ctx.rotate(Math.PI * 0.5 + kick * 0.5);
     ctx.beginPath();
     ctx.moveTo(2, 0);
-    ctx.lineTo(dino ? -12 : -20, side * (dino ? 5.2 : 8.4));
-    ctx.quadraticCurveTo(dino ? -16 : -28, side * 0.8, dino ? -11 : -18, side * -1.6);
-    ctx.lineTo(1, side * -0.7);
+    ctx.lineTo(-15, 5.2);
+    ctx.quadraticCurveTo(-22, 0.5, -14, -2.4);
+    ctx.lineTo(1, -0.7);
     ctx.closePath();
     ctx.fillStyle = col;
     ctx.fill();
     ctx.strokeStyle = edge;
-    ctx.lineWidth = 1.25;
-    ctx.stroke();
-    ctx.fillStyle = tip;
-    ctx.beginPath();
-    ctx.moveTo(dino ? -8 : -14, side * (dino ? 2.2 : 3.4));
-    ctx.lineTo(dino ? -12 : -20, side * (dino ? 5.0 : 8.0));
-    ctx.lineTo(dino ? -10 : -16, side * 0.4);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,0.35)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(-2, side * 0.6);
-    ctx.lineTo(dino ? -10 : -16, side * (dino ? 3.2 : 5.2));
+    ctx.lineWidth = 1.15;
     ctx.stroke();
     ctx.restore();
-  }
-  function drawSwimPaddle(skin, phase, kickWave, stroke, arms) {
-    paintSwimFlipper(1, kickWave, skin);
-    paintSwimFlipper(-1, -kickWave, skin);
-    if (skin === "dino" && arms) {
-      ctx.save();
-      ctx.translate(-6 + kickWave * 3.2, 1);
-      ctx.rotate(-0.18 + kickWave * 0.42);
-      ctx.fillStyle = "#3d9a4a";
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.quadraticCurveTo(-16, kickWave * 6, -28, kickWave * 3);
-      ctx.quadraticCurveTo(-16, 8 + kickWave * 2, 2, 5);
-      ctx.closePath();
-      ctx.fill();
-      ctx.fillStyle = "#f0b429";
-      ctx.beginPath();
-      ctx.moveTo(-10, 1);
-      ctx.lineTo(-18, kickWave * 4);
-      ctx.lineTo(-8, 4);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-      ctx.save();
-      ctx.translate(2, stroke * 1.8);
-      ctx.strokeStyle = "rgba(255, 140, 60, 0.85)";
-      ctx.lineWidth = 3.2;
-      ctx.beginPath();
-      ctx.arc(4, 0, 9.5, 0.4 + kickWave * 0.15, Math.PI * 1.7 + kickWave * 0.15);
-      ctx.stroke();
-      ctx.restore();
-    } else if (arms) {
-      const arm = 0.55 + stroke * 0.7;
-      drawLimbChain(8, -5.4, -1.15 + arm, 8.2, -0.4, 6.6, 2.3, "#f0c2a0");
-      drawLimbChain(6, 5.8, 1.2 - arm * 0.85, 7.4, 0.35, 6.0, 2.2, "#f0c2a0");
-    }
   }
   function drawDiver(x, y, ang, t, skinId) {
     const skin = normalizeSkin(skinId != null ? skinId : state.skin);
     ctx.save();
     ctx.fillStyle = "rgba(4, 22, 40, 0.28)";
     ctx.beginPath();
-    ctx.ellipse(x, y + 11, 20, 7.2, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y + 16, 28, 9, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
     const phase = player.walkPhase != null ? player.walkPhase : t;
     const kickWave = Math.sin(phase);
     const stroke = Math.sin(phase + 1.15);
-    // C58 — atlas swim frames are already horizontal. Rotating by full
-    // facing (dock walk is ≈π/2 down) stood the diver upright in the bay.
     const faceS = player.faceS != null ? player.faceS : (Math.cos(ang) < -0.38 ? -1 : 1);
     const flip = faceS < 0 ? -1 : 1;
-    const headingPitch = Math.sin(ang) * 0.38;
-    // loop 141 real diving angle — weight the vertical-velocity pitch fully
-    // and open the clamp so a descent reads head-down (~50°), an ascent
-    // head-up, and a level swim still lies prone (belly-down) at pitch≈0.
-    const pitch = clamp((player.pitch || 0) * 1.0 + headingPitch + kickWave * 0.05, -0.9, 0.9);
-    const sway = Math.sin(t * 8) * 0.03;
-    const tilt = pitch + sway;
+    // loop 167 — atlas swim cells are already a prone flutter-kick.
+    // Use them. Ryan (no cells) and a missing atlas paint the same pose.
+    // loop 141 still pitches the body with the heading.
+    const headingPitch = Math.sin(ang) * 0.12;
+    const pitch = clamp((player.pitch || 0) + headingPitch + kickWave * 0.035, -0.9, 0.9);
+    const tilt = pitch + Math.sin(t * 8) * 0.022;
+    // Atlas Skip / Reef / Dino frames are already a prone flutter-kick.
+    // Painting over them made a sausage. Ryan has no swim cells — paint him.
     const fi = gaitIndex(phase, 6);
-    // C123 — body-turn scaleX, never paper-flip through 0. Small yaw
-    // twist only — do not rotate by full facing (C58 swim stays flat).
-    // loop 123 body turn not paper flip
-    // loop 136 dino swims flat — same asymmetric-mirror fix as loop 135's
-    // walk turn: the dino's floatie / snorkel sit on one side, so the
-    // faceDrawX squash-then-mirror swaps them at the thin midpoint and
-    // reads as a paper flip. Mirror the dino swim flat (full width, sign
-    // only, no yaw twist); Reef / Skip keep the loop 123 yaw swim.
     const asymTurn = skin === "dino";
     const swimYaw = asymTurn ? 0 : (1 - Math.abs(faceS)) * 0.16;
     const swimScaleX = asymTurn
       ? flip * (1 + Math.abs(kickWave) * 0.04)
       : faceDrawX(faceS, 1 + Math.abs(kickWave) * 0.04);
-    const drew = blitGait(skin, "swim", fi, x, y, {
+    if (blitGait(skin, "swim", fi, x, y, {
       rot: tilt * flip + swimYaw,
       scale: 0.58,
       scaleX: swimScaleX,
       scaleY: 1 - Math.abs(kickWave) * 0.045,
       water: true,
-    });
+    })) return;
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(flip, 1);
+    // Atlas swim cells are ~196px wide at scale 0.58. The paint fallback
+    // sat at ~50px and read as a minnow. 1.85 matches the bay silhouette.
+    ctx.scale(flip * 1.85, 1.85);
     ctx.rotate(tilt);
-    if (drew) {
-      ctx.restore();
-      return;
-    }
-    drawSwimPaddle(skin, phase, kickWave, stroke, true);
-    const kick = kickWave * 0.48;
-    drawLimbChain(-2, 4, Math.PI * 0.92 + kick * 0.35, 8, kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : skin === "ryan" ? "#5a4a28" : "#243848");
-    drawLimbChain(2, 4, -Math.PI * 0.92 - kick * 0.35, 8, -kick * 0.4, 7, 2.4, skin === "dino" ? "#2a6a34" : skin === "ryan" ? "#5a4a28" : "#243848");
+    const kA = kickWave;
+    const kB = -kickWave;
+    // Trailing flutter: a = π/2 sends the limb along −X (toward the feet).
+    const aA = Math.PI * 0.5 + kA * 0.34;
+    const aB = Math.PI * 0.5 + kB * 0.34;
+    const hipY = 3.6;
+    const legCol = skin === "dino" ? "#2a6a34" : skin === "ryan" ? "#5a4a28" : "#243848";
+    const skinCol = skin === "dino" ? "#3d9a4a" : skin === "ryan" ? "#d4a070" : "#f0c2a0";
+    drawLimbChain(-9.2, hipY, aA, 11.2, kA * 0.2, 9.2, 2.25, legCol);
+    drawLimbChain(-9.2, -hipY, aB, 11.2, kB * 0.2, 9.2, 2.25, legCol);
+    const footA = swimFoot(-9.2, hipY, aA, 19.6);
+    const footB = swimFoot(-9.2, -hipY, aB, 19.6);
+    paintTrailFlipper(footA.x, footA.y, kA, skin);
+    paintTrailFlipper(footB.x, footB.y, kB, skin);
     if (skin === "dino") {
       ctx.fillStyle = "#b8c4ce";
-      roundRect(-13, -8, 9, 16, 3); ctx.fill();
-      ctx.fillStyle = "#7a8c9c"; ctx.fillRect(-11, -8, 3.6, 16);
-      const db = ctx.createLinearGradient(-4, -10, 10, 10);
+      ctx.beginPath(); ctx.ellipse(-9, -1, 7.2, 5.8, 0.08, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#7a8c9c";
+      ctx.beginPath(); ctx.ellipse(-9, -1, 3.2, 5.2, 0.08, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#3a9a48";
+      ctx.beginPath(); ctx.ellipse(1.2, 6.2, 12.2, 5.2, 0.04, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#f0b429";
+      ctx.beginPath(); ctx.ellipse(2.2, 6.2, 7.8, 3.1, 0.04, 0, Math.PI * 2); ctx.fill();
+      const db = ctx.createLinearGradient(-6, -8, 10, 6);
       db.addColorStop(0, "#54b45e");
       db.addColorStop(1, "#2a6a34");
       ctx.fillStyle = db;
-      ctx.beginPath();
-      ctx.ellipse(2, 0, 12, 9.2, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#2f7a3a";
-      ctx.beginPath(); ctx.ellipse(-1, 1, 2.2, 1.5, 0.2, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(5, -3, 1.8, 1.3, 0, 0, Math.PI * 2); ctx.fill();
-      drawLimbChain(4, -6, -1.15 + stroke, 7, -0.4, 6, 2.2, "#3d9a4a");
-      drawLimbChain(4, 6, 1.15 - stroke, 7, 0.4, 6, 2.2, "#3d9a4a");
-      ctx.fillStyle = "#3d9a4a";
-      fillCapsule(10, 0, 13.6, 0, 2.3);
-      ctx.fillStyle = "#46b35a";
-      ctx.beginPath(); ctx.ellipse(16.4, 0, 7.0, 6.6, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(21.2, 1.2, 5.4, 3.2, 0.15, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#2a1a12";
-      ctx.beginPath(); ctx.arc(15.4, -1.4, 1.05, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.arc(18.4, -0.8, 1.05, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#fff6e8";
-      ctx.beginPath(); ctx.arc(22.6, 0.8, 1.05, 0, Math.PI * 2); ctx.fill();
-      drawMaskVisor(18.0, -0.5, 5.0, 3.5, true);
-      drawSnorkel(19.2, -3.4, 21.4, -13.6);
+      ctx.beginPath(); ctx.ellipse(2.4, -0.2, 14.6, 5.5, -0.04, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "ryan") {
-      ctx.fillStyle = "#2f7dff";
-      ctx.beginPath(); ctx.ellipse(1, 5.4, 14.2, 6.2, 0, 0, Math.PI * 2); ctx.fill();
+      // Thin globe ring around the waist — a filled oval swallowed the kid.
+      ctx.strokeStyle = "#2f7dff";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.ellipse(1.2, 1.4, 9.6, 6.8, -0.08, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(255, 226, 122, 0.75)";
+      ctx.lineWidth = 1.05;
+      ctx.beginPath(); ctx.ellipse(1.2, 1.4, 9.6, 6.8, -0.08, 0, Math.PI * 2); ctx.stroke();
       ctx.fillStyle = "#3d8b4a";
-      ctx.beginPath(); ctx.ellipse(-2.4, 5.0, 5.6, 3.4, -0.3, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "rgba(255, 226, 122, 0.7)";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.ellipse(1, 5.4, 14.2, 6.2, 0, 0, Math.PI * 2); ctx.stroke();
-      const rb = ctx.createLinearGradient(-4, -10, 10, 10);
+      ctx.beginPath(); ctx.ellipse(-2.4, 1.1, 3.4, 2.2, -0.4, 0, Math.PI * 2); ctx.fill();
+      const rb = ctx.createLinearGradient(-6, -8, 10, 6);
       rb.addColorStop(0, "#ffb04a");
+      rb.addColorStop(0.5, "#e85d4c");
       rb.addColorStop(1, "#b43a28");
       ctx.fillStyle = rb;
-      ctx.beginPath();
-      ctx.ellipse(2, 0, 11.4, 8.4, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#2f7dff";
-      ctx.beginPath(); ctx.ellipse(3, 0.4, 3.6, 3.2, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#3d8b4a";
-      ctx.beginPath(); ctx.ellipse(2.2, 0.2, 1.8, 1.3, -0.3, 0, Math.PI * 2); ctx.fill();
-      drawLimbChain(4, -6.2, -1.2 + stroke, 7.4, -0.35, 6.2, 2.25, "#d4a070");
-      drawLimbChain(4, 6.2, 1.2 - stroke, 7.4, 0.35, 6.2, 2.25, "#d4a070");
-      ctx.fillStyle = "#d4a070";
-      fillCapsule(11, 0, 14.2, 0, 2.2);
-      ctx.beginPath(); ctx.ellipse(17.2, 0, 6.8, 6.8, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#2a1a12";
-      ctx.beginPath(); ctx.arc(16.2, -3.4, 5.2, Math.PI * 0.7, Math.PI * 1.9); ctx.fill();
-      ctx.beginPath(); ctx.arc(14.4, 2.6, 2.4, 0, Math.PI * 2); ctx.fill();
-      drawMaskVisor(19.4, -0.2, 5.0, 3.6, true);
-      drawSnorkel(20.8, -3.2, 23.0, -13.8);
+      ctx.beginPath(); ctx.ellipse(2.6, -0.4, 13.4, 4.8, -0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#c8a050";
+      ctx.beginPath(); ctx.ellipse(0.4, 1.7, 7.2, 2.5, -0.05, 0, Math.PI * 2); ctx.fill();
+    } else if (skin === "reef") {
+      ctx.fillStyle = "#cfd8e3";
+      ctx.beginPath(); ctx.ellipse(-9, -0.6, 6.8, 5.4, 0.06, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#8aa0b5";
+      ctx.beginPath(); ctx.ellipse(-9, -0.6, 3.0, 4.8, 0.06, 0, Math.PI * 2); ctx.fill();
+      const pb = ctx.createLinearGradient(-6, -8, 10, 6);
+      pb.addColorStop(0, "#f49aa8");
+      pb.addColorStop(0.45, "#e85d7a");
+      pb.addColorStop(1, "#b43a58");
+      ctx.fillStyle = pb;
+      ctx.beginPath(); ctx.ellipse(2.4, -0.2, 14.4, 5.4, -0.05, 0, Math.PI * 2); ctx.fill();
     } else {
       ctx.fillStyle = "#cfd8e3";
-      roundRect(-12, -10, 10, 20, 3); ctx.fill();
-      ctx.fillStyle = "#8aa0b5"; ctx.fillRect(-10, -10, 4, 20);
-      const sb = ctx.createLinearGradient(-4, -10, 10, 10);
-      sb.addColorStop(0, "#3ec4b4");
-      sb.addColorStop(1, "#1b4d6b");
-      ctx.fillStyle = sb;
-      ctx.beginPath();
-      ctx.ellipse(2, 0, 11.6, skin === "reef" ? 8.2 : 9.0, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "rgba(255,255,255,0.16)";
-      ctx.beginPath(); ctx.ellipse(2, -3.2, 6, 2.4, -0.2, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#2a9d8f"; ctx.fillRect(-1, -5, 11, 4);
-      drawLimbChain(4, -6.2, -1.2 + stroke, 7.4, -0.35, 6.2, 2.25, "#f0c2a0");
-      drawLimbChain(4, 6.2, 1.2 - stroke, 7.4, 0.35, 6.2, 2.25, "#f0c2a0");
-      ctx.fillStyle = "#f0c2a0";
-      fillCapsule(11, 0, 14.2, 0, 2.2);
-      ctx.beginPath(); ctx.ellipse(17.2, 0, skin === "reef" ? 6.4 : 7.0, 6.8, 0, 0, Math.PI * 2); ctx.fill();
-      if (skin === "reef") {
-        ctx.fillStyle = "#5a2a14";
-        ctx.beginPath(); ctx.arc(15.6, -3.2, 5.4, Math.PI * 0.7, Math.PI * 1.85); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(13.4, 3.6, 2.6, 4.2, 0.5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = "#e85d4c";
-        ctx.beginPath(); ctx.arc(14.4, -6.4, 1.5, 0, Math.PI * 2); ctx.fill();
-      }
-      drawMaskVisor(19.4, -0.2, 5.0, 3.6, true);
-      drawSnorkel(20.8, -3.2, 23.0, -13.8);
+      ctx.beginPath(); ctx.ellipse(-9, -0.6, 6.8, 5.4, 0.06, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#8aa0b5";
+      ctx.beginPath(); ctx.ellipse(-9, -0.6, 3.0, 4.8, 0.06, 0, Math.PI * 2); ctx.fill();
+      const yb = ctx.createLinearGradient(-6, -8, 10, 6);
+      yb.addColorStop(0, "#ffe27a");
+      yb.addColorStop(0.5, "#f0c04a");
+      yb.addColorStop(1, "#d49220");
+      ctx.fillStyle = yb;
+      ctx.beginPath(); ctx.ellipse(2.4, -0.3, 14.4, 5.2, -0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#2a7d8a";
+      ctx.beginPath(); ctx.ellipse(0.2, 1.9, 8.8, 2.7, -0.05, 0, Math.PI * 2); ctx.fill();
     }
+    // Both arms reach +X (the heading). drawLimbChain(a) walks +Y after
+    // rotate(a), so −1.52 hugs the nose. +1.52 was the seafloor hang —
+    // one arm forward and one back still read as a person on their side.
+    const armA = -1.52 - 0.24 + stroke * 0.12;
+    const armB = -1.52 + 0.24 - stroke * 0.12;
+    drawLimbChain(3.6, -4.2, armA, 8.4, -0.14, 6.4, 2.05, skinCol);
+    drawLimbChain(3.6, 4.2, armB, 8.4, 0.14, 6.4, 2.05, skinCol);
+    const handA = swimFoot(3.6, -4.2, armA, 14.4);
+    const handB = swimFoot(3.6, 4.2, armB, 14.4);
+    ctx.fillStyle = skinCol;
+    ctx.beginPath(); ctx.ellipse(handA.x, handA.y, 2.15, 1.7, armA, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(handB.x, handB.y, 2.15, 1.7, armB, 0, Math.PI * 2); ctx.fill();
+    fillCapsule(12.6, -1.8, 16.4, -2.9, 2.2);
+    ctx.beginPath(); ctx.ellipse(19.8, -3.6, 6.5, 6.1, -0.16, 0, Math.PI * 2); ctx.fill();
+    if (skin === "reef") {
+      ctx.fillStyle = "#5a2a14";
+      ctx.beginPath(); ctx.arc(18.2, -6.6, 5.2, Math.PI * 0.75, Math.PI * 1.95); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(16.2, 0.6, 2.4, 3.6, 0.45, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#e85d4c";
+      ctx.beginPath(); ctx.arc(17.0, -9.4, 1.45, 0, Math.PI * 2); ctx.fill();
+    } else if (skin === "ryan") {
+      ctx.fillStyle = "#2a1a12";
+      ctx.beginPath(); ctx.arc(18.8, -6.6, 5.2, Math.PI * 0.65, Math.PI * 1.98); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(16.6, 0.4, 2.2, 3.2, 0.4, 0, Math.PI * 2); ctx.fill();
+    } else if (skin === "dino") {
+      ctx.fillStyle = "#46b35a";
+      ctx.beginPath(); ctx.ellipse(23.2, -2.6, 5.0, 3.0, 0.12, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.fillStyle = "#3a2415";
+      ctx.beginPath(); ctx.arc(18.2, -6.4, 4.6, Math.PI * 0.85, Math.PI * 2.05); ctx.fill();
+    }
+    ctx.fillStyle = "#2a1a12";
+    ctx.beginPath(); ctx.arc(18.6, -4.4, 1.0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(21.0, -4.0, 1.0, 0, Math.PI * 2); ctx.fill();
+    drawMaskVisor(21.6, -3.8, 4.8, 3.3, true);
+    drawSnorkel(22.8, -6.8, 24.4, -16.2);
     ctx.restore();
   }
   function drawPot(x, y, leaf, sc) {
@@ -16411,6 +16378,7 @@
         "After the first dive a reef shark patrols — a bump drops your last catch",
         "Jellies sting, urchins poke, and a moray lunges — first dive stays quiet",
         "The deep has worse teeth — an angler lure and something huge in the dark",
+        "Divers swim prone — flutter kick, arms along the body",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
