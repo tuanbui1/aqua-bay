@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 166 a pearl glints in the dark — swim into it
 // loop 165 the deep has worse teeth — an angler and a leviathan
 // loop 164 ocean monsters — jellies sting, urchins poke, a moray lunges
 // loop 163 a reef shark patrols — a bump drops your last catch
@@ -4554,10 +4555,11 @@
   }
   function ensureDeepMonsters() {
     if (!deepScaryLegal()) return;
-    let angler = null, levi = null, eyes = [];
+    let angler = null, levi = null, pearl = null, eyes = [];
     for (const s of oceanScenery) {
       if (s.kind === "angler") angler = s;
       if (s.kind === "leviathan") levi = s;
+      if (s.kind === "pearl") pearl = s;
       if (s.kind === "abyss-eye") eyes.push(s);
     }
     const px = player.x, py = player.y;
@@ -4580,6 +4582,20 @@
       });
     } else {
       herdDeepMonster(levi, -220, 80);
+    }
+    if (!pearl && state.deepPearlReady !== false) {
+      oceanScenery.push({
+        kind: "pearl",
+        x: clamp(px + 52, 120, OCEAN.w - 120),
+        y: clamp(py + 10, 1020, OCEAN.h - 120),
+        ph: 0.8,
+      });
+      if (!state.deepPearlHint) {
+        state.deepPearlHint = true;
+        toast("A pearl glints in the dark", "#ffe27a", 2.6);
+      }
+    } else if (pearl) {
+      herdDeepMonster(pearl, 52, 10);
     }
     if (!eyes.length) {
       for (let i = 0; i < 3; i++) {
@@ -4792,6 +4808,24 @@
     sfx("escape");
     persist();
   }
+  function scoopDeepPearl(s) {
+    // loop 166 — swim into the glow. Money, not a fifteenth species.
+    if (state.deepPearlReady === false) return;
+    state.deepPearlReady = false;
+    s.kind = "pearl-gone";
+    const pay = 35;
+    state.money += pay;
+    state.peakMoney = Math.max(state.peakMoney | 0, state.money | 0);
+    state.moneyRollFrom = state.displayMoney;
+    state.moneyRollTo = state.money;
+    state.moneyRollT = 0.35;
+    state.moneyPunch = 1.22;
+    spawnP(player.x, player.y - 8, 22, ["#ffe27a", "#f4d06a", "#fff6e8", "#9ef0ff"], 90);
+    pop(player.x, player.y - 28, "Pearl! +$" + pay, "#ffe27a", 0.95, 1.2);
+    toast("A pearl from the dark +$" + pay, "#ffe27a", 2.8);
+    sfx("unlock");
+    persist();
+  }
   function updateOceanScenery(dt) {
     ensureDeepMonsters();
     if ((state.sharkBumpLock || 0) > 0) state.sharkBumpLock = Math.max(0, state.sharkBumpLock - dt);
@@ -4891,6 +4925,19 @@
         s.facing = s.vx >= 0 ? 1 : -1;
         if (player.y >= 960 && state.scene === "ocean" && !state.fadeDir && (state.leviLock || 0) <= 0 && d < 78) {
           leviathanSweep(s);
+        }
+      } else if (s.kind === "pearl") {
+        s.x += Math.sin(state.time * 0.9 + s.ph) * 8 * dt;
+        s.y += Math.cos(state.time * 1.1 + s.ph) * 6 * dt;
+        s.x = clamp(s.x, 80, OCEAN.w - 80);
+        s.y = clamp(s.y, 980, OCEAN.h - 80);
+        if (player.y >= 960 && state.scene === "ocean" && !state.fadeDir && state.deepPearlReady !== false) {
+          const pd = Math.hypot(player.x - s.x, player.y - s.y) || 1;
+          if (pd < 170) {
+            s.x += ((player.x - s.x) / pd) * 62 * dt;
+            s.y += ((player.y - s.y) / pd) * 62 * dt;
+          }
+          if (pd < 36) scoopDeepPearl(s);
         }
       } else if (s.kind === "abyss-eye") {
         s.x += Math.sin(state.time * 0.35 + s.ph) * 10 * dt;
@@ -16411,6 +16458,7 @@
         "After the first dive a reef shark patrols — a bump drops your last catch",
         "Jellies sting, urchins poke, and a moray lunges — first dive stays quiet",
         "The deep has worse teeth — an angler lure and something huge in the dark",
+        "A pearl glints in the dark — swim into the glow",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
@@ -16804,6 +16852,8 @@
         state.bagBonus = 1;
         state.divesThisSession = (state.divesThisSession | 0) + 1;
         state.wreckChestReady = true;
+        state.deepPearlReady = true;
+        state.deepPearlHint = false;
         if (!state.unlocked[1] && state.didFirstStock && !state.tangHintDone) {
           state.tangHintLife = Math.max(state.tangHintLife || 0, 4.2);
         }
@@ -17068,7 +17118,7 @@
         keepSwimmerOffRail(f, Math.max(28, (SPECIES[f.s] && SPECIES[f.s].size) || 20));
       }
       for (const s of oceanScenery) {
-        if (s.kind === "kelp" || s.kind === "rock" || s.kind === "urchin" || s.kind === "abyss-eye") continue;
+        if (s.kind === "kelp" || s.kind === "rock" || s.kind === "urchin" || s.kind === "abyss-eye" || s.kind === "pearl") continue;
         keepSwimmerOffRail(s, s.kind === "ray" ? 40 : s.kind === "shark" ? 52 : s.kind === "eel" ? 40 : s.kind === "leviathan" ? 80 : s.kind === "angler" ? 44 : 20);
       }
       for (const b of bubbles) keepSwimmerOffRail(b, (b.r || 3) + 4);
@@ -17118,7 +17168,7 @@
   }
   function drawOceanScenery() {
     for (const s of oceanScenery) {
-      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : (s.kind === "shark" || s.kind === "eel" || s.kind === "angler") ? 64 : s.kind === "leviathan" ? 110 : 32);
+      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : (s.kind === "shark" || s.kind === "eel" || s.kind === "angler") ? 64 : s.kind === "leviathan" ? 110 : s.kind === "pearl" ? 40 : 32);
       if (sa <= 0.04) continue;
       ctx.save();
       ctx.globalAlpha *= sa;
@@ -17132,6 +17182,7 @@
       else if (s.kind === "angler") drawSceneryAngler(s);
       else if (s.kind === "leviathan") drawSceneryLeviathan(s);
       else if (s.kind === "abyss-eye") drawSceneryAbyssEye(s);
+      else if (s.kind === "pearl") drawSceneryPearl(s);
       else drawSceneryMinnow(s);
       ctx.restore();
     }
@@ -17540,6 +17591,34 @@
     ctx.beginPath(); ctx.arc(50.8, -6.6, 0.9, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     drawWorldPlate(s.x, s.y - 46, "DEEP", "shiny");
+  }
+  function drawSceneryPearl(s) {
+    const pulse = 0.72 + 0.28 * (0.5 + 0.5 * Math.sin(state.time * 3.4 + s.ph));
+    const bob = Math.sin(state.time * 2.2 + s.ph) * 3;
+    ctx.save();
+    ctx.translate(s.x, s.y + bob);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const halo = ctx.createRadialGradient(0, 0, 1, 0, 0, 28);
+    halo.addColorStop(0, "rgba(255, 246, 200," + (0.85 * pulse) + ")");
+    halo.addColorStop(0.35, "rgba(255, 210, 90," + (0.45 * pulse) + ")");
+    halo.addColorStop(1, "rgba(255, 160, 40, 0)");
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(0, 0, 28, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    const gem = ctx.createRadialGradient(-3, -4, 0.6, 1, 2, 9);
+    gem.addColorStop(0, "#fff6e8");
+    gem.addColorStop(0.4, "#ffe27a");
+    gem.addColorStop(1, "#c49210");
+    ctx.fillStyle = gem;
+    ctx.beginPath(); ctx.ellipse(0, 0, 7.4, 6.2, 0.2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(120, 80, 20, 0.55)";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255, 255, 246, 0.7)";
+    ctx.beginPath(); ctx.ellipse(-2.2, -2.4, 2.2, 1.4, -0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    drawWorldPlate(s.x, s.y + bob - 22, "PEARL", "shiny");
   }
   function drawSceneryAbyssEye(s) {
     const tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(state.time * 2.6 + s.ph));
