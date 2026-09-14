@@ -11161,8 +11161,8 @@
   function paintTrailFlipper(fx, fy, kick, skin) {
     const dino = skin === "dino";
     const ryan = skin === "ryan";
-    const col = dino ? "#4aaa4a" : ryan ? "#e85d4c" : "#2ec8c4";
-    const edge = dino ? "#1e4a24" : ryan ? "#7a2a18" : "#146a6e";
+    const col = dino ? "#4aaa4a" : "#2ec8c4";
+    const edge = dino ? "#1e4a24" : "#146a6e";
     ctx.save();
     ctx.translate(fx, fy);
     ctx.rotate(Math.PI * 0.5 + kick * 0.5);
@@ -11224,7 +11224,7 @@
     // Trailing flutter: a = π/2 sends the limb along −X (toward the feet).
     const aA = Math.PI * 0.5 + kA * 0.34;
     const aB = Math.PI * 0.5 + kB * 0.34;
-    const hipY = 2.6;
+    const hipY = 3.6;
     const legCol = skin === "dino" ? "#2a6a34" : skin === "ryan" ? "#5a4a28" : "#243848";
     const skinCol = skin === "dino" ? "#3d9a4a" : skin === "ryan" ? "#d4a070" : "#f0c2a0";
     drawLimbChain(-9.2, hipY, aA, 11.2, kA * 0.2, 9.2, 2.25, legCol);
@@ -11248,21 +11248,23 @@
       ctx.fillStyle = db;
       ctx.beginPath(); ctx.ellipse(2.4, -0.2, 14.6, 5.5, -0.04, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "ryan") {
-      ctx.fillStyle = "#2f7dff";
-      ctx.beginPath(); ctx.ellipse(1.4, 0.6, 14.6, 7.2, -0.04, 0, Math.PI * 2); ctx.fill();
+      // Thin globe ring around the waist — a filled oval swallowed the kid.
+      ctx.strokeStyle = "#2f7dff";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.ellipse(1.2, 1.4, 9.6, 6.8, -0.08, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(255, 226, 122, 0.75)";
+      ctx.lineWidth = 1.05;
+      ctx.beginPath(); ctx.ellipse(1.2, 1.4, 9.6, 6.8, -0.08, 0, Math.PI * 2); ctx.stroke();
       ctx.fillStyle = "#3d8b4a";
-      ctx.beginPath(); ctx.ellipse(-1.2, 0.2, 5.4, 2.8, -0.35, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "rgba(255, 226, 122, 0.7)";
-      ctx.lineWidth = 1.15;
-      ctx.beginPath(); ctx.ellipse(1.4, 0.6, 14.6, 7.2, -0.04, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(-2.4, 1.1, 3.4, 2.2, -0.4, 0, Math.PI * 2); ctx.fill();
       const rb = ctx.createLinearGradient(-6, -8, 10, 6);
       rb.addColorStop(0, "#ffb04a");
       rb.addColorStop(0.5, "#e85d4c");
       rb.addColorStop(1, "#b43a28");
       ctx.fillStyle = rb;
-      ctx.beginPath(); ctx.ellipse(2.4, -0.3, 14.2, 5.2, -0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(2.6, -0.4, 13.4, 4.8, -0.05, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#c8a050";
-      ctx.beginPath(); ctx.ellipse(-1.4, 1.8, 7.6, 2.8, -0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0.4, 1.7, 7.2, 2.5, -0.05, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "reef") {
       ctx.fillStyle = "#cfd8e3";
       ctx.beginPath(); ctx.ellipse(-9, -0.6, 6.8, 5.4, 0.06, 0, Math.PI * 2); ctx.fill();
@@ -11310,7 +11312,8 @@
       ctx.beginPath(); ctx.arc(17.0, -9.4, 1.45, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "ryan") {
       ctx.fillStyle = "#2a1a12";
-      ctx.beginPath(); ctx.arc(18.6, -6.8, 5.0, Math.PI * 0.7, Math.PI * 1.95); ctx.fill();
+      ctx.beginPath(); ctx.arc(18.8, -6.6, 5.2, Math.PI * 0.65, Math.PI * 1.98); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(16.6, 0.4, 2.2, 3.2, 0.4, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "dino") {
       ctx.fillStyle = "#46b35a";
       ctx.beginPath(); ctx.ellipse(23.2, -2.6, 5.0, 3.0, 0.12, 0, Math.PI * 2); ctx.fill();
