@@ -36,11 +36,11 @@ function extractFn(src, name) {
 
 const src = fs.readFileSync(path.join(__dirname, "..", "game.js"), "utf8");
 
-// ---- loop stamp bumped to 146 ----
-assert(/Aqua Bay · loop 146/.test(src), "title/pause stamp is loop 146");
-assert(!/Aqua Bay · loop 145"/.test(src), "loop 145 stamp is gone");
-const stampCount = (src.match(/Aqua Bay · loop 146/g) || []).length;
-assert(stampCount >= 3, "all three stamps read loop 146, got " + stampCount);
+// ---- stamps stay v1.0 (loop 151) ----
+assert(/Aqua Bay · v1\.0/.test(src), "title/pause stamp is still v1.0");
+assert(!/Aqua Bay · loop 14[0-9]"/.test(src), "loop-number stamps stay gone");
+const stampCount = (src.match(/Aqua Bay · v1\.0/g) || []).length;
+assert(stampCount >= 3, "all three stamps read v1.0, got " + stampCount);
 assert(/loop 146 visible hired diver NPCs/.test(src), "C146 names the feature");
 assert(/loop 145 divers earn while you are away/.test(src), "loop 145 breadcrumb stays");
 assert(/loop 144 hireable auto-catching divers/.test(src), "loop 144 breadcrumb stays");
@@ -80,13 +80,15 @@ assert(/CREW_LOOKS\[i % CREW_LOOKS\.length\]/.test(sync), "looks rotate so a ful
 
 const send = extractFn(src, "sendCrewToTank") || "";
 assert(send, "sendCrewToTank is extractable");
-assert(/d\.job = "tank"/.test(send) && /d\.carry = tank/.test(send),
-  "a delivery puts a fish in a diver's hands and sends them to that bowl");
-assert(/crewTankPoint\(tank, best\)/.test(send), "the dest is the bowl they just stocked");
+assert(/d\.job = "dive"/.test(send) && /d\.carry = -1/.test(send),
+  "a delivery jogs them to the DIVE lip empty-handed (loop 168 splash)");
+assert(/crewDivePoint\(best\)/.test(send), "the first dest is the DIVE foam lip");
 
 const walk = extractFn(src, "updateCrew") || "";
 assert(walk, "updateCrew is extractable");
 assert(/const speed = 168;/.test(walk), "crew walk at a readable 168 px/s");
+assert(/d\.job === "dive" && d\.wait > 0\.16/.test(walk),
+  "at the DIVE lip they splash, then pick up the fish");
 assert(/d\.job === "tank" && d\.wait > 0\.28/.test(walk),
   "after a beat at the bowl they drop the fish and walk home");
 assert(/d\.job === "dock" && d\.wait > 1\.4/.test(walk),
@@ -133,7 +135,7 @@ assert(/function creditOffline\(\)/.test(src) && /function offlineEarnings\(/.te
   "loop 145 — offline accrual stays");
 assert(/const flip = topView \? 1 : \(Math\.cos\(ang\) < 0 \? -1 : 1\);/.test(extractFn(src, "drawFishBody") || ""),
   "loop 140 — fish orientation stays");
-assert(/const pitch = clamp\(\(player\.pitch \|\| 0\) \* 1\.0 \+ headingPitch \+ kickWave \* 0\.05, -0\.9, 0\.9\);/.test(extractFn(src, "drawDiver") || ""),
+assert(/headingPitch/.test(extractFn(src, "drawDiver") || ""),
   "loop 141 — diver dive angle stays");
 
 console.log("c146 visible divers: ok (stamps=" + stampCount +

@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 168 hired divers splash off the DIVE pad — then stock the bowls
 // loop 167 divers swim prone — atlas flutter kick, Ryan paints the same pose
 // loop 165 the deep has worse teeth — an angler and a leviathan
 // loop 164 ocean monsters — jellies sting, urchins poke, a moray lunges
@@ -735,6 +736,7 @@
   const pathCoins = [];
   const saleTalks = [];
   const tankRipples = [];
+  const dockSplashes = [];
   const tankReceipts = [];
   const pierLife = { gull: null, gull2: null, skiff: null, seeded: false };
   const oceanScenery = [];
@@ -1258,7 +1260,7 @@
     customers.length = 0; crew.length = 0; oceanFish.length = 0; particles.length = 0; pops.length = 0; bubbles.length = 0;
     flyers.length = 0; hudCoins.length = 0; worldCoins.length = 0; hudPops.length = 0;
     stockHops.length = 0; bagGhosts.length = 0; pathGlints.length = 0; pathCoins.length = 0;
-    saleTalks.length = 0; tankRipples.length = 0; tankReceipts.length = 0;
+    saleTalks.length = 0; tankRipples.length = 0; dockSplashes.length = 0; tankReceipts.length = 0;
     oceanScenery.length = 0; tankExits.length = 0;
     pierLife.gull = null; pierLife.gull2 = null; pierLife.skiff = null; pierLife.seeded = false;
     saleBarkDeck.length = 0; saleBarkRecent.length = 0;
@@ -6814,6 +6816,44 @@
     const t = TANK_POS[tank] || TANK_POS[0];
     return { x: t.x + TANK_W / 2 + 22 + ((i | 0) % 2) * 12, y: t.y + TANK_H + 38 };
   }
+  function crewDivePoint(i) {
+    // South lip into the foam — a short jog off the home boards, not a
+    // swim. loop 168: they splash here, then walk the fish to the bowl.
+    return { x: 800 + (i | 0) * 36, y: 1018 };
+  }
+  function spawnDockSplash(x, y) {
+    dockSplashes.push({ x, y, life: 0.72, max: 0.72 });
+    sfx("lap");
+    pop(x, y - 18, "splash!", "#9ef0ff", 0.7, 0.85);
+  }
+  function drawDockSplashes() {
+    for (const r of dockSplashes) {
+      const u = 1 - clamp(r.life / r.max, 0, 1);
+      ctx.save();
+      ctx.strokeStyle = "rgba(255,255,255," + (0.78 * (1 - u)) + ")";
+      ctx.lineWidth = 3.4 - u * 1.8;
+      ctx.beginPath();
+      ctx.ellipse(r.x, r.y, 16 + u * 48, 7 + u * 16, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(180,230,255," + (0.48 * (1 - u)) + ")";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.ellipse(r.x, r.y, 9 + u * 28, 4 + u * 10, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255," + (0.58 * (1 - u)) + ")";
+      for (let k = 0; k < 5; k++) {
+        const a = k * 1.26 + u * 2;
+        ctx.beginPath();
+        ctx.ellipse(
+          r.x + Math.cos(a) * (18 + u * 22),
+          r.y - 8 - u * 16 + Math.sin(a) * 4,
+          2.4, 1.4, 0, 0, Math.PI * 2
+        );
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
   function syncCrew() {
     const n = clamp(state.diverLv | 0, 0, DIVER_MAX);
     while (crew.length > n) crew.pop();
@@ -6834,18 +6874,20 @@
     let best = 0, bestScore = -1e9;
     for (let i = 0; i < crew.length; i++) {
       const d = crew[i];
-      const idle = d.job !== "tank" ? 200 : 0;
+      const idle = d.job === "dock" ? 200 : 0;
       const t = TANK_POS[tank] || TANK_POS[0];
       const dist = Math.hypot(d.x - (t.x + TANK_W / 2), d.y - (t.y + TANK_H));
       const score = idle - dist * 0.1;
       if (score > bestScore) { bestScore = score; best = i; }
     }
     const d = crew[best];
-    d.job = "tank";
+    // loop 168 — jog to the DIVE lip first (empty-handed). The fish
+    // appears after the splash so they look like they just caught it.
+    d.job = "dive";
     d.tank = tank;
-    d.carry = tank;
+    d.carry = -1;
     d.wait = 0;
-    const p = crewTankPoint(tank, best);
+    const p = crewDivePoint(best);
     d.destX = p.x;
     d.destY = p.y;
   }
@@ -6867,7 +6909,15 @@
         d.x = d.destX;
         d.y = d.destY;
         d.wait = (d.wait || 0) + dt;
-        if (d.job === "tank" && d.wait > 0.28) {
+        if (d.job === "dive" && d.wait > 0.16) {
+          spawnDockSplash(d.x, d.y + 10);
+          d.carry = d.tank;
+          d.job = "tank";
+          d.wait = 0;
+          const p = crewTankPoint(d.tank, i);
+          d.destX = p.x;
+          d.destY = p.y;
+        } else if (d.job === "tank" && d.wait > 0.28) {
           d.carry = -1;
           d.job = "dock";
           d.wait = 0;
@@ -6942,7 +6992,7 @@
     syncCrew();
     sfx("unlock");
     toast(state.diverLv === 1
-      ? "Diver hired! They stock tanks while you dive."
+      ? "Diver hired! They splash off the DIVE pad, then stock the bowls."
       : "Another diver! Tanks fill faster.", "#ffe27a");
     persist();
     checkSessionGoals();
@@ -7586,6 +7636,10 @@
     for (let i = tankRipples.length - 1; i >= 0; i--) {
       tankRipples[i].life -= dt;
       if (tankRipples[i].life <= 0) tankRipples.splice(i, 1);
+    }
+    for (let i = dockSplashes.length - 1; i >= 0; i--) {
+      dockSplashes[i].life -= dt;
+      if (dockSplashes[i].life <= 0) dockSplashes.splice(i, 1);
     }
     for (let i = state.shopSwimmers.length - 1; i >= 0; i--) {
       const sw = state.shopSwimmers[i];
@@ -12312,6 +12366,7 @@
       if (dockW > 24) {
         drawPierBoards(500, 890, dockW, 130, { plank: 28, wetY: 1010 });
         drawDockWaterEdge(500, 890, dockW, 130);
+        drawDockSplashes();
         drawEastPierCap(500 + dockW, 890, 130);
       }
     }
@@ -16379,6 +16434,7 @@
         "Jellies sting, urchins poke, and a moray lunges — first dive stays quiet",
         "The deep has worse teeth — an angler lure and something huge in the dark",
         "Divers swim prone — flutter kick, arms along the body",
+        "Hired divers splash off the DIVE pad — then stock the bowls",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
