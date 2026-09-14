@@ -11200,7 +11200,9 @@
     const tilt = pitch + Math.sin(t * 8) * 0.022;
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(flip, 1);
+    // Atlas swim cells are ~196px wide at scale 0.58. The old paint sat
+    // at ~50px and read as a minnow. 1.85 matches the bay silhouette.
+    ctx.scale(flip * 1.85, 1.85);
     ctx.rotate(tilt);
     const kA = kickWave;
     const kB = -kickWave;
