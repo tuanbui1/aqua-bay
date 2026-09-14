@@ -4586,8 +4586,8 @@
     if (!pearl && state.deepPearlReady !== false) {
       oceanScenery.push({
         kind: "pearl",
-        x: clamp(px + 80, 120, OCEAN.w - 120),
-        y: clamp(py + 16, 1020, OCEAN.h - 120),
+        x: clamp(px + 52, 120, OCEAN.w - 120),
+        y: clamp(py + 10, 1020, OCEAN.h - 120),
         ph: 0.8,
       });
       if (!state.deepPearlHint) {
@@ -4595,7 +4595,7 @@
         toast("A pearl glints in the dark", "#ffe27a", 2.6);
       }
     } else if (pearl) {
-      herdDeepMonster(pearl, 80, 16);
+      herdDeepMonster(pearl, 52, 10);
     }
     if (!eyes.length) {
       for (let i = 0; i < 3; i++) {
@@ -4932,8 +4932,12 @@
         s.x = clamp(s.x, 80, OCEAN.w - 80);
         s.y = clamp(s.y, 980, OCEAN.h - 80);
         if (player.y >= 960 && state.scene === "ocean" && !state.fadeDir && state.deepPearlReady !== false) {
-          const pd = Math.hypot(player.x - s.x, player.y - s.y);
-          if (pd < 28) scoopDeepPearl(s);
+          const pd = Math.hypot(player.x - s.x, player.y - s.y) || 1;
+          if (pd < 170) {
+            s.x += ((player.x - s.x) / pd) * 62 * dt;
+            s.y += ((player.y - s.y) / pd) * 62 * dt;
+          }
+          if (pd < 36) scoopDeepPearl(s);
         }
       } else if (s.kind === "abyss-eye") {
         s.x += Math.sin(state.time * 0.35 + s.ph) * 10 * dt;

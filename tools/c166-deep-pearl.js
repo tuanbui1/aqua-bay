@@ -64,7 +64,8 @@ assert(/pearl-gone/.test(scoop), "the scooped pearl leaves the water");
 const upd = extractFn(src, "updateOceanScenery") || "";
 assert(/s\.kind === "pearl"/.test(upd), "the pearl updates");
 assert(/scoopDeepPearl\(s\)/.test(upd), "swimming into the glow scoops it");
-assert(/pd < 28/.test(upd), "a close pass takes the pearl");
+assert(/pd < 36/.test(upd), "a close pass takes the pearl");
+assert(/pd < 170/.test(upd), "the glow drifts toward the diver");
 
 assert(/function drawSceneryPearl\(/.test(src), "the pearl paints");
 assert(/PEARL/.test(extractFn(src, "drawSceneryPearl") || ""), "the pearl wears a PEARL plate");
