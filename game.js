@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 165 the deep has worse teeth — an angler and a leviathan
 // loop 164 ocean monsters — jellies sting, urchins poke, a moray lunges
 // loop 163 a reef shark patrols — a bump drops your last catch
 // loop 162 fish cruise in gentle S-curves, not straight lines
@@ -4538,6 +4539,46 @@
     // patrols. Not a new catchable — scenery with a bump.
     return (state.divesThisSession | 0) >= 2 || !!state.didFirstStock || !!state.missionDone;
   }
+  function deepScaryLegal() {
+    // loop 165 — the deep has worse teeth. Same first-dive quiet as
+    // the shallows pack. They have to swim into the reef (y ≥ 980).
+    return sharkLegal() && state.scene === "ocean" && player.y >= 980;
+  }
+  function ensureDeepMonsters() {
+    if (!deepScaryLegal()) return;
+    let hasAngler = false, hasLevi = false, eyes = 0;
+    for (const s of oceanScenery) {
+      if (s.kind === "angler") hasAngler = true;
+      if (s.kind === "leviathan") hasLevi = true;
+      if (s.kind === "abyss-eye") eyes++;
+    }
+    const px = player.x, py = player.y;
+    if (!hasAngler) {
+      oceanScenery.push({
+        kind: "angler",
+        x: clamp(px + 190, 120, OCEAN.w - 120),
+        y: clamp(py + 70, 1020, OCEAN.h - 120),
+        vx: -36, vy: 8, ph: 1.2, facing: -1,
+      });
+    }
+    if (!hasLevi) {
+      oceanScenery.push({
+        kind: "leviathan",
+        x: clamp(px - 280, 180, OCEAN.w - 180),
+        y: clamp(py + 240, 1180, OCEAN.h - 140),
+        vx: 52, vy: 0, ph: 0.4, facing: 1,
+      });
+    }
+    while (eyes < 3) {
+      oceanScenery.push({
+        kind: "abyss-eye",
+        x: clamp(px + rand(-340, 340), 80, OCEAN.w - 80),
+        y: clamp(py + rand(50, 300), 1040, OCEAN.h - 80),
+        ph: eyes * 1.7,
+      });
+      eyes++;
+    }
+  }
   function seedOceanScenery() {
     oceanScenery.length = 0;
     const px = player.x, py = player.y;
@@ -4700,13 +4741,50 @@
     toast("Urchin spines — you swim slower", "#e8c070", 2.2);
     sfx("escape");
   }
+  function anglerBite(s) {
+    state.anglerLock = 2.5;
+    state.sharkStun = Math.max(state.sharkStun || 0, 0.44);
+    state.hitStop = Math.max(state.hitStop || 0, 0.12);
+    state.camPunch = Math.max(state.camPunch || 0, 0.24);
+    const away = s.x >= player.x ? -1 : 1;
+    player.vx = away * 210;
+    player.vy = -48;
+    s.vx = -away * 90;
+    s.facing = s.vx >= 0 ? 1 : -1;
+    clearScoop("shark");
+    const dropped = dropLastBagCatch();
+    pop(player.x, player.y - 28, dropped ? "dropped!" : "teeth!", "#ff8a6a", 0.9, 1.25);
+    toast(dropped ? "The lure had teeth — last catch got away" : "The lure had teeth", "#ff8a6a", 3.2);
+    sfx("escape");
+    persist();
+  }
+  function leviathanSweep(s) {
+    state.leviLock = 3.2;
+    state.sharkStun = Math.max(state.sharkStun || 0, 0.55);
+    state.hitStop = Math.max(state.hitStop || 0, 0.16);
+    state.camPunch = Math.max(state.camPunch || 0, 0.32);
+    const away = s.x >= player.x ? -1 : 1;
+    player.vx = away * 260;
+    player.vy = -70;
+    s.vx = -away * 70;
+    s.facing = s.vx >= 0 ? 1 : -1;
+    clearScoop("shark");
+    const dropped = dropLastBagCatch();
+    pop(player.x, player.y - 32, dropped ? "dropped!" : "whoa!", "#c8b0ff", 1.0, 1.35);
+    toast(dropped ? "Something huge moved in the dark — last catch got away" : "Something huge moved in the dark", "#c8b0ff", 3.4);
+    sfx("escape");
+    persist();
+  }
   function updateOceanScenery(dt) {
+    ensureDeepMonsters();
     if ((state.sharkBumpLock || 0) > 0) state.sharkBumpLock = Math.max(0, state.sharkBumpLock - dt);
     if ((state.sharkStun || 0) > 0) state.sharkStun = Math.max(0, state.sharkStun - dt);
     if ((state.jellyLock || 0) > 0) state.jellyLock = Math.max(0, state.jellyLock - dt);
     if ((state.eelLock || 0) > 0) state.eelLock = Math.max(0, state.eelLock - dt);
     if ((state.urchinLock || 0) > 0) state.urchinLock = Math.max(0, state.urchinLock - dt);
     if ((state.urchinSlow || 0) > 0) state.urchinSlow = Math.max(0, state.urchinSlow - dt);
+    if ((state.anglerLock || 0) > 0) state.anglerLock = Math.max(0, state.anglerLock - dt);
+    if ((state.leviLock || 0) > 0) state.leviLock = Math.max(0, state.leviLock - dt);
     for (const s of oceanScenery) {
       if (s.kind === "ray") {
         s.x += s.vx * dt;
@@ -4771,6 +4849,37 @@
           const ud = Math.hypot(player.x - s.x, player.y - s.y);
           if (ud < 24) urchinPoke();
         }
+      } else if (s.kind === "angler") {
+        const dx = player.x - s.x, dy = player.y - s.y;
+        const d = Math.hypot(dx, dy) || 1;
+        s.vx = clamp(s.vx + (dx / d) * 20 * dt, -72, 72);
+        s.vy = clamp(s.vy + (dy / d) * 16 * dt, -38, 38);
+        s.x += s.vx * dt;
+        s.y += s.vy * dt + Math.sin(state.time * 1.15 + s.ph) * 8 * dt;
+        s.x = clamp(s.x, 80, OCEAN.w - 80);
+        s.y = clamp(s.y, 980, OCEAN.h - 100);
+        s.facing = s.vx >= 0 ? 1 : -1;
+        if (player.y >= 960 && state.scene === "ocean" && !state.fadeDir && (state.anglerLock || 0) <= 0 && d < 40) {
+          anglerBite(s);
+        }
+      } else if (s.kind === "leviathan") {
+        const dx = player.x - s.x, dy = player.y - s.y;
+        const d = Math.hypot(dx, dy) || 1;
+        s.vy = clamp(s.vy + (dy / d) * 10 * dt, -24, 24);
+        s.x += s.vx * dt;
+        s.y += s.vy * dt + Math.sin(state.time * 0.42 + s.ph) * 16 * dt;
+        s.y = clamp(s.y, 980, OCEAN.h - 120);
+        if (s.x < 100) { s.x = 100; s.vx = Math.abs(s.vx); }
+        if (s.x > OCEAN.w - 100) { s.x = OCEAN.w - 100; s.vx = -Math.abs(s.vx); }
+        s.facing = s.vx >= 0 ? 1 : -1;
+        if (player.y >= 960 && state.scene === "ocean" && !state.fadeDir && (state.leviLock || 0) <= 0 && d < 78) {
+          leviathanSweep(s);
+        }
+      } else if (s.kind === "abyss-eye") {
+        s.x += Math.sin(state.time * 0.35 + s.ph) * 10 * dt;
+        s.y += Math.cos(state.time * 0.28 + s.ph) * 6 * dt;
+        s.x = clamp(s.x, 80, OCEAN.w - 80);
+        s.y = clamp(s.y, 980, OCEAN.h - 80);
       } else {
         s.x += s.vx * dt;
         s.y += Math.sin(state.time * 6 + s.ph) * 28 * dt;
@@ -13323,6 +13432,17 @@
     murk.addColorStop(1, night ? "rgba(0,3,8,0.68)" : "rgba(1,8,14,0.6)");
     ctx.fillStyle = murk;
     ctx.fillRect(0, 320, OCEAN.w, OCEAN.h - 320);
+    // loop 165 — the deep goes black. A player-centered vignette
+    // only after they leave the shallows (y ≥ 900).
+    if (player && player.y >= 900) {
+      const scare = clamp((player.y - 900) / 700, 0, 0.58);
+      const vg = ctx.createRadialGradient(player.x, player.y, 90, player.x, player.y, 540);
+      vg.addColorStop(0, "rgba(0,0,0,0)");
+      vg.addColorStop(0.52, "rgba(0, 4, 12," + (scare * 0.3) + ")");
+      vg.addColorStop(1, "rgba(0, 2, 8," + (scare * 0.56) + ")");
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 800, OCEAN.w, OCEAN.h - 800);
+    }
     drawWaterMotes(0, 220, OCEAN.w, OCEAN.h - 280, state.time, night ? 40 : 70, night ? "rgba(160,220,255,0.4)" : "rgba(220,245,255,0.45)");
     if (state.unlocked[1]) {
       const rg = ctx.createLinearGradient(0, 820, 0, OCEAN.h);
@@ -16273,6 +16393,7 @@
         "A read note tucks under the slate — walk over it again",
         "After the first dive a reef shark patrols — a bump drops your last catch",
         "Jellies sting, urchins poke, and a moray lunges — first dive stays quiet",
+        "The deep has worse teeth — an angler lure and something huge in the dark",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
@@ -16930,8 +17051,8 @@
         keepSwimmerOffRail(f, Math.max(28, (SPECIES[f.s] && SPECIES[f.s].size) || 20));
       }
       for (const s of oceanScenery) {
-        if (s.kind === "kelp" || s.kind === "rock" || s.kind === "urchin") continue;
-        keepSwimmerOffRail(s, s.kind === "ray" ? 40 : s.kind === "shark" ? 52 : s.kind === "eel" ? 40 : 20);
+        if (s.kind === "kelp" || s.kind === "rock" || s.kind === "urchin" || s.kind === "abyss-eye") continue;
+        keepSwimmerOffRail(s, s.kind === "ray" ? 40 : s.kind === "shark" ? 52 : s.kind === "eel" ? 40 : s.kind === "leviathan" ? 80 : s.kind === "angler" ? 44 : 20);
       }
       for (const b of bubbles) keepSwimmerOffRail(b, (b.r || 3) + 4);
     } else {
@@ -16980,7 +17101,7 @@
   }
   function drawOceanScenery() {
     for (const s of oceanScenery) {
-      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : (s.kind === "shark" || s.kind === "eel") ? 64 : 32);
+      const sa = worldSpriteAlpha(s.x, s.y, s.kind === "kelp" ? 48 : (s.kind === "shark" || s.kind === "eel" || s.kind === "angler") ? 64 : s.kind === "leviathan" ? 110 : 32);
       if (sa <= 0.04) continue;
       ctx.save();
       ctx.globalAlpha *= sa;
@@ -16991,6 +17112,9 @@
       else if (s.kind === "shark") drawSceneryShark(s);
       else if (s.kind === "eel") drawSceneryEel(s);
       else if (s.kind === "urchin") drawSceneryUrchin(s);
+      else if (s.kind === "angler") drawSceneryAngler(s);
+      else if (s.kind === "leviathan") drawSceneryLeviathan(s);
+      else if (s.kind === "abyss-eye") drawSceneryAbyssEye(s);
       else drawSceneryMinnow(s);
       ctx.restore();
     }
@@ -17284,6 +17408,116 @@
     ctx.beginPath(); ctx.arc(17.4, -2.4, 0.5, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     drawWorldPlate(s.x, s.y - 28, "SHARK", "shiny");
+  }
+  function drawSceneryAngler(s) {
+    const face = (s.facing || (s.vx >= 0 ? 1 : -1)) >= 0 ? 1 : -1;
+    const wag = Math.sin(state.time * 5 + s.ph) * 0.16;
+    const pulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(state.time * 4.2 + s.ph));
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.scale(face, 1);
+    ctx.rotate(wag * 0.1);
+    ctx.fillStyle = "rgba(0, 2, 8, 0.42)";
+    ctx.beginPath(); ctx.ellipse(2, 12, 22, 6, 0, 0, Math.PI * 2); ctx.fill();
+    const body = ctx.createLinearGradient(-22, -8, 16, 10);
+    body.addColorStop(0, "#0a1018");
+    body.addColorStop(0.5, "#1a2430");
+    body.addColorStop(1, "#2a3844");
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 22, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#121820";
+    ctx.beginPath();
+    ctx.moveTo(-18, 0);
+    ctx.lineTo(-32, -8 + wag * 6);
+    ctx.lineTo(-28, 0);
+    ctx.lineTo(-32, 8 - wag * 6);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = "#1a2430";
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    ctx.moveTo(16, -6);
+    ctx.quadraticCurveTo(22, -22, 28, -18);
+    ctx.stroke();
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const lure = ctx.createRadialGradient(28, -18, 0.5, 28, -18, 14);
+    lure.addColorStop(0, "rgba(255, 236, 140," + (0.95 * pulse) + ")");
+    lure.addColorStop(0.35, "rgba(255, 180, 60," + (0.55 * pulse) + ")");
+    lure.addColorStop(1, "rgba(255, 120, 20, 0)");
+    ctx.fillStyle = lure;
+    ctx.beginPath(); ctx.arc(28, -18, 14, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffe27a";
+    ctx.beginPath(); ctx.arc(28, -18, 2.4, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = "#ffe27a";
+    ctx.beginPath(); ctx.arc(12, -2, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#1a0808";
+    ctx.beginPath();
+    ctx.moveTo(10, 3);
+    ctx.lineTo(18, 6);
+    ctx.lineTo(10, 7);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+    drawWorldPlate(s.x, s.y - 30, "LURE", "shiny");
+  }
+  function drawSceneryLeviathan(s) {
+    const face = (s.facing || (s.vx >= 0 ? 1 : -1)) >= 0 ? 1 : -1;
+    const wag = Math.sin(state.time * 2.2 + s.ph) * 0.2;
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.scale(face, 1);
+    ctx.rotate(wag * 0.06);
+    ctx.globalAlpha = 0.82;
+    ctx.fillStyle = "rgba(0, 2, 8, 0.45)";
+    ctx.beginPath(); ctx.ellipse(4, 22, 78, 14, 0, 0, Math.PI * 2); ctx.fill();
+    const body = ctx.createLinearGradient(-70, -18, 50, 20);
+    body.addColorStop(0, "#040810");
+    body.addColorStop(0.4, "#0c1420");
+    body.addColorStop(1, "#182028");
+    ctx.fillStyle = body;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 72, 22, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#0a1018";
+    ctx.beginPath();
+    ctx.moveTo(-8, -18);
+    ctx.lineTo(8, -42);
+    ctx.lineTo(22, -16);
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-62, 0);
+    ctx.lineTo(-96, -16 + wag * 10);
+    ctx.lineTo(-86, 0);
+    ctx.lineTo(-96, 16 - wag * 10);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#6ef0e0";
+    ctx.globalAlpha = 0.55 + 0.25 * Math.sin(state.time * 3 + s.ph);
+    ctx.beginPath(); ctx.arc(42, -4, 2.4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#c8b0ff";
+    ctx.beginPath(); ctx.arc(42.6, -4.4, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    drawWorldPlate(s.x, s.y - 40, "DEEP", "shiny");
+  }
+  function drawSceneryAbyssEye(s) {
+    const tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(state.time * 2.6 + s.ph));
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 0.55 * tw;
+    const gap = 7 + Math.sin(state.time * 0.8 + s.ph) * 1.2;
+    for (const ox of [-gap, gap]) {
+      const glow = ctx.createRadialGradient(s.x + ox, s.y, 0.4, s.x + ox, s.y, 10);
+      glow.addColorStop(0, "rgba(200, 240, 255, 0.9)");
+      glow.addColorStop(0.4, "rgba(80, 180, 220, 0.35)");
+      glow.addColorStop(1, "rgba(20, 60, 90, 0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(s.x + ox, s.y, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#9ef0ff";
+      ctx.beginPath(); ctx.arc(s.x + ox, s.y, 1.6, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
   }
   function drawSceneryRay(s) {
     const flap = Math.sin(state.time * 1.6 + s.ph) * 0.22;
