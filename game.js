@@ -6822,9 +6822,9 @@
     return { x: 800 + (i | 0) * 36, y: 1018 };
   }
   function spawnDockSplash(x, y) {
-    dockSplashes.push({ x, y, life: 0.72, max: 0.72 });
+    dockSplashes.push({ x, y, life: 1.15, max: 1.15 });
     sfx("lap");
-    pop(x, y - 18, "splash!", "#9ef0ff", 0.7, 0.85);
+    pop(x, y - 22, "splash!", "#9ef0ff", 1.15, 1.15);
   }
   function drawDockSplashes() {
     for (const r of dockSplashes) {
@@ -12366,7 +12366,6 @@
       if (dockW > 24) {
         drawPierBoards(500, 890, dockW, 130, { plank: 28, wetY: 1010 });
         drawDockWaterEdge(500, 890, dockW, 130);
-        drawDockSplashes();
         drawEastPierCap(500 + dockW, 890, 130);
       }
     }
@@ -12529,6 +12528,7 @@
     }
     actors.sort(function (a, b) { return a.y - b.y; });
     for (let i = 0; i < actors.length; i++) actors[i].draw();
+    drawDockSplashes();
     if (plazaA > 0.04) {
       ctx.save();
       ctx.globalAlpha = plazaA;
