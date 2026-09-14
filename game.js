@@ -4544,39 +4544,56 @@
     // the shallows pack. They have to swim into the reef (y ≥ 980).
     return sharkLegal() && state.scene === "ocean" && player.y >= 980;
   }
+  function herdDeepMonster(s, ox, oy) {
+    // Stay in the dark around the diver. A fast descent used to leave
+    // them parked at the reef lip.
+    if (Math.abs(player.y - s.y) > 240 || Math.abs(player.x - s.x) > 460) {
+      s.x = clamp(player.x + ox, 140, OCEAN.w - 140);
+      s.y = clamp(player.y + oy, 980, OCEAN.h - 120);
+    }
+  }
   function ensureDeepMonsters() {
     if (!deepScaryLegal()) return;
-    let hasAngler = false, hasLevi = false, eyes = 0;
+    let angler = null, levi = null, eyes = [];
     for (const s of oceanScenery) {
-      if (s.kind === "angler") hasAngler = true;
-      if (s.kind === "leviathan") hasLevi = true;
-      if (s.kind === "abyss-eye") eyes++;
+      if (s.kind === "angler") angler = s;
+      if (s.kind === "leviathan") levi = s;
+      if (s.kind === "abyss-eye") eyes.push(s);
     }
     const px = player.x, py = player.y;
-    if (!hasAngler) {
+    if (!angler) {
       oceanScenery.push({
         kind: "angler",
-        x: clamp(px + 190, 120, OCEAN.w - 120),
-        y: clamp(py + 70, 1020, OCEAN.h - 120),
+        x: clamp(px + 150, 120, OCEAN.w - 120),
+        y: clamp(py + 36, 1020, OCEAN.h - 120),
         vx: -36, vy: 8, ph: 1.2, facing: -1,
       });
+    } else {
+      herdDeepMonster(angler, 150, 28);
     }
-    if (!hasLevi) {
+    if (!levi) {
       oceanScenery.push({
         kind: "leviathan",
-        x: clamp(px - 280, 180, OCEAN.w - 180),
-        y: clamp(py + 240, 1180, OCEAN.h - 140),
+        x: clamp(px - 220, 180, OCEAN.w - 180),
+        y: clamp(py + 70, 1040, OCEAN.h - 140),
         vx: 52, vy: 0, ph: 0.4, facing: 1,
       });
+    } else {
+      herdDeepMonster(levi, -220, 80);
     }
-    while (eyes < 3) {
-      oceanScenery.push({
-        kind: "abyss-eye",
-        x: clamp(px + rand(-340, 340), 80, OCEAN.w - 80),
-        y: clamp(py + rand(50, 300), 1040, OCEAN.h - 80),
-        ph: eyes * 1.7,
-      });
-      eyes++;
+    if (!eyes.length) {
+      for (let i = 0; i < 3; i++) {
+        oceanScenery.push({
+          kind: "abyss-eye",
+          x: clamp(px + rand(-340, 340), 80, OCEAN.w - 80),
+          y: clamp(py + rand(40, 220), 1040, OCEAN.h - 80),
+          ph: i * 1.7,
+        });
+      }
+    } else {
+      for (let i = 0; i < eyes.length; i++) {
+        herdDeepMonster(eyes[i], (i - 1) * 180, 120 + i * 40);
+      }
     }
   }
   function seedOceanScenery() {
@@ -4852,8 +4869,8 @@
       } else if (s.kind === "angler") {
         const dx = player.x - s.x, dy = player.y - s.y;
         const d = Math.hypot(dx, dy) || 1;
-        s.vx = clamp(s.vx + (dx / d) * 20 * dt, -72, 72);
-        s.vy = clamp(s.vy + (dy / d) * 16 * dt, -38, 38);
+        s.vx = clamp(s.vx + (dx / d) * 28 * dt, -88, 88);
+        s.vy = clamp(s.vy + (dy / d) * 32 * dt, -64, 64);
         s.x += s.vx * dt;
         s.y += s.vy * dt + Math.sin(state.time * 1.15 + s.ph) * 8 * dt;
         s.x = clamp(s.x, 80, OCEAN.w - 80);
@@ -4865,7 +4882,7 @@
       } else if (s.kind === "leviathan") {
         const dx = player.x - s.x, dy = player.y - s.y;
         const d = Math.hypot(dx, dy) || 1;
-        s.vy = clamp(s.vy + (dy / d) * 10 * dt, -24, 24);
+        s.vy = clamp(s.vy + (dy / d) * 22 * dt, -48, 48);
         s.x += s.vx * dt;
         s.y += s.vy * dt + Math.sin(state.time * 0.42 + s.ph) * 16 * dt;
         s.y = clamp(s.y, 980, OCEAN.h - 120);
@@ -13435,11 +13452,11 @@
     // loop 165 — the deep goes black. A player-centered vignette
     // only after they leave the shallows (y ≥ 900).
     if (player && player.y >= 900) {
-      const scare = clamp((player.y - 900) / 700, 0, 0.58);
-      const vg = ctx.createRadialGradient(player.x, player.y, 90, player.x, player.y, 540);
+      const scare = clamp((player.y - 900) / 620, 0, 0.72);
+      const vg = ctx.createRadialGradient(player.x, player.y, 70, player.x, player.y, 520);
       vg.addColorStop(0, "rgba(0,0,0,0)");
-      vg.addColorStop(0.52, "rgba(0, 4, 12," + (scare * 0.3) + ")");
-      vg.addColorStop(1, "rgba(0, 2, 8," + (scare * 0.56) + ")");
+      vg.addColorStop(0.48, "rgba(0, 4, 12," + (scare * 0.38) + ")");
+      vg.addColorStop(1, "rgba(0, 1, 6," + (scare * 0.7) + ")");
       ctx.fillStyle = vg;
       ctx.fillRect(0, 800, OCEAN.w, OCEAN.h - 800);
     }
@@ -17417,51 +17434,53 @@
     ctx.translate(s.x, s.y);
     ctx.scale(face, 1);
     ctx.rotate(wag * 0.1);
-    ctx.fillStyle = "rgba(0, 2, 8, 0.42)";
-    ctx.beginPath(); ctx.ellipse(2, 12, 22, 6, 0, 0, Math.PI * 2); ctx.fill();
-    const body = ctx.createLinearGradient(-22, -8, 16, 10);
-    body.addColorStop(0, "#0a1018");
-    body.addColorStop(0.5, "#1a2430");
-    body.addColorStop(1, "#2a3844");
+    ctx.fillStyle = "rgba(0, 2, 8, 0.5)";
+    ctx.beginPath(); ctx.ellipse(2, 14, 26, 7, 0, 0, Math.PI * 2); ctx.fill();
+    const body = ctx.createLinearGradient(-26, -10, 18, 12);
+    body.addColorStop(0, "#06080c");
+    body.addColorStop(0.5, "#141c24");
+    body.addColorStop(1, "#243038");
     ctx.fillStyle = body;
     ctx.beginPath();
-    ctx.ellipse(0, 0, 22, 10, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, 26, 12, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "#121820";
+    ctx.fillStyle = "#0c1014";
     ctx.beginPath();
-    ctx.moveTo(-18, 0);
-    ctx.lineTo(-32, -8 + wag * 6);
-    ctx.lineTo(-28, 0);
-    ctx.lineTo(-32, 8 - wag * 6);
+    ctx.moveTo(-20, 0);
+    ctx.lineTo(-38, -10 + wag * 7);
+    ctx.lineTo(-32, 0);
+    ctx.lineTo(-38, 10 - wag * 7);
     ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = "#1a2430";
-    ctx.lineWidth = 1.6;
+    ctx.strokeStyle = "#1a2028";
+    ctx.lineWidth = 2;
     ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.moveTo(16, -6);
-    ctx.quadraticCurveTo(22, -22, 28, -18);
+    ctx.moveTo(18, -7);
+    ctx.quadraticCurveTo(26, -28, 34, -22);
     ctx.stroke();
     ctx.save();
     ctx.globalCompositeOperation = "lighter";
-    const lure = ctx.createRadialGradient(28, -18, 0.5, 28, -18, 14);
-    lure.addColorStop(0, "rgba(255, 236, 140," + (0.95 * pulse) + ")");
-    lure.addColorStop(0.35, "rgba(255, 180, 60," + (0.55 * pulse) + ")");
-    lure.addColorStop(1, "rgba(255, 120, 20, 0)");
+    const lure = ctx.createRadialGradient(34, -22, 0.5, 34, -22, 22);
+    lure.addColorStop(0, "rgba(255, 246, 170," + (0.98 * pulse) + ")");
+    lure.addColorStop(0.28, "rgba(255, 190, 70," + (0.7 * pulse) + ")");
+    lure.addColorStop(1, "rgba(255, 110, 20, 0)");
     ctx.fillStyle = lure;
-    ctx.beginPath(); ctx.arc(28, -18, 14, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#ffe27a";
-    ctx.beginPath(); ctx.arc(28, -18, 2.4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(34, -22, 22, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff6c8";
+    ctx.beginPath(); ctx.arc(34, -22, 3.2, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
     ctx.fillStyle = "#ffe27a";
-    ctx.beginPath(); ctx.arc(12, -2, 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#1a0808";
+    ctx.beginPath(); ctx.arc(14, -3, 1.8, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#2a0808";
     ctx.beginPath();
-    ctx.moveTo(10, 3);
-    ctx.lineTo(18, 6);
-    ctx.lineTo(10, 7);
+    ctx.moveTo(12, 3);
+    ctx.lineTo(24, 8);
+    ctx.lineTo(12, 9);
     ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#fff6e8";
+    ctx.beginPath(); ctx.moveTo(16, 5); ctx.lineTo(21, 7.2); ctx.lineTo(16, 7.6); ctx.closePath(); ctx.fill();
     ctx.restore();
-    drawWorldPlate(s.x, s.y - 30, "LURE", "shiny");
+    drawWorldPlate(s.x, s.y - 34, "LURE", "shiny");
   }
   function drawSceneryLeviathan(s) {
     const face = (s.facing || (s.vx >= 0 ? 1 : -1)) >= 0 ? 1 : -1;
@@ -17470,36 +17489,57 @@
     ctx.translate(s.x, s.y);
     ctx.scale(face, 1);
     ctx.rotate(wag * 0.06);
-    ctx.globalAlpha = 0.82;
-    ctx.fillStyle = "rgba(0, 2, 8, 0.45)";
-    ctx.beginPath(); ctx.ellipse(4, 22, 78, 14, 0, 0, Math.PI * 2); ctx.fill();
-    const body = ctx.createLinearGradient(-70, -18, 50, 20);
-    body.addColorStop(0, "#040810");
-    body.addColorStop(0.4, "#0c1420");
-    body.addColorStop(1, "#182028");
+    ctx.globalAlpha = 0.88;
+    ctx.fillStyle = "rgba(0, 2, 8, 0.5)";
+    ctx.beginPath(); ctx.ellipse(6, 26, 92, 16, 0, 0, Math.PI * 2); ctx.fill();
+    const body = ctx.createLinearGradient(-86, -22, 60, 24);
+    body.addColorStop(0, "#020408");
+    body.addColorStop(0.4, "#0a1018");
+    body.addColorStop(1, "#161e28");
     ctx.fillStyle = body;
     ctx.beginPath();
-    ctx.ellipse(0, 0, 72, 22, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, 86, 26, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = "#0a1018";
+    ctx.fillStyle = "#080c12";
     ctx.beginPath();
-    ctx.moveTo(-8, -18);
-    ctx.lineTo(8, -42);
-    ctx.lineTo(22, -16);
+    ctx.moveTo(-10, -22);
+    ctx.lineTo(10, -52);
+    ctx.lineTo(28, -20);
     ctx.closePath(); ctx.fill();
     ctx.beginPath();
-    ctx.moveTo(-62, 0);
-    ctx.lineTo(-96, -16 + wag * 10);
-    ctx.lineTo(-86, 0);
-    ctx.lineTo(-96, 16 - wag * 10);
+    ctx.moveTo(-74, 0);
+    ctx.lineTo(-118, -20 + wag * 12);
+    ctx.lineTo(-102, 0);
+    ctx.lineTo(-118, 20 - wag * 12);
     ctx.closePath(); ctx.fill();
-    ctx.fillStyle = "#6ef0e0";
-    ctx.globalAlpha = 0.55 + 0.25 * Math.sin(state.time * 3 + s.ph);
-    ctx.beginPath(); ctx.arc(42, -4, 2.4, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#c8b0ff";
-    ctx.beginPath(); ctx.arc(42.6, -4.4, 0.7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#0c1016";
+    ctx.beginPath();
+    ctx.moveTo(8, 10);
+    ctx.lineTo(22, 34);
+    ctx.lineTo(36, 8);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#1a0a0a";
+    ctx.beginPath();
+    ctx.moveTo(48, 6);
+    ctx.lineTo(78, 14);
+    ctx.lineTo(50, 16);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#ffe27a";
+    ctx.globalAlpha = 0.22;
+    for (let i = 0; i < 4; i++) {
+      ctx.beginPath();
+      ctx.moveTo(52 + i * 5, 8);
+      ctx.lineTo(56 + i * 5, 13);
+      ctx.lineTo(50 + i * 5, 12);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.globalAlpha = 0.7 + 0.25 * Math.sin(state.time * 3 + s.ph);
+    ctx.fillStyle = "#ff6a4a";
+    ctx.beginPath(); ctx.arc(50, -6, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffe27a";
+    ctx.beginPath(); ctx.arc(50.8, -6.6, 0.9, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
-    drawWorldPlate(s.x, s.y - 40, "DEEP", "shiny");
+    drawWorldPlate(s.x, s.y - 46, "DEEP", "shiny");
   }
   function drawSceneryAbyssEye(s) {
     const tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(state.time * 2.6 + s.ph));

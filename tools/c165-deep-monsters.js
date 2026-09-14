@@ -55,6 +55,7 @@ assert(/kind: "angler"/.test(ensure), "an angler seeds in the deep");
 assert(/kind: "leviathan"/.test(ensure), "a leviathan seeds in the deep");
 assert(/deepScaryLegal\(\)/.test(ensure), "shallows do not spawn deep monsters");
 assert(/kind: "abyss-eye"/.test(ensure), "glowing eyes sit in the dark");
+assert(/herdDeepMonster\(/.test(ensure), "a fast descent does not leave them at the reef lip");
 
 const seed = extractFn(src, "seedOceanScenery") || "";
 assert(!/kind: "angler"/.test(seed), "the angler is not a shallows seed");
