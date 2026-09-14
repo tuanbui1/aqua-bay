@@ -49,12 +49,12 @@ assert(!/id: 14/.test(src), "no fifteenth catchable species");
 
 const dive = extractFn(src, "drawDiver") || "";
 assert(dive, "drawDiver is extractable");
-assert(!/blitGait\(skin, "swim"/.test(dive), "atlas swim frames are no longer the ocean pose");
+assert(/blitGait\(skin, "swim"/.test(dive),
+  "Skip / Reef / Dino keep the atlas prone swim (already a flutter-kick)");
+assert(/skin === "ryan"/.test(dive), "Ryan paints a prone swim (no atlas swim cells)");
 assert((dive.match(/-1\.52/g) || []).length >= 2,
-  "both arms reach forward along the heading (−1.52), not one forward / one back");
-assert(/paintTrailFlipper/.test(dive), "flippers trail the flutter kick");
-assert(/skin === "reef"/.test(dive) && /skin === "ryan"/.test(dive) && /skin === "dino"/.test(dive),
-  "all four divers paint a prone swim");
+  "Ryan's painted arms reach along the heading, not one hanging at the seafloor");
+assert(/paintTrailFlipper/.test(dive), "painted flippers trail the flutter kick");
 assert(/function swimFoot\(/.test(src), "kick feet are placed from the hips");
 assert(/Math\.sin\(player\.facing\) \* 0\.58/.test(src), "pitch follows the swim heading");
 assert(/Divers swim prone/.test(src), "help names the prone swim");

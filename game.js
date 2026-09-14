@@ -1,5 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
-// loop 167 divers swim prone — flutter kick, arms along the body
+// loop 167 divers swim prone — atlas flutter kick, Ryan paints the same pose
 // loop 165 the deep has worse teeth — an angler and a leviathan
 // loop 164 ocean monsters — jellies sting, urchins poke, a moray lunges
 // loop 163 a reef shark patrols — a bump drops your last catch
@@ -11192,16 +11192,31 @@
     const stroke = Math.sin(phase + 1.15);
     const faceS = player.faceS != null ? player.faceS : (Math.cos(ang) < -0.38 ? -1 : 1);
     const flip = faceS < 0 ? -1 : 1;
-    // loop 167 — atlas swim frames are a standing walk laid on its side
-    // (one arm hangs at the seafloor). Paint a prone flutter-kick instead.
+    // loop 167 — atlas swim cells are already a prone flutter-kick.
+    // Use them. Ryan (no cells) and a missing atlas paint the same pose.
     // loop 141 still pitches the body with the heading.
     const headingPitch = Math.sin(ang) * 0.12;
     const pitch = clamp((player.pitch || 0) + headingPitch + kickWave * 0.035, -0.9, 0.9);
     const tilt = pitch + Math.sin(t * 8) * 0.022;
+    // Atlas Skip / Reef / Dino frames are already a prone flutter-kick.
+    // Painting over them made a sausage. Ryan has no swim cells — paint him.
+    const fi = gaitIndex(phase, 6);
+    const asymTurn = skin === "dino";
+    const swimYaw = asymTurn ? 0 : (1 - Math.abs(faceS)) * 0.16;
+    const swimScaleX = asymTurn
+      ? flip * (1 + Math.abs(kickWave) * 0.04)
+      : faceDrawX(faceS, 1 + Math.abs(kickWave) * 0.04);
+    if (blitGait(skin, "swim", fi, x, y, {
+      rot: tilt * flip + swimYaw,
+      scale: 0.58,
+      scaleX: swimScaleX,
+      scaleY: 1 - Math.abs(kickWave) * 0.045,
+      water: true,
+    })) return;
     ctx.save();
     ctx.translate(x, y);
-    // Atlas swim cells are ~196px wide at scale 0.58. The old paint sat
-    // at ~50px and read as a minnow. 1.85 matches the bay silhouette.
+    // Atlas swim cells are ~196px wide at scale 0.58. The paint fallback
+    // sat at ~50px and read as a minnow. 1.85 matches the bay silhouette.
     ctx.scale(flip * 1.85, 1.85);
     ctx.rotate(tilt);
     const kA = kickWave;
@@ -16360,7 +16375,7 @@
         "After the first dive a reef shark patrols — a bump drops your last catch",
         "Jellies sting, urchins poke, and a moray lunges — first dive stays quiet",
         "The deep has worse teeth — an angler lure and something huge in the dark",
-        "Divers swim prone — flutter kick, both arms along the heading",
+        "Divers swim prone — flutter kick, arms along the body",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
