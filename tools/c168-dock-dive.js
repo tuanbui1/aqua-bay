@@ -59,7 +59,7 @@ assert(/function spawnDockSplash\(/.test(src) && /function drawDockSplashes\(/.t
   "splash spawn + draw exist");
 assert(/sfx\("lap"\)/.test(src) && /"splash!"/.test(src),
   "a ker-splash pops on the lip");
-assert(/drawDockSplashes\(\);/.test(src), "splashes paint on the dock water edge");
+assert(/drawDockSplashes\(\);/.test(src), "splashes paint after the dock actors");
 
 const send = extractFn(src, "sendCrewToTank") || "";
 assert(/d\.job = "dive"/.test(send), "a delivery starts as a DIVE-lip jog");
