@@ -50,7 +50,8 @@ assert(!/id: 14/.test(src), "no fifteenth catchable species");
 const dive = extractFn(src, "drawDiver") || "";
 assert(dive, "drawDiver is extractable");
 assert(!/blitGait\(skin, "swim"/.test(dive), "atlas swim frames are no longer the ocean pose");
-assert(/1\.52/.test(dive), "arms hug the heading instead of hanging at the seafloor");
+assert((dive.match(/-1\.52/g) || []).length >= 2,
+  "both arms reach forward along the heading (−1.52), not one forward / one back");
 assert(/paintTrailFlipper/.test(dive), "flippers trail the flutter kick");
 assert(/skin === "reef"/.test(dive) && /skin === "ryan"/.test(dive) && /skin === "dino"/.test(dive),
   "all four divers paint a prone swim");
