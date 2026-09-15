@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 169 a manta glides the shallows — swim under it for a lift
 // loop 167 divers swim prone — atlas flutter kick, Ryan paints the same pose
 // loop 165 the deep has worse teeth — an angler and a leviathan
 // loop 164 ocean monsters — jellies sting, urchins poke, a moray lunges
@@ -702,6 +703,7 @@
     catchClimax: null,
     divesThisSession: 0, tangRumor: false, freezeFrame: 0,
     aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
+    rayDraftLock: 0, rayShade: 0,
     catchVerb: null, tankFlash: null, pierChirp: 0,
     camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0,
     camTillHold: 0,
@@ -1247,6 +1249,7 @@
       coneFlash: 0, registerPunch: 1, tankShake: null, cardShake: null, priceFlash: null, nopeFlash: 0,
       catchClimax: null, divesThisSession: 0, tangRumor: false, freezeFrame: 0,
       aisleSchoolWait: 0, nearMiss: [], nearMissLife: 0, surfaceYell: null,
+      rayDraftLock: 0, rayShade: 0,
       catchVerb: null, tankFlash: null, pierChirp: 0,
       camNudge: 0, camNudgeMax: 0, camSettle: 0, camEase: 0, camTillHold: 0, almostSfxAt: 0, surfaceQuiet: 0,
       playClock: 0, tillSlip: null, escapeBar: null, escapeGate: 0,
@@ -4793,8 +4796,25 @@
     sfx("escape");
     persist();
   }
+  function rayDraft(s) {
+    // loop 169 — the shallows manta is scenery, not a sting. Swim under
+    // it for a lift along its heading. Never drops a bag fish.
+    if (state.scene !== "ocean" || state.fadeDir) return;
+    if ((state.rayDraftLock || 0) > 0) return;
+    const d = Math.hypot(player.x - s.x, player.y - s.y);
+    if (d > 78) return;
+    player.vx += (s.vx || 0) * 0.62;
+    player.vy += Math.sin(state.time * 0.7 + s.ph) * 10;
+    state.rayDraftLock = 1.8;
+    state.rayShade = 0.72;
+    sfx("lap");
+    pop(player.x, player.y - 30, "glide!", "#9ef0ff", 0.95, 1.2);
+    state.camPunch = Math.max(state.camPunch || 0, 0.1);
+  }
   function updateOceanScenery(dt) {
     ensureDeepMonsters();
+    if ((state.rayDraftLock || 0) > 0) state.rayDraftLock = Math.max(0, state.rayDraftLock - dt);
+    if ((state.rayShade || 0) > 0) state.rayShade = Math.max(0, state.rayShade - dt);
     if ((state.sharkBumpLock || 0) > 0) state.sharkBumpLock = Math.max(0, state.sharkBumpLock - dt);
     if ((state.sharkStun || 0) > 0) state.sharkStun = Math.max(0, state.sharkStun - dt);
     if ((state.jellyLock || 0) > 0) state.jellyLock = Math.max(0, state.jellyLock - dt);
@@ -4810,6 +4830,7 @@
         s.y = clamp(s.y, 280, OCEAN.h - 120);
         if (s.x < 90) { s.x = 90; s.vx = Math.abs(s.vx); s.facing = 1; }
         if (s.x > OCEAN.w - 90) { s.x = OCEAN.w - 90; s.vx = -Math.abs(s.vx); s.facing = -1; }
+        rayDraft(s);
       } else if (s.kind === "jelly") {
         s.y += Math.sin(state.time * 1.15 + s.ph) * 22 * dt - 8 * dt;
         s.x += Math.sin(state.time * 0.55 + s.ph) * 16 * dt;
@@ -13719,6 +13740,13 @@
     }
     drawNearMiss();
     drawCone();
+    if ((state.rayShade || 0) > 0.04) {
+      const a = 0.26 * clamp(state.rayShade, 0, 1);
+      ctx.fillStyle = "rgba(8, 22, 36," + a + ")";
+      ctx.beginPath();
+      ctx.ellipse(player.x, player.y + 18, 36, 13, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
     drawDiver(player.x, player.y, player.facing, player.bob);
     for (const f of list) {
       if (f === player.target || !huntBangWanted(f)) continue;
@@ -16379,6 +16407,7 @@
         "Jellies sting, urchins poke, and a moray lunges — first dive stays quiet",
         "The deep has worse teeth — an angler lure and something huge in the dark",
         "Divers swim prone — flutter kick, arms along the body",
+        "A manta glides the shallows — swim under it for a lift",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
@@ -16771,6 +16800,8 @@
         state.diveLock = 1.6;
         state.bagBonus = 1;
         state.divesThisSession = (state.divesThisSession | 0) + 1;
+        state.rayDraftLock = 0;
+        state.rayShade = 0;
         state.wreckChestReady = true;
         if (!state.unlocked[1] && state.didFirstStock && !state.tangHintDone) {
           state.tangHintLife = Math.max(state.tangHintLife || 0, 4.2);
