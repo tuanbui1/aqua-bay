@@ -16719,7 +16719,7 @@
     const tall = portraitStage() && H > DESKTOP_H + 20;
     const pad = tall ? Math.round(H * 0.028) : 56;
     const cardW = tall ? Math.min(W - 48, 1040) : 500;
-    const cardH = tall ? H - pad * 2 : 608;
+    const cardH = tall ? H - pad * 2 : 668;
     const cardX = W / 2 - cardW / 2;
     const cardY = pad;
     const btnW = tall ? Math.min(cardW - 80, 640) : 280;
