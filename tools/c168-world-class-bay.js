@@ -58,12 +58,16 @@ assert(/ordersFilled:/.test(src), "ordersFilled persists");
 assert(/badges:/.test(src), "badges persist");
 assert(/function sharePier\(\) \{/.test(src), "sharePier function exists");
 assert(/navigator\.clipboard && navigator\.clipboard\.writeText/.test(src), "share copies to clipboard");
-assert(/navigator\.share/.test(src), "share uses Web Share when available");
+assert(/Mobi\|Android\|iPhone\|iPad/.test(src), "Web Share is phone-only");
+assert(/e\.key === "c" \|\| e\.key === "C"/.test(src), "pause/title C copies pier card");
+assert(/window\.__aquaBayShareLast/.test(src), "share mirrors text for QA");
 assert(/function sharePierBlurb\(/.test(src), "sharePierBlurb exists");
 assert(/tuanbui1\.github\.io\/aqua-bay\//.test(src), "share links the live play URL");
 assert(/Special ORDER goals appear/.test(src), "help names orders");
 assert(/Pier stars rise/.test(src), "help names stars");
 assert(/Earn bay badges/.test(src), "help names badges");
+assert(/Share my pier/.test(src) && src.indexOf('panelBtn("share"') < src.indexOf('panelBtn("export"'),
+  "Share sits above Export on pause");
 assert(/lastPlayed: \(d\.lastPlayed > 0 \? \+d\.lastPlayed : 0\)/.test(src),
   "lastPlayed still loads as a full millisecond timestamp");
 assert(/function firstSessionReached\(/.test(src), "first-session quiet stays");

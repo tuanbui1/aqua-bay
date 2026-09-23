@@ -3638,12 +3638,16 @@
         copied = true;
       }
     } catch (e) {}
+    // loop 168 — Web Share only on phones. Desktop Chrome may open an
+    // odd system picker; the clipboard toast is the pier-card path.
     try {
-      if (navigator.share) {
+      const mobile = typeof navigator !== "undefined" && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || "");
+      if (mobile && navigator.share) {
         navigator.share({ title: "Aqua Bay", text: text, url: "https://tuanbui1.github.io/aqua-bay/" }).catch(function () {});
       }
     } catch (e) {}
     state.sharePulse = 1.4;
+    try { window.__aquaBayShareLast = text; } catch (e) {}
     if (copied) toast("Pier card copied — paste anywhere", "#9ef0ff", 3.0);
     else toast("Copy failed — try Export save", "#ff8a7a", 2.4);
     sfx("click");
@@ -4052,6 +4056,10 @@
       if (state.bookOpen != null) state.bookOpen = null;
       else if (state.mode === "play") state.mode = "pause";
       else if (state.mode === "pause" || state.mode === "help") state.mode = "play";
+    }
+    // loop 168 — copy the shareable pier card from pause (same as the button).
+    if ((e.key === "c" || e.key === "C") && (state.mode === "pause" || state.mode === "title")) {
+      sharePier();
     }
     if (e.key === " " || e.code === "Space" || e.key === "Enter" || e.key === "e" || e.key === "E") {
       // Full bag + Space/Enter always surfaces, even with a walk target.
@@ -16756,7 +16764,7 @@
         "Pier stars rise with unlocks, streaks, and peak cash — denser crowds + better tips",
         "Special ORDER goals appear after day 2 — sell the listed fish before the timer",
         "Stocked tanks hatch shinies over time (nursery) — rares + decor speed it up",
-        "Earn bay badges — Pause → Share my pier copies a card you can post",
+        "Earn bay badges — Pause → Share my pier (or C) copies a card you can post",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
@@ -16795,11 +16803,11 @@
       const saveH = tall ? Math.max(52, btnH - 8) : 40;
       const half = (btnW - 10) / 2;
       const saveFont = tall ? Math.max(20, btnFont - 4) : 16;
-      panelBtn("export", W / 2 - btnW / 2, y, half, saveH, "Export save", "#2a7d8a", 1, saveFont);
-      panelBtn("import", W / 2 - btnW / 2 + half + 10, y, half, saveH, "Import save", "#3d6f7a", 1, saveFont);
-      y += saveH + (tall ? 10 : 8);
       const sharePulse = 1 + Math.min(0.08, (state.sharePulse || 0) * 0.06);
       panelBtn("share", W / 2 - btnW / 2, y, btnW, saveH, "Share my pier", "#c48a2a", sharePulse, saveFont);
+      y += saveH + (tall ? 10 : 8);
+      panelBtn("export", W / 2 - btnW / 2, y, half, saveH, "Export save", "#2a7d8a", 1, saveFont);
+      panelBtn("import", W / 2 - btnW / 2 + half + 10, y, half, saveH, "Import save", "#3d6f7a", 1, saveFont);
       y += saveH + (tall ? 10 : 8);
       const resetY = tall ? cardY + cardH - 16 - btnH : y;
       panelBtn("reset", W / 2 - btnW / 2, resetY, btnW, tall ? btnH : 44, "New Game", "#a84a3a", 1, btnFont);
