@@ -1,4 +1,6 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 170 deeper forever bands — pearl caches, depth records, deep catch fun
+// loop 169 divers walk + swim verified for Skip / Reef / Dino / Ryan
 // loop 168 pier stars, special orders, tank nursery, bay badges, share pier
 // loop 167 divers swim prone — atlas flutter kick, Ryan paints the same pose
 // loop 165 the deep has worse teeth — an angler and a leviathan
@@ -111,7 +113,9 @@
   const FOREVER_ZONE_NAMES = [
     "Midnight trench", "Crystal canyon", "Glow abyss", "Starfall hollow",
     "Ribbon rift", "Quiet cathedral", "Lantern stairs", "Forever blue",
+    "Pressure garden", "Echo vault", "Cobalt stairs", "Pearl sink",
   ];
+  const DEPTH_CACHE_PAY_BASE = 28;
   const SPEED_COST = [40, 90, 180, 350, 600];
   const BAG_COST   = [50, 120, 250, 450, 700];
   const CATCH_COST = [45, 100, 200, 400, 750];
@@ -307,7 +311,123 @@
       y > WRECK.y - 60 && y < WRECK.y + WRECK.h + 90;
   }
   function isChestTarget(f) {
-    return !!(f && f.chest);
+    return !!(f && (f.chest || f.depthCache));
+  }
+  function isDepthCache(f) {
+    return !!(f && f.depthCache);
+  }
+  function foreverLapAt(y) {
+    if (y < OCEAN_BASE_H) return 0;
+    const band = ((y - OCEAN_BASE_H) / ZONE_STEP) | 0;
+    if (band < 8) return 0;
+    // Match zoneAtDepth lap math (species cycle every 8 forever bands).
+    return (((band - 8) / 8) | 0) + 1;
+  }
+  function depthCacheKey(band) {
+    return "b" + (band | 0);
+  }
+  function depthCacheTaken(band) {
+    if (!state.depthCaches || typeof state.depthCaches !== "object") state.depthCaches = {};
+    return !!(state.depthCaches[depthCacheKey(band)]);
+  }
+  function markDepthCacheTaken(band) {
+    if (!state.depthCaches || typeof state.depthCaches !== "object") state.depthCaches = {};
+    state.depthCaches[depthCacheKey(band)] = 1;
+  }
+  function depthCachePos(band) {
+    const y0 = OCEAN_BASE_H + band * ZONE_STEP;
+    const salt = (band * 97 + 13) % 1000;
+    return {
+      x: 420 + (salt % 7) * 340,
+      y: y0 + 120 + (salt % 5) * 48,
+      band: band,
+    };
+  }
+  function depthCacheTarget() {
+    if (state.scene !== "ocean" || player.y < OCEAN_BASE_H - 20) return null;
+    const band = ((Math.max(0, player.y - OCEAN_BASE_H)) / ZONE_STEP) | 0;
+    // Named deep bowls + forever bands each hide one pearl cache.
+    if (band < 0) return null;
+    if (depthCacheTaken(band)) return null;
+    const p = depthCachePos(band);
+    if (!state.depthCacheObj || state.depthCacheObj.band !== band) {
+      state.depthCacheObj = { depthCache: true, chest: false, band: band, x: p.x, y: p.y, vx: 0, vy: 0, ang: 0 };
+    }
+    state.depthCacheObj.x = p.x;
+    state.depthCacheObj.y = p.y;
+    return state.depthCacheObj;
+  }
+  function depthPayMult(y) {
+    if (y < OCEAN_BASE_H) return 1;
+    const band = ((y - OCEAN_BASE_H) / ZONE_STEP) | 0;
+    if (band < 8) return 1 + Math.min(0.2, (band + 1) * 0.025);
+    const lap = foreverLapAt(y);
+    return 1 + Math.min(0.55, 0.12 + lap * 0.08);
+  }
+  function noteDepthRecord() {
+    if (state.scene !== "ocean") return;
+    const m = depthMeters(player.y);
+    if (m <= (state.deepestM | 0)) return;
+    const prev = state.deepestM | 0;
+    state.deepestM = m;
+    // Milestone every ~40m after the turtle meadow floor.
+    if (m >= 70 && (prev < 70 || ((m / 40) | 0) > ((prev / 40) | 0))) {
+      const tip = 8 + Math.min(40, ((m / 40) | 0) * 4);
+      state.money += tip;
+      state.moneyRollFrom = state.displayMoney;
+      state.moneyRollTo = state.money;
+      state.moneyRollT = 0.28;
+      state.moneyPunch = 1.18;
+      toast("Depth record " + m + "m! +$" + tip, "#9ef0ff", 2.8);
+      pop(player.x, player.y - 36, m + "m!", "#9ef0ff", 1.2, 1.35);
+      spawnP(player.x, player.y, 14, ["#9ef0ff", "#ffe27a", "#fff6e8"], 70);
+      sfx("unlock");
+      state.depthRecordToast = 2.4;
+      state.sessionDepthRecord = true;
+      persist();
+      checkSessionGoals();
+    } else {
+      persist();
+    }
+  }
+  function openDepthCache(cache) {
+    if (!cache || !cache.depthCache) return;
+    const band = cache.band | 0;
+    if (depthCacheTaken(band)) return;
+    markDepthCacheTaken(band);
+    state.sessionPearl = true;
+    const lap = band < 8 ? 1 : foreverLapAt(cache.y);
+    const pay = DEPTH_CACHE_PAY_BASE + Math.min(90, band * 6 + lap * 10);
+    state.money += pay;
+    state.moneyRollFrom = state.displayMoney;
+    state.moneyRollTo = state.money;
+    state.moneyRollT = 0.35;
+    state.moneyPunch = 1.3;
+    spawnP(cache.x, cache.y, 28, ["#ffe27a", "#9ef0ff", "#fff6e8", "#c4a0ff"], 120);
+    pop(cache.x, cache.y - 24, "DEPTH PEARL +$" + pay, "#9ef0ff", 1.25, 1.4);
+    sfx("unlock");
+    toast("Depth pearl! +$" + pay, "#9ef0ff", 3.0);
+    // A shiny hitchhikes out of cold water — bag if room.
+    if (state.bag.length < bagMax()) {
+      const sid = highestUnlockedSafe();
+      state.bag.push(sid);
+      if (!state.bagRare) state.bagRare = [];
+      state.bagRare.push(true);
+      state.caughtRare = true;
+      state.bagPunch = 1.3;
+      pop(cache.x + 16, cache.y - 42, "SHINY!", "#ffd24a");
+    } else {
+      pushOceanFish(highestUnlockedSafe(), cache.x + 30, cache.y - 18, { rare: true });
+    }
+    player.catchProg = 0;
+    player.target = null;
+    player.scoopLock = null;
+    player.scoopTap = false;
+    player.catchLatch = true;
+    state.depthCacheObj = null;
+    checkSessionGoals();
+    refreshBadges(false);
+    persist();
   }
   function wreckChestTarget() {
     if (state.scene !== "ocean" || !state.wreckChestReady) return null;
@@ -345,7 +465,8 @@
     const s = 5 + (forever % 8);
     const y0 = OCEAN_BASE_H + band * ZONE_STEP;
     const lap = ((forever / 8) | 0) + 1;
-    return { name: FOREVER_ZONE_NAMES[forever % 8] + " · " + lap, s, y0, y1: y0 + ZONE_STEP, forever: true };
+    const nameN = FOREVER_ZONE_NAMES.length || 8;
+    return { name: FOREVER_ZONE_NAMES[forever % nameN] + " · " + lap, s, y0, y1: y0 + ZONE_STEP, forever: true, lap: lap, band: band };
   }
   function depthMeters(y) {
     return Math.max(1, ((y - 200) / 28) | 0);
@@ -714,6 +835,7 @@
     escapeBar: null, escapeGate: 0,
     tangHintLife: 0, tangHintDone: false,
     diveForTank: null, diveForAway: 0, diveForHunt: null,
+    deepestM: 0, depthCombo: 0, depthCaches: {}, sessionPearl: false, depthRecordToast: 0,
     // loop 168 — mid/late depth + shareable pier card
     hatchProg: padSpeciesNums([]), hatches: 0, ordersFilled: 0,
     pierOrder: null, badges: {}, badgeToast: null, sharePulse: 0,
@@ -998,6 +1120,7 @@
       skin: "skip",
       hatchProg: padSpeciesNums([]), hatches: 0, ordersFilled: 0,
       pierOrder: null, badges: {},
+      deepestM: 0, depthCaches: {},
     };
   }
   function loadSave() {
@@ -1073,6 +1196,9 @@
         ordersFilled: Math.max(0, d.ordersFilled | 0),
         pierOrder: sanitizePierOrder(d.pierOrder),
         badges: (d.badges && typeof d.badges === "object") ? Object.assign({}, d.badges) : {},
+        deepestM: Math.max(0, d.deepestM | 0),
+        depthCaches: (d.depthCaches && typeof d.depthCaches === "object") ? Object.assign({}, d.depthCaches) : {},
+        depthCombo: 0, sessionPearl: false, depthRecordToast: 0,
       });
       ensureUnlockFlags();
       refreshBadges(true);
@@ -1152,6 +1278,8 @@
       ordersFilled: state.ordersFilled | 0,
       pierOrder: state.pierOrder || null,
       badges: state.badges || {},
+      deepestM: state.deepestM | 0,
+      depthCaches: state.depthCaches || {},
     };
   }
   function persist() {
@@ -1261,6 +1389,7 @@
       didFirstStock: false, didFirstSale: false,
       hatchProg: padSpeciesNums([]), hatches: 0, ordersFilled: 0,
       pierOrder: null, badges: {}, badgeToast: null, sharePulse: 0,
+      deepestM: 0, depthCombo: 0, depthCaches: {}, sessionPearl: false, depthRecordToast: 0,
       shinyHold: 0, shinyHoldName: "",
       boatHint: 0, boatGlance: 0,
       coneFlash: 0, registerPunch: 1, tankShake: null, cardShake: null, priceFlash: null, nopeFlash: 0,
@@ -2732,6 +2861,8 @@
     }
     if (id === "catch6") return "Catch 6 fish  " + Math.min(6, state.sessionDiveCatch | 0) + "/6";
     if (id === "deep") return "Dive a new zone";
+    if (id === "record") return "Set a depth record  " + (state.deepestM | 0) + "m";
+    if (id === "pearl") return "Crack a depth pearl";
     if (id === "unlock") {
       const n = nextLockedTank();
       return n >= 0 ? "Unlock " + SPECIES[n].name : "Unlock a new friend";
@@ -2761,6 +2892,8 @@
     if (id === "guest") return !!state.sessionDayGuest;
     if (id === "catch6") return (state.sessionDiveCatch | 0) >= 6;
     if (id === "deep") return (state.sessionSawDeep | 0) > (state.goalDeepAt | 0);
+    if (id === "record") return !!state.sessionDepthRecord;
+    if (id === "pearl") return !!state.sessionPearl;
     if (id === "unlock") {
       const want = state.goalUnlockAt | 0;
       return highestUnlocked() > want || nextLockedTank() < 0;
@@ -2807,6 +2940,8 @@
     if (dayBoardReady()) pool.push("guest");
     if (pierOrderReady()) pool.push("order");
     if (state.unlocked[4]) pool.push("deep");
+    if ((state.deepestM | 0) >= 60 || state.unlocked[4]) pool.push("record");
+    if (state.unlocked[5] || (state.deepestM | 0) >= 80) pool.push("pearl");
     const nl = nextLockedTank();
     if (nl >= 0) pool.push("unlock");
     const hi = highestUnlocked();
@@ -2833,6 +2968,8 @@
     state.sessionNicoLantern = false;
     state.sessionSable = false;
     state.sessionOrderDone = false;
+    state.sessionPearl = false;
+    state.sessionDepthRecord = false;
     state.sessionDiveCatch = 0;
     state.sessionStocked = -1;
     state.goalUnlockAt = highestUnlocked();
@@ -5371,7 +5508,8 @@
       const d = rand(220, 360);
       const local = zoneAtDepth(player.y, player.x);
       const sid = local.wreck ? 13 : (state.unlocked[local.s] ? local.s : 0);
-      pushOceanFish(sid, player.x + Math.cos(ang) * d, player.y + Math.sin(ang) * d + 50);
+      const deepRare = !!(local.forever && Math.random() < Math.min(0.28, 0.08 + (local.lap || 1) * 0.05));
+      pushOceanFish(sid, player.x + Math.cos(ang) * d, player.y + Math.sin(ang) * d + 50, deepRare ? { rare: true } : null);
       near++;
       total++;
     }
@@ -5597,6 +5735,11 @@
       const d = Math.hypot(chest.x - wx, chest.y - wy);
       if (d < bestD) best = chest;
     }
+    const dCache = depthCacheTarget();
+    if (dCache) {
+      const d = Math.hypot(dCache.x - wx, dCache.y - wy);
+      if (d < bestD) { best = dCache; bestD = d; }
+    }
     return best;
   }
   function nearestScoopFish() {
@@ -5622,6 +5765,15 @@
       if (d <= maxD + 28 && d >= 4 &&
           Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) <= half + 0.2) {
         return chest;
+      }
+    }
+    const dCache = depthCacheTarget();
+    if (dCache) {
+      const dx = dCache.x - player.x, dy = dCache.y - player.y;
+      const d = Math.hypot(dx, dy);
+      if (d <= maxD + 36 && d >= 4 &&
+          Math.abs(normAng(Math.atan2(dy, dx) - player.facing)) <= half + 0.25) {
+        return dCache;
       }
     }
     if (exclusive) {
@@ -5651,7 +5803,8 @@
     return true;
   }
   function startScoopOnFish(f) {
-    if (!f || f.caught || f.tease || state.bag.length >= bagMax()) return false;
+    if (!f || f.caught || f.tease) return false;
+    if (state.bag.length >= bagMax() && !isChestTarget(f)) return false;
     if (player.catchLatch && (keys.has(" ") || keys.has("enter"))) return false;
     player.catchLatch = false;
     return lockScoop(f);
@@ -5789,7 +5942,7 @@
     }
   }
   function maybeStartCatchVerb(f) {
-    if (!f || f.rare || f.tease || f.verb || f.chest || state.catchVerb) return;
+    if (!f || f.rare || f.tease || f.verb || f.chest || f.depthCache || state.catchVerb) return;
     const n = (state.diveCatches | 0) + 1;
     const firstDive = (state.divesThisSession | 0) === 1;
     if (n === 3) beginYankHold(f);
@@ -5814,7 +5967,9 @@
       return;
     }
     if (player.catchLatch && !catchHolding()) player.catchLatch = false;
-    if (state.bag.length >= bagMax() && !(wreckChestTarget() && inWreck(player.x, player.y))) {
+    if (state.bag.length >= bagMax() &&
+        !(wreckChestTarget() && inWreck(player.x, player.y)) &&
+        !depthCacheTarget()) {
       clearCatchVerb();
       clearScoop("fade");
       player.target = null;
@@ -5882,6 +6037,11 @@
       best = chestAim;
       bestD = Math.hypot(chestAim.x - player.x, chestAim.y - player.y);
     }
+    const cacheAim = depthCacheTarget();
+    if (cacheAim && (fishInCone(cacheAim) || fishNearCone(cacheAim))) {
+      const d = Math.hypot(cacheAim.x - player.x, cacheAim.y - player.y);
+      if (d < bestD) { best = cacheAim; bestD = d; }
+    }
     for (const f of oceanFish) {
       if (f.caught || f.tease) continue;
       if (!huntScoopAllows(f)) continue;
@@ -5892,6 +6052,7 @@
       if (d < bestD) { bestD = d; best = f; }
     }
     if (chestAim && best === chestAim) { /* wreck chest wins the cone in the hull */ }
+    else if (cacheAim && best === cacheAim) { /* depth pearl wins its band */ }
     else if (bestRare) best = bestRare;
     else if (rareNear) best = null;
     if (rareNear && player.target && !player.target.rare && !isChestTarget(player.target)) {
@@ -5951,7 +6112,11 @@
     }
   }
   function beginCatchClimax(f) {
-    if (isChestTarget(f)) {
+    if (isDepthCache(f)) {
+      openDepthCache(f);
+      return;
+    }
+    if (f && f.chest) {
       openWreckChest();
       return;
     }
@@ -6022,6 +6187,18 @@
     f.caught = true;
     f.verb = "";
     state.catchVerb = null;
+    // loop 170 — deep scoops stack a DEPTH combo and bump bag pay.
+    if (player.y >= OCEAN_BASE_H - 40) {
+      state.depthCombo = (state.depthCombo | 0) + 1;
+      const dm = depthPayMult(player.y);
+      state.bagBonus = Math.max(state.bagBonus || 1, Math.min(1.55, dm + (state.depthCombo | 0) * 0.03));
+      if ((state.depthCombo | 0) >= 2) {
+        pop(player.x, player.y - 48, "DEPTH ×" + state.depthCombo, "#9ef0ff", 1.05, 1.15);
+      }
+    } else {
+      state.depthCombo = 0;
+    }
+    noteDepthRecord();
     state.bag.push(f.s);
     if (!state.bagRare) state.bagRare = [];
     state.bagRare.push(!!f.rare);
@@ -6042,7 +6219,7 @@
       state.pendingBookTease = true;
     }
     if (state.diveCatches >= 3 && !f.rare) {
-      state.bagBonus = 1.1;
+      state.bagBonus = Math.max(state.bagBonus || 1, 1.1);
       const word = state.diveCatches >= 5 ? "AMAZING" : state.diveCatches === 4 ? "GREAT" : "STREAK!";
       const col = state.diveCatches >= 5 ? "#ff8ad4" : state.diveCatches === 4 ? "#9ef0ff" : "#ffe27a";
       const isStreak = state.diveCatches === 3;
@@ -6056,7 +6233,7 @@
         state.comboPop = { text: word, col, life: hold, max: hold, keep: false };
       }
     } else if (state.diveCatches >= 3) {
-      state.bagBonus = 1.1;
+      state.bagBonus = Math.max(state.bagBonus || 1, 1.1);
     }
     state.bagPunch = 1.28;
     const scr = worldToScreen(f.x, f.y);
@@ -7373,11 +7550,17 @@
       const tag = z.y0 | 0;
       if ((state.zoneStamp | 0) !== tag) {
         state.zoneStamp = tag;
-        state.zoneTitle = { text: z.name.toUpperCase(), life: 0.55, max: 0.55 };
+        const hold = z.forever ? 0.85 : 0.55;
+        state.zoneTitle = { text: z.name.toUpperCase(), life: hold, max: hold };
+        noteDepthRecord();
         if ((state.sawDeepZone | 0) < tag) {
           state.sawDeepZone = tag;
           state.sessionSawDeep = tag;
           toast(z.name, SPECIES[z.s] ? SPECIES[z.s].color : "#9ef0ff");
+          if (z.forever) {
+            spawnP(player.x, player.y, 12, ["#9ef0ff", "#c4a0ff", "#fff6e8"], 60);
+            sfx("tang");
+          }
           persist();
           checkSessionGoals();
         }
@@ -11542,8 +11725,9 @@
   function paintTrailFlipper(fx, fy, kick, skin) {
     const dino = skin === "dino";
     const ryan = skin === "ryan";
-    const col = dino ? "#4aaa4a" : "#2ec8c4";
-    const edge = dino ? "#1e4a24" : "#146a6e";
+    // loop 169 — Ryan's painted kick uses sand flippers, not teal scuba fins.
+    const col = dino ? "#4aaa4a" : ryan ? "#e8c06a" : "#2ec8c4";
+    const edge = dino ? "#1e4a24" : ryan ? "#8a6030" : "#146a6e";
     ctx.save();
     ctx.translate(fx, fy);
     ctx.rotate(Math.PI * 0.5 + kick * 0.5);
@@ -11629,23 +11813,26 @@
       ctx.fillStyle = db;
       ctx.beginPath(); ctx.ellipse(2.4, -0.2, 14.6, 5.5, -0.04, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "ryan") {
-      // Thin globe ring around the waist — a filled oval swallowed the kid.
-      ctx.strokeStyle = "#2f7dff";
-      ctx.lineWidth = 2.4;
-      ctx.beginPath(); ctx.ellipse(1.2, 1.4, 9.6, 6.8, -0.08, 0, Math.PI * 2); ctx.stroke();
-      ctx.strokeStyle = "rgba(255, 226, 122, 0.75)";
-      ctx.lineWidth = 1.05;
-      ctx.beginPath(); ctx.ellipse(1.2, 1.4, 9.6, 6.8, -0.08, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = "#3d8b4a";
-      ctx.beginPath(); ctx.ellipse(-2.4, 1.1, 3.4, 2.2, -0.4, 0, Math.PI * 2); ctx.fill();
+      // loop 169 — prone like Skip/Dino: solid torso first, globe floatie
+      // under the belly (not a tall ring through the chest that reads as
+      // backstroke). Sand kick fins stay on paintTrailFlipper.
       const rb = ctx.createLinearGradient(-6, -8, 10, 6);
       rb.addColorStop(0, "#ffb04a");
       rb.addColorStop(0.5, "#e85d4c");
       rb.addColorStop(1, "#b43a28");
       ctx.fillStyle = rb;
-      ctx.beginPath(); ctx.ellipse(2.6, -0.4, 13.4, 4.8, -0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(2.6, -0.4, 13.8, 5.2, -0.05, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#c8a050";
-      ctx.beginPath(); ctx.ellipse(0.4, 1.7, 7.2, 2.5, -0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0.6, 1.5, 7.6, 2.6, -0.05, 0, Math.PI * 2); ctx.fill();
+      // Belly-side globe floatie (same side as Dino's orange ring).
+      ctx.strokeStyle = "#2f7dff";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.ellipse(1.4, 6.0, 11.4, 4.6, 0.04, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(255, 226, 122, 0.8)";
+      ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.ellipse(1.4, 6.0, 11.4, 4.6, 0.04, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "#3d8b4a";
+      ctx.beginPath(); ctx.ellipse(-2.0, 5.6, 3.2, 2.0, -0.35, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "reef") {
       ctx.fillStyle = "#cfd8e3";
       ctx.beginPath(); ctx.ellipse(-9, -0.6, 6.8, 5.4, 0.06, 0, Math.PI * 2); ctx.fill();
@@ -12229,10 +12416,43 @@
     }
     ctx.restore();
   }
+  function drawDepthCache(cache) {
+    if (!cache || !cache.depthCache) return;
+    const pulse = 0.7 + 0.3 * Math.sin(state.time * 5.2 + (cache.band || 0));
+    ctx.save();
+    ctx.translate(cache.x, cache.y);
+    ctx.fillStyle = "rgba(158, 240, 255," + (0.18 * pulse) + ")";
+    ctx.beginPath(); ctx.arc(0, 0, 34 * pulse, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#ffe27a";
+    ctx.beginPath(); ctx.ellipse(0, 4, 14, 10, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#fff6e8";
+    ctx.beginPath(); ctx.ellipse(-3, 1, 5, 4, -0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(158, 240, 255," + (0.55 + 0.35 * pulse) + ")";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, 18 + pulse * 4, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = "#9ef0ff";
+    ctx.font = "800 11px Nunito, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("PEARL", 0, -22);
+    ctx.restore();
+  }
+  function drawVisibleDepthCaches() {
+    if (state.scene !== "ocean" || player.y < OCEAN_BASE_H - 200) return;
+    const viewTop = cam.y - (H / Math.max(0.4, cam.z)) * 0.65;
+    const viewBot = cam.y + (H / Math.max(0.4, cam.z)) * 0.75;
+    const b0 = Math.max(0, ((viewTop - OCEAN_BASE_H) / ZONE_STEP) | 0);
+    const b1 = Math.max(b0, ((viewBot - OCEAN_BASE_H) / ZONE_STEP) | 0) + 1;
+    for (let b = b0; b <= b1; b++) {
+      if (depthCacheTaken(b)) continue;
+      const p = depthCachePos(b);
+      if (p.y < viewTop - 40 || p.y > viewBot + 40) continue;
+      drawDepthCache({ depthCache: true, band: b, x: p.x, y: p.y });
+    }
+  }
   function drawForeverBand(y0) {
     ctx.save();
     const g = ctx.createLinearGradient(0, y0, 0, y0 + ZONE_STEP);
-    const kind = ((y0 / ZONE_STEP) | 0) % 8;
+    const kind = ((y0 / ZONE_STEP) | 0) % (FOREVER_ZONE_NAMES.length || 8);
     if (kind === 0) {
       g.addColorStop(0, "rgba(2,8,18,0)");
       g.addColorStop(1, "rgba(0,4,12,0.42)");
@@ -12249,13 +12469,21 @@
     }
     ctx.fillStyle = g;
     ctx.fillRect(0, y0, OCEAN.w, ZONE_STEP);
-    if (kind === 0) {
+    if (kind % 3 === 0) {
       ctx.fillStyle = "rgba(90,230,255,0.22)";
-      for (let i = 0; i < 24; i++) {
+      for (let i = 0; i < 28; i++) {
         ctx.globalAlpha = 0.15 + 0.3 * (0.5 + 0.5 * Math.sin(state.time * 1.8 + i));
         ctx.beginPath(); ctx.arc((i * 173) % OCEAN.w, y0 + 80 + (i * 37) % 300, 1.8, 0, Math.PI * 2); ctx.fill();
       }
       ctx.globalAlpha = 1;
+    } else if (kind % 3 === 1) {
+      ctx.strokeStyle = "rgba(200, 160, 255, 0.18)";
+      ctx.lineWidth = 1.4;
+      for (let i = 0; i < 10; i++) {
+        const px = (i * 311 + state.time * 12) % OCEAN.w;
+        const py = y0 + 60 + (i * 41) % 320;
+        ctx.beginPath(); ctx.arc(px, py, 10 + (i % 3) * 4, 0, Math.PI * 2); ctx.stroke();
+      }
     }
     ctx.restore();
   }
@@ -13925,6 +14153,7 @@
     }
     drawDiveBeds();
     drawWreck();
+    drawVisibleDepthCaches();
     drawDecorOcean();
     if (state.splash) {
       const u = 1 - clamp(state.splash.life / state.splash.max, 0, 1);
@@ -14840,7 +15069,8 @@
     return { x: x, y: floor - inset - h, w: w, h: h };
   }
   function huntScoopAllows(f) {
-    if (isChestTarget(f)) return !!state.wreckChestReady;
+    if (isDepthCache(f)) return true;
+    if (f && f.chest) return !!state.wreckChestReady;
     if (!f || f.caught || f.tease) return false;
     if (!huntScoopExclusive()) return true;
     return (f.s | 0) === diveForHuntIndex();
@@ -15031,6 +15261,10 @@
       if (chest && (inWreck(player.x, player.y) ||
           Math.hypot(player.x - chest.x, player.y - chest.y) < 460)) {
         return { text: "Hold the cone on the wreck chest", target: { x: chest.x, y: chest.y } };
+      }
+      const pearl = depthCacheTarget();
+      if (pearl && Math.hypot(player.x - pearl.x, player.y - pearl.y) < 520) {
+        return { text: "Hold the cone on the depth pearl", target: { x: pearl.x, y: pearl.y } };
       }
       const shiny = firstRareFish();
       if (shiny && (state.shinyCallout > 0 || !state.caughtRare)) {
@@ -16765,6 +16999,8 @@
         "Special ORDER goals appear after day 2 — sell the listed fish before the timer",
         "Stocked tanks hatch shinies over time (nursery) — rares + decor speed it up",
         "Earn bay badges — Pause → Share my pier (or C) copies a card you can post",
+        "Swim past Whale road into forever zones — each band hides a depth pearl",
+        "Deep scoops stack a DEPTH combo and pay more — chase a depth record",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
@@ -17159,6 +17395,7 @@
         state.escapeBar = null;
         state.diveLock = 1.6;
         state.bagBonus = 1;
+        state.depthCombo = 0;
         state.divesThisSession = (state.divesThisSession | 0) + 1;
         state.wreckChestReady = true;
         if (!state.unlocked[1] && state.didFirstStock && !state.tangHintDone) {
@@ -18150,6 +18387,130 @@
   seedPierLife();
   for (let i = 0; i < 16; i++) {
     titleBubbles.push({ x: rand(30, W - 30), y: rand(40, H + 20), r: rand(2, 6), v: rand(36, 88), ph: rand(0, 8) });
+  }
+  // loop 169 — ?qa=1 probe so walk/swim skin checks can read pose + force a dive.
+  // loop 170 — depth / pearl / forever probes for c170 smoke.
+  if (typeof location !== "undefined" && /[?&]qa=1(?:&|$)/.test(location.search || "")) {
+    window.__aquaBayQA = function (cmd, arg) {
+      if (cmd === "probe") {
+        const scr = worldToScreen(player.x, player.y);
+        const z = zoneAtDepth(player.y, player.x);
+        const pearl = depthCacheTarget();
+        return {
+          skin: state.skin, scene: state.scene, mode: state.mode,
+          x: player.x, y: player.y, facing: player.facing,
+          pitch: player.pitch || 0, faceS: player.faceS,
+          vx: player.vx, vy: player.vy, walkPhase: player.walkPhase,
+          sx: scr.x, sy: scr.y, art: !!(ART && ART.ready),
+          deepestM: state.deepestM | 0, depthCombo: state.depthCombo | 0,
+          sessionPearl: !!state.sessionPearl, sessionDepthRecord: !!state.sessionDepthRecord,
+          zone: z ? z.name : "", forever: !!(z && z.forever), band: z && z.band != null ? z.band : -1,
+          pearl: pearl ? { x: pearl.x, y: pearl.y, band: pearl.band | 0 } : null,
+          money: state.money | 0, bag: (state.bag || []).length | 0,
+        };
+      }
+      if (cmd === "skin") {
+        state.skin = normalizeSkin(arg);
+        persist();
+        return state.skin;
+      }
+      if (cmd === "play") {
+        if (state.mode === "title" || state.mode === "pause") startPlay();
+        return state.mode;
+      }
+      if (cmd === "dock") {
+        state.scene = "shop";
+        state.fade = 0; state.fadeDir = 0; state.pendingScene = null;
+        player.x = 880; player.y = 920;
+        player.vx = 0; player.vy = 0;
+        player.facing = 0; player.faceS = 1; player.pitch = 0;
+        cam.x = 880; cam.y = DOCK_CAM_FLOOR; cam.z = stageZoom();
+        return "shop";
+      }
+      if (cmd === "dive") {
+        if (state.mode !== "play") startPlay();
+        state.scene = "shop";
+        player.x = 880; player.y = 1040;
+        beginDive();
+        return "dive";
+      }
+      if (cmd === "ocean") {
+        if (state.mode !== "play") startPlay();
+        state.fade = 0; state.fadeDir = 0; state.pendingScene = null;
+        state.scene = "ocean";
+        player.x = 900; player.y = 520;
+        player.vx = 0; player.vy = 0;
+        player.facing = arg && arg.facing != null ? +arg.facing : 0.35;
+        player.faceS = Math.cos(player.facing) < -0.38 ? -1 : 1;
+        player.pitch = Math.sin(player.facing) * 0.58;
+        player.walkPhase = (arg && arg.phase != null) ? +arg.phase : 2.4;
+        cam.x = player.x; cam.y = player.y; cam.z = stageZoom();
+        seedOcean();
+        return "ocean";
+      }
+      if (cmd === "unlockDeep") {
+        if (state.mode !== "play") startPlay();
+        for (let i = 0; i < SPECIES.length; i++) {
+          if (!isWreckSpecies(i)) state.unlocked[i] = true;
+        }
+        state.money = Math.max(state.money | 0, 500);
+        persist();
+        syncOceanHeight();
+        return highestUnlockedSafe();
+      }
+      if (cmd === "gotoBand") {
+        if (state.mode !== "play") startPlay();
+        state.fade = 0; state.fadeDir = 0; state.pendingScene = null;
+        state.scene = "ocean";
+        const band = Math.max(0, (arg && arg.band != null ? arg.band : arg) | 0);
+        const p = depthCachePos(band);
+        player.x = p.x - 80;
+        player.y = p.y;
+        player.vx = 0; player.vy = 0;
+        player.facing = 0;
+        player.faceS = 1;
+        player.pitch = 0;
+        state.diveLock = 0;
+        cam.x = player.x; cam.y = player.y; cam.z = stageZoom();
+        syncOceanHeight();
+        seedOcean();
+        noteDepthRecord();
+        return { band: band, x: player.x, y: player.y, pearl: depthCacheTarget() };
+      }
+      if (cmd === "crackPearl") {
+        const c = depthCacheTarget();
+        if (!c) return { ok: false, reason: "no-pearl" };
+        const before = state.money | 0;
+        openDepthCache(c);
+        return { ok: true, pay: (state.money | 0) - before, money: state.money | 0, sessionPearl: !!state.sessionPearl };
+      }
+      if (cmd === "scoopDeep") {
+        // Simulate a deep scoop for DEPTH combo without needing a live fish.
+        const fake = { s: 5, x: player.x + 20, y: player.y, rare: false, caught: false, verb: "", tease: false };
+        oceanFish.push(fake);
+        player.y = Math.max(player.y, OCEAN_BASE_H + 40);
+        catchFish(fake);
+        return { combo: state.depthCombo | 0, bagBonus: state.bagBonus || 1, deepestM: state.deepestM | 0 };
+      }
+  if (cmd === "resetDepth") {
+        state.depthCaches = {};
+        state.deepestM = 0;
+        state.depthCombo = 0;
+        state.sessionPearl = false;
+        state.sessionDepthRecord = false;
+        state.depthRecordToast = 0;
+        state.depthCacheObj = null;
+        persist();
+        return true;
+      }
+      if (cmd === "face") {
+        player.facing = +arg || 0;
+        player.faceS = Math.cos(player.facing) < -0.38 ? -1 : 1;
+        player.pitch = Math.sin(player.facing) * 0.58;
+        return player.facing;
+      }
+      return null;
+    };
   }
   requestAnimationFrame(frame);
 })();
