@@ -6219,7 +6219,7 @@
       state.pendingBookTease = true;
     }
     if (state.diveCatches >= 3 && !f.rare) {
-      state.bagBonus = 1.1;
+      state.bagBonus = Math.max(state.bagBonus || 1, 1.1);
       const word = state.diveCatches >= 5 ? "AMAZING" : state.diveCatches === 4 ? "GREAT" : "STREAK!";
       const col = state.diveCatches >= 5 ? "#ff8ad4" : state.diveCatches === 4 ? "#9ef0ff" : "#ffe27a";
       const isStreak = state.diveCatches === 3;
@@ -6233,7 +6233,7 @@
         state.comboPop = { text: word, col, life: hold, max: hold, keep: false };
       }
     } else if (state.diveCatches >= 3) {
-      state.bagBonus = 1.1;
+      state.bagBonus = Math.max(state.bagBonus || 1, 1.1);
     }
     state.bagPunch = 1.28;
     const scr = worldToScreen(f.x, f.y);
@@ -18389,16 +18389,24 @@
     titleBubbles.push({ x: rand(30, W - 30), y: rand(40, H + 20), r: rand(2, 6), v: rand(36, 88), ph: rand(0, 8) });
   }
   // loop 169 — ?qa=1 probe so walk/swim skin checks can read pose + force a dive.
+  // loop 170 — depth / pearl / forever probes for c170 smoke.
   if (typeof location !== "undefined" && /[?&]qa=1(?:&|$)/.test(location.search || "")) {
     window.__aquaBayQA = function (cmd, arg) {
       if (cmd === "probe") {
         const scr = worldToScreen(player.x, player.y);
+        const z = zoneAtDepth(player.y, player.x);
+        const pearl = depthCacheTarget();
         return {
           skin: state.skin, scene: state.scene, mode: state.mode,
           x: player.x, y: player.y, facing: player.facing,
           pitch: player.pitch || 0, faceS: player.faceS,
           vx: player.vx, vy: player.vy, walkPhase: player.walkPhase,
           sx: scr.x, sy: scr.y, art: !!(ART && ART.ready),
+          deepestM: state.deepestM | 0, depthCombo: state.depthCombo | 0,
+          sessionPearl: !!state.sessionPearl, sessionDepthRecord: !!state.sessionDepthRecord,
+          zone: z ? z.name : "", forever: !!(z && z.forever), band: z && z.band != null ? z.band : -1,
+          pearl: pearl ? { x: pearl.x, y: pearl.y, band: pearl.band | 0 } : null,
+          money: state.money | 0, bag: (state.bag || []).length | 0,
         };
       }
       if (cmd === "skin") {
@@ -18439,6 +18447,61 @@
         cam.x = player.x; cam.y = player.y; cam.z = stageZoom();
         seedOcean();
         return "ocean";
+      }
+      if (cmd === "unlockDeep") {
+        if (state.mode !== "play") startPlay();
+        for (let i = 0; i < SPECIES.length; i++) {
+          if (!isWreckSpecies(i)) state.unlocked[i] = true;
+        }
+        state.money = Math.max(state.money | 0, 500);
+        persist();
+        syncOceanHeight();
+        return highestUnlockedSafe();
+      }
+      if (cmd === "gotoBand") {
+        if (state.mode !== "play") startPlay();
+        state.fade = 0; state.fadeDir = 0; state.pendingScene = null;
+        state.scene = "ocean";
+        const band = Math.max(0, (arg && arg.band != null ? arg.band : arg) | 0);
+        const p = depthCachePos(band);
+        player.x = p.x - 80;
+        player.y = p.y;
+        player.vx = 0; player.vy = 0;
+        player.facing = 0;
+        player.faceS = 1;
+        player.pitch = 0;
+        state.diveLock = 0;
+        cam.x = player.x; cam.y = player.y; cam.z = stageZoom();
+        syncOceanHeight();
+        seedOcean();
+        noteDepthRecord();
+        return { band: band, x: player.x, y: player.y, pearl: depthCacheTarget() };
+      }
+      if (cmd === "crackPearl") {
+        const c = depthCacheTarget();
+        if (!c) return { ok: false, reason: "no-pearl" };
+        const before = state.money | 0;
+        openDepthCache(c);
+        return { ok: true, pay: (state.money | 0) - before, money: state.money | 0, sessionPearl: !!state.sessionPearl };
+      }
+      if (cmd === "scoopDeep") {
+        // Simulate a deep scoop for DEPTH combo without needing a live fish.
+        const fake = { s: 5, x: player.x + 20, y: player.y, rare: false, caught: false, verb: "", tease: false };
+        oceanFish.push(fake);
+        player.y = Math.max(player.y, OCEAN_BASE_H + 40);
+        catchFish(fake);
+        return { combo: state.depthCombo | 0, bagBonus: state.bagBonus || 1, deepestM: state.deepestM | 0 };
+      }
+  if (cmd === "resetDepth") {
+        state.depthCaches = {};
+        state.deepestM = 0;
+        state.depthCombo = 0;
+        state.sessionPearl = false;
+        state.sessionDepthRecord = false;
+        state.depthRecordToast = 0;
+        state.depthCacheObj = null;
+        persist();
+        return true;
       }
       if (cmd === "face") {
         player.facing = +arg || 0;
