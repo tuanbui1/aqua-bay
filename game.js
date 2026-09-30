@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 169 divers walk + swim verified for Skip / Reef / Dino / Ryan
 // loop 168 pier stars, special orders, tank nursery, bay badges, share pier
 // loop 167 divers swim prone — atlas flutter kick, Ryan paints the same pose
 // loop 165 the deep has worse teeth — an angler and a leviathan
@@ -11542,8 +11543,9 @@
   function paintTrailFlipper(fx, fy, kick, skin) {
     const dino = skin === "dino";
     const ryan = skin === "ryan";
-    const col = dino ? "#4aaa4a" : "#2ec8c4";
-    const edge = dino ? "#1e4a24" : "#146a6e";
+    // loop 169 — Ryan's painted kick uses sand flippers, not teal scuba fins.
+    const col = dino ? "#4aaa4a" : ryan ? "#e8c06a" : "#2ec8c4";
+    const edge = dino ? "#1e4a24" : ryan ? "#8a6030" : "#146a6e";
     ctx.save();
     ctx.translate(fx, fy);
     ctx.rotate(Math.PI * 0.5 + kick * 0.5);
@@ -11629,23 +11631,26 @@
       ctx.fillStyle = db;
       ctx.beginPath(); ctx.ellipse(2.4, -0.2, 14.6, 5.5, -0.04, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "ryan") {
-      // Thin globe ring around the waist — a filled oval swallowed the kid.
-      ctx.strokeStyle = "#2f7dff";
-      ctx.lineWidth = 2.4;
-      ctx.beginPath(); ctx.ellipse(1.2, 1.4, 9.6, 6.8, -0.08, 0, Math.PI * 2); ctx.stroke();
-      ctx.strokeStyle = "rgba(255, 226, 122, 0.75)";
-      ctx.lineWidth = 1.05;
-      ctx.beginPath(); ctx.ellipse(1.2, 1.4, 9.6, 6.8, -0.08, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = "#3d8b4a";
-      ctx.beginPath(); ctx.ellipse(-2.4, 1.1, 3.4, 2.2, -0.4, 0, Math.PI * 2); ctx.fill();
+      // loop 169 — prone like Skip/Dino: solid torso first, globe floatie
+      // under the belly (not a tall ring through the chest that reads as
+      // backstroke). Sand kick fins stay on paintTrailFlipper.
       const rb = ctx.createLinearGradient(-6, -8, 10, 6);
       rb.addColorStop(0, "#ffb04a");
       rb.addColorStop(0.5, "#e85d4c");
       rb.addColorStop(1, "#b43a28");
       ctx.fillStyle = rb;
-      ctx.beginPath(); ctx.ellipse(2.6, -0.4, 13.4, 4.8, -0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(2.6, -0.4, 13.8, 5.2, -0.05, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#c8a050";
-      ctx.beginPath(); ctx.ellipse(0.4, 1.7, 7.2, 2.5, -0.05, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0.6, 1.5, 7.6, 2.6, -0.05, 0, Math.PI * 2); ctx.fill();
+      // Belly-side globe floatie (same side as Dino's orange ring).
+      ctx.strokeStyle = "#2f7dff";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.ellipse(1.4, 6.0, 11.4, 4.6, 0.04, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(255, 226, 122, 0.8)";
+      ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.ellipse(1.4, 6.0, 11.4, 4.6, 0.04, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "#3d8b4a";
+      ctx.beginPath(); ctx.ellipse(-2.0, 5.6, 3.2, 2.0, -0.35, 0, Math.PI * 2); ctx.fill();
     } else if (skin === "reef") {
       ctx.fillStyle = "#cfd8e3";
       ctx.beginPath(); ctx.ellipse(-9, -0.6, 6.8, 5.4, 0.06, 0, Math.PI * 2); ctx.fill();
@@ -18150,6 +18155,67 @@
   seedPierLife();
   for (let i = 0; i < 16; i++) {
     titleBubbles.push({ x: rand(30, W - 30), y: rand(40, H + 20), r: rand(2, 6), v: rand(36, 88), ph: rand(0, 8) });
+  }
+  // loop 169 — ?qa=1 probe so walk/swim skin checks can read pose + force a dive.
+  if (typeof location !== "undefined" && /[?&]qa=1(?:&|$)/.test(location.search || "")) {
+    window.__aquaBayQA = function (cmd, arg) {
+      if (cmd === "probe") {
+        const scr = worldToScreen(player.x, player.y);
+        return {
+          skin: state.skin, scene: state.scene, mode: state.mode,
+          x: player.x, y: player.y, facing: player.facing,
+          pitch: player.pitch || 0, faceS: player.faceS,
+          vx: player.vx, vy: player.vy, walkPhase: player.walkPhase,
+          sx: scr.x, sy: scr.y, art: !!(ART && ART.ready),
+        };
+      }
+      if (cmd === "skin") {
+        state.skin = normalizeSkin(arg);
+        persist();
+        return state.skin;
+      }
+      if (cmd === "play") {
+        if (state.mode === "title" || state.mode === "pause") startPlay();
+        return state.mode;
+      }
+      if (cmd === "dock") {
+        state.scene = "shop";
+        state.fade = 0; state.fadeDir = 0; state.pendingScene = null;
+        player.x = 880; player.y = 920;
+        player.vx = 0; player.vy = 0;
+        player.facing = 0; player.faceS = 1; player.pitch = 0;
+        cam.x = 880; cam.y = DOCK_CAM_FLOOR; cam.z = stageZoom();
+        return "shop";
+      }
+      if (cmd === "dive") {
+        if (state.mode !== "play") startPlay();
+        state.scene = "shop";
+        player.x = 880; player.y = 1040;
+        beginDive();
+        return "dive";
+      }
+      if (cmd === "ocean") {
+        if (state.mode !== "play") startPlay();
+        state.fade = 0; state.fadeDir = 0; state.pendingScene = null;
+        state.scene = "ocean";
+        player.x = 900; player.y = 520;
+        player.vx = 0; player.vy = 0;
+        player.facing = arg && arg.facing != null ? +arg.facing : 0.35;
+        player.faceS = Math.cos(player.facing) < -0.38 ? -1 : 1;
+        player.pitch = Math.sin(player.facing) * 0.58;
+        player.walkPhase = (arg && arg.phase != null) ? +arg.phase : 2.4;
+        cam.x = player.x; cam.y = player.y; cam.z = stageZoom();
+        seedOcean();
+        return "ocean";
+      }
+      if (cmd === "face") {
+        player.facing = +arg || 0;
+        player.faceS = Math.cos(player.facing) < -0.38 ? -1 : 1;
+        player.pitch = Math.sin(player.facing) * 0.58;
+        return player.facing;
+      }
+      return null;
+    };
   }
   requestAnimationFrame(frame);
 })();
