@@ -171,7 +171,7 @@
   const DAY_BOARD = { x: 348, y: 942 };
   // loop 171 — brass bell on the main dock, clear of the slate, the
   // DIVE post (598), the mop (748), and the world DIVE chip (796).
-  const GAUNTLET_BELL = { x: 700, y: 1002 };
+  const GAUNTLET_BELL = { x: 656, y: 948 };
   const GAUNTLET_SECS = 40;
   const GAUNTLET_RINGS = 3;
   const DAY_GUESTS = ["Maya", "Nico", "Jun"];
@@ -3881,63 +3881,72 @@
     }
     persist();
   }
+  function gauntletBellRect() {
+    return { x: GAUNTLET_BELL.x - 42, y: GAUNTLET_BELL.y - 70, w: 84, h: 108 };
+  }
   function drawGauntletBell(x, y) {
     const armed = !!state.gauntletArmed;
     const left = gauntletRingsLeftNow();
     const resting = !armed && left <= 0;
-    const swing = Math.sin(state.time * (armed ? 8.2 : 1.7)) * (armed ? 0.28 : 0.05);
+    const swing = Math.sin(state.time * (armed ? 8.2 : 1.7)) * (armed ? 0.32 : 0.06);
     if (armed) {
-      const glow = ctx.createRadialGradient(x, y - 10, 4, x, y - 6, 46);
-      glow.addColorStop(0, "rgba(255, 226, 122, 0.55)");
+      const glow = ctx.createRadialGradient(x, y - 18, 6, x, y - 12, 58);
+      glow.addColorStop(0, "rgba(255, 226, 122, 0.62)");
       glow.addColorStop(1, "rgba(255, 226, 122, 0)");
       ctx.fillStyle = glow;
       ctx.beginPath();
-      ctx.arc(x, y - 8, 46, 0, Math.PI * 2);
+      ctx.arc(x, y - 14, 58, 0, Math.PI * 2);
       ctx.fill();
     }
-    sitShadow(x, y + 10, 18, 6, 0.38);
+    sitShadow(x, y + 18, 26, 7, 0.4);
     ctx.fillStyle = "#5c3a22";
-    ctx.fillRect(x - 3, y - 36, 6, 40);
-    ctx.fillStyle = "rgba(255, 220, 160, 0.28)";
-    ctx.fillRect(x - 2, y - 36, 2, 40);
+    ctx.fillRect(x - 4, y - 48, 8, 52);
+    ctx.fillStyle = "rgba(255, 220, 160, 0.35)";
+    ctx.fillRect(x - 3, y - 48, 2.4, 52);
+    ctx.fillStyle = "#c8a060";
+    ctx.fillRect(x - 14, y - 50, 28, 5);
     ctx.save();
-    ctx.translate(x, y - 36);
+    ctx.translate(x, y - 46);
     ctx.rotate(swing);
-    ctx.strokeStyle = "#c8a060";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#8a5a18";
+    ctx.lineWidth = 2.4;
     ctx.beginPath();
-    ctx.moveTo(-10, 0);
-    ctx.lineTo(10, 0);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, 6);
     ctx.stroke();
-    ctx.fillStyle = armed ? "#ffe27a" : (resting ? "#a08048" : "#e8c04a");
+    ctx.fillStyle = armed ? "#ffe27a" : (resting ? "#a08048" : "#f0c44a");
     ctx.beginPath();
-    ctx.moveTo(-10, 2);
-    ctx.quadraticCurveTo(-12, 18, 0, 22);
-    ctx.quadraticCurveTo(12, 18, 10, 2);
+    ctx.moveTo(-14, 6);
+    ctx.quadraticCurveTo(-16, 26, 0, 32);
+    ctx.quadraticCurveTo(16, 26, 14, 6);
     ctx.closePath();
     ctx.fill();
     ctx.strokeStyle = "#8a5a10";
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.6;
     ctx.stroke();
-    ctx.fillStyle = "#fff6e8";
-    ctx.fillRect(-7, 4, 3, 7);
+    ctx.fillStyle = "rgba(255, 246, 220, 0.85)";
+    ctx.fillRect(-10, 9, 4, 10);
     ctx.fillStyle = "#6a4010";
     ctx.beginPath();
-    ctx.arc(0, 22, 2.2, 0, Math.PI * 2);
+    ctx.arc(0, 33, 2.6, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
     ctx.fillStyle = "#3a2414";
-    roundRect(x - 30, y + 6, 60, 20, 4);
+    roundRect(x - 36, y + 8, 72, 24, 5);
     ctx.fill();
     ctx.fillStyle = resting ? "#2a241c" : "#24382c";
-    roundRect(x - 28, y + 8, 56, 16, 3);
+    roundRect(x - 34, y + 10, 68, 20, 4);
     ctx.fill();
+    ctx.strokeStyle = resting ? "#8a7a62" : "#e8c04a";
+    ctx.lineWidth = 1.4;
+    roundRect(x - 34, y + 10, 68, 20, 4);
+    ctx.stroke();
     ctx.fillStyle = resting ? "#c8b8a0" : "#ffe27a";
-    ctx.font = "800 10px Nunito, sans-serif";
+    ctx.font = "800 13px Nunito, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const label = armed ? "LIT" : (resting ? "REST" : ("RING " + left));
-    ctx.fillText(label, x, y + 16);
+    ctx.fillText(label, x, y + 20);
     ctx.textBaseline = "alphabetic";
   }
   function drawGauntletClock() {
@@ -4581,7 +4590,7 @@
       const near = Math.hypot(player.x - GAUNTLET_BELL.x, player.y - GAUNTLET_BELL.y) < 78;
       if (!near) {
         player.pendingAct = null;
-        setWalkDest({ x: GAUNTLET_BELL.x, y: 988 });
+        setWalkDest({ x: GAUNTLET_BELL.x + 46, y: 992 });
         return;
       }
       ringGauntlet();
@@ -13026,9 +13035,10 @@
       paintWorldSprite(DAY_BOARD.x - 40, DAY_BOARD.y + 36, 28, function () { drawSlateNote(); });
     }
     if (state.missionDone) {
-      const bellPainted = paintWorldSprite(GAUNTLET_BELL.x, GAUNTLET_BELL.y, 72, function () { drawGauntletBell(GAUNTLET_BELL.x, GAUNTLET_BELL.y); });
+      const bellPainted = paintWorldSprite(GAUNTLET_BELL.x, GAUNTLET_BELL.y, 88, function () { drawGauntletBell(GAUNTLET_BELL.x, GAUNTLET_BELL.y); });
       if (bellPainted && state.mode === "play" && state.scene === "shop") {
-        const hb = screenBtnFromWorld(GAUNTLET_BELL.x - 36, GAUNTLET_BELL.y - 58, 72, 96);
+        const br = gauntletBellRect();
+        const hb = screenBtnFromWorld(br.x, br.y, br.w, br.h);
         if (hb[0] < viewWidth() && hb[0] + hb[2] > 0 && hb[1] < H && hb[1] + hb[3] > 0) {
           btn("gauntlet-bell", hb[0], hb[1], hb[2], hb[3]);
         }
@@ -18444,6 +18454,56 @@
     state.lifetimeCatches = 8;
     state.caughtCount = padSpeciesNums([6]);
     startPlay();
+    // Demo probe for ?bell=1 only. Normal play never attaches this.
+    window.__aquaBell = {
+      status: function () {
+        return {
+          mode: state.mode,
+          scene: state.scene,
+          mission: !!state.missionDone,
+          armed: !!state.gauntletArmed,
+          active: !!state.gauntletActive,
+          caught: state.gauntletCaught | 0,
+          goal: state.gauntletGoal | 0,
+          time: Math.ceil(state.gauntletTime || 0),
+          rings: gauntletRingsLeftNow(),
+          money: state.money | 0,
+          clears: state.gauntletClears | 0,
+        };
+      },
+      bell: function () {
+        const br = gauntletBellRect();
+        const hb = screenBtnFromWorld(br.x, br.y, br.w, br.h);
+        return { x: hb[0] + hb[2] / 2, y: hb[1] + hb[3] / 2 };
+      },
+      dive: function () {
+        const b = actionBtnBox();
+        return { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+      },
+      fish: function () {
+        let best = null, bestD = 1e9;
+        for (let i = 0; i < oceanFish.length; i++) {
+          const f = oceanFish[i];
+          if (!f || f.caught) continue;
+          const d = Math.hypot(f.x - player.x, f.y - player.y);
+          if (d < bestD) { bestD = d; best = f; }
+        }
+        if (!best) return null;
+        const s = worldToScreen(best.x, best.y);
+        return { x: s.x, y: s.y };
+      },
+      poke: function (sx, sy, kind) {
+        const r = canvas.getBoundingClientRect();
+        const clientX = r.left + sx * (r.width / W);
+        const clientY = r.top + sy * (r.height / H);
+        const type = kind === "up" ? "pointerup" : "pointerdown";
+        canvas.dispatchEvent(new PointerEvent(type, {
+          bubbles: true, cancelable: true, clientX: clientX, clientY: clientY,
+          pointerId: 1, pointerType: "mouse", button: 0, buttons: kind === "up" ? 0 : 1,
+        }));
+        return { clientX: clientX, clientY: clientY };
+      },
+    };
   }
   maybeBellPreview();
   requestAnimationFrame(frame);
