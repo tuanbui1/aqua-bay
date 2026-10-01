@@ -1,4 +1,5 @@
 // Aqua Bay — original pier aquarium tycoon (vanilla Canvas 2D)
+// loop 171 ring the dock bell — a timed gauntlet pays if you bag the ask
 // loop 168 pier stars, special orders, tank nursery, bay badges, share pier
 // loop 167 divers swim prone — atlas flutter kick, Ryan paints the same pose
 // loop 165 the deep has worse teeth — an angler and a leviathan
@@ -168,6 +169,11 @@
   // loop 153 — west of the life ring / DIVE post so the first-session
   // dock stays quiet and Continue still reads the slate on dock cam.
   const DAY_BOARD = { x: 348, y: 942 };
+  // loop 171 — brass bell on the main dock, clear of the slate, the
+  // DIVE post (598), the mop (748), and the world DIVE chip (796).
+  const GAUNTLET_BELL = { x: 656, y: 948 };
+  const GAUNTLET_SECS = 40;
+  const GAUNTLET_RINGS = 3;
   const DAY_GUESTS = ["Maya", "Nico", "Jun"];
   // loop 149 — Nico hangs the wreck lantern off the bait hut's east eave
   // so OPEN / the life ring stay readable and the glow sits on the dusk dock.
@@ -717,6 +723,9 @@
     // loop 168 — mid/late depth + shareable pier card
     hatchProg: padSpeciesNums([]), hatches: 0, ordersFilled: 0,
     pierOrder: null, badges: {}, badgeToast: null, sharePulse: 0,
+    // loop 171 — dock bell. Armed survives Continue; the live run does not.
+    gauntletArmed: false, gauntletClears: 0, gauntletRings: 0, gauntletDay: 0,
+    gauntletActive: false, gauntletTime: 0, gauntletCaught: 0, gauntletGoal: 0,
   };
   const player = { x: 880, y: 920, vx: 0, vy: 0, facing: 0, bob: 0, catchProg: 0, target: null, radius: 16, goto: null, route: null, blockT: 0, walkPhase: 0, lean: 0, faceS: 1, pitch: 0, pendingAct: null, unlockConfirm: null, catchLatch: false, scoopLock: null, scoopTap: false, tillDwell: 0, holdGrace: 0, surfaceIntent: false };
   const cam = { x: 880, y: 920, z: 1, rail: 28 };
@@ -965,8 +974,12 @@
     } else if (kind === "receipt") {
       tone(1046, 0.045, "square", 0.04);
       tone(1480, 0.06, "sine", 0.028);
-    } else if (kind === "escape") {
+    }     else if (kind === "escape") {
       tone(420, 0.07, "triangle", 0.04, 180);
+    } else if (kind === "bell") {
+      tone(784, 0.09, "sine", 0.07);
+      setTimeout(() => { if (!state.muted) tone(1175, 0.22, "triangle", 0.055); }, 80);
+      setTimeout(() => { if (!state.muted) tone(1568, 0.16, "sine", 0.03); }, 180);
     }
   }
   function playAlmostSfx() {
@@ -998,6 +1011,7 @@
       skin: "skip",
       hatchProg: padSpeciesNums([]), hatches: 0, ordersFilled: 0,
       pierOrder: null, badges: {},
+      gauntletArmed: false, gauntletClears: 0, gauntletRings: 0, gauntletDay: 0,
     };
   }
   function loadSave() {
@@ -1073,6 +1087,10 @@
         ordersFilled: Math.max(0, d.ordersFilled | 0),
         pierOrder: sanitizePierOrder(d.pierOrder),
         badges: (d.badges && typeof d.badges === "object") ? Object.assign({}, d.badges) : {},
+        gauntletArmed: !!d.gauntletArmed,
+        gauntletClears: Math.max(0, d.gauntletClears | 0),
+        gauntletRings: Math.max(0, d.gauntletRings | 0),
+        gauntletDay: Math.max(0, d.gauntletDay | 0),
       });
       ensureUnlockFlags();
       refreshBadges(true);
@@ -1152,6 +1170,10 @@
       ordersFilled: state.ordersFilled | 0,
       pierOrder: state.pierOrder || null,
       badges: state.badges || {},
+      gauntletArmed: !!state.gauntletArmed,
+      gauntletClears: state.gauntletClears | 0,
+      gauntletRings: state.gauntletRings | 0,
+      gauntletDay: state.gauntletDay | 0,
     };
   }
   function persist() {
@@ -1261,6 +1283,8 @@
       didFirstStock: false, didFirstSale: false,
       hatchProg: padSpeciesNums([]), hatches: 0, ordersFilled: 0,
       pierOrder: null, badges: {}, badgeToast: null, sharePulse: 0,
+      gauntletArmed: false, gauntletClears: 0, gauntletRings: 0, gauntletDay: 0,
+      gauntletActive: false, gauntletTime: 0, gauntletCaught: 0, gauntletGoal: 0,
       shinyHold: 0, shinyHoldName: "",
       boatHint: 0, boatGlance: 0,
       coneFlash: 0, registerPunch: 1, tankShake: null, cardShake: null, priceFlash: null, nopeFlash: 0,
@@ -2863,6 +2887,9 @@
     }
     if (state.sessionGoals.length && state.sessionGoalDone.length >= state.sessionGoals.length) {
       state.sessionDay = (state.sessionDay | 0) + 1;
+      state.gauntletRings = 0;
+      state.gauntletDay = state.sessionDay | 0;
+      state.gauntletArmed = false;
       toast("New day! Fresh TODAY goals", "#9ef0ff", 2.6);
       rollSessionGoals();
     }
@@ -3388,6 +3415,8 @@
     { id: "order1", name: "Order Desk", hint: "Fill one special order" },
     { id: "hatch1", name: "Nursery", hint: "Hatch a tank shiny" },
     { id: "cash1k", name: "Peak $1k", hint: "Hit $1000 peak money" },
+    { id: "bell", name: "Bell Ringer", hint: "Clear a pier gauntlet" },
+    { id: "bell3", name: "Three Bells", hint: "Clear the gauntlet 3 times" },
   ];
   function sanitizePierOrder(o) {
     if (!o || typeof o !== "object") return null;
@@ -3454,6 +3483,8 @@
     if (id === "order1") return (state.ordersFilled | 0) >= 1;
     if (id === "hatch1") return (state.hatches | 0) >= 1;
     if (id === "cash1k") return (state.peakMoney | 0) >= 1000;
+    if (id === "bell") return (state.gauntletClears | 0) >= 1;
+    if (id === "bell3") return (state.gauntletClears | 0) >= 3;
     return false;
   }
   function refreshBadges(quiet) {
@@ -3622,7 +3653,8 @@
     const badgeN = Object.keys(state.badges || {}).length;
     const lines = [
       starTxt + "Aqua Bay pier — $" + peak + " peak · " + nSp + " species · day " + day +
-        (badgeN ? (" · " + badgeN + " badges") : ""),
+        (badgeN ? (" · " + badgeN + " badges") : "") +
+        ((state.gauntletClears | 0) > 0 ? (" · " + (state.gauntletClears | 0) + " bells") : ""),
       "Dive. Stock. Sell. Free in your browser — no account:",
       "https://tuanbui1.github.io/aqua-bay/",
       "#AquaBay #IndieGame",
@@ -3721,6 +3753,226 @@
     ctx.fillText(text, W / 2 + 2, y + 2);
     ctx.fillStyle = "#ffe27a";
     ctx.fillText(text, W / 2, y);
+    ctx.restore();
+  }
+
+  // ===== LOOP 171 — pier gauntlet (dock bell) =====
+  // Pure helpers. tools/c171-gauntlet-sim.js extracts these by name.
+  function gauntletGoalOf(stars, bagMaxN, clears) {
+    const bag = Math.max(3, bagMaxN | 0);
+    const ask = 4 + Math.max(0, (stars | 0) - 1);
+    const taught = (clears | 0) <= 0 ? Math.min(ask, 3) : ask;
+    return Math.max(3, Math.min(bag, taught));
+  }
+  function gauntletGoalNow(stars, bagMaxN, clears, bagCount) {
+    const space = Math.max(0, (bagMaxN | 0) - (bagCount | 0));
+    if (space < 1) return 0;
+    return Math.min(gauntletGoalOf(stars, bagMaxN, clears), space);
+  }
+  function gauntletPayOf(caught, stars) {
+    const n = Math.max(0, caught | 0);
+    if (n <= 0) return 0;
+    const s = Math.max(1, Math.min(5, stars | 0));
+    return Math.round(n * (16 + (s - 1) * 4) + 20);
+  }
+  function gauntletConsolationOf(caught) {
+    return Math.max(0, caught | 0) * 5;
+  }
+  function gauntletPayout(caught, goal, stars) {
+    const n = Math.max(0, caught | 0);
+    const g = Math.max(0, goal | 0);
+    const ok = g > 0 && n >= g;
+    if (ok) return { ok: true, pay: gauntletPayOf(n, stars) };
+    return { ok: false, pay: gauntletConsolationOf(n) };
+  }
+  function gauntletRingResult(armed, rings, day, sessionDay, bagCount, bagMaxN) {
+    const full = (bagCount | 0) >= (bagMaxN | 0);
+    if (full) return { ok: false, armed: !!armed, rings: rings | 0, day: day | 0, reason: "full" };
+    if (armed) return { ok: true, armed: true, rings: rings | 0, day: day | 0, reason: "lit" };
+    let r = rings | 0;
+    let d = day | 0;
+    const sd = sessionDay | 0;
+    if (d !== sd) { r = 0; d = sd; }
+    if (r >= GAUNTLET_RINGS) return { ok: false, armed: false, rings: r, day: d, reason: "rest" };
+    return { ok: true, armed: true, rings: r + 1, day: d, reason: "ring" };
+  }
+  function gauntletRingsLeftNow() {
+    if ((state.gauntletDay | 0) !== (state.sessionDay | 0)) return GAUNTLET_RINGS;
+    return Math.max(0, GAUNTLET_RINGS - (state.gauntletRings | 0));
+  }
+  function ringGauntlet() {
+    if (!state.missionDone || state.scene !== "shop" || state.gauntletActive) return;
+    const res = gauntletRingResult(
+      state.gauntletArmed, state.gauntletRings, state.gauntletDay, state.sessionDay,
+      state.bag.length, bagMax()
+    );
+    state.gauntletArmed = !!res.armed;
+    state.gauntletRings = res.rings | 0;
+    state.gauntletDay = res.day | 0;
+    if (res.reason === "full") {
+      toast("Stock the bowls, then ring the bell", "#ffd0a8", 2.4);
+      sfx("no");
+      return;
+    }
+    if (res.reason === "rest") {
+      toast("The bell rests until tomorrow", "#ffd0a8", 2.4);
+      sfx("no");
+      return;
+    }
+    if (res.reason === "lit") {
+      toast("Bell's lit — dive when you're ready", "#ffe27a", 2.2);
+      sfx("bell");
+      return;
+    }
+    const goal = gauntletGoalNow(Math.max(1, pierStars()), bagMax(), state.gauntletClears, state.bag.length);
+    toast("Bell's lit — dive and bag " + goal, "#ffe27a", 2.8);
+    sfx("bell");
+    pop(GAUNTLET_BELL.x, GAUNTLET_BELL.y - 52, "RING", "#ffe27a");
+    spawnP(GAUNTLET_BELL.x, GAUNTLET_BELL.y - 20, 14, ["#ffe27a", "#fff6e8", "#e8c04a"], 70);
+    persist();
+  }
+  function beginGauntletRun() {
+    if (!state.gauntletArmed || state.expedition) return;
+    const space = bagMax() - (state.bag ? state.bag.length : 0);
+    if (space < 1) {
+      toast("Bag's full — stock, then dive. The bell stays lit", "#ffd0a8", 2.6);
+      return;
+    }
+    state.gauntletArmed = false;
+    state.gauntletActive = true;
+    state.gauntletTime = GAUNTLET_SECS;
+    state.gauntletCaught = 0;
+    state.gauntletGoal = gauntletGoalNow(Math.max(1, pierStars()), bagMax(), state.gauntletClears, state.bag.length);
+    toast("Gauntlet — bag " + state.gauntletGoal + " · " + GAUNTLET_SECS + "s", "#ffe27a", 2.6);
+    sfx("bell");
+  }
+  function resolveGauntlet() {
+    if (!state.gauntletActive) return;
+    const caught = state.gauntletCaught | 0;
+    const goal = state.gauntletGoal | 0;
+    state.gauntletActive = false;
+    state.gauntletTime = 0;
+    const result = gauntletPayout(caught, goal, Math.max(1, pierStars()));
+    if (result.ok) {
+      state.gauntletClears = (state.gauntletClears | 0) + 1;
+      state.money += result.pay;
+      state.moneyRollFrom = state.displayMoney;
+      state.moneyRollTo = state.money;
+      state.moneyRollT = 0.4;
+      state.moneyPunch = 1.35;
+      state.flash = Math.max(state.flash || 0, 0.18);
+      state.hitStop = Math.max(state.hitStop || 0, 0.12);
+      toast("Gauntlet! +$" + result.pay, "#ffe27a", 3.2);
+      pop(GAUNTLET_BELL.x, GAUNTLET_BELL.y - 56, "GAUNTLET +$" + result.pay, "#ffe27a", 1.15, 1.45);
+      spawnP(GAUNTLET_BELL.x, GAUNTLET_BELL.y - 16, 18, ["#ffe27a", "#fff6e8", "#9ef0c8"], 80);
+      sfx("cashin");
+      sfx("bell");
+      refreshBadges(false);
+    } else if (result.pay > 0) {
+      state.money += result.pay;
+      state.moneyRollFrom = state.displayMoney;
+      state.moneyRollTo = state.money;
+      state.moneyRollT = 0.3;
+      toast("Bell goes quiet — " + caught + "/" + goal + " · +$" + result.pay, "#ffd0a8", 2.8);
+      sfx("almost");
+    } else {
+      toast("Bell goes quiet — " + caught + "/" + goal, "#ffd0a8", 2.6);
+      sfx("almost");
+    }
+    persist();
+  }
+  function gauntletBellRect() {
+    return { x: GAUNTLET_BELL.x - 42, y: GAUNTLET_BELL.y - 70, w: 84, h: 108 };
+  }
+  function drawGauntletBell(x, y) {
+    const armed = !!state.gauntletArmed;
+    const left = gauntletRingsLeftNow();
+    const resting = !armed && left <= 0;
+    const swing = Math.sin(state.time * (armed ? 8.2 : 1.7)) * (armed ? 0.32 : 0.06);
+    if (armed) {
+      const glow = ctx.createRadialGradient(x, y - 18, 6, x, y - 12, 58);
+      glow.addColorStop(0, "rgba(255, 226, 122, 0.62)");
+      glow.addColorStop(1, "rgba(255, 226, 122, 0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(x, y - 14, 58, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    sitShadow(x, y + 18, 26, 7, 0.4);
+    ctx.fillStyle = "#5c3a22";
+    ctx.fillRect(x - 4, y - 48, 8, 52);
+    ctx.fillStyle = "rgba(255, 220, 160, 0.35)";
+    ctx.fillRect(x - 3, y - 48, 2.4, 52);
+    ctx.fillStyle = "#c8a060";
+    ctx.fillRect(x - 14, y - 50, 28, 5);
+    ctx.save();
+    ctx.translate(x, y - 46);
+    ctx.rotate(swing);
+    ctx.strokeStyle = "#8a5a18";
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, 6);
+    ctx.stroke();
+    ctx.fillStyle = armed ? "#ffe27a" : (resting ? "#a08048" : "#f0c44a");
+    ctx.beginPath();
+    ctx.moveTo(-14, 6);
+    ctx.quadraticCurveTo(-16, 26, 0, 32);
+    ctx.quadraticCurveTo(16, 26, 14, 6);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = "#8a5a10";
+    ctx.lineWidth = 1.6;
+    ctx.stroke();
+    ctx.fillStyle = "rgba(255, 246, 220, 0.85)";
+    ctx.fillRect(-10, 9, 4, 10);
+    ctx.fillStyle = "#6a4010";
+    ctx.beginPath();
+    ctx.arc(0, 33, 2.6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = "#3a2414";
+    roundRect(x - 36, y + 8, 72, 24, 5);
+    ctx.fill();
+    ctx.fillStyle = resting ? "#2a241c" : "#24382c";
+    roundRect(x - 34, y + 10, 68, 20, 4);
+    ctx.fill();
+    ctx.strokeStyle = resting ? "#8a7a62" : "#e8c04a";
+    ctx.lineWidth = 1.4;
+    roundRect(x - 34, y + 10, 68, 20, 4);
+    ctx.stroke();
+    ctx.fillStyle = resting ? "#c8b8a0" : "#ffe27a";
+    ctx.font = "800 13px Nunito, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const label = armed ? "LIT" : (resting ? "REST" : ("RING " + left));
+    ctx.fillText(label, x, y + 20);
+    ctx.textBaseline = "alphabetic";
+  }
+  function drawGauntletClock() {
+    if (!state.gauntletActive || state.scene !== "ocean" || state.mode !== "play") return;
+    const sec = Math.max(0, Math.ceil(state.gauntletTime || 0));
+    const label = "BELL " + (state.gauntletCaught | 0) + "/" + (state.gauntletGoal | 0) + " · " + sec + "s";
+    ctx.save();
+    const px = portraitStage() ? phoneCss(15) : 16;
+    ctx.font = "800 " + px + "px Nunito, sans-serif";
+    const tw = Math.ceil(ctx.measureText(label).width);
+    const pad = portraitStage() ? phoneCss(22) : 24;
+    const bw = tw + pad;
+    const bh = portraitStage() ? phoneCss(28) : 28;
+    const x = Math.round(viewWidth() / 2 - bw / 2);
+    const y = portraitStage() ? phoneCss(62) : 68;
+    const hot = sec <= 8;
+    card(x, y, bw, bh, hot ? "rgba(48, 18, 16, 0.94)" : "rgba(20, 40, 32, 0.94)");
+    ctx.strokeStyle = hot ? "#ff8a7a" : "#e8c04a";
+    ctx.lineWidth = 1.6;
+    roundRect(x, y, bw, bh, 8);
+    ctx.stroke();
+    ctx.fillStyle = hot ? "#ff8a7a" : "#ffe27a";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label, x + bw / 2, y + bh / 2 + 1);
+    ctx.textBaseline = "alphabetic";
     ctx.restore();
   }
 
@@ -4334,6 +4586,16 @@
     if (id === "export") { exportSave(); return; }
     if (id === "import") { pickImportSave(); return; }
     if (id === "share") { sharePier(); return; }
+    if (id === "gauntlet-bell") {
+      const near = Math.hypot(player.x - GAUNTLET_BELL.x, player.y - GAUNTLET_BELL.y) < 78;
+      if (!near) {
+        player.pendingAct = null;
+        setWalkDest({ x: GAUNTLET_BELL.x + 46, y: 992 });
+        return;
+      }
+      ringGauntlet();
+      return;
+    }
     if (id === "mute") { state.muted = !state.muted; persist(); return; }
     if (id === "shop-toggle") { phoneShopOpen = !phoneShopOpen; return; }
     if (id === "shop-panel") return;
@@ -5073,6 +5335,9 @@
     if (!state.bag.length) return false;
     const sid = state.bag.pop() | 0;
     if (state.bagRare && state.bagRare.length) state.bagRare.pop();
+    if (state.gauntletActive && (state.gauntletCaught | 0) > 0) {
+      state.gauntletCaught = (state.gauntletCaught | 0) - 1;
+    }
     pushOceanFish(sid, player.x + 36, player.y + 10);
     const f = oceanFish[oceanFish.length - 1];
     if (f) {
@@ -6029,6 +6294,7 @@
     player.scoopLock = null; player.scoopTap = false;
     state.lifetimeCatches++;
     state.diveCatches++;
+    if (state.gauntletActive) state.gauntletCaught = (state.gauntletCaught | 0) + 1;
     if (!state.caughtCount || state.caughtCount.length < SPECIES.length) state.caughtCount = padSpeciesNums(state.caughtCount);
     state.caughtCount[f.s] = (state.caughtCount[f.s] | 0) + 1;
     state.sessionDiveCatch = (state.sessionDiveCatch | 0) + 1;
@@ -12768,6 +13034,16 @@
       paintWorldSprite(DAY_BOARD.x + 16, DAY_BOARD.y + 28, 28, function () { drawSlateTip(); });
       paintWorldSprite(DAY_BOARD.x - 40, DAY_BOARD.y + 36, 28, function () { drawSlateNote(); });
     }
+    if (state.missionDone) {
+      const bellPainted = paintWorldSprite(GAUNTLET_BELL.x, GAUNTLET_BELL.y, 88, function () { drawGauntletBell(GAUNTLET_BELL.x, GAUNTLET_BELL.y); });
+      if (bellPainted && state.mode === "play" && state.scene === "shop") {
+        const br = gauntletBellRect();
+        const hb = screenBtnFromWorld(br.x, br.y, br.w, br.h);
+        if (hb[0] < viewWidth() && hb[0] + hb[2] > 0 && hb[1] < H && hb[1] + hb[3] > 0) {
+          btn("gauntlet-bell", hb[0], hb[1], hb[2], hb[3]);
+        }
+      }
+    }
     {
       const diveA = worldBoxAlpha(diveSign.x - 48, diveSign.y - 136, 96, 152);
       if (diveA > 0.04) {
@@ -15919,6 +16195,7 @@
         ctx.fillText(clock, W / 2, ey + 20);
       }
     }
+    drawGauntletClock();
     if (boatChipLegal()) {
       const eb = actionBtnBox();
       card(eb.x, eb.y, eb.w, eb.h, "rgba(40, 160, 180, 0.88)");
@@ -16765,6 +17042,7 @@
         "Special ORDER goals appear after day 2 — sell the listed fish before the timer",
         "Stocked tanks hatch shinies over time (nursery) — rares + decor speed it up",
         "Earn bay badges — Pause → Share my pier (or C) copies a card you can post",
+        "After the first session, ring the dock bell — bag the ask before it goes quiet",
         "Pause → Export save — keep your shop if the browser clears",
         "Esc — pause / resume  ·  pick Reef, Skip, Dino, or Ryan World on title",
       ];
@@ -17155,6 +17433,7 @@
         }
         state.diveCatches = 0;
         state.catchVerb = null;
+        if (state.gauntletArmed && !state.expedition) beginGauntletRun();
         player.scoopLock = null; player.scoopTap = false; player.catchProg = 0; player.target = null;
         state.escapeBar = null;
         state.diveLock = 1.6;
@@ -17188,6 +17467,7 @@
       } else if (state.pendingScene === "shop") {
         state.scene = "shop";
         clearDiveForHunt();
+        if (state.gauntletActive) resolveGauntlet();
         state.surfaceLock = 0.55;
         if (state.expedition) {
           player.x = 1188; player.y = 1000; player.vx = 0; player.vy = -30;
@@ -18098,6 +18378,10 @@
           state.expeditionTime -= sim;
           if (state.expeditionTime <= 0) beginSurface();
         }
+        if (state.gauntletActive && state.scene === "ocean" && !state.fadeDir && !(state.diveLock > 0)) {
+          state.gauntletTime = Math.max(0, (state.gauntletTime || 0) - sim);
+          if (state.gauntletTime <= 0) beginSurface();
+        }
         if (state.scene === "ocean" && !state.fadeDir && (
           (player.surfaceIntent && nearSurface()) ||
           (bagIsFull() && nearSurface()) ||
@@ -18151,5 +18435,76 @@
   for (let i = 0; i < 16; i++) {
     titleBubbles.push({ x: rand(30, W - 30), y: rand(40, H + 20), r: rand(2, 6), v: rand(36, 88), ph: rand(0, 8) });
   }
+  // Empty-pier demo so the dock bell can be played without a finished
+  // first session. A real save is left alone.
+  function maybeBellPreview() {
+    let q = "";
+    try { q = (location && location.search) || ""; } catch (e) { return; }
+    if (!/\bbell=1\b/.test(q)) return;
+    if (state.hasSave) return;
+    state.missionDone = true;
+    state.tutorial = 4;
+    state.missionStep = 3;
+    state.sessionDay = 2;
+    state.money = 120;
+    state.displayMoney = 120;
+    state.didFirstStock = true;
+    state.didFirstSale = true;
+    state.didFirstCollect = true;
+    state.lifetimeCatches = 8;
+    state.caughtCount = padSpeciesNums([6]);
+    startPlay();
+    // Demo probe for ?bell=1 only. Normal play never attaches this.
+    window.__aquaBell = {
+      status: function () {
+        return {
+          mode: state.mode,
+          scene: state.scene,
+          mission: !!state.missionDone,
+          armed: !!state.gauntletArmed,
+          active: !!state.gauntletActive,
+          caught: state.gauntletCaught | 0,
+          goal: state.gauntletGoal | 0,
+          time: Math.ceil(state.gauntletTime || 0),
+          rings: gauntletRingsLeftNow(),
+          money: state.money | 0,
+          clears: state.gauntletClears | 0,
+        };
+      },
+      bell: function () {
+        const br = gauntletBellRect();
+        const hb = screenBtnFromWorld(br.x, br.y, br.w, br.h);
+        return { x: hb[0] + hb[2] / 2, y: hb[1] + hb[3] / 2 };
+      },
+      dive: function () {
+        const b = actionBtnBox();
+        return { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+      },
+      fish: function () {
+        let best = null, bestD = 1e9;
+        for (let i = 0; i < oceanFish.length; i++) {
+          const f = oceanFish[i];
+          if (!f || f.caught) continue;
+          const d = Math.hypot(f.x - player.x, f.y - player.y);
+          if (d < bestD) { bestD = d; best = f; }
+        }
+        if (!best) return null;
+        const s = worldToScreen(best.x, best.y);
+        return { x: s.x, y: s.y };
+      },
+      poke: function (sx, sy, kind) {
+        const r = canvas.getBoundingClientRect();
+        const clientX = r.left + sx * (r.width / W);
+        const clientY = r.top + sy * (r.height / H);
+        const type = kind === "up" ? "pointerup" : "pointerdown";
+        canvas.dispatchEvent(new PointerEvent(type, {
+          bubbles: true, cancelable: true, clientX: clientX, clientY: clientY,
+          pointerId: 1, pointerType: "mouse", button: 0, buttons: kind === "up" ? 0 : 1,
+        }));
+        return { clientX: clientX, clientY: clientY };
+      },
+    };
+  }
+  maybeBellPreview();
   requestAnimationFrame(frame);
 })();
